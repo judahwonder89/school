@@ -3,8 +3,8 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Judah Wonder Model School — Raising Generational Wonders</title>
-    <meta name="description" content="Judah Wonder Model School, Abeokuta — Nursery & Primary education focused on spiritual prowess, sound academics, and moral excellence. Owned by Mrs. Oluwabunmi Somoye.">
+    <title>Judah Wonders Model School — Raising Generational Wonders</title>
+    <meta name="description" content="Judah Wonders Model School, Abeokuta — Nursery & Primary education focused on spiritual prowess, sound academics, and moral excellence. Owned by Mrs. Oluwabunmi Somoye.">
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&family=Playfair+Display:wght@600;700;800&display=swap" rel="stylesheet">
@@ -269,18 +269,18 @@
             transform: scale(1.3);
         }
 
-        /* ============ ARTISTIC LOGO SHOWCASE ============ */
+        /* ============ ARTISTIC LOGO SHOWCASE (NO BACKGROUND, LARGER) ============ */
         .logo-showcase {
             position: relative;
-            background: var(--soft-white);
-            padding: 70px 20px;
             text-align: center;
-            margin-top: -60px;
+            margin-top: -70px;            /* overlap hero slightly */
             z-index: 5;
-            border-radius: 40px 40px 0 0;
+            padding: 40px 20px;
+            background: transparent;       /* no background box */
         }
         .logo-showcase img {
-            width: 160px;
+            width: 240px;                  /* much larger */
+            max-width: 90vw;
             filter: drop-shadow(0 8px 20px rgba(0,0,0,0.15));
             animation: float 4s ease-in-out infinite;
         }
@@ -293,7 +293,7 @@
             font-size: 2.2rem;
             font-weight: 700;
             color: var(--deep-blue);
-            margin-top: 16px;
+            margin-top: 20px;
         }
         .logo-showcase .motto {
             color: var(--gold);
@@ -542,13 +542,16 @@
             .gallery {
                 grid-template-columns: 1fr 1fr;
             }
+            .logo-showcase img {
+                width: 180px;
+            }
         }
     </style>
 </head>
 <body>
     <!-- LOADING SCREEN -->
     <div id="loader">
-        <img src="https://res.cloudinary.com/dda7kpir8/image/upload/q_auto/f_auto/v1781038310/ChatGPT_Image_Jun_9_2026_09_25_06_AM_elnine.png" alt="Judah Wonder Model School Logo">
+        <img src="https://res.cloudinary.com/dda7kpir8/image/upload/q_auto/f_auto/v1781038310/ChatGPT_Image_Jun_9_2026_09_25_06_AM_elnine.png" alt="Judah Wonders Model School Logo">
     </div>
 
     <!-- HEADER -->
@@ -556,7 +559,7 @@
         <div class="header-inner">
             <a href="#" class="logo-area">
                 <img src="https://res.cloudinary.com/dda7kpir8/image/upload/q_auto/f_auto/v1781038310/ChatGPT_Image_Jun_9_2026_09_25_06_AM_elnine.png" alt="JWMS Logo" class="logo-img">
-                <div class="logo-text">JUDAH WONDER<span>MODEL SCHOOL</span></div>
+                <div class="logo-text">JUDAH WONDERS<span>MODEL SCHOOL</span></div>
             </a>
             <div class="nav-links" id="navLinks">
                 <a href="#home">Home</a>
@@ -584,22 +587,22 @@
         <div class="slide-indicators" id="slideIndicators"></div>
     </section>
 
-    <!-- ARTISTIC LOGO SHOWCASE -->
+    <!-- ARTISTIC LOGO SHOWCASE (NO BACKGROUND, LARGER) -->
     <div class="logo-showcase reveal">
-        <img src="https://res.cloudinary.com/dda7kpir8/image/upload/q_auto/f_auto/v1781038310/ChatGPT_Image_Jun_9_2026_09_25_06_AM_elnine.png" alt="Judah Wonder Logo">
-        <div class="school-name">Judah Wonder Model School</div>
+        <img src="https://res.cloudinary.com/dda7kpir8/image/upload/q_auto/f_auto/v1781038310/ChatGPT_Image_Jun_9_2026_09_25_06_AM_elnine.png" alt="Judah Wonders Logo">
+        <div class="school-name">Judah Wonders Model School</div>
         <div class="motto">...raising generational wonders among the best. Isaiah 8:18</div>
     </div>
 
     <!-- ABOUT -->
     <section id="about">
-        <h2 class="section-title reveal">Welcome to Judah Wonder</h2>
+        <h2 class="section-title reveal">Welcome to Judah Wonders</h2>
         <p class="section-subtitle reveal">Nursery & Primary Education in Abeokuta</p>
         <div class="about-grid">
             <div class="about-text reveal">
-                <p>Nestled in the heart of Abeokuta, behind Family FM on Abiola Way, <strong>Judah Wonder Model School</strong> is more than a school — it's a nurturing ground for tomorrow’s leaders. Founded by <strong>Mrs. Oluwabunmi Somoye</strong>, our institution is built on the pillars of justice, unity, distinction, achievement, and honesty.</p>
+                <p>Nestled in the heart of Abeokuta, behind Family FM on Abiola Way, <strong>Judah Wonders Model School</strong> is more than a school — it's a nurturing ground for tomorrow’s leaders. Founded by <strong>Mrs. Oluwabunmi Somoye</strong>, our institution is built on the pillars of justice, unity, distinction, achievement, and honesty.</p>
                 <p>We cater to Nursery and Primary pupils, offering a blend of spiritual development, sound qualitative academics, and moral instruction. Our highly motivated staff ensure every child is equipped for all‑round excellence.</p>
-                <p>With modern facilities, a secure learning environment, and a curriculum that meets global standards, Judah Wonder is where young minds bloom into generational wonders.</p>
+                <p>With modern facilities, a secure learning environment, and a curriculum that meets global standards, Judah Wonders is where young minds bloom into generational wonders.</p>
             </div>
             <div class="about-image reveal">
                 <img src="https://res.cloudinary.com/dda7kpir8/image/upload/q_auto/f_auto/v1781038545/IMG-20260609-WA0003_u3sdix.jpg" alt="School children" loading="lazy">
@@ -693,13 +696,13 @@
             <img src="https://res.cloudinary.com/dda7kpir8/image/upload/q_auto/f_auto/v1781038544/images_-_2026-06-09T215402.857_texcre.jpg" alt="School activity" loading="lazy" class="reveal">
             <img src="https://res.cloudinary.com/dda7kpir8/image/upload/q_auto/f_auto/v1781038545/images_-_2026-06-09T215427.407_zuoe13.jpg" alt="Pupils" loading="lazy" class="reveal">
             <img src="https://res.cloudinary.com/dda7kpir8/image/upload/q_auto/f_auto/v1781038545/IMG-20260609-WA0003_u3sdix.jpg" alt="Learning" loading="lazy" class="reveal">
-            <img src="https://res.cloudinary.com/dda7kpir8/image/upload/q_auto/f_auto/v1781038545/images_-_2026-06-09T215308.558_jsfs3p.jpg" alt="Judah Wonder pupils" loading="lazy" class="reveal">
+            <img src="https://res.cloudinary.com/dda7kpir8/image/upload/q_auto/f_auto/v1781038545/images_-_2026-06-09T215308.558_jsfs3p.jpg" alt="Judah Wonders pupils" loading="lazy" class="reveal">
         </div>
     </section>
 
     <!-- ADMISSION CTA -->
     <div class="cta-section reveal">
-        <h2 style="font-family: 'Playfair Display', serif; font-size: 2.2rem;">Join the Judah Wonder Family</h2>
+        <h2 style="font-family: 'Playfair Display', serif; font-size: 2.2rem;">Join the Judah Wonders Family</h2>
         <p style="max-width: 600px; margin: 0.5rem auto 0;">Admissions are open for Nursery and Primary. Give your child the gift of an excellent foundation.</p>
         <a href="portal.html" class="btn-light">Go to Portal</a>
     </div>
@@ -707,14 +710,14 @@
     <!-- FOOTER -->
     <footer>
         <img src="https://res.cloudinary.com/dda7kpir8/image/upload/q_auto/f_auto/v1781038310/ChatGPT_Image_Jun_9_2026_09_25_06_AM_elnine.png" alt="JWMS" class="footer-logo">
-        <p><strong>Judah Wonder Model School</strong><br>Behind Family FM, Abiola Way, Abeokuta, Ogun State</p>
-        <p>📞 0803 000 0000 &nbsp;|&nbsp; ✉️ info@judahwonder.sch.ng</p>
+        <p><strong>Judah Wonders Model School</strong><br>Behind Family FM, Abiola Way, Abeokuta, Ogun State</p>
+        <p>📞 09060473636 &nbsp;|&nbsp; ✉️ judahwonder89@gmail.com</p>
         <div class="social">
             <a href="#"><i class="fab fa-facebook-f"></i></a>
             <a href="#"><i class="fab fa-instagram"></i></a>
             <a href="#"><i class="fab fa-whatsapp"></i></a>
         </div>
-        <p style="margin-top: 30px; font-size: 0.85rem;">&copy; 2025 Judah Wonder Model School. All rights reserved.</p>
+        <p style="margin-top: 30px; font-size: 0.85rem;">&copy; 2025 Judah Wonders Model School. All rights reserved.</p>
     </footer>
 
     <script>
@@ -784,8 +787,6 @@
             });
         }, { threshold: 0.15 });
         revealElements.forEach(el => observer.observe(el));
-
-        // also observe any dynamically added elements (none here, but good practice)
     </script>
 </body>
 </html>
