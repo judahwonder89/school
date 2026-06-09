@@ -194,6 +194,7 @@
         }
         .sidebar .toggle-btn:hover { color: var(--accent); }
 
+        /* Main Content */
         .main-content {
             flex: 1;
             margin-left: 280px;
@@ -323,6 +324,7 @@
             border-radius: 3rem;
             padding: 0.3rem;
             width: fit-content;
+            flex-wrap: wrap;
         }
         .tab {
             padding: 0.7rem 2rem;
@@ -331,6 +333,7 @@
             cursor: pointer;
             transition: 0.2s;
             color: var(--text-secondary);
+            white-space: nowrap;
         }
         .tab.active { background: var(--accent); color: white; }
 
@@ -400,12 +403,12 @@
             .main-content { margin-left: 90px; }
             .top-bar { flex-direction: column; align-items: flex-start; }
             .tabs { width: 100%; justify-content: center; }
+            .user-grid { grid-template-columns: 1fr; }
         }
     </style>
 </head>
 <body>
-    <img src="https://res.cloudinary.com/dda7kpir8/image/upload/q_auto/f_auto/v1781038310/ChatGPT_Image_Jun_9_2026_09_25_06_AM_elnine.png"
-         alt="" class="bg-logo" aria-hidden="true">
+    <img src="https://res.cloudinary.com/dda7kpir8/image/upload/q_auto/f_auto/v1781038310/ChatGPT_Image_Jun_9_2026_09_25_06_AM_elnine.png" alt="" class="bg-logo" aria-hidden="true">
     <div class="orb orb-1"></div>
     <div class="orb orb-2"></div>
 
@@ -494,7 +497,7 @@
         const auth = firebase.auth();
         const db = firebase.firestore();
 
-        // Sidebar & theme toggles (same as before)
+        // Sidebar toggle
         const sidebar = document.getElementById('sidebar');
         const mainContent = document.getElementById('mainContent');
         document.getElementById('sidebarToggle').addEventListener('click', () => {
@@ -505,6 +508,7 @@
             icon.classList.toggle('fa-chevron-right');
         });
 
+        // Theme toggle
         const html = document.documentElement;
         const themeToggle = document.getElementById('themeToggle');
         const themeIcon = themeToggle.querySelector('i:first-child');
@@ -650,7 +654,6 @@
                 const userRef = db.collection('users').doc(userId);
                 const userSnap = await userRef.get();
                 const userData = userSnap.data();
-                // Generate ID only if not already assigned
                 if (!userData.userId) {
                     const year = userData.admissionYear || new Date().getFullYear();
                     const generatedId = await generateUserId(year);
