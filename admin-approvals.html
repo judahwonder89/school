@@ -1,0 +1,696 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="dark">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=yes">
+    <title>Judah Wonders Model School · Approvals</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:opsz,wght@14..32,400;500;600;700&family=Playfair+Display:wght@600;700&display=swap" rel="stylesheet">
+    <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-auth-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-firestore-compat.js"></script>
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+
+        :root[data-theme="light"] {
+            --bg-primary: #f0f5fa;
+            --bg-sidebar: rgba(255,255,255,0.75);
+            --text-primary: #0b1e33;
+            --text-secondary: #2c3e50;
+            --accent: #0A2540;
+            --accent-glow: #C8963E;
+            --border: rgba(0,0,0,0.08);
+            --card-bg: rgba(255,255,255,0.7);
+            --hover-bg: rgba(255,255,255,0.9);
+            --shadow: 0 15px 35px -10px rgba(0,0,0,0.1);
+            --stat-icon: #0A2540;
+            --success-bg: rgba(34,197,94,0.2);
+            --success-text: #16a34a;
+            --warning-bg: rgba(245,158,11,0.2);
+            --warning-text: #b45309;
+            --danger-bg: rgba(239,68,68,0.2);
+            --danger-text: #b91c1c;
+        }
+
+        :root[data-theme="dark"] {
+            --bg-primary: #0a0f1e;
+            --bg-sidebar: rgba(15, 23, 42, 0.8);
+            --text-primary: #f0f4fa;
+            --text-secondary: #a0b3d9;
+            --accent: #C8963E;
+            --accent-glow: #D4AF37;
+            --border: rgba(255,255,255,0.05);
+            --card-bg: rgba(15, 23, 42, 0.6);
+            --hover-bg: rgba(30, 41, 59, 0.8);
+            --shadow: 0 15px 35px -10px rgba(0,0,0,0.5);
+            --stat-icon: #C8963E;
+            --success-bg: rgba(34,197,94,0.2);
+            --success-text: #4ade80;
+            --warning-bg: rgba(245,158,11,0.2);
+            --warning-text: #fbbf24;
+            --danger-bg: rgba(239,68,68,0.2);
+            --danger-text: #f87171;
+        }
+
+        body {
+            font-family: 'Inter', sans-serif;
+            background: var(--bg-primary);
+            color: var(--text-primary);
+            min-height: 100vh;
+            display: flex;
+            transition: background 0.3s;
+            position: relative;
+            overflow-x: hidden;
+        }
+
+        /* Breathing background logo */
+        .bg-logo {
+            position: fixed;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            width: 450px;
+            max-width: 80vw;
+            opacity: 0.03;
+            z-index: 0;
+            pointer-events: none;
+            animation: breathe 6s ease-in-out infinite;
+        }
+        @keyframes breathe {
+            0%, 100% { transform: translate(-50%, -50%) scale(1); opacity: 0.03; }
+            50% { transform: translate(-50%, -50%) scale(1.06); opacity: 0.06; }
+        }
+
+        .orb {
+            position: fixed;
+            width: 300px;
+            height: 300px;
+            border-radius: 50%;
+            background: radial-gradient(circle at 30% 30%, rgba(10,37,64,0.15), transparent 70%);
+            filter: blur(80px);
+            z-index: 0;
+            animation: float 25s infinite alternate ease-in-out;
+        }
+        .orb-1 { top: -100px; left: -100px; }
+        .orb-2 { bottom: -150px; right: -50px; width: 400px; height: 400px; background: radial-gradient(circle at 70% 70%, rgba(200,150,62,0.15), transparent); animation-duration: 30s; }
+
+        @keyframes float {
+            0% { transform: translate(0,0) scale(1); }
+            100% { transform: translate(60px, 40px) scale(1.2); }
+        }
+
+        /* Sidebar */
+        .sidebar {
+            width: 280px;
+            background: var(--bg-sidebar);
+            backdrop-filter: blur(16px);
+            -webkit-backdrop-filter: blur(16px);
+            border-right: 1px solid var(--border);
+            padding: 2rem 1rem;
+            display: flex;
+            flex-direction: column;
+            transition: width 0.3s cubic-bezier(0.4,0,0.2,1);
+            position: fixed;
+            top: 0;
+            left: 0;
+            height: 100vh;
+            overflow-y: auto;
+            z-index: 100;
+            box-shadow: var(--shadow);
+        }
+        .sidebar.collapsed { width: 90px; }
+
+        .sidebar .logo-area {
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+            margin-bottom: 2.5rem;
+            padding: 0 0.5rem;
+            text-decoration: none;
+        }
+        .sidebar .logo-area img {
+            width: 42px;
+            height: 42px;
+            object-fit: contain;
+            animation: logoPulse 3s ease-in-out infinite;
+        }
+        @keyframes logoPulse {
+            0%, 100% { transform: scale(1); }
+            50% { transform: scale(1.05); }
+        }
+        .sidebar .logo-area h2 {
+            font-family: 'Playfair Display', serif;
+            font-size: 1.3rem;
+            font-weight: 700;
+            white-space: nowrap;
+            color: var(--accent);
+            line-height: 1.2;
+        }
+        .sidebar .logo-area h2 span {
+            display: block;
+            font-size: 0.65rem;
+            letter-spacing: 2px;
+            color: var(--accent-glow);
+        }
+        .sidebar.collapsed .logo-area h2 { display: none; }
+
+        .sidebar .nav-item {
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+            padding: 0.9rem 1.2rem;
+            border-radius: 1.2rem;
+            color: var(--text-secondary);
+            transition: all 0.2s;
+            cursor: pointer;
+            margin-bottom: 0.4rem;
+            text-decoration: none;
+            font-weight: 500;
+            white-space: nowrap;
+            border: 1px solid transparent;
+        }
+        .sidebar .nav-item:hover {
+            background: var(--hover-bg);
+            color: var(--accent);
+            border-color: var(--border);
+            transform: translateX(5px);
+        }
+        .sidebar .nav-item.active {
+            background: linear-gradient(135deg, var(--accent), var(--accent-glow));
+            color: white;
+            box-shadow: 0 8px 20px -5px var(--accent);
+        }
+        .sidebar .nav-item i { font-size: 1.3rem; width: 1.8rem; text-align: center; }
+        .sidebar.collapsed .nav-item span { display: none; }
+
+        .sidebar .toggle-btn {
+            margin-top: auto;
+            display: flex;
+            justify-content: flex-end;
+            padding: 1rem 0.5rem;
+            cursor: pointer;
+            color: var(--text-secondary);
+            font-size: 1.2rem;
+        }
+        .sidebar .toggle-btn:hover { color: var(--accent); }
+
+        .main-content {
+            flex: 1;
+            margin-left: 280px;
+            padding: 2rem;
+            transition: margin-left 0.3s cubic-bezier(0.4,0,0.2,1);
+            position: relative;
+            z-index: 5;
+        }
+        .main-content.expanded { margin-left: 90px; }
+
+        .top-bar {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 2.5rem;
+            flex-wrap: wrap;
+            gap: 1rem;
+        }
+        .page-title h1 {
+            font-family: 'Playfair Display', serif;
+            font-size: 2.4rem;
+            font-weight: 700;
+            color: var(--accent);
+            margin-bottom: 0.2rem;
+        }
+        .page-title p { color: var(--text-secondary); font-weight: 400; }
+
+        .profile-area { display: flex; align-items: center; gap: 1.5rem; }
+        .theme-toggle {
+            background: var(--card-bg);
+            backdrop-filter: blur(8px);
+            border: 1px solid var(--border);
+            border-radius: 3rem;
+            padding: 0.6rem 1.2rem;
+            display: flex;
+            align-items: center;
+            gap: 0.6rem;
+            cursor: pointer;
+            color: var(--text-secondary);
+            font-weight: 500;
+            transition: 0.2s;
+        }
+        .theme-toggle:hover { background: var(--hover-bg); color: var(--accent); }
+        .profile-dropdown { position: relative; cursor: pointer; }
+        .profile-trigger {
+            display: flex;
+            align-items: center;
+            gap: 0.8rem;
+            background: var(--card-bg);
+            backdrop-filter: blur(8px);
+            border: 1px solid var(--border);
+            border-radius: 3rem;
+            padding: 0.4rem 0.4rem 0.4rem 1rem;
+        }
+        .profile-name { font-weight: 600; color: var(--text-primary); }
+        .profile-pic {
+            width: 42px;
+            height: 42px;
+            border-radius: 50%;
+            background: linear-gradient(135deg, var(--accent), var(--accent-glow));
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-weight: 600;
+            font-size: 1.1rem;
+            box-shadow: 0 5px 15px var(--accent);
+        }
+        .dropdown-menu {
+            position: absolute;
+            right: 0;
+            top: 60px;
+            background: var(--bg-sidebar);
+            backdrop-filter: blur(16px);
+            border: 1px solid var(--border);
+            border-radius: 1.2rem;
+            padding: 0.5rem;
+            min-width: 180px;
+            display: none;
+            z-index: 1000;
+            box-shadow: var(--shadow);
+        }
+        .profile-dropdown:hover .dropdown-menu { display: block; animation: fadeIn 0.2s; }
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(-10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+        .dropdown-item {
+            padding: 0.8rem 1.2rem;
+            color: var(--text-primary);
+            border-radius: 0.8rem;
+            display: flex;
+            align-items: center;
+            gap: 0.8rem;
+            transition: 0.2s;
+        }
+        .dropdown-item:hover { background: var(--hover-bg); color: var(--accent); }
+
+        .stats-row {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(160px, 1fr));
+            gap: 1.5rem;
+            margin-bottom: 2.5rem;
+        }
+        .stat-card {
+            background: var(--card-bg);
+            backdrop-filter: blur(8px);
+            border: 1px solid var(--border);
+            border-radius: 2rem;
+            padding: 1.5rem;
+            text-align: center;
+            box-shadow: var(--shadow);
+            transition: transform 0.2s, box-shadow 0.2s;
+        }
+        .stat-card:hover { transform: translateY(-5px) scale(1.02); box-shadow: 0 20px 40px -10px var(--accent); }
+        .stat-card .stat-icon { font-size: 2.2rem; color: var(--stat-icon); margin-bottom: 0.5rem; }
+        .stat-card .stat-value { font-size: 2.2rem; font-weight: 700; color: var(--accent); }
+        .stat-card .stat-label { color: var(--text-secondary); font-size: 0.9rem; font-weight: 500; }
+
+        .tabs {
+            display: flex;
+            gap: 0.5rem;
+            margin-bottom: 2rem;
+            background: var(--card-bg);
+            backdrop-filter: blur(8px);
+            border: 1px solid var(--border);
+            border-radius: 3rem;
+            padding: 0.3rem;
+            width: fit-content;
+        }
+        .tab {
+            padding: 0.7rem 2rem;
+            border-radius: 3rem;
+            font-weight: 500;
+            cursor: pointer;
+            transition: 0.2s;
+            color: var(--text-secondary);
+        }
+        .tab.active { background: var(--accent); color: white; }
+
+        .user-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+            gap: 1.5rem;
+        }
+        .user-card {
+            background: var(--card-bg);
+            backdrop-filter: blur(8px);
+            border: 1px solid var(--border);
+            border-radius: 2rem;
+            padding: 1.5rem;
+            box-shadow: var(--shadow);
+            transition: transform 0.2s, box-shadow 0.2s;
+        }
+        .user-card:hover { transform: translateY(-5px) scale(1.02); box-shadow: 0 20px 40px -10px var(--accent); }
+        .user-card-header { display: flex; align-items: center; gap: 1rem; margin-bottom: 1rem; }
+        .user-avatar {
+            width: 50px;
+            height: 50px;
+            border-radius: 50%;
+            background: linear-gradient(135deg, var(--accent), var(--accent-glow));
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-weight: 600;
+            font-size: 1.2rem;
+        }
+        .user-info h3 { font-size: 1.1rem; font-weight: 600; }
+        .user-info p { color: var(--text-secondary); font-size: 0.9rem; }
+        .user-detail { display: flex; align-items: center; gap: 0.5rem; margin: 0.5rem 0; color: var(--text-secondary); font-size: 0.95rem; }
+        .user-detail i { width: 1.2rem; color: var(--accent); }
+        .user-actions { display: flex; gap: 0.8rem; margin-top: 1.2rem; justify-content: flex-end; flex-wrap: wrap; }
+        .btn { padding: 0.5rem 1.2rem; border: none; border-radius: 2rem; font-weight: 500; cursor: pointer; transition: 0.2s; font-size: 0.9rem; display: inline-flex; align-items: center; gap: 0.3rem; }
+        .btn-approve { background: var(--success-text); color: white; }
+        .btn-approve:hover { filter: brightness(1.1); transform: scale(1.02); }
+        .btn-reject { background: var(--danger-text); color: white; }
+        .btn-reject:hover { filter: brightness(1.1); transform: scale(1.02); }
+        .btn-outline { background: transparent; border: 1px solid var(--border); color: var(--text-primary); }
+        .btn-outline:hover { background: var(--hover-bg); border-color: var(--accent); }
+
+        .empty-state { text-align: center; padding: 3rem; color: var(--text-secondary); grid-column: 1 / -1; }
+        .empty-state i { font-size: 3rem; margin-bottom: 1rem; color: var(--accent); }
+
+        .modal { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.5); backdrop-filter: blur(5px); align-items: center; justify-content: center; z-index: 2000; }
+        .modal.active { display: flex; }
+        .modal-content {
+            background: var(--card-bg); backdrop-filter: blur(16px); border: 1px solid var(--border);
+            border-radius: 2rem; padding: 2rem; max-width: 500px; width: 90%; max-height: 80vh; overflow-y: auto;
+            box-shadow: var(--shadow);
+        }
+        .modal-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 1.5rem; }
+        .modal-header h3 { font-size: 1.5rem; font-family: 'Playfair Display', serif; }
+        .modal-header i { cursor: pointer; color: var(--text-secondary); font-size: 1.2rem; }
+        .modal-header i:hover { color: var(--accent); }
+        .detail-row { display: flex; margin-bottom: 0.8rem; border-bottom: 1px dashed var(--border); padding-bottom: 0.5rem; }
+        .detail-label { width: 120px; color: var(--text-secondary); font-weight: 500; }
+        .detail-value { flex: 1; font-weight: 400; }
+        .modal-actions { display: flex; gap: 1rem; margin-top: 2rem; justify-content: flex-end; }
+
+        @media (max-width: 768px) {
+            .sidebar { width: 90px; }
+            .sidebar .logo-area h2, .sidebar .nav-item span { display: none; }
+            .main-content { margin-left: 90px; }
+            .top-bar { flex-direction: column; align-items: flex-start; }
+            .tabs { width: 100%; justify-content: center; }
+        }
+    </style>
+</head>
+<body>
+    <img src="https://res.cloudinary.com/dda7kpir8/image/upload/q_auto/f_auto/v1781038310/ChatGPT_Image_Jun_9_2026_09_25_06_AM_elnine.png"
+         alt="" class="bg-logo" aria-hidden="true">
+    <div class="orb orb-1"></div>
+    <div class="orb orb-2"></div>
+
+    <div class="sidebar" id="sidebar">
+        <a href="index.html" class="logo-area">
+            <img src="https://res.cloudinary.com/dda7kpir8/image/upload/q_auto/f_auto/v1781038310/ChatGPT_Image_Jun_9_2026_09_25_06_AM_elnine.png" alt="JWMS Logo">
+            <h2>Judah Wonders<span>Model School</span></h2>
+        </a>
+        <a href="admin-dashboard.html" class="nav-item"><i class="fas fa-chart-pie"></i><span>Dashboard</span></a>
+        <a href="admin-users.html" class="nav-item"><i class="fas fa-users"></i><span>Users</span></a>
+        <a href="admin-approvals.html" class="nav-item active"><i class="fas fa-user-check"></i><span>Approvals</span></a>
+        <a href="admin-lesson-notes.html" class="nav-item"><i class="fas fa-book-open"></i><span>Lesson Notes</span></a>
+        <a href="admin-timetable.html" class="nav-item"><i class="fas fa-calendar-alt"></i><span>Timetable</span></a>
+        <a href="admin-attendance.html" class="nav-item"><i class="fas fa-fingerprint"></i><span>Attendance</span></a>
+        <a href="admin-payments.html" class="nav-item"><i class="fas fa-credit-card"></i><span>Payments</span></a>
+        <a href="admin-announcements.html" class="nav-item"><i class="fas fa-bullhorn"></i><span>Announcements</span></a>
+        <a href="admin-calendar.html" class="nav-item"><i class="fas fa-calendar-check"></i><span>Calendar</span></a>
+        <a href="admin-audit.html" class="nav-item"><i class="fas fa-history"></i><span>Audit Logs</span></a>
+        <a href="admin-settings.html" class="nav-item"><i class="fas fa-cog"></i><span>Settings</span></a>
+        <div class="toggle-btn" id="sidebarToggle"><i class="fas fa-chevron-left"></i></div>
+    </div>
+
+    <div class="main-content" id="mainContent">
+        <div class="top-bar">
+            <div class="page-title">
+                <h1>Approvals</h1>
+                <p>Review and manage pending registrations</p>
+            </div>
+            <div class="profile-area">
+                <div class="theme-toggle" id="themeToggle">
+                    <i class="fas fa-sun"></i><span>Light</span><i class="fas fa-moon"></i>
+                </div>
+                <div class="profile-dropdown">
+                    <div class="profile-trigger">
+                        <span class="profile-name" id="profileName">Admin</span>
+                        <div class="profile-pic" id="profilePic">MA</div>
+                    </div>
+                    <div class="dropdown-menu">
+                        <div class="dropdown-item" id="profileLink"><i class="fas fa-user"></i> Profile</div>
+                        <div class="dropdown-item" id="logoutBtn"><i class="fas fa-sign-out-alt"></i> Logout</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="stats-row">
+            <div class="stat-card"><i class="fas fa-hourglass-half stat-icon"></i><div class="stat-value" id="totalPending">0</div><div class="stat-label">Total Pending</div></div>
+            <div class="stat-card"><i class="fas fa-chalkboard-teacher stat-icon"></i><div class="stat-value" id="pendingTeachers">0</div><div class="stat-label">Teachers</div></div>
+            <div class="stat-card"><i class="fas fa-user-graduate stat-icon"></i><div class="stat-value" id="pendingStudents">0</div><div class="stat-label">Students</div></div>
+            <div class="stat-card"><i class="fas fa-users-cog stat-icon"></i><div class="stat-value" id="pendingStaff">0</div><div class="stat-label">Staff</div></div>
+        </div>
+
+        <div class="tabs" id="roleTabs">
+            <div class="tab active" data-role="all">All</div>
+            <div class="tab" data-role="teacher">Teachers</div>
+            <div class="tab" data-role="student">Students</div>
+            <div class="tab" data-role="nonTeachingStaff">Staff</div>
+        </div>
+
+        <div id="usersContainer" class="user-grid"></div>
+    </div>
+
+    <div class="modal" id="detailModal">
+        <div class="modal-content">
+            <div class="modal-header"><h3>User Details</h3><i class="fas fa-times" onclick="closeDetailModal()"></i></div>
+            <div id="detailContent"></div>
+            <div class="modal-actions">
+                <button class="btn btn-approve" onclick="approveFromDetail()">Approve</button>
+                <button class="btn btn-reject" onclick="rejectFromDetail()">Reject</button>
+                <button class="btn btn-outline" onclick="closeDetailModal()">Cancel</button>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        const firebaseConfig = {
+            apiKey: "AIzaSyADXHEiaSQ146QsGsaOCElARtpwrLE8svs",
+            authDomain: "judah-c737e.firebaseapp.com",
+            projectId: "judah-c737e",
+            storageBucket: "judah-c737e.firebasestorage.app",
+            messagingSenderId: "739196063078",
+            appId: "1:739196063078:web:c0ee1c1da2cc3794ca8ca7",
+            measurementId: "G-YEM22F1C39"
+        };
+        firebase.initializeApp(firebaseConfig);
+        const auth = firebase.auth();
+        const db = firebase.firestore();
+
+        // Sidebar & theme toggles (same as before)
+        const sidebar = document.getElementById('sidebar');
+        const mainContent = document.getElementById('mainContent');
+        document.getElementById('sidebarToggle').addEventListener('click', () => {
+            sidebar.classList.toggle('collapsed');
+            mainContent.classList.toggle('expanded');
+            const icon = document.getElementById('sidebarToggle').querySelector('i');
+            icon.classList.toggle('fa-chevron-left');
+            icon.classList.toggle('fa-chevron-right');
+        });
+
+        const html = document.documentElement;
+        const themeToggle = document.getElementById('themeToggle');
+        const themeIcon = themeToggle.querySelector('i:first-child');
+        const themeText = themeToggle.querySelector('span');
+        function updateThemeUI(theme) {
+            themeIcon.className = theme === 'dark' ? 'fas fa-moon' : 'fas fa-sun';
+            themeText.textContent = theme === 'dark' ? 'Dark' : 'Light';
+        }
+        const savedTheme = localStorage.getItem('judah-theme') || 'dark';
+        html.setAttribute('data-theme', savedTheme);
+        updateThemeUI(savedTheme);
+        themeToggle.addEventListener('click', () => {
+            const next = html.getAttribute('data-theme') === 'dark' ? 'light' : 'dark';
+            html.setAttribute('data-theme', next);
+            localStorage.setItem('judah-theme', next);
+            updateThemeUI(next);
+        });
+
+        let currentUserData = null;
+        auth.onAuthStateChanged(async (user) => {
+            if (!user) { window.location.href = 'admin-login.html'; return; }
+            const userDoc = await db.collection('users').doc(user.uid).get();
+            if (!userDoc.exists || !['master-admin', 'admin'].includes(userDoc.data().role)) {
+                auth.signOut(); window.location.href = 'index.html'; return;
+            }
+            currentUserData = userDoc.data();
+            document.getElementById('profileName').textContent = currentUserData.firstName || 'Admin';
+            document.getElementById('profilePic').textContent = (currentUserData.firstName?.[0]||'A')+(currentUserData.surname?.[0]||'A');
+            document.querySelector('.page-title p').textContent = `Welcome back, ${currentUserData.firstName || 'Admin'}`;
+            setupUsersListener();
+        });
+
+        document.getElementById('logoutBtn').addEventListener('click', () => auth.signOut().then(() => window.location.href = 'index.html'));
+        document.getElementById('profileLink').addEventListener('click', () => window.location.href = 'admin-profile.html');
+
+        let unsubscribeUsers = null, allUsers = [], pendingUsers = [];
+        function setupUsersListener() {
+            if (unsubscribeUsers) unsubscribeUsers();
+            unsubscribeUsers = db.collection('users').onSnapshot(snap => {
+                allUsers = []; snap.forEach(d => allUsers.push({id: d.id, ...d.data()}));
+                pendingUsers = allUsers.filter(u => u.approved !== true);
+                updateStats(); filterByTab(currentTab);
+            });
+        }
+
+        function updateStats() {
+            document.getElementById('totalPending').textContent = pendingUsers.length;
+            document.getElementById('pendingTeachers').textContent = pendingUsers.filter(u => u.role === 'teacher').length;
+            document.getElementById('pendingStudents').textContent = pendingUsers.filter(u => u.role === 'student').length;
+            document.getElementById('pendingStaff').textContent = pendingUsers.filter(u => u.role === 'nonTeachingStaff').length;
+        }
+
+        let currentTab = 'all';
+        document.querySelectorAll('.tab').forEach(t => t.addEventListener('click', function() {
+            document.querySelectorAll('.tab').forEach(tab => tab.classList.remove('active'));
+            this.classList.add('active');
+            currentTab = this.dataset.role;
+            filterByTab(currentTab);
+        }));
+
+        function filterByTab(role) {
+            let filtered = role === 'all' ? pendingUsers : pendingUsers.filter(u => u.role === role);
+            renderCards(filtered);
+        }
+
+        function renderCards(users) {
+            const container = document.getElementById('usersContainer');
+            if (!users.length) {
+                container.innerHTML = `<div class="empty-state"><i class="fas fa-check-circle"></i><h3>All clear!</h3><p>No pending approvals in this category.</p></div>`;
+                return;
+            }
+            container.innerHTML = users.map(user => {
+                const name = `${user.firstName||''} ${user.surname||''}`.trim() || 'Unnamed';
+                const initials = (user.firstName?.[0]||'') + (user.surname?.[0]||'') || '?';
+                const roleDisplay = user.role === 'teacher' ? 'Teacher' : user.role === 'student' ? 'Student' : user.role === 'nonTeachingStaff' ? 'Staff' : user.role;
+                let extra = '';
+                if (user.role === 'teacher') extra = `📚 ${user.classTeaching || 'No class'}`;
+                else if (user.role === 'student') extra = `🎓 ${user.class || 'No class'}`;
+                else if (user.role === 'nonTeachingStaff') extra = `🛠️ ${user.department || 'No dept'}`;
+                return `<div class="user-card" data-id="${user.id}">
+                    <div class="user-card-header"><div class="user-avatar">${initials}</div><div class="user-info"><h3>${name}</h3><p>${roleDisplay}</p></div></div>
+                    <div class="user-detail"><i class="fas fa-envelope"></i> ${user.email||'—'}</div>
+                    <div class="user-detail"><i class="fas fa-phone"></i> ${user.phone||'—'}</div>
+                    ${extra ? `<div class="user-detail"><i class="fas fa-info-circle"></i> ${extra}</div>` : ''}
+                    <div class="user-actions">
+                        <button class="btn btn-outline" onclick="viewDetails('${user.id}')"><i class="fas fa-eye"></i> Details</button>
+                        <button class="btn btn-approve" onclick="approveUser('${user.id}')"><i class="fas fa-check"></i> Approve</button>
+                        <button class="btn btn-reject" onclick="rejectUser('${user.id}')"><i class="fas fa-times"></i> Reject</button>
+                    </div>
+                </div>`;
+            }).join('');
+        }
+
+        let currentDetailUserId = null;
+        window.viewDetails = (userId) => {
+            const user = allUsers.find(u => u.id === userId);
+            if (!user) return;
+            currentDetailUserId = userId;
+            const name = `${user.firstName||''} ${user.surname||''}`.trim() || 'Unnamed';
+            const roleDisplay = user.role === 'teacher' ? 'Teacher' : user.role === 'student' ? 'Student' : user.role === 'nonTeachingStaff' ? 'Staff' : user.role;
+            let extraRows = '';
+            if (user.role === 'teacher') {
+                extraRows += `<div class="detail-row"><span class="detail-label">Class Teaching</span><span class="detail-value">${user.classTeaching||'—'}</span></div>`;
+                extraRows += `<div class="detail-row"><span class="detail-label">Qualifications</span><span class="detail-value">${user.qualifications||'—'}</span></div>`;
+            } else if (user.role === 'student') {
+                extraRows += `<div class="detail-row"><span class="detail-label">Class</span><span class="detail-value">${user.class||'—'}</span></div>`;
+            } else if (user.role === 'nonTeachingStaff') {
+                extraRows += `<div class="detail-row"><span class="detail-label">Department</span><span class="detail-value">${user.department||'—'}</span></div>`;
+            }
+            document.getElementById('detailContent').innerHTML = `
+                <div class="detail-row"><span class="detail-label">Name</span><span class="detail-value">${name}</span></div>
+                <div class="detail-row"><span class="detail-label">Email</span><span class="detail-value">${user.email||'—'}</span></div>
+                <div class="detail-row"><span class="detail-label">Phone</span><span class="detail-value">${user.phone||'—'}</span></div>
+                <div class="detail-row"><span class="detail-label">Role</span><span class="detail-value">${roleDisplay}</span></div>
+                ${extraRows}
+                <div class="detail-row"><span class="detail-label">Created</span><span class="detail-value">${user.createdAt ? new Date(user.createdAt.seconds*1000).toLocaleString() : '—'}</span></div>
+            `;
+            document.getElementById('detailModal').classList.add('active');
+        };
+        window.closeDetailModal = () => { document.getElementById('detailModal').classList.remove('active'); currentDetailUserId = null; };
+        window.approveFromDetail = () => { if (currentDetailUserId) approveUser(currentDetailUserId); };
+        window.rejectFromDetail = () => { if (currentDetailUserId) rejectUser(currentDetailUserId); };
+
+        // ========== ID GENERATION ==========
+        async function generateUserId(year) {
+            const counterRef = db.collection('counters').doc(`userId_${year}`);
+            const newId = await db.runTransaction(async (transaction) => {
+                const doc = await transaction.get(counterRef);
+                let nextNum = 1;
+                if (doc.exists) {
+                    nextNum = (doc.data().value || 0) + 1;
+                }
+                transaction.set(counterRef, { value: nextNum }, { merge: true });
+                return nextNum;
+            });
+            const paddedNum = String(newId).padStart(4, '0');
+            return `JWSEDU${year}${paddedNum}`;
+        }
+
+        window.approveUser = async (userId) => {
+            if (!confirm('Approve this user? A unique ID will be generated.')) return;
+            try {
+                const userRef = db.collection('users').doc(userId);
+                const userSnap = await userRef.get();
+                const userData = userSnap.data();
+                // Generate ID only if not already assigned
+                if (!userData.userId) {
+                    const year = userData.admissionYear || new Date().getFullYear();
+                    const generatedId = await generateUserId(year);
+                    await userRef.update({ approved: true, userId: generatedId });
+                    alert(`User approved! ID: ${generatedId}`);
+                } else {
+                    await userRef.update({ approved: true });
+                }
+                await logAudit(`Approved user ${userId} (ID: ${userData.userId || 'assigned'})`);
+                closeDetailModal();
+            } catch (error) {
+                console.error('Approve error:', error);
+                alert('Error approving user.');
+            }
+        };
+
+        window.rejectUser = async (userId) => {
+            if (!confirm('Reject this user? This will delete their data.')) return;
+            try {
+                await db.collection('users').doc(userId).delete();
+                await logAudit(`Rejected user ${userId}`);
+                closeDetailModal();
+            } catch (error) {
+                console.error('Reject error:', error);
+                alert('Error rejecting user.');
+            }
+        };
+
+        async function logAudit(action) {
+            if (!currentUserData) return;
+            await db.collection('auditLogs').add({
+                userId: auth.currentUser.uid,
+                userName: currentUserData.firstName + ' ' + currentUserData.surname,
+                userEmail: currentUserData.email || auth.currentUser.email,
+                action,
+                timestamp: firebase.firestore.FieldValue.serverTimestamp()
+            });
+        }
+
+        window.addEventListener('beforeunload', () => { if (unsubscribeUsers) unsubscribeUsers(); });
+    </script>
+</body>
+</html>
