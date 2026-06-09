@@ -1,0 +1,791 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Judah Wonder Model School — Raising Generational Wonders</title>
+    <meta name="description" content="Judah Wonder Model School, Abeokuta — Nursery & Primary education focused on spiritual prowess, sound academics, and moral excellence. Owned by Mrs. Oluwabunmi Somoye.">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&family=Playfair+Display:wght@600;700;800&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        :root {
+            --deep-blue: #0A2540;
+            --gold: #C8963E;
+            --gold-light: #D4AF37;
+            --soft-white: #F8F7F4;
+            --text-dark: #1E293B;
+            --text-muted: #475569;
+            --card-bg: #FFFFFF;
+            --border-light: #E2E8F0;
+            --shadow-sm: 0 1px 2px rgba(0,0,0,0.03);
+            --shadow-md: 0 8px 30px rgba(0,0,0,0.06);
+            --shadow-lg: 0 20px 50px rgba(0,0,0,0.08);
+            --transition: 0.4s cubic-bezier(0.25, 0.46, 0.45, 0.94);
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        html {
+            scroll-behavior: smooth;
+        }
+
+        body {
+            font-family: 'Inter', sans-serif;
+            background: #FFFFFF;
+            color: var(--text-dark);
+            line-height: 1.6;
+            overflow-x: hidden;
+        }
+
+        /* ============ LOADING SCREEN ============ */
+        #loader {
+            position: fixed;
+            inset: 0;
+            background: #ffffff;
+            z-index: 10000;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: opacity 0.6s ease, visibility 0.6s ease;
+        }
+        #loader img {
+            width: 120px;
+            animation: logoPulse 1.8s infinite;
+        }
+        @keyframes logoPulse {
+            0% { transform: scale(0.95); opacity: 0.8; }
+            50% { transform: scale(1.05); opacity: 1; }
+            100% { transform: scale(0.95); opacity: 0.8; }
+        }
+        #loader.hidden {
+            opacity: 0;
+            visibility: hidden;
+            pointer-events: none;
+        }
+
+        /* ============ HEADER ============ */
+        .header {
+            position: fixed;
+            top: 0;
+            width: 100%;
+            z-index: 1000;
+            background: rgba(255,255,255,0.92);
+            backdrop-filter: blur(12px);
+            border-bottom: 1px solid rgba(10,37,64,0.06);
+            transition: box-shadow var(--transition), padding var(--transition);
+            padding: 12px 5%;
+        }
+        .header.scrolled {
+            box-shadow: var(--shadow-md);
+            padding: 8px 5%;
+        }
+        .header-inner {
+            max-width: 1300px;
+            margin: 0 auto;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+        }
+        .logo-area {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            text-decoration: none;
+        }
+        .logo-img {
+            height: 48px;
+            width: auto;
+            transition: height var(--transition);
+        }
+        .header.scrolled .logo-img {
+            height: 40px;
+        }
+        .logo-text {
+            font-family: 'Playfair Display', serif;
+            font-weight: 700;
+            font-size: 1.4rem;
+            color: var(--deep-blue);
+            line-height: 1.2;
+        }
+        .logo-text span {
+            display: block;
+            font-size: 0.7rem;
+            font-weight: 600;
+            letter-spacing: 2px;
+            color: var(--gold);
+        }
+        .nav-links {
+            display: flex;
+            gap: 2rem;
+            align-items: center;
+        }
+        .nav-links a {
+            text-decoration: none;
+            color: var(--text-dark);
+            font-weight: 500;
+            font-size: 0.95rem;
+            transition: color var(--transition);
+            position: relative;
+        }
+        .nav-links a::after {
+            content: '';
+            position: absolute;
+            bottom: -4px;
+            left: 0;
+            width: 0;
+            height: 2px;
+            background: var(--gold);
+            transition: width var(--transition);
+        }
+        .nav-links a:hover {
+            color: var(--gold);
+        }
+        .nav-links a:hover::after {
+            width: 100%;
+        }
+        .portal-btn {
+            background: var(--deep-blue);
+            color: white !important;
+            padding: 10px 24px;
+            border-radius: 50px;
+            font-weight: 600;
+            transition: background var(--transition), transform var(--transition) !important;
+        }
+        .portal-btn:hover {
+            background: var(--gold);
+            transform: translateY(-2px);
+        }
+        .mobile-toggle {
+            display: none;
+            font-size: 1.8rem;
+            color: var(--deep-blue);
+            cursor: pointer;
+        }
+
+        /* ============ HERO SLIDER ============ */
+        .hero {
+            position: relative;
+            width: 100%;
+            height: 100vh;
+            min-height: 650px;
+            overflow: hidden;
+            margin-top: 0;
+        }
+        .slide {
+            position: absolute;
+            inset: 0;
+            background-size: cover;
+            background-position: center;
+            opacity: 0;
+            transition: opacity 1.2s ease-in-out;
+            animation: kenBurns 18s infinite alternate;
+        }
+        .slide.active {
+            opacity: 1;
+        }
+        @keyframes kenBurns {
+            0% { transform: scale(1); }
+            100% { transform: scale(1.1); }
+        }
+        .hero-overlay {
+            position: absolute;
+            inset: 0;
+            background: linear-gradient(to bottom, rgba(10,37,64,0.4), rgba(10,37,64,0.75));
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            text-align: center;
+            color: white;
+            padding: 20px;
+        }
+        .hero-title {
+            font-family: 'Playfair Display', serif;
+            font-size: clamp(2.5rem, 8vw, 5rem);
+            font-weight: 800;
+            line-height: 1.2;
+            text-shadow: 0 4px 20px rgba(0,0,0,0.4);
+            margin-bottom: 1rem;
+            opacity: 0;
+            transform: translateY(30px);
+            animation: fadeUp 1s forwards 0.3s;
+        }
+        @keyframes fadeUp {
+            to { opacity: 1; transform: translateY(0); }
+        }
+        .hero-subtitle {
+            font-size: 1.3rem;
+            font-weight: 400;
+            max-width: 700px;
+            margin: 0 auto 2rem;
+            text-shadow: 0 2px 10px rgba(0,0,0,0.3);
+            opacity: 0;
+            animation: fadeUp 1s forwards 0.6s;
+        }
+        .hero-cta {
+            display: inline-block;
+            background: var(--gold);
+            color: var(--deep-blue);
+            font-weight: 700;
+            padding: 16px 40px;
+            border-radius: 50px;
+            text-decoration: none;
+            letter-spacing: 0.5px;
+            transition: all var(--transition);
+            box-shadow: 0 8px 24px rgba(200,150,62,0.3);
+            opacity: 0;
+            animation: fadeUp 1s forwards 0.9s;
+        }
+        .hero-cta:hover {
+            background: #b8862c;
+            transform: translateY(-3px);
+            box-shadow: 0 12px 30px rgba(200,150,62,0.4);
+        }
+        .slide-indicators {
+            position: absolute;
+            bottom: 30px;
+            left: 50%;
+            transform: translateX(-50%);
+            display: flex;
+            gap: 12px;
+            z-index: 10;
+        }
+        .dot {
+            width: 12px;
+            height: 12px;
+            border-radius: 50%;
+            background: rgba(255,255,255,0.5);
+            cursor: pointer;
+            transition: all var(--transition);
+        }
+        .dot.active {
+            background: var(--gold);
+            transform: scale(1.3);
+        }
+
+        /* ============ ARTISTIC LOGO SHOWCASE ============ */
+        .logo-showcase {
+            position: relative;
+            background: var(--soft-white);
+            padding: 70px 20px;
+            text-align: center;
+            margin-top: -60px;
+            z-index: 5;
+            border-radius: 40px 40px 0 0;
+        }
+        .logo-showcase img {
+            width: 160px;
+            filter: drop-shadow(0 8px 20px rgba(0,0,0,0.15));
+            animation: float 4s ease-in-out infinite;
+        }
+        @keyframes float {
+            0%, 100% { transform: translateY(0); }
+            50% { transform: translateY(-8px); }
+        }
+        .logo-showcase .school-name {
+            font-family: 'Playfair Display', serif;
+            font-size: 2.2rem;
+            font-weight: 700;
+            color: var(--deep-blue);
+            margin-top: 16px;
+        }
+        .logo-showcase .motto {
+            color: var(--gold);
+            font-style: italic;
+            font-weight: 500;
+            margin-top: 8px;
+        }
+
+        /* ============ GENERAL SECTION STYLES ============ */
+        section {
+            padding: 100px 5%;
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+        .section-title {
+            font-family: 'Playfair Display', serif;
+            font-size: 2.5rem;
+            font-weight: 700;
+            color: var(--deep-blue);
+            margin-bottom: 1.5rem;
+            text-align: center;
+        }
+        .section-subtitle {
+            color: var(--gold);
+            text-transform: uppercase;
+            letter-spacing: 3px;
+            font-weight: 600;
+            margin-bottom: 2rem;
+            text-align: center;
+        }
+        .reveal {
+            opacity: 0;
+            transform: translateY(40px);
+            transition: opacity 0.8s ease, transform 0.8s ease;
+        }
+        .reveal.visible {
+            opacity: 1;
+            transform: translateY(0);
+        }
+
+        /* ============ ABOUT ============ */
+        .about-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 60px;
+            align-items: center;
+        }
+        .about-text p {
+            margin-bottom: 1.2rem;
+            color: var(--text-muted);
+            font-size: 1.05rem;
+        }
+        .about-image img {
+            width: 100%;
+            border-radius: 30px;
+            box-shadow: var(--shadow-lg);
+        }
+
+        /* ============ CORE VALUES ============ */
+        .values-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 30px;
+            margin-top: 3rem;
+        }
+        .value-card {
+            background: var(--card-bg);
+            padding: 2.5rem 1.5rem;
+            border-radius: 24px;
+            text-align: center;
+            box-shadow: var(--shadow-sm);
+            transition: all var(--transition);
+            border: 1px solid var(--border-light);
+        }
+        .value-card:hover {
+            transform: translateY(-8px);
+            box-shadow: var(--shadow-lg);
+            border-color: var(--gold);
+        }
+        .value-letter {
+            font-size: 3rem;
+            font-weight: 800;
+            color: var(--gold);
+            margin-bottom: 0.5rem;
+        }
+        .value-word {
+            font-weight: 700;
+            font-size: 1.3rem;
+            margin-bottom: 0.5rem;
+        }
+
+        /* ============ VISION & MISSION ============ */
+        .vision-mission {
+            background: var(--soft-white);
+            border-radius: 40px;
+            padding: 60px 40px;
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 40px;
+        }
+        .vision, .mission {
+            padding: 20px;
+        }
+        .vision h3, .mission h3 {
+            font-family: 'Playfair Display', serif;
+            font-size: 1.8rem;
+            margin-bottom: 1rem;
+        }
+        .scripture {
+            font-style: italic;
+            color: var(--gold);
+            margin-top: 10px;
+        }
+
+        /* ============ PROGRAMMES ============ */
+        .programmes-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+            gap: 30px;
+            margin-top: 2rem;
+        }
+        .programme-card {
+            background: white;
+            border-radius: 24px;
+            overflow: hidden;
+            box-shadow: var(--shadow-sm);
+            transition: var(--transition);
+            border: 1px solid var(--border-light);
+        }
+        .programme-card:hover {
+            transform: translateY(-6px);
+            box-shadow: var(--shadow-lg);
+        }
+        .programme-img {
+            height: 200px;
+            background-size: cover;
+            background-position: center;
+        }
+        .programme-content {
+            padding: 2rem;
+        }
+
+        /* ============ WHY CHOOSE US ============ */
+        .features-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 25px;
+        }
+        .feature-item {
+            display: flex;
+            gap: 20px;
+            align-items: flex-start;
+        }
+        .feature-icon {
+            font-size: 2rem;
+            color: var(--gold);
+        }
+
+        /* ============ GALLERY ============ */
+        .gallery {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 15px;
+            margin-top: 2rem;
+        }
+        .gallery img {
+            width: 100%;
+            height: 250px;
+            object-fit: cover;
+            border-radius: 16px;
+            transition: transform 0.4s;
+        }
+        .gallery img:hover {
+            transform: scale(1.03);
+        }
+
+        /* ============ CTA ============ */
+        .cta-section {
+            background: var(--deep-blue);
+            color: white;
+            text-align: center;
+            border-radius: 30px;
+            padding: 80px 30px;
+            margin: 60px auto;
+        }
+        .cta-section .btn-light {
+            background: white;
+            color: var(--deep-blue);
+            font-weight: 700;
+            padding: 16px 40px;
+            border-radius: 50px;
+            text-decoration: none;
+            display: inline-block;
+            margin-top: 25px;
+            transition: background var(--transition);
+        }
+        .cta-section .btn-light:hover {
+            background: var(--gold);
+        }
+
+        /* ============ FOOTER ============ */
+        footer {
+            background: #0A1A2F;
+            color: #CBD5E1;
+            padding: 60px 5% 30px;
+            text-align: center;
+        }
+        footer .footer-logo {
+            width: 80px;
+            margin-bottom: 20px;
+        }
+        footer .social i {
+            margin: 0 10px;
+            font-size: 1.4rem;
+            color: #94A3B8;
+            transition: color var(--transition);
+        }
+        footer .social i:hover {
+            color: var(--gold);
+        }
+
+        /* ============ RESPONSIVE ============ */
+        @media (max-width: 768px) {
+            .nav-links {
+                position: fixed;
+                top: 0;
+                right: -100%;
+                width: 70%;
+                height: 100vh;
+                background: white;
+                flex-direction: column;
+                padding: 100px 30px;
+                transition: right var(--transition);
+                box-shadow: -5px 0 20px rgba(0,0,0,0.1);
+            }
+            .nav-links.active {
+                right: 0;
+            }
+            .mobile-toggle {
+                display: block;
+                z-index: 1100;
+            }
+            .about-grid, .vision-mission {
+                grid-template-columns: 1fr;
+            }
+            .gallery {
+                grid-template-columns: 1fr 1fr;
+            }
+        }
+    </style>
+</head>
+<body>
+    <!-- LOADING SCREEN -->
+    <div id="loader">
+        <img src="https://res.cloudinary.com/dda7kpir8/image/upload/q_auto/f_auto/v1781038310/ChatGPT_Image_Jun_9_2026_09_25_06_AM_elnine.png" alt="Judah Wonder Model School Logo">
+    </div>
+
+    <!-- HEADER -->
+    <header class="header" id="header">
+        <div class="header-inner">
+            <a href="#" class="logo-area">
+                <img src="https://res.cloudinary.com/dda7kpir8/image/upload/q_auto/f_auto/v1781038310/ChatGPT_Image_Jun_9_2026_09_25_06_AM_elnine.png" alt="JWMS Logo" class="logo-img">
+                <div class="logo-text">JUDAH WONDER<span>MODEL SCHOOL</span></div>
+            </a>
+            <div class="nav-links" id="navLinks">
+                <a href="#home">Home</a>
+                <a href="#about">About</a>
+                <a href="#values">Values</a>
+                <a href="#programmes">Programmes</a>
+                <a href="#gallery">Gallery</a>
+                <a href="portal.html" class="portal-btn">Portal</a>
+            </div>
+            <div class="mobile-toggle" id="mobileToggle"><i class="fas fa-bars"></i></div>
+        </div>
+    </header>
+
+    <!-- HERO SLIDER -->
+    <section class="hero" id="home">
+        <div class="slide active" style="background-image: url('https://res.cloudinary.com/dda7kpir8/image/upload/q_auto/f_auto/v1781038544/images_-_2026-06-09T215402.857_texcre.jpg');"></div>
+        <div class="slide" style="background-image: url('https://res.cloudinary.com/dda7kpir8/image/upload/q_auto/f_auto/v1781038545/images_-_2026-06-09T215427.407_zuoe13.jpg');"></div>
+        <div class="slide" style="background-image: url('https://res.cloudinary.com/dda7kpir8/image/upload/q_auto/f_auto/v1781038545/IMG-20260609-WA0003_u3sdix.jpg');"></div>
+        <div class="slide" style="background-image: url('https://res.cloudinary.com/dda7kpir8/image/upload/q_auto/f_auto/v1781038545/images_-_2026-06-09T215308.558_jsfs3p.jpg');"></div>
+        <div class="hero-overlay">
+            <h1 class="hero-title">Raising Generational<br>Wonders</h1>
+            <p class="hero-subtitle">A place where spiritual prowess, academic excellence, and moral integrity shape tomorrow’s leaders.</p>
+            <a href="#about" class="hero-cta">Discover More</a>
+        </div>
+        <div class="slide-indicators" id="slideIndicators"></div>
+    </section>
+
+    <!-- ARTISTIC LOGO SHOWCASE -->
+    <div class="logo-showcase reveal">
+        <img src="https://res.cloudinary.com/dda7kpir8/image/upload/q_auto/f_auto/v1781038310/ChatGPT_Image_Jun_9_2026_09_25_06_AM_elnine.png" alt="Judah Wonder Logo">
+        <div class="school-name">Judah Wonder Model School</div>
+        <div class="motto">...raising generational wonders among the best. Isaiah 8:18</div>
+    </div>
+
+    <!-- ABOUT -->
+    <section id="about">
+        <h2 class="section-title reveal">Welcome to Judah Wonder</h2>
+        <p class="section-subtitle reveal">Nursery & Primary Education in Abeokuta</p>
+        <div class="about-grid">
+            <div class="about-text reveal">
+                <p>Nestled in the heart of Abeokuta, behind Family FM on Abiola Way, <strong>Judah Wonder Model School</strong> is more than a school — it's a nurturing ground for tomorrow’s leaders. Founded by <strong>Mrs. Oluwabunmi Somoye</strong>, our institution is built on the pillars of justice, unity, distinction, achievement, and honesty.</p>
+                <p>We cater to Nursery and Primary pupils, offering a blend of spiritual development, sound qualitative academics, and moral instruction. Our highly motivated staff ensure every child is equipped for all‑round excellence.</p>
+                <p>With modern facilities, a secure learning environment, and a curriculum that meets global standards, Judah Wonder is where young minds bloom into generational wonders.</p>
+            </div>
+            <div class="about-image reveal">
+                <img src="https://res.cloudinary.com/dda7kpir8/image/upload/q_auto/f_auto/v1781038545/IMG-20260609-WA0003_u3sdix.jpg" alt="School children" loading="lazy">
+            </div>
+        </div>
+    </section>
+
+    <!-- CORE VALUES -->
+    <section id="values" style="background: var(--soft-white); border-radius: 40px; margin: 40px auto;">
+        <h2 class="section-title reveal">Our Core Values</h2>
+        <p class="section-subtitle reveal">The J‑U‑D‑A‑H Principles</p>
+        <div class="values-grid">
+            <div class="value-card reveal">
+                <div class="value-letter">J</div>
+                <div class="value-word">Justice</div>
+                <p>Fairness and equity in all our dealings, teaching children to stand for what is right.</p>
+            </div>
+            <div class="value-card reveal">
+                <div class="value-letter">U</div>
+                <div class="value-word">Unity</div>
+                <p>Fostering togetherness, collaboration, and a strong sense of community among pupils and staff.</p>
+            </div>
+            <div class="value-card reveal">
+                <div class="value-letter">D</div>
+                <div class="value-word">Distinction</div>
+                <p>Excellence that sets us apart — in academics, character, and service.</p>
+            </div>
+            <div class="value-card reveal">
+                <div class="value-letter">A</div>
+                <div class="value-word">Achievement</div>
+                <p>Celebrating every milestone and empowering each child to reach their highest potential.</p>
+            </div>
+            <div class="value-card reveal">
+                <div class="value-letter">H</div>
+                <div class="value-word">Honesty</div>
+                <p>Integrity as a lifestyle, building trustworthy future leaders from the earliest years.</p>
+            </div>
+        </div>
+    </section>
+
+    <!-- VISION & MISSION -->
+    <section class="vision-mission reveal">
+        <div class="vision">
+            <h3>Our Vision</h3>
+            <p>Raising generational wonders among the best.</p>
+            <p class="scripture">“Behold, I and the children whom the LORD hath given me are for signs and for wonders…” — Isaiah 8:18</p>
+        </div>
+        <div class="mission">
+            <h3>Our Mission</h3>
+            <p><strong>1.</strong> To prepare every child for all‑round excellence through spiritual prowess, sound qualitative academics, moral instructions, and effective co‑curricular activities using highly motivated manpower.</p>
+            <p><strong>2.</strong> To contribute immensely towards nation building and achieving the best possible returns to all stakeholders.</p>
+        </div>
+    </section>
+
+    <!-- PROGRAMMES -->
+    <section id="programmes">
+        <h2 class="section-title reveal">Our Programmes</h2>
+        <div class="programmes-grid">
+            <div class="programme-card reveal">
+                <div class="programme-img" style="background-image: url('https://res.cloudinary.com/dda7kpir8/image/upload/q_auto/f_auto/v1781038544/images_-_2026-06-09T215402.857_texcre.jpg');" loading="lazy"></div>
+                <div class="programme-content">
+                    <h3>Nursery Section</h3>
+                    <p>Playgroup, Nursery 1 & 2 — a safe, stimulating environment where early learners explore, create, and grow.</p>
+                </div>
+            </div>
+            <div class="programme-card reveal">
+                <div class="programme-img" style="background-image: url('https://res.cloudinary.com/dda7kpir8/image/upload/q_auto/f_auto/v1781038545/images_-_2026-06-09T215308.558_jsfs3p.jpg');" loading="lazy"></div>
+                <div class="programme-content">
+                    <h3>Primary Section</h3>
+                    <p>Primary 1 – 6 with a robust curriculum blending Nigerian and international standards, character formation, and ICT.</p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- WHY CHOOSE US -->
+    <section style="background: var(--soft-white); border-radius: 40px;">
+        <h2 class="section-title reveal">Why Parents Choose Us</h2>
+        <div class="features-grid">
+            <div class="feature-item reveal"><i class="fas fa-church feature-icon"></i><div><h4>Spiritual Foundation</h4><p>Daily devotion, Bible clubs, and godly mentoring.</p></div></div>
+            <div class="feature-item reveal"><i class="fas fa-book-open feature-icon"></i><div><h4>Qualitative Academics</h4><p>Experienced teachers, modern methods, excellent results.</p></div></div>
+            <div class="feature-item reveal"><i class="fas fa-heart feature-icon"></i><div><h4>Moral Excellence</h4><p>Character education woven into every activity.</p></div></div>
+            <div class="feature-item reveal"><i class="fas fa-futbol feature-icon"></i><div><h4>Co‑Curricular Activities</h4><p>Sports, music, drama, and clubs for holistic development.</p></div></div>
+        </div>
+    </section>
+
+    <!-- GALLERY -->
+    <section id="gallery">
+        <h2 class="section-title reveal">Our School in Pictures</h2>
+        <div class="gallery">
+            <img src="https://res.cloudinary.com/dda7kpir8/image/upload/q_auto/f_auto/v1781038544/images_-_2026-06-09T215402.857_texcre.jpg" alt="School activity" loading="lazy" class="reveal">
+            <img src="https://res.cloudinary.com/dda7kpir8/image/upload/q_auto/f_auto/v1781038545/images_-_2026-06-09T215427.407_zuoe13.jpg" alt="Pupils" loading="lazy" class="reveal">
+            <img src="https://res.cloudinary.com/dda7kpir8/image/upload/q_auto/f_auto/v1781038545/IMG-20260609-WA0003_u3sdix.jpg" alt="Learning" loading="lazy" class="reveal">
+            <img src="https://res.cloudinary.com/dda7kpir8/image/upload/q_auto/f_auto/v1781038545/images_-_2026-06-09T215308.558_jsfs3p.jpg" alt="Judah Wonder pupils" loading="lazy" class="reveal">
+        </div>
+    </section>
+
+    <!-- ADMISSION CTA -->
+    <div class="cta-section reveal">
+        <h2 style="font-family: 'Playfair Display', serif; font-size: 2.2rem;">Join the Judah Wonder Family</h2>
+        <p style="max-width: 600px; margin: 0.5rem auto 0;">Admissions are open for Nursery and Primary. Give your child the gift of an excellent foundation.</p>
+        <a href="portal.html" class="btn-light">Go to Portal</a>
+    </div>
+
+    <!-- FOOTER -->
+    <footer>
+        <img src="https://res.cloudinary.com/dda7kpir8/image/upload/q_auto/f_auto/v1781038310/ChatGPT_Image_Jun_9_2026_09_25_06_AM_elnine.png" alt="JWMS" class="footer-logo">
+        <p><strong>Judah Wonder Model School</strong><br>Behind Family FM, Abiola Way, Abeokuta, Ogun State</p>
+        <p>📞 0803 000 0000 &nbsp;|&nbsp; ✉️ info@judahwonder.sch.ng</p>
+        <div class="social">
+            <a href="#"><i class="fab fa-facebook-f"></i></a>
+            <a href="#"><i class="fab fa-instagram"></i></a>
+            <a href="#"><i class="fab fa-whatsapp"></i></a>
+        </div>
+        <p style="margin-top: 30px; font-size: 0.85rem;">&copy; 2025 Judah Wonder Model School. All rights reserved.</p>
+    </footer>
+
+    <script>
+        // ===== LOADER =====
+        window.addEventListener('load', () => {
+            setTimeout(() => {
+                document.getElementById('loader').classList.add('hidden');
+            }, 1500);
+        });
+
+        // ===== STICKY HEADER =====
+        window.addEventListener('scroll', () => {
+            document.getElementById('header').classList.toggle('scrolled', window.scrollY > 50);
+        });
+
+        // ===== MOBILE MENU TOGGLE =====
+        const toggle = document.getElementById('mobileToggle');
+        const nav = document.getElementById('navLinks');
+        toggle.addEventListener('click', () => {
+            nav.classList.toggle('active');
+            const icon = toggle.querySelector('i');
+            icon.classList.toggle('fa-bars');
+            icon.classList.toggle('fa-times');
+        });
+        // close menu on link click
+        nav.querySelectorAll('a').forEach(link => {
+            link.addEventListener('click', () => nav.classList.remove('active'));
+        });
+
+        // ===== HERO SLIDER =====
+        const slides = document.querySelectorAll('.slide');
+        const dotsContainer = document.getElementById('slideIndicators');
+        let currentSlide = 0;
+        const totalSlides = slides.length;
+
+        // create dots
+        for (let i = 0; i < totalSlides; i++) {
+            const dot = document.createElement('span');
+            dot.className = 'dot' + (i === 0 ? ' active' : '');
+            dot.addEventListener('click', () => goToSlide(i));
+            dotsContainer.appendChild(dot);
+        }
+        const dots = document.querySelectorAll('.dot');
+
+        function goToSlide(index) {
+            slides[currentSlide].classList.remove('active');
+            dots[currentSlide].classList.remove('active');
+            currentSlide = (index + totalSlides) % totalSlides;
+            slides[currentSlide].classList.add('active');
+            dots[currentSlide].classList.add('active');
+        }
+
+        function nextSlide() {
+            goToSlide(currentSlide + 1);
+        }
+
+        // auto advance every 5 seconds
+        setInterval(nextSlide, 5000);
+
+        // ===== SCROLL REVEAL =====
+        const revealElements = document.querySelectorAll('.reveal');
+        const observer = new IntersectionObserver((entries) => {
+            entries.forEach(entry => {
+                if (entry.isIntersecting) {
+                    entry.target.classList.add('visible');
+                }
+            });
+        }, { threshold: 0.15 });
+        revealElements.forEach(el => observer.observe(el));
+
+        // also observe any dynamically added elements (none here, but good practice)
+    </script>
+</body>
+</html>
