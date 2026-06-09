@@ -1,0 +1,1118 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="dark">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=yes">
+    <title>Judah Wonders Model School · Teacher Dashboard</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:opsz,wght@14..32,400;500;600;700;800&family=Playfair+Display:wght@600;700&display=swap" rel="stylesheet">
+    <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-auth-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-firestore-compat.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+
+        :root[data-theme="light"] {
+            --bg-primary: #f8fafc;
+            --bg-sidebar: rgba(255,255,255,0.96);
+            --text-primary: #0f172a;
+            --text-secondary: #475569;
+            --accent: #0A2540;              /* deep blue */
+            --accent-glow: #C8963E;          /* gold */
+            --border: #e2e8f0;
+            --card-bg: #ffffff;
+            --hover-bg: #f1f5f9;
+            --shadow: 0 20px 25px -5px rgba(0,0,0,0.05);
+            --success-bg: #dcfce7;
+            --success-text: #16a34a;
+            --warning-bg: #fef9c3;
+            --warning-text: #ca8a04;
+            --danger-bg: #fee2e2;
+            --danger-text: #dc2626;
+            --info-bg: #dbeafe;
+            --info-text: #0A2540;
+            --gradient-start: #0A2540;
+            --gradient-end: #1e4a6b;
+        }
+
+        :root[data-theme="dark"] {
+            --bg-primary: #0f172a;
+            --bg-sidebar: rgba(15,23,42,0.96);
+            --text-primary: #f1f5f9;
+            --text-secondary: #94a3b8;
+            --accent: #C8963E;               /* gold now the accent in dark mode */
+            --accent-glow: #D4AF37;
+            --border: #1e293b;
+            --card-bg: #1e293b;
+            --hover-bg: #334155;
+            --shadow: 0 20px 25px -5px rgba(0,0,0,0.2);
+            --success-bg: rgba(34,197,94,0.2);
+            --success-text: #4ade80;
+            --warning-bg: rgba(245,158,11,0.2);
+            --warning-text: #fbbf24;
+            --danger-bg: rgba(239,68,68,0.2);
+            --danger-text: #f87171;
+            --info-bg: rgba(10,37,64,0.2);
+            --info-text: #93C5FD;
+            --gradient-start: #0A2540;
+            --gradient-end: #1e4a6b;
+        }
+
+        body {
+            font-family: 'Inter', sans-serif;
+            background: var(--bg-primary);
+            color: var(--text-primary);
+            min-height: 100vh;
+            display: flex;
+            transition: all 0.3s;
+            position: relative;
+            overflow-x: hidden;
+        }
+
+        /* Breathing background logo */
+        .bg-logo {
+            position: fixed;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            width: 450px;
+            max-width: 80vw;
+            opacity: 0.03;
+            z-index: 0;
+            pointer-events: none;
+            animation: breathe 6s ease-in-out infinite;
+        }
+        @keyframes breathe {
+            0%, 100% { transform: translate(-50%, -50%) scale(1); opacity: 0.03; }
+            50% { transform: translate(-50%, -50%) scale(1.06); opacity: 0.06; }
+        }
+
+        .orb {
+            position: fixed;
+            width: 500px;
+            height: 500px;
+            border-radius: 50%;
+            filter: blur(100px);
+            z-index: 0;
+            animation: float 20s infinite alternate;
+            pointer-events: none;
+        }
+        .orb-1 { top: -200px; right: -200px; background: radial-gradient(circle at 70% 30%, rgba(10,37,64,0.12), transparent 70%); }
+        .orb-2 { bottom: -200px; left: -200px; background: radial-gradient(circle at 30% 70%, rgba(200,150,62,0.08), transparent 70%); animation-duration: 25s; }
+
+        @keyframes float {
+            0% { transform: translate(0,0) scale(1); }
+            100% { transform: translate(40px, 40px) scale(1.1); }
+        }
+
+        /* ==================== SIDEBAR ==================== */
+        .sidebar {
+            width: 280px;
+            background: var(--bg-sidebar);
+            backdrop-filter: blur(20px);
+            border-right: 1px solid var(--border);
+            padding: 1.5rem 0.75rem;
+            display: flex;
+            flex-direction: column;
+            transition: width 0.3s;
+            position: fixed;
+            top: 0;
+            left: 0;
+            height: 100vh;
+            overflow-y: auto;
+            z-index: 100;
+            box-shadow: var(--shadow);
+        }
+        .sidebar.collapsed { width: 90px; }
+
+        .sidebar .logo-area {
+            display: flex;
+            align-items: center;
+            gap: 0.8rem;
+            margin-bottom: 1.5rem;
+            padding: 0 0.5rem;
+        }
+        .sidebar .logo-area img {
+            width: 42px;
+            height: 42px;
+            object-fit: contain;
+            animation: logoPulse 3s ease-in-out infinite;
+        }
+        @keyframes logoPulse {
+            0%, 100% { transform: scale(1); }
+            50% { transform: scale(1.05); }
+        }
+        .sidebar .logo-area h2 {
+            font-family: 'Playfair Display', serif;
+            font-size: 1.3rem;
+            font-weight: 700;
+            white-space: nowrap;
+            color: var(--accent);
+            line-height: 1.2;
+        }
+        .sidebar .logo-area h2 span {
+            display: block;
+            font-size: 0.6rem;
+            letter-spacing: 1.5px;
+            color: var(--accent-glow);
+        }
+        .sidebar.collapsed .logo-area h2 { display: none; }
+
+        .sidebar .nav-section-title {
+            margin: 0.75rem 0.5rem 0.2rem;
+            padding-left: 0.5rem;
+            font-size: 0.65rem;
+            color: var(--text-secondary);
+            letter-spacing: 1.5px;
+            font-weight: 700;
+            text-transform: uppercase;
+        }
+        .sidebar.collapsed .nav-section-title { display: none; }
+
+        .sidebar .nav-item {
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+            padding: 0.65rem 0.9rem;
+            border-radius: 0.75rem;
+            color: var(--text-secondary);
+            transition: all 0.2s;
+            cursor: pointer;
+            margin-bottom: 0.15rem;
+            text-decoration: none;
+            font-weight: 500;
+            white-space: nowrap;
+            border: 1px solid transparent;
+            font-size: 0.84rem;
+        }
+        .sidebar .nav-item:hover {
+            background: var(--hover-bg);
+            color: var(--accent);
+            transform: translateX(5px);
+            border-color: var(--border);
+        }
+        .sidebar .nav-item.active {
+            background: linear-gradient(135deg, var(--gradient-start), var(--gradient-end));
+            color: white;
+            box-shadow: 0 5px 15px -5px var(--accent);
+        }
+        .sidebar .nav-item i { font-size: 1.05rem; width: 1.3rem; text-align: center; }
+        .sidebar.collapsed .nav-item span { display: none; }
+
+        .sidebar .toggle-btn {
+            margin-top: auto;
+            display: flex;
+            justify-content: flex-end;
+            padding: 1rem 0.5rem;
+            cursor: pointer;
+            color: var(--text-secondary);
+            font-size: 1.2rem;
+            transition: 0.2s;
+        }
+        .sidebar .toggle-btn:hover { color: var(--accent); }
+
+        /* ==================== MAIN CONTENT ==================== */
+        .main-content {
+            flex: 1;
+            margin-left: 280px;
+            padding: 2rem;
+            transition: margin-left 0.3s;
+            position: relative;
+            z-index: 5;
+            max-width: 1500px;
+        }
+        .main-content.expanded { margin-left: 90px; }
+
+        .top-bar {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 1.5rem;
+            flex-wrap: wrap;
+            gap: 1rem;
+        }
+        .page-title h1 {
+            font-family: 'Playfair Display', serif;
+            font-size: 2rem;
+            font-weight: 700;
+            color: var(--accent);
+            margin-bottom: 0.25rem;
+        }
+        .page-title p { color: var(--text-secondary); font-size: 0.9rem; }
+
+        .profile-area { display: flex; align-items: center; gap: 1rem; }
+        .theme-toggle {
+            background: var(--card-bg);
+            backdrop-filter: blur(8px);
+            border: 1px solid var(--border);
+            border-radius: 2rem;
+            padding: 0.5rem 1rem;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            cursor: pointer;
+            font-size: 0.9rem;
+            font-weight: 500;
+            color: var(--text-primary);
+        }
+        .profile-dropdown { position: relative; cursor: pointer; }
+        .profile-trigger {
+            display: flex;
+            align-items: center;
+            gap: 0.8rem;
+            background: var(--card-bg);
+            backdrop-filter: blur(8px);
+            border: 1px solid var(--border);
+            border-radius: 2rem;
+            padding: 0.3rem 0.3rem 0.3rem 1rem;
+        }
+        .profile-name { font-weight: 600; color: var(--text-primary); font-size: 0.9rem; max-width: 120px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+        .profile-pic {
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            background: linear-gradient(135deg, var(--gradient-start), var(--gradient-end));
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-weight: 600;
+            font-size: 1rem;
+            box-shadow: 0 2px 10px var(--accent);
+            flex-shrink: 0;
+        }
+        .dropdown-menu {
+            position: absolute;
+            right: 0;
+            top: 55px;
+            background: var(--bg-sidebar);
+            backdrop-filter: blur(16px);
+            border: 1px solid var(--border);
+            border-radius: 1rem;
+            padding: 0.5rem;
+            min-width: 200px;
+            display: none;
+            z-index: 1000;
+            box-shadow: var(--shadow);
+        }
+        .profile-dropdown:hover .dropdown-menu { display: block; animation: fadeIn 0.2s; }
+        @keyframes fadeIn { from { opacity: 0; transform: translateY(-10px); } to { opacity: 1; transform: translateY(0); } }
+        .dropdown-item {
+            padding: 0.75rem 1rem;
+            color: var(--text-primary);
+            border-radius: 0.75rem;
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+            transition: 0.2s;
+            cursor: pointer;
+            text-decoration: none;
+            font-size: 0.9rem;
+        }
+        .dropdown-item:hover { background: var(--hover-bg); color: var(--accent); }
+
+        .welcome-banner {
+            background: linear-gradient(135deg, var(--gradient-start), var(--gradient-end));
+            border-radius: 1.5rem;
+            padding: 1.5rem 2rem;
+            margin-bottom: 1.5rem;
+            color: white;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            flex-wrap: wrap;
+            gap: 1rem;
+            box-shadow: 0 10px 30px rgba(10,37,64,0.2);
+        }
+        .welcome-banner h2 { font-size: 1.3rem; margin-bottom: 0.25rem; }
+        .welcome-banner p { opacity: 0.9; font-size: 0.85rem; }
+
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(170px, 1fr));
+            gap: 0.85rem;
+            margin-bottom: 1.5rem;
+        }
+        .stat-card {
+            background: var(--card-bg);
+            border: 1px solid var(--border);
+            border-radius: 1.3rem;
+            padding: 1.1rem;
+            text-align: center;
+            transition: all 0.3s;
+        }
+        .stat-card:hover { transform: translateY(-2px); box-shadow: var(--shadow); }
+        .stat-value {
+            font-size: 1.8rem;
+            font-weight: 700;
+            font-family: 'Space Grotesk', sans-serif;
+            color: var(--accent);
+        }
+        .stat-label { color: var(--text-secondary); font-size: 0.75rem; margin-top: 0.15rem; }
+
+        .quick-actions {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(135px, 1fr));
+            gap: 0.75rem;
+            margin-bottom: 1.5rem;
+        }
+        .action-card {
+            background: var(--card-bg);
+            border: 1px solid var(--border);
+            border-radius: 1rem;
+            padding: 1rem 0.75rem;
+            text-align: center;
+            cursor: pointer;
+            transition: 0.2s;
+            text-decoration: none;
+            color: var(--text-primary);
+        }
+        .action-card:hover {
+            transform: translateY(-4px);
+            border-color: var(--accent);
+            box-shadow: var(--shadow);
+        }
+        .action-card i { font-size: 1.4rem; color: var(--accent); margin-bottom: 0.5rem; display: block; }
+        .action-card span { font-size: 0.72rem; font-weight: 500; }
+
+        .section-card {
+            background: var(--card-bg);
+            border: 1px solid var(--border);
+            border-radius: 1.5rem;
+            padding: 1.25rem;
+            margin-bottom: 1.25rem;
+            box-shadow: var(--shadow);
+        }
+        .section-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 0.75rem;
+            flex-wrap: wrap;
+            gap: 0.5rem;
+            padding-bottom: 0.75rem;
+            border-bottom: 1px solid var(--border);
+        }
+        .section-header h3 {
+            font-size: 0.95rem;
+            font-weight: 600;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+        .section-header a {
+            color: var(--accent);
+            text-decoration: none;
+            font-size: 0.78rem;
+            font-weight: 500;
+        }
+        .section-header a:hover { text-decoration: underline; }
+
+        .table-responsive { overflow-x: auto; }
+        table { width: 100%; border-collapse: collapse; }
+        th {
+            text-align: left;
+            padding: 0.65rem 0.5rem;
+            color: var(--text-secondary);
+            font-weight: 500;
+            border-bottom: 1px solid var(--border);
+            font-size: 0.75rem;
+            white-space: nowrap;
+        }
+        td {
+            padding: 0.65rem 0.5rem;
+            border-bottom: 1px solid var(--border);
+            font-size: 0.8rem;
+        }
+        tr:last-child td { border-bottom: none; }
+
+        .badge {
+            padding: 0.18rem 0.55rem;
+            border-radius: 2rem;
+            font-size: 0.68rem;
+            font-weight: 600;
+            display: inline-block;
+        }
+        .badge-success { background: var(--success-bg); color: var(--success-text); }
+        .badge-warning { background: var(--warning-bg); color: var(--warning-text); }
+        .badge-danger { background: var(--danger-bg); color: var(--danger-text); }
+        .badge-info { background: var(--info-bg); color: var(--info-text); }
+
+        .btn {
+            padding: 0.3rem 0.75rem;
+            border: none;
+            border-radius: 0.65rem;
+            font-weight: 500;
+            cursor: pointer;
+            transition: 0.2s;
+            font-size: 0.72rem;
+            display: inline-flex;
+            align-items: center;
+            gap: 0.3rem;
+            text-decoration: none;
+        }
+        .btn-primary {
+            background: linear-gradient(135deg, var(--gradient-start), var(--gradient-end));
+            color: white;
+        }
+        .btn-primary:hover { opacity: 0.9; transform: translateY(-1px); }
+        .btn-outline {
+            background: transparent;
+            border: 1px solid var(--border);
+            color: var(--text-primary);
+        }
+        .btn-outline:hover { background: var(--hover-bg); border-color: var(--accent); color: var(--accent); }
+
+        .two-columns {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 1.25rem;
+            margin-bottom: 1.25rem;
+        }
+
+        .empty-state-text {
+            text-align: center;
+            padding: 2rem 1rem;
+            color: var(--text-secondary);
+            font-size: 0.82rem;
+        }
+
+        @media (max-width: 768px) {
+            .sidebar { width: 80px; }
+            .sidebar .logo-area h2, .sidebar .nav-item span, .sidebar .nav-section-title { display: none; }
+            .main-content { margin-left: 80px; padding: 1rem; }
+            .two-columns { grid-template-columns: 1fr; }
+            .quick-actions { grid-template-columns: repeat(2, 1fr); }
+            .stats-grid { grid-template-columns: repeat(2, 1fr); }
+        }
+    </style>
+</head>
+<body>
+    <!-- Background breathing logo -->
+    <img src="https://res.cloudinary.com/dda7kpir8/image/upload/q_auto/f_auto/v1781038310/ChatGPT_Image_Jun_9_2026_09_25_06_AM_elnine.png"
+         alt="" class="bg-logo" aria-hidden="true">
+
+    <div class="orb orb-1"></div>
+    <div class="orb orb-2"></div>
+
+    <!-- ==================== SIDEBAR ==================== -->
+    <div class="sidebar" id="sidebar">
+        <div class="logo-area">
+            <img src="https://res.cloudinary.com/dda7kpir8/image/upload/q_auto/f_auto/v1781038310/ChatGPT_Image_Jun_9_2026_09_25_06_AM_elnine.png"
+                 alt="JWMS Logo">
+            <h2>Judah Wonders<span>Model School</span></h2>
+        </div>
+
+        <div class="nav-section-title">Main</div>
+        <a href="teacher-dashboard.html" class="nav-item active"><i class="fas fa-chart-line"></i><span>Dashboard</span></a>
+
+        <div class="nav-section-title">Teacher's Tools</div>
+        <a href="teacher's-tool.html" class="nav-item"><i class="fas fa-toolbox"></i><span>Teacher's Tool</span></a>
+        <a href="teacher-report-card.html" class="nav-item"><i class="fas fa-graduation-cap"></i><span>Report Card</span></a>
+        <a href="teacher-question-bank.html" class="nav-item"><i class="fas fa-database"></i><span>Question Bank</span></a>
+        <a href="teacher-profile.html" class="nav-item"><i class="fas fa-user-edit"></i><span>Profile</span></a>
+
+        <div class="nav-section-title">Assessments</div>
+        <a href="teacher-test.html" class="nav-item"><i class="fas fa-file-alt"></i><span>Tests</span></a>
+        <a href="teacher-assignment.html" class="nav-item"><i class="fas fa-tasks"></i><span>Assignments</span></a>
+        <a href="teacher-exam.html" class="nav-item"><i class="fas fa-pen-fancy"></i><span>Exams</span></a>
+
+        <div class="nav-section-title">Teaching</div>
+        <a href="teacher-teach.html" class="nav-item"><i class="fas fa-chalkboard-teacher"></i><span>Teach</span></a>
+        <a href="teacher-analysis.html" class="nav-item"><i class="fas fa-chart-pie"></i><span>Analysis</span></a>
+
+        <div class="nav-section-title">Information</div>
+        <a href="school-info.html" class="nav-item"><i class="fas fa-info-circle"></i><span>School Info</span></a>
+
+        <!-- 3 placeholder pages as requested -->
+        <div class="nav-section-title">Additional</div>
+        <a href="teacher-page1.html" class="nav-item"><i class="fas fa-star"></i><span>Page 1</span></a>
+        <a href="teacher-page2.html" class="nav-item"><i class="fas fa-heart"></i><span>Page 2</span></a>
+        <a href="teacher-page3.html" class="nav-item"><i class="fas fa-gem"></i><span>Page 3</span></a>
+
+        <div class="toggle-btn" id="sidebarToggle"><i class="fas fa-chevron-left"></i></div>
+    </div>
+
+    <!-- ==================== MAIN CONTENT ==================== -->
+    <div class="main-content" id="mainContent">
+        <!-- Top Bar -->
+        <div class="top-bar">
+            <div class="page-title">
+                <h1>Teacher Dashboard</h1>
+                <p>Welcome back, <span id="teacherName">Teacher</span></p>
+            </div>
+            <div class="profile-area">
+                <div class="theme-toggle" id="themeToggle">
+                    <i class="fas fa-sun"></i><span>Light</span><i class="fas fa-moon"></i>
+                </div>
+                <div class="profile-dropdown">
+                    <div class="profile-trigger">
+                        <span class="profile-name" id="profileName">Teacher</span>
+                        <div class="profile-pic" id="profilePic">T</div>
+                    </div>
+                    <div class="dropdown-menu">
+                        <a href="teacher-profile.html" class="dropdown-item"><i class="fas fa-user-edit"></i> Update Profile</a>
+                        <div class="dropdown-item" id="logoutBtn"><i class="fas fa-sign-out-alt"></i> Logout</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Welcome Banner -->
+        <div class="welcome-banner">
+            <div>
+                <h2><i class="fas fa-chalkboard"></i> Ready to inspire minds!</h2>
+                <p>You have <span id="pendingTasksCount">0</span> pending tasks to complete</p>
+            </div>
+            <div><span id="currentDate" style="font-size: 0.9rem;"></span></div>
+        </div>
+
+        <!-- Stats Grid -->
+        <div class="stats-grid">
+            <div class="stat-card"><div class="stat-value" id="totalStudents">0</div><div class="stat-label">Total Students</div></div>
+            <div class="stat-card"><div class="stat-value" id="publishedAssignments">0</div><div class="stat-label">Assignments</div></div>
+            <div class="stat-card"><div class="stat-value" id="publishedTests">0</div><div class="stat-label">CBT Tests</div></div>
+            <div class="stat-card"><div class="stat-value" id="publishedExams">0</div><div class="stat-label">Exams</div></div>
+            <div class="stat-card"><div class="stat-value" id="pendingSubmissions">0</div><div class="stat-label">Pending Grading</div></div>
+            <div class="stat-card"><div class="stat-value" id="gradedSubmissions">0</div><div class="stat-label">Graded</div></div>
+            <div class="stat-card"><div class="stat-value" id="avgClassScore">0%</div><div class="stat-label">Avg Class Score</div></div>
+            <div class="stat-card"><div class="stat-value" id="attendanceToday">0%</div><div class="stat-label">Today's Attendance</div></div>
+        </div>
+
+        <!-- Quick Actions -->
+        <div class="quick-actions">
+            <a href="teacher-assignment.html" class="action-card"><i class="fas fa-plus-circle"></i><span>New Assignment</span></a>
+            <a href="teacher-test.html" class="action-card"><i class="fas fa-plus-square"></i><span>New CBT Test</span></a>
+            <a href="teacher-exam.html" class="action-card"><i class="fas fa-plus-circle"></i><span>New Exam</span></a>
+            <a href="teacher's-tool.html" class="action-card"><i class="fas fa-check-double"></i><span>Grade Work</span></a>
+            <a href="teacher-teach.html" class="action-card"><i class="fas fa-fingerprint"></i><span>Take Attendance</span></a>
+            <a href="teacher-question-bank.html" class="action-card"><i class="fas fa-database"></i><span>Question Bank</span></a>
+            <a href="teacher-analysis.html" class="action-card"><i class="fas fa-calculator"></i><span>Calculate Grades</span></a>
+            <a href="teacher-report-card.html" class="action-card"><i class="fas fa-graduation-cap"></i><span>Generate Reports</span></a>
+        </div>
+
+        <!-- Two Column Layout -->
+        <div class="two-columns">
+            <!-- Left Column -->
+            <div>
+                <!-- Today's Schedule -->
+                <div class="section-card">
+                    <div class="section-header">
+                        <h3><i class="fas fa-calendar-alt"></i> Today's Schedule</h3>
+                        <a href="teacher-timetable.html">View Full <i class="fas fa-arrow-right"></i></a>
+                    </div>
+                    <div id="todaySchedule"><p class="empty-state-text">Loading...</p></div>
+                </div>
+
+                <!-- Pending Submissions -->
+                <div class="section-card">
+                    <div class="section-header">
+                        <h3><i class="fas fa-clock"></i> Pending Submissions to Grade</h3>
+                        <a href="teacher's-tool.html">View All <i class="fas fa-arrow-right"></i></a>
+                    </div>
+                    <div class="table-responsive">
+                        <table>
+                            <thead><tr><th>Student</th><th>Assessment</th><th>Type</th><th>Submitted</th><th>Action</th></tr></thead>
+                            <tbody id="pendingSubmissionsBody"><tr><td colspan="5" class="empty-state-text">Loading...</td></tr></tbody>
+                        </table>
+                    </div>
+                </div>
+
+                <!-- Recent Assignments -->
+                <div class="section-card">
+                    <div class="section-header">
+                        <h3><i class="fas fa-tasks"></i> Recent Assignments</h3>
+                        <a href="teacher-assignment.html">View All <i class="fas fa-arrow-right"></i></a>
+                    </div>
+                    <div class="table-responsive">
+                        <table>
+                            <thead><tr><th>Title</th><th>Subject</th><th>Due Date</th><th>Submissions</th><th>Status</th></tr></thead>
+                            <tbody id="recentAssignmentsBody"><tr><td colspan="5" class="empty-state-text">Loading...</td></tr></tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Right Column -->
+            <div>
+                <!-- Upcoming Tests -->
+                <div class="section-card">
+                    <div class="section-header">
+                        <h3><i class="fas fa-laptop"></i> Upcoming CBT Tests</h3>
+                        <a href="teacher-test.html">View All <i class="fas fa-arrow-right"></i></a>
+                    </div>
+                    <div class="table-responsive">
+                        <table>
+                            <thead><tr><th>Title</th><th>Subject</th><th>Date</th><th>Questions</th><th>Status</th></tr></thead>
+                            <tbody id="upcomingTestsBody"><tr><td colspan="5" class="empty-state-text">Loading...</td></tr></tbody>
+                        </table>
+                    </div>
+                </div>
+
+                <!-- Upcoming Exams -->
+                <div class="section-card">
+                    <div class="section-header">
+                        <h3><i class="fas fa-pen-fancy"></i> Upcoming Exams</h3>
+                        <a href="teacher-exam.html">View All <i class="fas fa-arrow-right"></i></a>
+                    </div>
+                    <div class="table-responsive">
+                        <table>
+                            <thead><tr><th>Title</th><th>Subject</th><th>Date</th><th>Duration</th><th>Status</th></tr></thead>
+                            <tbody id="upcomingExamsBody"><tr><td colspan="5" class="empty-state-text">Loading...</td></tr></tbody>
+                        </table>
+                    </div>
+                </div>
+
+                <!-- Recent Results -->
+                <div class="section-card">
+                    <div class="section-header">
+                        <h3><i class="fas fa-chart-simple"></i> Recent Graded Results</h3>
+                        <a href="teacher-analysis.html">View All <i class="fas fa-arrow-right"></i></a>
+                    </div>
+                    <div class="table-responsive">
+                        <table>
+                            <thead><tr><th>Student</th><th>Assessment</th><th>Score</th><th>Grade</th><th>Date</th></tr></thead>
+                            <tbody id="recentResultsBody"><tr><td colspan="5" class="empty-state-text">Loading...</td></tr></tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Bottom Row -->
+        <div class="two-columns">
+            <!-- Recent Activity -->
+            <div class="section-card">
+                <div class="section-header">
+                    <h3><i class="fas fa-user-graduate"></i> Recent Student Activity</h3>
+                    <a href="teacher-teach.html">View Class <i class="fas fa-arrow-right"></i></a>
+                </div>
+                <div class="table-responsive">
+                    <table>
+                        <thead><tr><th>Student</th><th>Activity</th><th>Assessment</th><th>Date</th><th>Status</th></tr></thead>
+                        <tbody id="recentActivityBody"><tr><td colspan="5" class="empty-state-text">Loading...</td></tr></tbody>
+                    </table>
+                </div>
+            </div>
+
+            <!-- Performance Chart -->
+            <div class="section-card">
+                <div class="section-header">
+                    <h3><i class="fas fa-chart-line"></i> Class Performance Trend</h3>
+                </div>
+                <canvas id="performanceChart" style="height: 200px; width: 100%;"></canvas>
+            </div>
+        </div>
+
+        <!-- Pending Lesson Notes -->
+        <div class="section-card">
+            <div class="section-header">
+                <h3><i class="fas fa-book-open"></i> Pending Lesson Notes</h3>
+                <a href="teacher-lesson-notes.html">View All <i class="fas fa-arrow-right"></i></a>
+            </div>
+            <div class="table-responsive">
+                <table>
+                    <thead><tr><th>Subject</th><th>Topic</th><th>Week</th><th>Submitted</th><th>Action</th></tr></thead>
+                    <tbody id="pendingNotesBody"><tr><td colspan="5" class="empty-state-text">Loading...</td></tr></tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        const firebaseConfig = {
+            apiKey: "AIzaSyADXHEiaSQ146QsGsaOCElARtpwrLE8svs",
+            authDomain: "judah-c737e.firebaseapp.com",
+            projectId: "judah-c737e",
+            storageBucket: "judah-c737e.firebasestorage.app",
+            messagingSenderId: "739196063078",
+            appId: "1:739196063078:web:c0ee1c1da2cc3794ca8ca7",
+            measurementId: "G-YEM22F1C39"
+        };
+        firebase.initializeApp(firebaseConfig);
+        const auth = firebase.auth();
+        const db = firebase.firestore();
+
+        // ==================== SIDEBAR TOGGLE ====================
+        const sidebar = document.getElementById('sidebar');
+        const mainContentEl = document.getElementById('mainContent');
+        const toggleBtn = document.getElementById('sidebarToggle');
+        toggleBtn.addEventListener('click', () => {
+            sidebar.classList.toggle('collapsed');
+            mainContentEl.classList.toggle('expanded');
+            const icon = toggleBtn.querySelector('i');
+            icon.classList.toggle('fa-chevron-left');
+            icon.classList.toggle('fa-chevron-right');
+        });
+
+        // ==================== THEME ====================
+        const htmlEl = document.documentElement;
+        const themeToggleEl = document.getElementById('themeToggle');
+        const savedTheme = localStorage.getItem('judah-theme') || 'dark';
+        htmlEl.setAttribute('data-theme', savedTheme);
+        themeToggleEl.querySelector('span').textContent = savedTheme === 'dark' ? 'Light' : 'Dark';
+        themeToggleEl.addEventListener('click', () => {
+            const current = htmlEl.getAttribute('data-theme');
+            const next = current === 'dark' ? 'light' : 'dark';
+            htmlEl.setAttribute('data-theme', next);
+            localStorage.setItem('judah-theme', next);
+            themeToggleEl.querySelector('span').textContent = next === 'dark' ? 'Light' : 'Dark';
+        });
+
+        // ==================== DATE ====================
+        document.getElementById('currentDate').textContent = new Date().toLocaleDateString('en-US', {
+            weekday: 'long', year: 'numeric', month: 'long', day: 'numeric'
+        });
+
+        // ==================== GLOBALS ====================
+        let currentUser = null;
+        let userData = null;
+        let performanceChart = null;
+
+        function escapeHtml(text) {
+            if (!text) return '';
+            const div = document.createElement('div');
+            div.textContent = text;
+            return div.innerHTML;
+        }
+
+        // ==================== AUTH ====================
+        auth.onAuthStateChanged(async (user) => {
+            if (!user) { window.location.href = 'teacher-login.html'; return; }
+            try {
+                const userDoc = await db.collection('users').doc(user.uid).get();
+                if (!userDoc.exists || (userDoc.data().role !== 'teacher' && !(userDoc.data().roles || []).includes('teacher'))) {
+                    auth.signOut();
+                    window.location.href = 'index.html';
+                    return;
+                }
+                userData = userDoc.data();
+                if (!(userData.approved === true || userData.status === 'approved')) {
+                    alert('Your account is pending approval. Please contact admin.');
+                    auth.signOut();
+                    window.location.href = 'teacher-login.html';
+                    return;
+                }
+                currentUser = user;
+                document.getElementById('teacherName').textContent = userData.firstName || 'Teacher';
+                document.getElementById('profileName').textContent = userData.firstName || 'Teacher';
+                const initials = (userData.firstName?.[0] || 'T') + (userData.surname?.[0] || 'E');
+                document.getElementById('profilePic').textContent = initials;
+                await loadDashboardData();
+            } catch (e) {
+                console.error('Auth error:', e);
+            }
+        });
+
+        document.getElementById('logoutBtn').addEventListener('click', () => {
+            auth.signOut().then(() => window.location.href = 'index.html');
+        });
+
+        // ==================== LOAD DASHBOARD DATA ====================
+        async function loadDashboardData() {
+            if (!currentUser) return;
+            try {
+                const teacherClass = userData.classTeaching;
+                let totalStudents = 0,
+                    pendingSubmissionsCount = 0,
+                    gradedCount = 0,
+                    totalScore = 0;
+
+                // Total Students
+                if (teacherClass) {
+                    const studentsSnap = await db.collection('users')
+                        .where('role', '==', 'student')
+                        .where('class', '==', teacherClass)
+                        .get();
+                    totalStudents = studentsSnap.size;
+                }
+                document.getElementById('totalStudents').textContent = totalStudents;
+
+                // Assignments
+                const allAssignmentsSnap = await db.collection('assignments')
+                    .where('teacherId', '==', currentUser.uid)
+                    .get();
+                document.getElementById('publishedAssignments').textContent =
+                    allAssignmentsSnap.docs.filter(d => d.data().status === 'published').length;
+
+                const recentAssignmentsSnap = await db.collection('assignments')
+                    .where('teacherId', '==', currentUser.uid)
+                    .orderBy('createdAt', 'desc')
+                    .limit(5)
+                    .get();
+
+                let assignmentsHtml = '';
+                if (recentAssignmentsSnap.empty) {
+                    assignmentsHtml = '<tr><td colspan="5" class="empty-state-text">No assignments created yet</td></tr>';
+                } else {
+                    for (const doc of recentAssignmentsSnap.docs) {
+                        const a = doc.data();
+                        const statusBadge = a.status === 'published' ?
+                            '<span class="badge badge-success">Published</span>' :
+                            '<span class="badge badge-warning">Draft</span>';
+                        assignmentsHtml += `<tr>
+                            <td><strong>${escapeHtml(a.title || 'Untitled')}</strong></td>
+                            <td>${escapeHtml(a.subject || '—')}</td>
+                            <td>${a.dueDate ? new Date(a.dueDate.seconds ? a.dueDate.seconds * 1000 : a.dueDate).toLocaleDateString() : 'No date'}</td>
+                            <td>—</td>
+                            <td>${statusBadge}</td>
+                        </tr>`;
+                    }
+                }
+                document.getElementById('recentAssignmentsBody').innerHTML = assignmentsHtml;
+
+                // Tests
+                const allTestsSnap = await db.collection('tests')
+                    .where('teacherId', '==', currentUser.uid)
+                    .get();
+                document.getElementById('publishedTests').textContent =
+                    allTestsSnap.docs.filter(d => d.data().status === 'published').length;
+
+                const recentTestsSnap = await db.collection('tests')
+                    .where('teacherId', '==', currentUser.uid)
+                    .where('status', '==', 'published')
+                    .orderBy('createdAt', 'desc')
+                    .limit(5)
+                    .get();
+
+                let testsHtml = '';
+                if (recentTestsSnap.empty) {
+                    testsHtml = '<tr><td colspan="5" class="empty-state-text">No published tests</td></tr>';
+                } else {
+                    for (const doc of recentTestsSnap.docs) {
+                        const t = doc.data();
+                        testsHtml += `<tr>
+                            <td><strong>${escapeHtml(t.title || 'Untitled')}</strong></td>
+                            <td>${escapeHtml(t.subject || '—')}</td>
+                            <td>${t.startDate ? new Date(t.startDate.seconds ? t.startDate.seconds * 1000 : t.startDate).toLocaleDateString() : 'Available'}</td>
+                            <td>${t.questions?.length || 0}</td>
+                            <td><span class="badge badge-success">Published</span></td>
+                        </tr>`;
+                    }
+                }
+                document.getElementById('upcomingTestsBody').innerHTML = testsHtml;
+
+                // Exams
+                const allExamsSnap = await db.collection('exams')
+                    .where('teacherId', '==', currentUser.uid)
+                    .get();
+                document.getElementById('publishedExams').textContent =
+                    allExamsSnap.docs.filter(d => d.data().status === 'published').length;
+
+                const recentExamsSnap = await db.collection('exams')
+                    .where('teacherId', '==', currentUser.uid)
+                    .where('status', '==', 'published')
+                    .orderBy('createdAt', 'desc')
+                    .limit(5)
+                    .get();
+
+                let examsHtml = '';
+                if (recentExamsSnap.empty) {
+                    examsHtml = '<tr><td colspan="5" class="empty-state-text">No published exams</td></tr>';
+                } else {
+                    for (const doc of recentExamsSnap.docs) {
+                        const e = doc.data();
+                        examsHtml += `<tr>
+                            <td><strong>${escapeHtml(e.title || 'Untitled')}</strong></td>
+                            <td>${escapeHtml(e.subject || '—')}</td>
+                            <td>${e.startDate ? new Date(e.startDate.seconds ? e.startDate.seconds * 1000 : e.startDate).toLocaleDateString() : 'Available'}</td>
+                            <td>${e.duration || 120} min</td>
+                            <td><span class="badge badge-success">Published</span></td>
+                        </tr>`;
+                    }
+                }
+                document.getElementById('upcomingExamsBody').innerHTML = examsHtml;
+
+                // Submissions (from assignments)
+                const submissionsSnap = await db.collection('submissions')
+                    .where('teacherId', '==', currentUser.uid)
+                    .orderBy('submittedAt', 'desc')
+                    .limit(20)
+                    .get();
+
+                const pendingSubs = submissionsSnap.docs.filter(d => d.data().graded === false || d.data().graded === undefined);
+                const gradedSubs = submissionsSnap.docs.filter(d => d.data().graded === true);
+                pendingSubmissionsCount = pendingSubs.length;
+                gradedCount = gradedSubs.length;
+                document.getElementById('pendingSubmissions').textContent = pendingSubmissionsCount;
+                document.getElementById('gradedSubmissions').textContent = gradedCount;
+
+                // Pending Table
+                let pendingTableHtml = '';
+                if (pendingSubs.length === 0) {
+                    pendingTableHtml = '<tr><td colspan="5" class="empty-state-text">No pending submissions</td></tr>';
+                } else {
+                    for (const doc of pendingSubs.slice(0, 5)) {
+                        const s = doc.data();
+                        let studentName = s.studentName || 'Student';
+                        pendingTableHtml += `<tr>
+                            <td>${escapeHtml(studentName)}</td>
+                            <td>${escapeHtml(s.assignmentTitle || 'Assignment')}</td>
+                            <td>${s.assignmentType === 'mcq' ? 'MCQ' : 'Essay'}</td>
+                            <td>${s.submittedAt ? new Date(s.submittedAt.seconds ? s.submittedAt.seconds * 1000 : s.submittedAt).toLocaleDateString() : '—'}</td>
+                            <td><a href="teacher's-tool.html" class="btn btn-primary btn-sm">Grade</a></td>
+                        </tr>`;
+                    }
+                }
+                document.getElementById('pendingSubmissionsBody').innerHTML = pendingTableHtml;
+
+                // Recent Results
+                let resultsHtml = '';
+                if (gradedSubs.length === 0) {
+                    resultsHtml = '<tr><td colspan="5" class="empty-state-text">No graded results yet</td></tr>';
+                } else {
+                    for (const doc of gradedSubs.slice(0, 5)) {
+                        const s = doc.data();
+                        let studentName = s.studentName || 'Student';
+                        let total = 100;
+                        const percentage = total > 0 ? (s.score / total) * 100 : 0;
+                        const grade = percentage >= 75 ? 'A' : percentage >= 65 ? 'B' : percentage >= 50 ? 'C' : percentage >= 40 ? 'D' : 'F';
+                        totalScore += percentage;
+                        resultsHtml += `<tr>
+                            <td>${escapeHtml(studentName)}</td>
+                            <td>${escapeHtml(s.assignmentTitle || 'Assignment')}</td>
+                            <td><strong>${s.score}/${total}</strong></td>
+                            <td><span class="badge badge-info">${grade}</span></td>
+                            <td>${s.gradedAt ? new Date(s.gradedAt.seconds ? s.gradedAt.seconds * 1000 : s.gradedAt).toLocaleDateString() : '—'}</td>
+                        </tr>`;
+                    }
+                }
+                const avgScore = gradedCount ? (totalScore / gradedCount).toFixed(1) : 0;
+                document.getElementById('avgClassScore').textContent = avgScore + '%';
+                document.getElementById('recentResultsBody').innerHTML = resultsHtml;
+
+                // Recent Activity
+                let activityHtml = '';
+                if (submissionsSnap.empty) {
+                    activityHtml = '<tr><td colspan="5" class="empty-state-text">No recent activity</td></tr>';
+                } else {
+                    for (const doc of submissionsSnap.docs.slice(0, 5)) {
+                        const s = doc.data();
+                        let studentName = s.studentName || 'Student';
+                        const status = s.graded ? 'graded' : 'pending';
+                        activityHtml += `<tr>
+                            <td>${escapeHtml(studentName)}</td>
+                            <td>Submitted ${s.assignmentType === 'mcq' ? 'MCQ' : 'Essay'}</td>
+                            <td>${escapeHtml(s.assignmentTitle || 'Assignment')}</td>
+                            <td>${s.submittedAt ? new Date(s.submittedAt.seconds ? s.submittedAt.seconds * 1000 : s.submittedAt).toLocaleDateString() : '—'}</td>
+                            <td><span class="badge ${s.graded ? 'badge-success' : 'badge-warning'}">${s.graded ? 'Graded' : 'Pending'}</span></td>
+                        </tr>`;
+                    }
+                }
+                document.getElementById('recentActivityBody').innerHTML = activityHtml;
+
+                // Pending Lesson Notes
+                const notesSnap = await db.collection('lessonNotes')
+                    .where('teacherId', '==', currentUser.uid)
+                    .where('status', '==', 'pending')
+                    .limit(5)
+                    .get();
+
+                let notesHtml = '';
+                if (notesSnap.empty) {
+                    notesHtml = '<tr><td colspan="5" class="empty-state-text">No pending lesson notes</td></tr>';
+                } else {
+                    for (const doc of notesSnap.docs) {
+                        const n = doc.data();
+                        notesHtml += `<tr>
+                            <td>${escapeHtml(n.subject || '—')}</td>
+                            <td>${escapeHtml(n.topic || '—')}</td>
+                            <td>Week ${n.week || '?'}</td>
+                            <td>${n.submittedAt ? new Date(n.submittedAt.seconds ? n.submittedAt.seconds * 1000 : n.submittedAt).toLocaleDateString() : '—'}</td>
+                            <td><a href="teacher-lesson-notes.html?note=${doc.id}" class="btn btn-outline btn-sm">Review</a></td>
+                        </tr>`;
+                    }
+                }
+                document.getElementById('pendingNotesBody').innerHTML = notesHtml;
+
+                // Pending Tasks Count
+                const totalPendingTasks = pendingSubmissionsCount + notesSnap.size;
+                document.getElementById('pendingTasksCount').textContent = totalPendingTasks;
+
+                // Today's Schedule
+                const today = new Date().toLocaleDateString('en-US', { weekday: 'long' });
+                if (teacherClass) {
+                    const timetableSnap = await db.collection('timetables')
+                        .where('classId', '==', teacherClass)
+                        .where('day', '==', today)
+                        .orderBy('startTime')
+                        .get();
+                    let scheduleHtml = '<ul style="list-style:none;padding:0;">';
+                    if (timetableSnap.empty) {
+                        scheduleHtml += '<li class="empty-state-text">No classes scheduled for today</li>';
+                    }
+                    timetableSnap.forEach(doc => {
+                        const p = doc.data();
+                        scheduleHtml += `<li style="display:flex;align-items:center;gap:1rem;padding:0.5rem 0;border-bottom:1px solid var(--border);">
+                            <span style="min-width:80px;color:var(--accent);font-weight:600;">${p.startTime || '—'} - ${p.endTime || '—'}</span>
+                            <span><strong>${escapeHtml(p.subject || '—')}</strong> ${p.topic ? `(${escapeHtml(p.topic)})` : ''}</span>
+                        </li>`;
+                    });
+                    scheduleHtml += '</ul>';
+                    document.getElementById('todaySchedule').innerHTML = scheduleHtml;
+                } else {
+                    document.getElementById('todaySchedule').innerHTML = '<p class="empty-state-text">No class assigned</p>';
+                }
+
+                // Today's Attendance
+                const todayStr = new Date().toISOString().split('T')[0];
+                if (teacherClass) {
+                    const attSnap = await db.collection('attendance')
+                        .where('classId', '==', teacherClass)
+                        .where('date', '==', todayStr)
+                        .get();
+                    let present = 0;
+                    attSnap.forEach(doc => { if (doc.data().status === 'present') present++; });
+                    const attRate = attSnap.size ? ((present / attSnap.size) * 100).toFixed(1) : 0;
+                    document.getElementById('attendanceToday').textContent = attRate + '%';
+                } else {
+                    document.getElementById('attendanceToday').textContent = '0%';
+                }
+
+                // Performance Chart
+                const scores = [];
+                for (const doc of gradedSubs.slice(0, 10)) {
+                    const s = doc.data();
+                    let total = 100;
+                    scores.push(total > 0 ? (s.score / total) * 100 : 0);
+                }
+                const ctx = document.getElementById('performanceChart')?.getContext('2d');
+                if (ctx) {
+                    if (performanceChart) performanceChart.destroy();
+                    performanceChart = new Chart(ctx, {
+                        type: 'line',
+                        data: {
+                            labels: scores.map((_, i) => `#${i + 1}`),
+                            datasets: [{
+                                label: 'Score (%)',
+                                data: scores,
+                                borderColor: '#C8963E',
+                                backgroundColor: 'rgba(200,150,62,0.1)',
+                                fill: true,
+                                tension: 0.4
+                            }]
+                        },
+                        options: {
+                            responsive: true,
+                            maintainAspectRatio: true,
+                            plugins: { legend: { position: 'top', labels: { color: '#94a3b8' } } },
+                            scales: {
+                                y: {
+                                    min: 0, max: 100,
+                                    title: { display: true, text: 'Score (%)', color: '#94a3b8' },
+                                    grid: { color: '#1e293b' }
+                                },
+                                x: { grid: { display: false } }
+                            }
+                        }
+                    });
+                }
+
+            } catch (e) {
+                console.error('Error loading dashboard:', e);
+            }
+        }
+    </script>
+</body>
+</html>
