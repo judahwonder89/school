@@ -12,8 +12,7 @@
     <style>
         * { margin: 0; padding: 0; box-sizing: border-box; }
         :root[data-theme="light"] {
-            --bg-primary: #f0f5fa; --bg-sidebar: rgba(255,255,255,0.75);
-            --text-primary: #0b1e33; --text-secondary: #2c3e50;
+            --bg-primary: #f0f5fa; --text-primary: #0b1e33; --text-secondary: #2c3e50;
             --accent: #0A2540; --accent-glow: #C8963E;
             --border: rgba(0,0,0,0.08); --card-bg: rgba(255,255,255,0.7);
             --hover-bg: rgba(255,255,255,0.9); --shadow: 0 8px 20px -5px rgba(0,0,0,0.08);
@@ -24,8 +23,7 @@
             --info-bg: rgba(10,37,64,0.1); --info-text: #0A2540;
         }
         :root[data-theme="dark"] {
-            --bg-primary: #0a0f1e; --bg-sidebar: rgba(15,23,42,0.8);
-            --text-primary: #f0f4fa; --text-secondary: #a0b3d9;
+            --bg-primary: #0a0f1e; --text-primary: #f0f4fa; --text-secondary: #a0b3d9;
             --accent: #C8963E; --accent-glow: #D4AF37;
             --border: rgba(255,255,255,0.06); --card-bg: rgba(15,23,42,0.6);
             --hover-bg: rgba(30,41,59,0.8); --shadow: 0 8px 20px -5px rgba(0,0,0,0.4);
@@ -248,8 +246,8 @@
             </div>
             <div class="table-responsive">
                 <table>
-                    <thead><tr><th>Student</th><th>Student ID</th><th>Email</th><th>Parent PIN</th><th>Prefect</th><th>Status</th><th>Actions</th></tr></thead>
-                    <tbody id="rosterBody"><tr><td colspan="7">Loading...</td></tr></tbody>
+                    <thead><tr><th>Student</th><th>Student ID</th><th>Email</th><th>Prefect</th><th>Status</th><th>Actions</th></tr></thead>
+                    <tbody id="rosterBody"><tr><td colspan="6">Loading...</td></tr></tbody>
                 </table>
             </div>
         </div>
@@ -340,18 +338,6 @@
     </div>
 </div>
 
-<!-- Parent PIN Modal -->
-<div class="modal-overlay" id="pinModal">
-    <div class="modal-content">
-        <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:1rem;">
-            <h3>Set Parent Access PIN</h3><i class="fas fa-times" style="cursor:pointer;" onclick="closePinModal()"></i>
-        </div>
-        <div class="form-group"><label>Student</label><input type="text" id="pinStudentName" class="form-control" readonly></div>
-        <div class="form-group"><label>New 4-digit PIN</label><input type="text" id="pinValue" class="form-control" maxlength="4" inputmode="numeric" pattern="\d{4}"></div>
-        <button class="btn btn-primary" id="savePinBtn">Save PIN</button>
-    </div>
-</div>
-
 <script>
     const firebaseConfig = {
         apiKey: "AIzaSyADXHEiaSQ146QsGsaOCElARtpwrLE8svs",
@@ -366,7 +352,6 @@
     const auth = firebase.auth();
     const db = firebase.firestore();
 
-    // State
     let currentUser = null, userData = null, teacherClass = null;
     let allStudents = [], pendingStudents = [];
 
@@ -431,7 +416,7 @@
     function renderRoster() {
         document.getElementById('rosterClassName').textContent = teacherClass?.toUpperCase() || 'Not Assigned';
         const tbody = document.getElementById('rosterBody');
-        if (!allStudents.length) { tbody.innerHTML = '<tr><td colspan="7">No students in this class.</td></tr>'; return; }
+        if (!allStudents.length) { tbody.innerHTML = '<tr><td colspan="6">No students in this class.</td></tr>'; return; }
         tbody.innerHTML = allStudents.map(s => {
             const name = `${s.firstName||''} ${s.surname||''}`.trim() || 'Unknown';
             const status = s.suspended ? 'suspended' : 'active';
@@ -439,13 +424,11 @@
                 <td><strong>${escapeHtml(name)}</strong></td>
                 <td style="font-family:monospace;">${s.userId || '—'}</td>
                 <td>${escapeHtml(s.email||'—')}</td>
-                <td>${s.parentPIN ? '••••' : '<span class="badge badge-pending">Not set</span>'}</td>
                 <td>${s.prefect || '—'}</td>
                 <td><span class="badge badge-${status}">${status}</span></td>
                 <td>
                     <div class="btn-group">
                         <button class="btn btn-outline btn-sm" onclick="editStudent('${s.id}')"><i class="fas fa-edit"></i></button>
-                        <button class="btn btn-outline btn-sm" onclick="openPinModal('${s.id}')"><i class="fas fa-key"></i> PIN</button>
                         <button class="btn ${s.suspended?'btn-outline':'btn-outline'} btn-sm" onclick="toggleSuspend('${s.id}',${!!s.suspended})"><i class="fas ${s.suspended?'fa-play':'fa-pause'}"></i></button>
                     </div>
                 </td>
@@ -489,26 +472,6 @@
         loadAllStudents();
     };
 
-    // Parent PIN
-    window.openPinModal = (id) => {
-        const s = allStudents.find(x => x.id === id);
-        if (!s) return;
-        document.getElementById('pinStudentName').value = `${s.firstName||''} ${s.surname||''}`.trim();
-        document.getElementById('pinValue').value = '';
-        document.getElementById('pinModal').dataset.studentId = id;
-        document.getElementById('pinModal').classList.add('active');
-    };
-    window.closePinModal = () => document.getElementById('pinModal').classList.remove('active');
-    document.getElementById('savePinBtn').addEventListener('click', async () => {
-        const id = document.getElementById('pinModal').dataset.studentId;
-        const pin = document.getElementById('pinValue').value;
-        if (!/^\d{4}$/.test(pin)) return alert('PIN must be exactly 4 digits.');
-        await db.collection('users').doc(id).update({ parentPIN: pin });
-        logAudit('PARENT_PIN_SET', `Student ${id}`);
-        closePinModal();
-        loadAllStudents();
-    });
-
     // Approvals
     function updateApprovalCount() {
         document.getElementById('pendingApprovalCount').textContent = `${pendingStudents.length} pending`;
@@ -538,9 +501,9 @@
         updateApprovalCount(); renderApprovals();
     }
 
-    // ID generation
+    // ID generation: JWSST + first3 of firstName + year + 5-digit serial
     async function generateUserId(firstName, year) {
-        const prefix = firstName.substring(0,3).toUpperCase();
+        const prefix = 'JWSST' + firstName.substring(0,3).toUpperCase();
         const counterRef = db.collection('counters').doc(`userId_${year}_${prefix}`);
         const newNum = await db.runTransaction(async (transaction) => {
             const doc = await transaction.get(counterRef);
@@ -549,7 +512,7 @@
             transaction.set(counterRef, { value: next }, { merge: true });
             return next;
         });
-        return `JWS${prefix}${year}${String(newNum).padStart(4,'0')}`;
+        return `${prefix}${year}${String(newNum).padStart(5,'0')}`;
     }
 
     window.approveStudent = async (id) => {
