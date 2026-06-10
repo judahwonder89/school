@@ -61,7 +61,6 @@
             100% { transform: translate(40px,30px) scale(1.15); }
         }
 
-        /* Sidebar */
         .sidebar {
             width: 260px; background: var(--bg-sidebar); backdrop-filter: blur(16px);
             border-right: 1px solid var(--border); padding: 1.5rem 0.8rem;
@@ -85,7 +84,6 @@
         .sidebar .toggle-btn { margin-top: auto; display: flex; justify-content: flex-end; padding: 0.8rem 0.5rem; cursor: pointer; color: var(--text-secondary); font-size: 1.1rem; }
         .sidebar .toggle-btn:hover { color: var(--accent); }
 
-        /* Main Content */
         .main-content { flex: 1; margin-left: 260px; padding: 1.5rem; transition: margin-left 0.3s; max-width: calc(100vw - 260px); position: relative; z-index: 5; }
         .main-content.expanded { margin-left: 85px; max-width: calc(100vw - 85px); }
 
@@ -104,7 +102,6 @@
         .dropdown-item { padding: 0.6rem 1rem; color: var(--text-primary); border-radius: 0.8rem; display: flex; align-items: center; gap: 0.6rem; font-size: 0.85rem; cursor: pointer; }
         .dropdown-item:hover { background: var(--hover-bg); color: var(--accent); }
 
-        /* Tabs */
         .tab-nav { display: flex; gap: 0.5rem; margin-bottom: 1.5rem; overflow-x: auto; background: var(--card-bg); border: 1px solid var(--border); border-radius: 1.5rem; padding: 0.4rem; box-shadow: var(--shadow); }
         .tab-btn { padding: 0.7rem 1.2rem; border-radius: 1.25rem; border: none; background: transparent; color: var(--text-secondary); cursor: pointer; font-weight: 600; font-size: 0.8rem; white-space: nowrap; display: flex; align-items: center; gap: 0.4rem; font-family: inherit; }
         .tab-btn:hover { background: var(--hover-bg); color: var(--accent); }
@@ -119,7 +116,6 @@
         .stat-card { background: var(--card-bg); border: 1px solid var(--border); border-radius: 1.2rem; padding: 1rem; text-align: center; }
         .stat-card .val { font-size: 1.8rem; font-weight: 700; color: var(--accent); }
         .stat-card .lbl { font-size: 0.7rem; color: var(--text-secondary); }
-
         .table-responsive { overflow-x: auto; }
         table { width: 100%; border-collapse: collapse; }
         th, td { padding: 0.6rem 0.5rem; border-bottom: 1px solid var(--border); font-size: 0.8rem; text-align: left; }
@@ -136,16 +132,18 @@
         .btn-success { background: var(--success-text); color: white; }
         .btn-danger { background: var(--danger-text); color: white; }
         .btn-sm { padding: 0.25rem 0.7rem; font-size: 0.7rem; }
+        .grid-2cols { display: grid; grid-template-columns: repeat(auto-fill, minmax(280px, 1fr)); gap: 1rem; }
+        .item-card { background: var(--hover-bg); border-radius: 1rem; padding: 1rem; }
 
-        .modal-overlay { position: fixed; top:0; left:0; width:100%; height:100%; background:rgba(0,0,0,0.7); backdrop-filter:blur(5px); display:none; align-items:center; justify-content:center; z-index:2000; }
-        .modal-overlay.active { display:flex; }
-        .modal-content { background:var(--card-bg); border:1px solid var(--border); border-radius:1.5rem; padding:1.5rem; max-width:600px; width:90%; max-height:80vh; overflow-y:auto; }
+        .modal-overlay { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.7); backdrop-filter: blur(5px); display: none; align-items: center; justify-content: center; z-index: 2000; }
+        .modal-overlay.active { display: flex; }
+        .modal-content { background: var(--card-bg); border: 1px solid var(--border); border-radius: 1.5rem; padding: 1.5rem; max-width: 600px; width: 90%; max-height: 80vh; overflow-y: auto; }
 
         @media (max-width:768px) {
-            .sidebar { width:85px; }
-            .sidebar .logo-area h2, .sidebar .nav-item span { display:none; }
-            .main-content { margin-left:85px; max-width:calc(100vw - 85px); padding:1rem; }
-            .tab-btn { font-size:0.7rem; padding:0.5rem 0.8rem; }
+            .sidebar { width: 85px; }
+            .sidebar .logo-area h2, .sidebar .nav-item span { display: none; }
+            .main-content { margin-left: 85px; max-width: calc(100vw - 85px); padding: 1rem; }
+            .tab-btn { font-size: 0.7rem; padding: 0.5rem 0.8rem; }
         }
     </style>
 </head>
@@ -232,11 +230,15 @@
         </div>
     </div>
 
-    <!-- 4. Lesson Notes Review -->
+    <!-- 4. Lesson Notes & Syllabi -->
     <div class="tab-content" id="tab-lessonnotes">
         <div class="card">
             <div class="card-header"><h3><i class="fas fa-book-open"></i> Pending Syllabi & Lesson Notes</h3></div>
-            <div id="lessonNotesPendingList"><p style="text-align:center;">Loading...</p></div>
+            <h4 style="margin:0.5rem 0;">📚 Syllabi</h4>
+            <div id="syllabusGrid" class="grid-2cols"></div>
+            <hr style="border-color:var(--border); margin:1rem 0;">
+            <h4 style="margin:0.5rem 0;">📝 Lesson Notes</h4>
+            <div id="lessonNotesGrid" class="grid-2cols"></div>
         </div>
     </div>
 
@@ -264,7 +266,7 @@
         </div>
     </div>
 
-    <!-- 8. Timetable Approvals -->
+    <!-- 8. Timetable Proposals -->
     <div class="tab-content" id="tab-timetables">
         <div class="card">
             <div class="card-header"><h3><i class="fas fa-calendar-alt"></i> Timetable Proposals</h3></div>
@@ -278,7 +280,7 @@
             <div class="card-header"><h3><i class="fas fa-chart-line"></i> Attendance Overview (Last 30 Days)</h3></div>
             <canvas id="attendanceChart" style="max-height:300px;"></canvas>
             <div class="table-responsive" style="margin-top:1rem;">
-                <table id="attOverviewTable">
+                <table>
                     <thead><tr><th>Date</th><th>Present</th><th>Absent</th><th>Rate</th></tr></thead>
                     <tbody id="attOverviewBody"></tbody>
                 </table>
@@ -349,7 +351,6 @@
             btn.classList.add('active');
             document.querySelectorAll('.tab-content').forEach(t => t.classList.remove('active'));
             document.getElementById('tab-' + btn.dataset.tab).classList.add('active');
-            // Load data for active tab
             const tab = btn.dataset.tab;
             if (tab === 'users') loadRegistrations();
             else if (tab === 'actions') loadStudentActions();
@@ -361,7 +362,6 @@
             else if (tab === 'timetables') loadTimetables();
             else if (tab === 'attendanceoverview') loadAttendanceOverview();
         });
-        // Load default tab
         loadRegistrations();
     });
 
@@ -377,14 +377,10 @@
             timestamp: firebase.firestore.FieldValue.serverTimestamp()
         }).catch(()=>{});
     }
-
-    // Helper to handle index errors
     function handleIndexError(error) {
         if (error.code === 'failed-precondition' && error.message.includes('index')) {
             const match = error.message.match(/https:\/\/console\.firebase\.google\.com[^\s]*/);
-            if (match) {
-                return `<a href="${match[0]}" target="_blank" style="color:var(--accent);">Create required index</a>`;
-            }
+            if (match) return `<a href="${match[0]}" target="_blank" style="color:var(--accent);">Create required index</a>`;
         }
         return error.message;
     }
@@ -392,16 +388,18 @@
     // ========== 1. REGISTRATIONS ==========
     async function loadRegistrations() {
         const tbody = document.getElementById('regPendingBody');
-        tbody.innerHTML = '<tr><td colspan="5" style="text-align:center;">Loading...</td></tr>';
+        tbody.innerHTML = '<tr><td colspan="5">Loading...</td></tr>';
         try {
             const snap = await db.collection('users').where('approved','==',false).get();
-            if (snap.empty) {
-                tbody.innerHTML = '<tr><td colspan="5" style="text-align:center;">No pending users.</td></tr>';
-                return;
-            }
+            if (snap.empty) { tbody.innerHTML = '<tr><td colspan="5">No pending users.</td></tr>'; return; }
+            let total=0, teachers=0, students=0, staff=0;
             tbody.innerHTML = '';
             snap.forEach(doc => {
                 const u = doc.data();
+                total++;
+                if (u.role==='teacher') teachers++;
+                else if (u.role==='student') students++;
+                else if (u.role==='nonTeachingStaff') staff++;
                 const name = `${u.firstName||''} ${u.surname||''}`.trim() || 'Unknown';
                 const avatar = u.photoURL ? `<img src="${u.photoURL}" style="width:30px;height:30px;border-radius:50%;object-fit:cover;">` : (u.firstName?.[0]||'?');
                 const row = `<tr>
@@ -410,37 +408,31 @@
                     <td>${u.email||''}</td>
                     <td>${avatar}</td>
                     <td>
-                        <button class="btn btn-success btn-sm" onclick="approveUser('${doc.id}')"><i class="fas fa-check"></i> Approve</button>
-                        <button class="btn btn-danger btn-sm" onclick="rejectUser('${doc.id}')"><i class="fas fa-times"></i> Reject</button>
+                        <button class="btn btn-success btn-sm" onclick="approveUser('${doc.id}')">Approve</button>
+                        <button class="btn btn-danger btn-sm" onclick="rejectUser('${doc.id}')">Reject</button>
                     </td>
                 </tr>`;
                 tbody.innerHTML += row;
             });
-        } catch(e) { tbody.innerHTML = `<tr><td colspan="5" style="text-align:center;">Error: ${handleIndexError(e)}</td></tr>`; }
+            document.getElementById('regPendingTotal').textContent = total;
+            document.getElementById('regPendingTeachers').textContent = teachers;
+            document.getElementById('regPendingStudents').textContent = students;
+            document.getElementById('regPendingStaff').textContent = staff;
+        } catch(e) { tbody.innerHTML = `<tr><td colspan="5">Error: ${handleIndexError(e)}</td></tr>`; }
     }
-    window.approveUser = async (id) => {
-        if (!confirm('Approve this user?')) return;
-        await db.collection('users').doc(id).update({ approved: true });
-        logAudit('APPROVED_USER', `Approved user ${id}`);
-        loadRegistrations();
-    };
-    window.rejectUser = async (id) => {
-        if (!confirm('Reject and delete this user?')) return;
-        await db.collection('users').doc(id).delete();
-        logAudit('REJECTED_USER', `Rejected user ${id}`);
-        loadRegistrations();
-    };
+    window.approveUser = async (id) => { if (!confirm('Approve?')) return; await db.collection('users').doc(id).update({ approved: true }); logAudit('APPROVED_USER', id); loadRegistrations(); };
+    window.rejectUser = async (id) => { if (!confirm('Reject and delete?')) return; await db.collection('users').doc(id).delete(); logAudit('REJECTED_USER', id); loadRegistrations(); };
 
-    // ========== 2. STUDENT ACTIONS (from teacher hub) ==========
+    // ========== 2. STUDENT ACTIONS ==========
     async function loadStudentActions() {
         const container = document.getElementById('actionsPendingList');
-        container.innerHTML = '<p style="text-align:center;">Loading...</p>';
+        container.innerHTML = '<p>Loading...</p>';
         try {
             const snap = await db.collection('pendingActions').where('status','==','pending').orderBy('requestedAt','desc').get();
-            if (snap.empty) { container.innerHTML = '<p style="text-align:center;">No pending student actions.</p>'; return; }
+            if (snap.empty) { container.innerHTML = '<p>No pending student actions.</p>'; return; }
             container.innerHTML = snap.docs.map(doc => {
                 const a = doc.data();
-                return `<div style="background:var(--hover-bg);border-radius:1rem;padding:1rem;margin-bottom:0.5rem;">
+                return `<div class="item-card">
                     <strong>${escapeHtml(a.actionType)}</strong> for ${escapeHtml(a.studentName)} (${escapeHtml(a.classId)})<br>
                     <small>Requested by ${escapeHtml(a.teacherName)} on ${a.requestedAt?.toDate().toLocaleString()||''}</small>
                     <div style="margin-top:0.5rem;">
@@ -449,10 +441,9 @@
                     </div>
                 </div>`;
             }).join('');
-        } catch(e) { container.innerHTML = `<p style="text-align:center;">Error: ${handleIndexError(e)}</p>`; }
+        } catch(e) { container.innerHTML = `<p>Error: ${handleIndexError(e)}</p>`; }
     }
     window.approveAction = async (docId) => {
-        // Apply the actual change to the student (simplified: suspend/activate/prefect/delete)
         const docRef = db.collection('pendingActions').doc(docId);
         const doc = await docRef.get();
         const data = doc.data();
@@ -480,26 +471,25 @@
     // ========== 3. ATTENDANCE ACKNOWLEDGEMENTS ==========
     async function loadAttendanceAck() {
         const container = document.getElementById('attendanceAckList');
-        container.innerHTML = '<p style="text-align:center;">Loading...</p>';
+        container.innerHTML = '<p>Loading...</p>';
         try {
             const snap = await db.collection('attendance').where('status','==','pending_acknowledgement').get();
-            if (snap.empty) { container.innerHTML = '<p style="text-align:center;">No pending attendance records.</p>'; return; }
-            // Group by date+class+session
+            if (snap.empty) { container.innerHTML = '<p>No pending attendance records.</p>'; return; }
             const groups = {};
             snap.forEach(doc => {
                 const d = doc.data();
                 const key = `${d.date}_${d.classId}_${d.session}`;
-                if (!groups[key]) groups[key] = { records: [], teacherName: d.teacherName, date: d.date, classId: d.classId, session: d.session };
-                groups[key].records.push(doc);
+                if (!groups[key]) groups[key] = { teacherName: d.teacherName, date: d.date, classId: d.classId, session: d.session, count: 0 };
+                groups[key].count++;
             });
             container.innerHTML = Object.entries(groups).map(([key, group]) => `
-                <div style="background:var(--hover-bg);border-radius:1rem;padding:1rem;margin-bottom:0.5rem;">
+                <div class="item-card">
                     <strong>${group.classId}</strong> | ${group.date} | ${group.session}<br>
-                    Teacher: ${group.teacherName} | Records: ${group.records.length}
+                    Teacher: ${group.teacherName} | Records: ${group.count}
                     <button class="btn btn-success btn-sm" onclick="acknowledgeAttendance('${key}')">Acknowledge</button>
                 </div>
             `).join('');
-        } catch(e) { container.innerHTML = `<p style="text-align:center;">Error: ${handleIndexError(e)}</p>`; }
+        } catch(e) { container.innerHTML = `<p>Error: ${handleIndexError(e)}</p>`; }
     }
     window.acknowledgeAttendance = async (key) => {
         const snap = await db.collection('attendance').where('status','==','pending_acknowledgement').get();
@@ -515,38 +505,53 @@
         loadAttendanceAck();
     };
 
-    // ========== 4. LESSON NOTES ==========
+    // ========== 4. LESSON NOTES & SYLLABI ==========
     async function loadLessonNotes() {
-        const container = document.getElementById('lessonNotesPendingList');
-        container.innerHTML = '<p style="text-align:center;">Loading...</p>';
+        const syllabusGrid = document.getElementById('syllabusGrid');
+        const notesGrid = document.getElementById('lessonNotesGrid');
+        syllabusGrid.innerHTML = '<p>Loading...</p>'; notesGrid.innerHTML = '<p>Loading...</p>';
         try {
             const [syllabusSnap, notesSnap] = await Promise.all([
                 db.collection('syllabus').where('status','==','pending').orderBy('submittedAt','desc').get(),
                 db.collection('lessonNotes').where('status','==','pending').orderBy('submittedAt','desc').get()
             ]);
-            if (syllabusSnap.empty && notesSnap.empty) {
-                container.innerHTML = '<p style="text-align:center;">No pending syllabi or lesson notes.</p>'; return;
+            if (syllabusSnap.empty) syllabusGrid.innerHTML = '<p>No pending syllabi.</p>';
+            else {
+                syllabusGrid.innerHTML = syllabusSnap.docs.map(doc => {
+                    const s = doc.data();
+                    return `<div class="item-card">
+                        <strong>Subject:</strong> ${escapeHtml(s.subject)}<br>
+                        <strong>Class:</strong> ${escapeHtml(s.classId)}<br>
+                        <strong>Weeks:</strong> ${s.weeks?.length || 0}<br>
+                        <strong>Teacher:</strong> ${escapeHtml(s.teacherName || s.teacherId)}<br>
+                        <small>${s.submittedAt?.toDate().toLocaleString()||''}</small>
+                        <div style="margin-top:0.5rem;">
+                            <button class="btn btn-success btn-sm" onclick="approveSyllabus('${doc.id}')">Approve</button>
+                            <button class="btn btn-danger btn-sm" onclick="rejectSyllabus('${doc.id}')">Reject</button>
+                        </div>
+                    </div>`;
+                }).join('');
             }
-            container.innerHTML = '';
-            syllabusSnap.forEach(doc => {
-                const s = doc.data();
-                container.innerHTML += `<div style="background:var(--hover-bg);border-radius:1rem;padding:1rem;margin-bottom:0.5rem;">
-                    <strong>Syllabus:</strong> ${escapeHtml(s.subject)} (${s.classId})<br>
-                    <small>Teacher: ${s.teacherId}</small>
-                    <div><button class="btn btn-success btn-sm" onclick="approveSyllabus('${doc.id}')">Approve</button>
-                    <button class="btn btn-danger btn-sm" onclick="rejectSyllabus('${doc.id}')">Reject</button></div>
-                </div>`;
-            });
-            notesSnap.forEach(doc => {
-                const n = doc.data();
-                container.innerHTML += `<div style="background:var(--hover-bg);border-radius:1rem;padding:1rem;margin-bottom:0.5rem;">
-                    <strong>Lesson Note:</strong> ${escapeHtml(n.subject)} Week ${n.week} (${n.topic})<br>
-                    <small>Teacher: ${n.teacherId}</small>
-                    <div><button class="btn btn-success btn-sm" onclick="approveNote('${doc.id}')">Approve</button>
-                    <button class="btn btn-danger btn-sm" onclick="rejectNote('${doc.id}')">Reject</button></div>
-                </div>`;
-            });
-        } catch(e) { container.innerHTML = `<p style="text-align:center;">Error: ${handleIndexError(e)}</p>`; }
+            if (notesSnap.empty) notesGrid.innerHTML = '<p>No pending lesson notes.</p>';
+            else {
+                notesGrid.innerHTML = notesSnap.docs.map(doc => {
+                    const n = doc.data();
+                    return `<div class="item-card">
+                        <strong>Subject:</strong> ${escapeHtml(n.subject)}<br>
+                        <strong>Week:</strong> ${n.week} — ${escapeHtml(n.topic)}<br>
+                        <strong>Teacher:</strong> ${escapeHtml(n.teacherName || n.teacherId)}<br>
+                        <small>${n.submittedAt?.toDate().toLocaleString()||''}</small>
+                        <div style="margin-top:0.5rem;">
+                            <button class="btn btn-success btn-sm" onclick="approveNote('${doc.id}')">Approve</button>
+                            <button class="btn btn-danger btn-sm" onclick="rejectNote('${doc.id}')">Reject</button>
+                        </div>
+                    </div>`;
+                }).join('');
+            }
+        } catch(e) {
+            syllabusGrid.innerHTML = `<p>Error: ${handleIndexError(e)}</p>`;
+            notesGrid.innerHTML = `<p>Error: ${handleIndexError(e)}</p>`;
+        }
     }
     window.approveSyllabus = async (id) => { await db.collection('syllabus').doc(id).update({ status:'approved' }); logAudit('SYLLABUS_APPROVED', id); loadLessonNotes(); };
     window.rejectSyllabus = async (id) => { await db.collection('syllabus').doc(id).update({ status:'rejected' }); logAudit('SYLLABUS_REJECTED', id); loadLessonNotes(); };
@@ -556,44 +561,40 @@
     // ========== 5. DAILY REPORTS ==========
     async function loadDailyReports() {
         const container = document.getElementById('dailyReportsList');
-        container.innerHTML = '<p style="text-align:center;">Loading...</p>';
+        container.innerHTML = '<p>Loading...</p>';
         try {
             const snap = await db.collection('dailyReports').orderBy('date','desc').limit(20).get();
-            if (snap.empty) { container.innerHTML = '<p style="text-align:center;">No daily reports.</p>'; return; }
+            if (snap.empty) { container.innerHTML = '<p>No daily reports.</p>'; return; }
             container.innerHTML = snap.docs.map(doc => {
                 const r = doc.data();
-                const statusBadge = r.status === 'acknowledged' ? 'badge-success' : 'badge-warning';
-                return `<div style="background:var(--hover-bg);border-radius:1rem;padding:1rem;margin-bottom:0.5rem;">
+                const statusBadge = r.status==='acknowledged' ? 'badge-success' : 'badge-warning';
+                return `<div class="item-card">
                     <strong>${escapeHtml(r.teacherName)}</strong> (${r.teacherClass}) — ${r.date} <span class="badge ${statusBadge}">${r.status}</span><br>
                     <div style="white-space:pre-wrap;">${escapeHtml(r.content)}</div>
-                    ${r.status !== 'acknowledged' ? `<button class="btn btn-success btn-sm" onclick="ackDailyReport('${doc.id}')">Acknowledge</button>` : ''}
+                    ${r.status!=='acknowledged' ? `<button class="btn btn-success btn-sm" onclick="ackDailyReport('${doc.id}')">Acknowledge</button>` : ''}
                 </div>`;
             }).join('');
-        } catch(e) { container.innerHTML = `<p style="text-align:center;">Error: ${handleIndexError(e)}</p>`; }
+        } catch(e) { container.innerHTML = `<p>Error: ${handleIndexError(e)}</p>`; }
     }
-    window.ackDailyReport = async (id) => {
-        await db.collection('dailyReports').doc(id).update({ status: 'acknowledged', acknowledgedAt: firebase.firestore.FieldValue.serverTimestamp() });
-        logAudit('DAILY_REPORT_ACK', id);
-        loadDailyReports();
-    };
+    window.ackDailyReport = async (id) => { await db.collection('dailyReports').doc(id).update({ status:'acknowledged', acknowledgedAt: firebase.firestore.FieldValue.serverTimestamp() }); logAudit('DAILY_REPORT_ACK', id); loadDailyReports(); };
 
     // ========== 6. PERMISSION REQUESTS ==========
     async function loadPermissions() {
         const container = document.getElementById('permissionsList');
-        container.innerHTML = '<p style="text-align:center;">Loading...</p>';
+        container.innerHTML = '<p>Loading...</p>';
         try {
             const snap = await db.collection('permissions').orderBy('createdAt','desc').limit(20).get();
-            if (snap.empty) { container.innerHTML = '<p style="text-align:center;">No permission requests.</p>'; return; }
+            if (snap.empty) { container.innerHTML = '<p>No permission requests.</p>'; return; }
             container.innerHTML = snap.docs.map(doc => {
                 const p = doc.data();
-                const statusBadge = p.status === 'approved' ? 'badge-success' : p.status === 'rejected' ? 'badge-danger' : 'badge-warning';
-                return `<div style="background:var(--hover-bg);border-radius:1rem;padding:1rem;margin-bottom:0.5rem;">
-                    <strong>${escapeHtml(p.userName)}</strong> — ${p.date} | ${p.requestType === 'full_day' ? 'Full Day' : `${p.startTime}-${p.endTime}`} <span class="badge ${statusBadge}">${p.status}</span><br>
+                const statusBadge = p.status==='approved' ? 'badge-success' : p.status==='rejected' ? 'badge-danger' : 'badge-warning';
+                return `<div class="item-card">
+                    <strong>${escapeHtml(p.userName)}</strong> — ${p.date} | ${p.requestType==='full_day'?'Full Day':`${p.startTime}-${p.endTime}`} <span class="badge ${statusBadge}">${p.status}</span><br>
                     Reason: ${escapeHtml(p.reason)}
-                    ${p.status === 'pending' ? `<div><button class="btn btn-success btn-sm" onclick="approvePermission('${doc.id}')">Approve</button> <button class="btn btn-danger btn-sm" onclick="rejectPermission('${doc.id}')">Reject</button></div>` : ''}
+                    ${p.status==='pending' ? `<div><button class="btn btn-success btn-sm" onclick="approvePermission('${doc.id}')">Approve</button> <button class="btn btn-danger btn-sm" onclick="rejectPermission('${doc.id}')">Reject</button></div>` : ''}
                 </div>`;
             }).join('');
-        } catch(e) { container.innerHTML = `<p style="text-align:center;">Error: ${handleIndexError(e)}</p>`; }
+        } catch(e) { container.innerHTML = `<p>Error: ${handleIndexError(e)}</p>`; }
     }
     window.approvePermission = async (id) => { await db.collection('permissions').doc(id).update({ status:'approved' }); logAudit('PERMISSION_APPROVED', id); loadPermissions(); };
     window.rejectPermission = async (id) => { await db.collection('permissions').doc(id).update({ status:'rejected' }); logAudit('PERMISSION_REJECTED', id); loadPermissions(); };
@@ -601,44 +602,44 @@
     // ========== 7. REPORT CARDS ==========
     async function loadReportCards() {
         const container = document.getElementById('reportCardsList');
-        container.innerHTML = '<p style="text-align:center;">Loading...</p>';
+        container.innerHTML = '<p>Loading...</p>';
         try {
             const snap = await db.collection('reportCards').orderBy('updatedAt','desc').limit(10).get();
-            if (snap.empty) { container.innerHTML = '<p style="text-align:center;">No report cards.</p>'; return; }
+            if (snap.empty) { container.innerHTML = '<p>No report cards.</p>'; return; }
             container.innerHTML = snap.docs.map(doc => {
                 const rc = doc.data();
-                const statusBadge = rc.status === 'published' ? 'badge-success' : rc.status === 'approved' ? 'badge-info' : 'badge-warning';
-                return `<div style="background:var(--hover-bg);border-radius:1rem;padding:1rem;margin-bottom:0.5rem;">
+                const statusBadge = rc.status==='published' ? 'badge-success' : rc.status==='approved' ? 'badge-info' : 'badge-warning';
+                return `<div class="item-card">
                     <strong>${escapeHtml(rc.session)} ${rc.term} - ${escapeHtml(rc.className)}</strong> by ${escapeHtml(rc.teacherName)}<br>
-                    Students: ${rc.studentResults?.length || 0} | Avg: ${rc.classAverage || '?'}% <span class="badge ${statusBadge}">${rc.status}</span>
+                    Students: ${rc.studentResults?.length||0} | Avg: ${rc.classAverage||'?'}% <span class="badge ${statusBadge}">${rc.status}</span>
                     <div>
-                        ${rc.status === 'pending_approval' ? `<button class="btn btn-success btn-sm" onclick="approveReportCard('${doc.id}')">Approve</button>` : ''}
-                        ${rc.status === 'approved' ? `<button class="btn btn-success btn-sm" onclick="publishReportCard('${doc.id}')">Publish</button>` : ''}
+                        ${rc.status==='pending_approval' ? `<button class="btn btn-success btn-sm" onclick="approveReportCard('${doc.id}')">Approve</button>` : ''}
+                        ${rc.status==='approved' ? `<button class="btn btn-success btn-sm" onclick="publishReportCard('${doc.id}')">Publish</button>` : ''}
                     </div>
                 </div>`;
             }).join('');
-        } catch(e) { container.innerHTML = `<p style="text-align:center;">Error: ${handleIndexError(e)}</p>`; }
+        } catch(e) { container.innerHTML = `<p>Error: ${handleIndexError(e)}</p>`; }
     }
     window.approveReportCard = async (id) => { await db.collection('reportCards').doc(id).update({ status:'approved' }); logAudit('REPORT_CARD_APPROVED', id); loadReportCards(); };
     window.publishReportCard = async (id) => { await db.collection('reportCards').doc(id).update({ status:'published' }); logAudit('REPORT_CARD_PUBLISHED', id); loadReportCards(); };
 
-    // ========== 8. TIMETABLES ==========
+    // ========== 8. TIMETABLE PROPOSALS ==========
     async function loadTimetables() {
         const container = document.getElementById('timetableList');
-        container.innerHTML = '<p style="text-align:center;">Loading...</p>';
+        container.innerHTML = '<p>Loading...</p>';
         try {
             const snap = await db.collection('timetableProposals').where('status','==','pending').orderBy('submittedAt','desc').limit(10).get();
-            if (snap.empty) { container.innerHTML = '<p style="text-align:center;">No pending timetables.</p>'; return; }
+            if (snap.empty) { container.innerHTML = '<p>No pending timetables.</p>'; return; }
             container.innerHTML = snap.docs.map(doc => {
                 const t = doc.data();
-                return `<div style="background:var(--hover-bg);border-radius:1rem;padding:1rem;margin-bottom:0.5rem;">
+                return `<div class="item-card">
                     <strong>${escapeHtml(t.classId)}</strong> by ${escapeHtml(t.teacherName)} (${t.type})<br>
                     <small>${t.submittedAt?.toDate().toLocaleString()||''}</small>
                     <div><button class="btn btn-success btn-sm" onclick="approveTimetable('${doc.id}')">Approve</button>
                     <button class="btn btn-danger btn-sm" onclick="rejectTimetable('${doc.id}')">Reject</button></div>
                 </div>`;
             }).join('');
-        } catch(e) { container.innerHTML = `<p style="text-align:center;">Error: ${handleIndexError(e)}</p>`; }
+        } catch(e) { container.innerHTML = `<p>Error: ${handleIndexError(e)}</p>`; }
     }
     window.approveTimetable = async (id) => { await db.collection('timetableProposals').doc(id).update({ status:'approved' }); logAudit('TIMETABLE_APPROVED', id); loadTimetables(); };
     window.rejectTimetable = async (id) => { await db.collection('timetableProposals').doc(id).update({ status:'rejected' }); logAudit('TIMETABLE_REJECTED', id); loadTimetables(); };
@@ -663,8 +664,9 @@
                 const t = grouped[d].present + grouped[d].absent;
                 return t ? ((grouped[d].present / t)*100).toFixed(1) : 0;
             });
-            const tbody = document.getElementById('attOverviewBody');
-            tbody.innerHTML = sortedDates.map((d,i) => `<tr><td>${d}</td><td>${presentData[i]}</td><td>${absentData[i]}</td><td>${rateData[i]}%</td></tr>`).join('');
+            document.getElementById('attOverviewBody').innerHTML = sortedDates.map((d,i) =>
+                `<tr><td>${d}</td><td>${presentData[i]}</td><td>${absentData[i]}</td><td>${rateData[i]}%</td></tr>`
+            ).join('');
 
             const ctx = document.getElementById('attendanceChart').getContext('2d');
             if (attendanceChart) attendanceChart.destroy();
@@ -679,7 +681,9 @@
                 },
                 options: { responsive:true, maintainAspectRatio:true, plugins:{legend:{position:'top'}} }
             });
-        } catch(e) { document.getElementById('attOverviewBody').innerHTML = `<tr><td colspan="4">Error: ${handleIndexError(e)}</td></tr>`; }
+        } catch(e) {
+            document.getElementById('attOverviewBody').innerHTML = `<tr><td colspan="4">Error: ${handleIndexError(e)}</td></tr>`;
+        }
     }
 </script>
 </body>
