@@ -6,10 +6,13 @@
     <title>Judah Wonders Model School · Teacher Workspace</title>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
     <link href="https://fonts.googleapis.com/css2?family=Inter:opsz,wght@14..32,400;500;600;700;800&family=Playfair+Display:wght@600;700&display=swap" rel="stylesheet">
+    <link href="https://cdn.quilljs.com/1.3.6/quill.snow.css" rel="stylesheet">
     <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-app-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-auth-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-firestore-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-remote-config-compat.js"></script>
+    <script src="https://cdn.quilljs.com/1.3.6/quill.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
     <script type="importmap">{ "imports": { "groq-sdk": "https://esm.run/groq-sdk" } }</script>
     <style>
         /* ====== COMPLETE STYLES ====== */
@@ -156,6 +159,116 @@
         .card.locked { opacity: 0.5; pointer-events: none; position: relative; }
         .card.locked::after { content: "✓ Moved/Published"; position: absolute; top: 10px; right: 15px; background: var(--success-text); color: white; padding: 0.3rem 1rem; border-radius: 2rem; font-size: 0.8rem; font-weight: 600; z-index: 10; }
 
+        .sub-tabs { display: flex; gap: 0.4rem; margin-bottom: 1.5rem; background: var(--card-bg); backdrop-filter: blur(8px); border: 1px solid var(--border); border-radius: 3rem; padding: 0.3rem; width: fit-content; }
+        .sub-tab { padding: 0.6rem 1.8rem; border-radius: 3rem; font-weight: 500; font-size: 0.9rem; cursor: pointer; transition: 0.2s; color: var(--text-secondary); }
+        .sub-tab.active { background: var(--accent); color: white; }
+
+        .content-section { background: var(--content-section-bg); border: 2px dashed var(--accent); border-radius: 1rem; padding: 1.5rem; margin: 1rem 0; }
+        .content-section h4 { color: var(--accent); margin-bottom: 0.5rem; font-size: 1rem; display: flex; align-items: center; gap: 0.5rem; }
+        .content-section p { color: var(--text-secondary); font-size: 0.85rem; margin-bottom: 1rem; }
+
+        .video-section { background: var(--card-bg); backdrop-filter: blur(8px); border: 1px solid var(--border); border-radius: 1.5rem; padding: 1.5rem; margin-bottom: 1.5rem; }
+        .video-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 1rem; }
+        .video-input { display: flex; gap: 0.5rem; margin-bottom: 1rem; }
+        .video-input input { flex: 1; padding: 0.7rem 1rem; border: 1px solid var(--border); border-radius: 2rem; background: var(--input-bg); color: var(--text-primary); }
+        .video-list { display: flex; flex-direction: column; gap: 0.5rem; }
+        .video-item { display: flex; justify-content: space-between; align-items: center; padding: 0.7rem; border-bottom: 1px dashed var(--border); background: var(--hover-bg); border-radius: 0.8rem; }
+        .video-item .platform-badge { padding: 0.2rem 0.6rem; border-radius: 1rem; font-size: 0.7rem; font-weight: 600; }
+        .platform-badge.youtube { background: #ff000022; color: #ff4444; }
+        .platform-badge.vimeo { background: #1ab7ea22; color: #1ab7ea; }
+        .platform-badge.other { background: var(--info-bg); color: var(--info-text); }
+        .video-preview { margin-top: 1rem; width: 100%; aspect-ratio: 16/9; border-radius: 1rem; overflow: hidden; position: relative; display: none; background: #000; }
+        .video-preview iframe, .video-preview video { width: 100%; height: 100%; border: none; }
+
+        .handwriting-preview { display: grid; grid-template-columns: repeat(auto-fill, minmax(300px, 1fr)); gap: 1rem; margin-bottom: 1.5rem; }
+        .handwriting-card { background: var(--card-bg); border: 1px solid var(--border); border-radius: 1rem; overflow: hidden; cursor: pointer; position: relative; }
+        .handwriting-card img { width: 100%; display: block; min-height: 200px; background: #f0f0f0; transition: 0.2s; }
+        .handwriting-card:hover img { transform: scale(1.02); }
+        .handwriting-card .caption { padding: 0.8rem; font-size: 0.85rem; color: var(--text-secondary); display: flex; justify-content: space-between; align-items: center; }
+
+        .modal-overlay { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.75); backdrop-filter: blur(5px); display: none; justify-content: center; align-items: center; z-index: 2000; }
+        .modal-overlay.active { display: flex; }
+        .modal-content { background: var(--card-bg); backdrop-filter: blur(20px); border: 1px solid var(--border); border-radius: 1.5rem; padding: 2rem; max-width: 700px; width: 90%; max-height: 80vh; overflow-y: auto; box-shadow: 0 30px 60px rgba(0,0,0,0.5); }
+        .modal-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 1.5rem; }
+        .modal-header h2 { font-size: 1.3rem; }
+        .modal-close { font-size: 1.5rem; cursor: pointer; color: var(--text-secondary); }
+        .modal-close:hover { color: var(--danger-text); }
+
+        .templates-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(280px, 1fr)); gap: 1rem; }
+        .template-card { background: var(--hover-bg); border: 1px solid var(--border); border-radius: 1rem; padding: 1rem; cursor: pointer; transition: 0.2s; position: relative; }
+        .template-card:hover { border-color: var(--accent); }
+        .template-card h4 { margin-bottom: 0.5rem; font-size: 0.95rem; }
+        .template-delete { position: absolute; top: 0.5rem; right: 0.5rem; color: var(--danger-text); background: none; border: none; cursor: pointer; font-size: 0.9rem; opacity: 0.7; }
+        .template-delete:hover { opacity: 1; }
+
+        .assistant-modal { display: flex; flex-direction: row; width: 95%; max-width: 1400px; height: 90vh; background: var(--card-bg); backdrop-filter: blur(20px); border: 1px solid var(--border); border-radius: 2rem; overflow: hidden; box-shadow: 0 30px 60px rgba(0,0,0,0.5); }
+        .assistant-history { width: 300px; background: var(--bg-surface); border-right: 1px solid var(--border); display: flex; flex-direction: column; }
+        .history-header { padding: 1.5rem; display: flex; justify-content: space-between; align-items: center; border-bottom: 1px solid var(--border); flex-shrink: 0; }
+        .history-header h3 { font-size: 1rem; font-weight: 600; }
+        .new-chat-btn { background: var(--accent); color: white; width: 35px; height: 35px; border-radius: 50%; display: flex; align-items: center; justify-content: center; cursor: pointer; transition: 0.2s; border: none; }
+        .new-chat-btn:hover { transform: scale(1.1); }
+        .history-list { flex: 1; overflow-y: auto; padding: 1rem; }
+        .history-item { padding: 0.8rem 1rem; border-radius: 1rem; margin-bottom: 0.5rem; background: var(--card-bg); border: 1px solid var(--border); cursor: pointer; transition: 0.2s; position: relative; }
+        .history-item:hover, .history-item.active { border-color: var(--accent); transform: translateX(3px); }
+        .history-item-title { font-weight: 600; font-size: 0.85rem; margin-bottom: 0.2rem; }
+        .history-item-date { font-size: 0.7rem; color: var(--text-secondary); }
+        .history-delete { position: absolute; right: 0.8rem; top: 0.8rem; color: var(--danger-text); cursor: pointer; font-size: 0.8rem; opacity: 0; transition: 0.2s; }
+        .history-item:hover .history-delete { opacity: 1; }
+        .assistant-main { flex: 1; display: flex; flex-direction: column; overflow: hidden; }
+        .assistant-header { padding: 1.2rem 1.5rem; border-bottom: 1px solid var(--border); display: flex; justify-content: space-between; align-items: center; flex-shrink: 0; }
+        .assistant-header-left { display: flex; align-items: center; gap: 1rem; }
+        .assistant-header-left i { font-size: 1.6rem; color: var(--accent); }
+        .assistant-header-left h2 { font-size: 1.3rem; font-weight: 600; }
+        .assistant-close { font-size: 1.5rem; cursor: pointer; color: var(--text-secondary); transition: 0.2s; }
+        .assistant-close:hover { color: var(--danger-text); }
+        .assistant-context { background: var(--hover-bg); padding: 0.8rem 1.5rem; font-size: 0.9rem; color: var(--text-secondary); border-bottom: 1px solid var(--border); flex-shrink: 0; }
+        .assistant-chat { flex: 1; overflow-y: auto; padding: 1.5rem; display: flex; flex-direction: column; gap: 1.2rem; background: var(--bg-primary); }
+        .message-wrapper { display: flex; flex-direction: column; max-width: 80%; }
+        .message-wrapper.user { align-self: flex-end; }
+        .message-wrapper.assistant { align-self: flex-start; }
+        .message-bubble { padding: 0.9rem 1.3rem; border-radius: 1.2rem; word-wrap: break-word; line-height: 1.6; font-size: 0.95rem; }
+        .message-wrapper.user .message-bubble { background: var(--assistant-user-bg); color: white; border-bottom-right-radius: 0.3rem; }
+        .message-wrapper.assistant .message-bubble { background: var(--assistant-bot-bg); border: 1px solid var(--border); border-bottom-left-radius: 0.3rem; }
+        .message-time { font-size: 0.7rem; color: var(--text-secondary); margin-top: 0.3rem; text-align: right; }
+        .assistant-thinking { display: flex; align-items: center; gap: 1rem; color: var(--text-secondary); padding: 1rem; background: var(--card-bg); border-radius: 1rem; align-self: flex-start; }
+        .assistant-input-area { padding: 1.2rem 1.5rem; border-top: 1px solid var(--border); background: var(--card-bg); display: flex; gap: 1rem; flex-shrink: 0; }
+        .assistant-input { flex: 1; background: var(--input-bg); border: 1px solid var(--border); border-radius: 3rem; padding: 0.9rem 1.3rem; color: var(--text-primary); font-size: 0.95rem; outline: none; }
+        .assistant-input:focus { border-color: var(--accent); box-shadow: 0 0 0 3px rgba(200,150,62,0.15); }
+        .assistant-send-btn { background: var(--accent); color: white; border: none; border-radius: 50%; width: 50px; height: 50px; display: flex; align-items: center; justify-content: center; cursor: pointer; transition: 0.2s; font-size: 1.1rem; flex-shrink: 0; }
+        .assistant-send-btn:hover { transform: scale(1.05); }
+        .assistant-actions { display: flex; gap: 1rem; padding: 1rem 1.5rem 1.5rem; justify-content: flex-end; background: var(--card-bg); border-top: 1px solid var(--border); flex-shrink: 0; }
+
+        .delete-modal { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.75); backdrop-filter: blur(5px); display: none; justify-content: center; align-items: center; z-index: 2100; }
+        .delete-modal.active { display: flex; }
+        .delete-modal-content { background: var(--card-bg); border-radius: 1.5rem; padding: 2rem; max-width: 420px; width: 90%; border: 1px solid var(--border); }
+        .delete-modal-actions { display: flex; gap: 1rem; justify-content: flex-end; margin-top: 2rem; }
+
+        .loading-overlay { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.85); display: none; justify-content: center; align-items: center; z-index: 3000; }
+        .loading-overlay.active { display: flex; }
+        .loading-content { background: var(--card-bg); padding: 2rem; border-radius: 1.5rem; text-align: center; }
+        .loading-content i { font-size: 3rem; color: var(--accent); margin-bottom: 1rem; }
+
+        .published-section { background: var(--published-bg); border: 2px solid var(--success-text); border-radius: 1.5rem; padding: 1.5rem; margin-bottom: 1.5rem; }
+        .published-section h3 { color: var(--success-text); margin-bottom: 1rem; display: flex; align-items: center; gap: 0.5rem; }
+        .published-item { background: var(--card-bg); border: 1px solid var(--border); border-radius: 1rem; padding: 1rem; margin-bottom: 0.8rem; }
+        .published-item-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 0.5rem; }
+        .published-item-title { font-weight: 600; color: var(--accent); }
+        .published-item-badge { font-size: 0.7rem; padding: 0.2rem 0.6rem; border-radius: 1rem; margin-right: 0.3rem; }
+        .published-item-badge.teach { background: var(--info-bg); color: var(--info-text); }
+        .published-item-badge.students { background: var(--success-bg); color: var(--success-text); }
+
+        .type-badge { background: var(--accent); color: white; padding: 0.3rem 1.2rem; border-radius: 2rem; font-size: 0.85rem; }
+        .merge-btn { background: linear-gradient(135deg, #8b5cf6, #6366f1); color: white; border: none; padding: 0.6rem 1.5rem; border-radius: 2rem; font-weight: 600; cursor: pointer; margin: 0.5rem; }
+        .report-item { background: var(--hover-bg); border-radius: 1rem; padding: 1rem; margin-bottom: 1rem; }
+        .report-date { font-weight: 700; color: var(--accent); }
+        .question-box { background: var(--info-bg); border-left: 3px solid var(--accent); padding: 0.75rem; margin-top: 0.5rem; border-radius: 0.5rem; font-size: 0.9rem; }
+        .badge-acknowledged { background: var(--success-bg); color: var(--success-text); padding: 0.2rem 0.7rem; border-radius: 2rem; font-size: 0.75rem; font-weight: 600; display: inline-block; }
+        .badge-pending { background: var(--warning-bg); color: var(--warning-text); padding: 0.2rem 0.7rem; border-radius: 2rem; font-size: 0.75rem; font-weight: 600; display: inline-block; }
+        .error-message { background: var(--danger-bg); color: var(--danger-text); padding: 1rem; border-radius: 1rem; margin-bottom: 1rem; border-left: 4px solid var(--danger-text); display: none; }
+        .filter-bar { display: flex; gap: 1rem; margin-bottom: 1.5rem; flex-wrap: wrap; align-items: center; }
+        .editor-footer { display: flex; justify-content: space-between; align-items: center; padding: 0.5rem 1rem; font-size: 0.8rem; color: var(--text-secondary); background: var(--toolbar-bg); border-top: 1px solid var(--border); border-radius: 0 0 1.5rem 1.5rem; }
+        .stats-row { display: grid; grid-template-columns: repeat(auto-fit, minmax(160px, 1fr)); gap: 0.8rem; margin-bottom: 1rem; }
+
         .toast-container { position: fixed; top: 1rem; right: 1rem; z-index: 5000; display: flex; flex-direction: column; gap: 0.5rem; pointer-events: none; }
         .toast { background: var(--toast-bg); backdrop-filter: blur(16px); border: 1px solid var(--border); border-radius: 1rem; padding: 1rem 1.5rem; min-width: 300px; max-width: 450px; box-shadow: 0 15px 35px rgba(0,0,0,0.4); display: flex; align-items: flex-start; gap: 0.8rem; animation: slideInRight 0.3s; pointer-events: auto; }
         .toast.removing { animation: slideOutRight 0.3s ease-in forwards; }
@@ -176,7 +289,9 @@
             .top-nav { padding: 0.8rem 1rem; } 
             .workspace-tabs { width: 100%; justify-content: center; } 
             .workspace-tab { padding: 0.6rem 1.2rem; font-size: 0.8rem; } 
-            .stats-grid { grid-template-columns: repeat(2, 1fr); } 
+            .stats-grid { grid-template-columns: repeat(2, 1fr); }
+            .assistant-modal { flex-direction: column; height: 95vh; } 
+            .assistant-history { width: 100%; max-height: 120px; } 
         }
     </style>
 </head>
@@ -232,9 +347,7 @@
             <div class="card">
                 <div class="card-header">
                     <h3><i class="fas fa-calendar-alt"></i> Class Timetable: <span id="ttClassName">Loading...</span></h3>
-                    <div class="actions">
-                        <button class="btn btn-primary" id="createNewTimetableBtn">+ New Draft</button>
-                    </div>
+                    <div class="actions"><button class="btn btn-primary" id="createNewTimetableBtn">+ New Draft</button></div>
                 </div>
                 <div class="sub-tabs" id="tt-tabs">
                     <div class="sub-tab active" data-tt="draft">Draft</div>
@@ -243,63 +356,13 @@
                     <div class="sub-tab" data-tt="rejected">Rejected</div>
                 </div>
                 <div id="tt-draft" class="card" style="display:block;">
-                    <div class="card-header">
-                        <div>
-                            <span id="draftTypeLabel" class="type-badge">Academic</span>
-                            <span style="margin-left:1rem;">Class: <strong id="draftClassDisplay">—</strong></span>
-                        </div>
-                        <button class="btn btn-outline btn-sm" id="deleteDraftBtn" style="display:none;"><i class="fas fa-trash"></i> Delete</button>
-                    </div>
-                    <div class="table-responsive">
-                        <table>
-                            <thead id="draftTableHeader"></thead>
-                            <tbody id="draftBody"></tbody>
-                        </table>
-                    </div>
-                    <div class="actions">
-                        <button class="btn btn-outline" id="addTimetableRowBtn"><i class="fas fa-plus"></i> Add Row</button>
-                        <button class="btn btn-primary" id="saveDraftBtn">Save Draft</button>
-                        <button class="btn btn-success" id="submitTimetableBtn">Submit</button>
-                    </div>
+                    <div class="card-header"><div><span id="draftTypeLabel" class="type-badge">Academic</span><span style="margin-left:1rem;">Class: <strong id="draftClassDisplay">—</strong></span></div><button class="btn btn-outline btn-sm" id="deleteDraftBtn" style="display:none;"><i class="fas fa-trash"></i> Delete</button></div>
+                    <div class="table-responsive"><table><thead id="draftTableHeader"></thead><tbody id="draftBody"></tbody></table></div>
+                    <div class="actions"><button class="btn btn-outline" id="addTimetableRowBtn"><i class="fas fa-plus"></i> Add Row</button><button class="btn btn-primary" id="saveDraftBtn">Save Draft</button><button class="btn btn-success" id="submitTimetableBtn">Submit</button></div>
                 </div>
-                <div id="tt-pending" class="card" style="display:none;">
-                    <div class="card-header"><h3>Pending Submission</h3></div>
-                    <div class="table-responsive">
-                        <table>
-                            <thead id="pendingTableHeader"></thead>
-                            <tbody id="pendingBody"></tbody>
-                        </table>
-                    </div>
-                    <div class="actions"><button class="btn btn-warning" id="editPendingBtn">Move to Draft</button></div>
-                </div>
-                <div id="tt-approved" class="card" style="display:none;">
-                    <div class="card-header"><h3>Approved Timetables</h3></div>
-                    <div class="filter-bar" style="margin-bottom:1rem;">
-                        <label>Type:</label>
-                        <select id="approvedTypeSelect"></select>
-                    </div>
-                    <div class="table-responsive">
-                        <table>
-                            <thead id="approvedTableHeader"></thead>
-                            <tbody id="approvedBody"></tbody>
-                        </table>
-                    </div>
-                    <div class="actions">
-                        <button class="btn btn-success" id="publishTimetableBtn">Publish</button>
-                        <button class="btn btn-outline" id="editApprovedBtn">New Draft from This</button>
-                    </div>
-                </div>
-                <div id="tt-rejected" class="card" style="display:none;">
-                    <div class="card-header"><h3>Rejected Submission</h3></div>
-                    <div id="rejectedFeedback" class="error-message" style="display:none;"></div>
-                    <div class="table-responsive">
-                        <table>
-                            <thead id="rejectedTableHeader"></thead>
-                            <tbody id="rejectedBody"></tbody>
-                        </table>
-                    </div>
-                    <div class="actions"><button class="btn btn-warning" id="editRejectedBtn">Move to Draft</button></div>
-                </div>
+                <div id="tt-pending" class="card" style="display:none;"><div class="card-header"><h3>Pending Submission</h3></div><div class="table-responsive"><table><thead id="pendingTableHeader"></thead><tbody id="pendingBody"></tbody></table></div><div class="actions"><button class="btn btn-warning" id="editPendingBtn">Move to Draft</button></div></div>
+                <div id="tt-approved" class="card" style="display:none;"><div class="card-header"><h3>Approved Timetables</h3></div><div class="filter-bar"><label>Type:</label><select id="approvedTypeSelect"></select></div><div class="table-responsive"><table><thead id="approvedTableHeader"></thead><tbody id="approvedBody"></tbody></table></div><div class="actions"><button class="btn btn-success" id="publishTimetableBtn">Publish</button><button class="btn btn-outline" id="editApprovedBtn">New Draft from This</button></div></div>
+                <div id="tt-rejected" class="card" style="display:none;"><div class="card-header"><h3>Rejected Submission</h3></div><div id="rejectedFeedback" class="error-message" style="display:none;"></div><div class="table-responsive"><table><thead id="rejectedTableHeader"></thead><tbody id="rejectedBody"></tbody></table></div><div class="actions"><button class="btn btn-warning" id="editRejectedBtn">Move to Draft</button></div></div>
             </div>
         </div>
 
@@ -319,24 +382,10 @@
                 <div id="syllabusSection" style="display:none;">
                     <div class="card">
                         <div class="card-header">
-                            <div>
-                                <h2 id="currentSubjectTitle"></h2>
-                                <span id="syllabusStatus" class="status-badge status-draft">Draft</span>
-                                <button class="btn btn-danger btn-sm" id="deleteSyllabusBtn" style="display:none;margin-left:1rem;"><i class="fas fa-trash"></i></button>
-                            </div>
-                            <div class="actions">
-                                <button class="btn btn-outline" id="addWeekBtn"><i class="fas fa-plus"></i> Week</button>
-                                <button class="btn btn-primary" id="saveSyllabusBtn">Save Draft</button>
-                                <button class="btn btn-success" id="submitSyllabusBtn">Submit</button>
-                                <button class="btn btn-warning" id="editSyllabusBtn" style="display:none;">Edit</button>
-                            </div>
+                            <div><h2 id="currentSubjectTitle"></h2><span id="syllabusStatus" class="status-badge status-draft">Draft</span><button class="btn btn-danger btn-sm" id="deleteSyllabusBtn" style="display:none;margin-left:1rem;"><i class="fas fa-trash"></i></button></div>
+                            <div class="actions"><button class="btn btn-outline" id="addWeekBtn"><i class="fas fa-plus"></i> Week</button><button class="btn btn-primary" id="saveSyllabusBtn">Save Draft</button><button class="btn btn-success" id="submitSyllabusBtn">Submit</button><button class="btn btn-warning" id="editSyllabusBtn" style="display:none;">Edit</button></div>
                         </div>
-                        <div class="table-responsive">
-                            <table>
-                                <thead><tr><th>Week</th><th>Topic</th><th>Objectives</th><th></th></tr></thead>
-                                <tbody id="syllabusBody"></tbody>
-                            </table>
-                        </div>
+                        <div class="table-responsive"><table><thead><tr><th>Week</th><th>Topic</th><th>Objectives</th><th></th></tr></thead><tbody id="syllabusBody"></tbody></table></div>
                     </div>
                     <button class="btn btn-primary" id="createLessonNoteBtn" style="display:none;margin-bottom:1.5rem;"><i class="fas fa-plus-circle"></i> Create Lesson Note</button>
                 </div>
@@ -346,22 +395,13 @@
             <div id="ln-notebook" style="display:none;">
                 <div class="week-tabs" id="weekTabs"></div>
                 <div id="editorSection" style="display:none;">
-                    <!-- Lesson Content -->
                     <div class="content-section" id="lessonContentSection">
                         <h4><i class="fas fa-pencil-alt"></i> Lesson Content</h4>
                         <p>Write the body of your lesson note below, then merge it into the editor.</p>
-                        <div class="actions" style="margin-bottom:0.5rem;">
-                            <button class="btn btn-outline btn-sm" id="useAIContentBtn"><i class="fas fa-robot"></i> AI Generate Content</button>
-                        </div>
+                        <div class="actions" style="margin-bottom:0.5rem;"><button class="btn btn-outline btn-sm" id="useAIContentBtn"><i class="fas fa-robot"></i> AI Generate Content</button></div>
                         <textarea id="lessonContent" placeholder="Write your lesson content here..." style="min-height:150px;"></textarea>
                     </div>
-
-                    <!-- Admin Feedback Box -->
-                    <div class="admin-feedback-box" id="adminFeedbackBox">
-                        <strong>Admin Feedback:</strong> <span id="adminFeedbackText"></span>
-                    </div>
-
-                    <!-- Main Lesson Note Editor -->
+                    <div class="admin-feedback-box" id="adminFeedbackBox"><strong>Admin Feedback:</strong> <span id="adminFeedbackText"></span></div>
                     <div class="card" id="lessonNoteCard">
                         <div class="card-header">
                             <h3><i class="fas fa-book-open"></i> <span id="editorTitle">Lesson Note</span></h3>
@@ -382,89 +422,34 @@
 
                     <!-- Post-Approval Sections -->
                     <div id="postApprovalSections" style="display:none;">
-                        <div class="card" style="border: 2px solid var(--success-text);">
-                            <div class="card-header"><h3><i class="fas fa-check-circle" style="color:var(--success-text);"></i> Lesson Note Approved!</h3></div>
-                        </div>
-
-                        <div class="card" style="text-align:center;">
-                            <button class="btn btn-success" id="pushToTeachBtn" style="font-size:1.1rem;padding:1rem 2rem;"><i class="fas fa-chalkboard-teacher"></i> Push to Teach</button>
-                        </div>
-
-                        <!-- Teaching Process -->
+                        <div class="card" style="border:2px solid var(--success-text);"><div class="card-header"><h3><i class="fas fa-check-circle" style="color:var(--success-text);"></i> Lesson Note Approved!</h3></div></div>
+                        <div class="card" style="text-align:center;"><button class="btn btn-success" id="pushToTeachBtn" style="font-size:1.1rem;padding:1rem 2rem;"><i class="fas fa-chalkboard-teacher"></i> Push to Teach</button></div>
                         <div class="card" id="teachingProcessCard">
-                            <div class="card-header">
-                                <h3><i class="fas fa-chalkboard-teacher"></i> Teaching Process</h3>
-                                <div class="actions">
-                                    <button class="btn btn-outline btn-sm" id="autoFormatTPBtn"><i class="fas fa-magic"></i> Auto-Format</button>
-                                    <button class="btn btn-outline btn-sm" id="saveTPAsTemplateBtn"><i class="fas fa-layer-group"></i> Save as Template</button>
-                                    <button class="btn btn-outline" id="useAIAssistantTPBtn"><i class="fas fa-robot"></i> AI Assistant</button>
-                                </div>
-                            </div>
+                            <div class="card-header"><h3><i class="fas fa-chalkboard-teacher"></i> Teaching Process</h3><div class="actions"><button class="btn btn-outline btn-sm" id="autoFormatTPBtn"><i class="fas fa-magic"></i> Auto-Format</button><button class="btn btn-outline btn-sm" id="saveTPAsTemplateBtn"><i class="fas fa-layer-group"></i> Save as Template</button><button class="btn btn-outline" id="useAIAssistantTPBtn"><i class="fas fa-robot"></i> AI Assistant</button></div></div>
                             <p style="color:var(--text-secondary);margin-bottom:1rem;">Write a step‑by‑step teaching process with time frames.</p>
-                            <div class="actions" style="margin-bottom:0.5rem;">
-                                <button class="btn btn-primary btn-sm" id="aiGenerateTPBtn"><i class="fas fa-robot"></i> AI Auto‑Generate</button>
-                            </div>
+                            <div class="actions" style="margin-bottom:0.5rem;"><button class="btn btn-primary btn-sm" id="aiGenerateTPBtn"><i class="fas fa-robot"></i> AI Auto‑Generate</button></div>
                             <div class="editor-container"><div id="teachingProcessEditor"></div></div>
-                            <div class="actions">
-                                <button class="btn btn-primary" id="saveTeachingProcessBtn">Save</button>
-                                <button class="btn btn-sm btn-outline" id="copyTPToTeachingProcessEditor" style="display:none;"><i class="fas fa-copy"></i> Copy to Editor</button>
-                                <button class="btn btn-success" id="moveToTeachBtn"><i class="fas fa-arrow-right"></i> Move to Teach</button>
-                            </div>
+                            <div class="actions"><button class="btn btn-primary" id="saveTeachingProcessBtn">Save</button><button class="btn btn-sm btn-outline" id="copyTPToTeachingProcessEditor" style="display:none;"><i class="fas fa-copy"></i> Copy to Editor</button><button class="btn btn-success" id="moveToTeachBtn"><i class="fas fa-arrow-right"></i> Move to Teach</button></div>
                         </div>
-
-                        <!-- Student Resources -->
                         <div class="card" id="studentResourceSection">
-                            <div class="card-header">
-                                <h3><i class="fas fa-book-reader"></i> Student Resources (Textbook‑Style)</h3>
-                                <div class="actions">
-                                    <button class="btn btn-outline btn-sm" id="autoFormatResourceBtn"><i class="fas fa-magic"></i> Auto‑Format</button>
-                                    <button class="btn btn-outline btn-sm" id="saveResourceAsTemplateBtn"><i class="fas fa-layer-group"></i> Save as Template</button>
-                                    <button class="btn btn-outline" id="useAIAssistantResourceBtn"><i class="fas fa-robot"></i> AI Assistant</button>
-                                </div>
-                            </div>
+                            <div class="card-header"><h3><i class="fas fa-book-reader"></i> Student Resources (Textbook‑Style)</h3><div class="actions"><button class="btn btn-outline btn-sm" id="autoFormatResourceBtn"><i class="fas fa-magic"></i> Auto‑Format</button><button class="btn btn-outline btn-sm" id="saveResourceAsTemplateBtn"><i class="fas fa-layer-group"></i> Save as Template</button><button class="btn btn-outline" id="useAIAssistantResourceBtn"><i class="fas fa-robot"></i> AI Assistant</button></div></div>
                             <p style="color:var(--text-secondary);margin-bottom:1rem;">Write a detailed textbook‑style explanation for students.</p>
-                            <div class="actions" style="margin-bottom:0.5rem;">
-                                <button class="btn btn-primary btn-sm" id="aiGenerateResourceBtn"><i class="fas fa-robot"></i> AI Auto‑Generate</button>
-                            </div>
+                            <div class="actions" style="margin-bottom:0.5rem;"><button class="btn btn-primary btn-sm" id="aiGenerateResourceBtn"><i class="fas fa-robot"></i> AI Auto‑Generate</button></div>
                             <div class="editor-container"><div id="studentResourceEditor"></div></div>
-                            <div class="actions">
-                                <button class="btn btn-primary" id="saveStudentResourceBtn">Save</button>
-                                <button class="btn btn-sm btn-outline" id="copyResourceToResourceEditor" style="display:none;"><i class="fas fa-copy"></i> Copy to Editor</button>
-                                <button class="btn btn-warning" id="moveResourceToResourcesBtn" style="display:none;">Move to Resources</button>
-                                <button class="btn btn-success" id="launchResourceToStudentsBtn" style="display:none;">Publish to Students</button>
-                            </div>
+                            <div class="actions"><button class="btn btn-primary" id="saveStudentResourceBtn">Save</button><button class="btn btn-sm btn-outline" id="copyResourceToResourceEditor" style="display:none;"><i class="fas fa-copy"></i> Copy to Editor</button><button class="btn btn-warning" id="moveResourceToResourcesBtn" style="display:none;">Move to Resources</button><button class="btn btn-success" id="launchResourceToStudentsBtn" style="display:none;">Publish to Students</button></div>
                         </div>
-
-                        <!-- Handwriting / Visual Notes -->
                         <div class="card" id="handwritingSection">
                             <div class="card-header"><h3><i class="fas fa-pen-fancy"></i> Handwriting & Visual Notes</h3></div>
                             <p style="color:var(--text-secondary);margin-bottom:1rem;">Generate visual/pictorial notes. Click on any image to enlarge.</p>
                             <div class="handwriting-preview" id="handwritingImages"></div>
-                            <div class="actions">
-                                <input type="text" id="handwritingPrompt" placeholder="Describe the picture you want..." style="flex:1;">
-                                <button class="btn btn-primary" id="generateHandwritingBtn"><i class="fas fa-image"></i> Generate Picture</button>
-                            </div>
-                            <div style="display:flex;gap:0.5rem;justify-content:flex-end;margin-top:1rem;">
-                                <button class="btn btn-sm btn-success" id="moveHandwritingToTeachBtn" style="display:none;">Move to Teach</button>
-                                <button class="btn btn-sm btn-success" id="publishHandwritingToStudentsBtn" style="display:none;">Publish to Students</button>
-                            </div>
+                            <div class="actions"><input type="text" id="handwritingPrompt" placeholder="Describe the picture you want..." style="flex:1;"><button class="btn btn-primary" id="generateHandwritingBtn"><i class="fas fa-image"></i> Generate Picture</button></div>
+                            <div style="display:flex;gap:0.5rem;justify-content:flex-end;margin-top:1rem;"><button class="btn btn-sm btn-success" id="moveHandwritingToTeachBtn" style="display:none;">Move to Teach</button><button class="btn btn-sm btn-success" id="publishHandwritingToStudentsBtn" style="display:none;">Publish to Students</button></div>
                         </div>
-
-                        <!-- Video Links -->
                         <div class="video-section" id="videoSection">
-                            <div class="video-header">
-                                <h3><i class="fas fa-play-circle"></i> Video Links</h3>
-                                <button class="btn btn-sm btn-outline" id="addVideoLinkBtn"><i class="fas fa-plus"></i> Add Link</button>
-                            </div>
-                            <div class="video-input" id="videoInputArea" style="display:none;">
-                                <input type="url" id="videoLinkInput" placeholder="Paste video URL">
-                                <button class="btn btn-sm btn-primary" id="previewVideoBtn">Preview</button>
-                            </div>
+                            <div class="video-header"><h3><i class="fas fa-play-circle"></i> Video Links</h3><button class="btn btn-sm btn-outline" id="addVideoLinkBtn"><i class="fas fa-plus"></i> Add Link</button></div>
+                            <div class="video-input" id="videoInputArea" style="display:none;"><input type="url" id="videoLinkInput" placeholder="Paste video URL"><button class="btn btn-sm btn-primary" id="previewVideoBtn">Preview</button></div>
                             <div id="videoList" class="video-list"></div>
-                            <div class="actions" style="justify-content:flex-end;">
-                                <button class="btn btn-sm btn-success" id="moveVideosToTeachBtn" style="display:none;">Move to Teach</button>
-                                <button class="btn btn-sm btn-success" id="publishVideosToStudentsBtn" style="display:none;">Publish to Students</button>
-                            </div>
+                            <div class="actions" style="justify-content:flex-end;"><button class="btn btn-sm btn-success" id="moveVideosToTeachBtn" style="display:none;">Move to Teach</button><button class="btn btn-sm btn-success" id="publishVideosToStudentsBtn" style="display:none;">Publish to Students</button></div>
                         </div>
                     </div>
                 </div>
@@ -472,35 +457,18 @@
 
             <!-- Teach Tab -->
             <div id="ln-teach" style="display:none;">
-                <h2>Ready to Teach</h2>
-                <div id="teachableList"></div>
-                <h2>Approved</h2>
-                <div id="approvedList"></div>
-                <h2>Drafts</h2>
-                <div id="draftsList"></div>
-                <h2>Pending</h2>
-                <div id="pendingNotesList"></div>
-                <h2>Rejected</h2>
-                <div id="rejectedNotesList"></div>
+                <h2>Ready to Teach</h2><div id="teachableList"></div>
+                <h2>Approved</h2><div id="approvedList"></div>
+                <h2>Drafts</h2><div id="draftsList"></div>
+                <h2>Pending</h2><div id="pendingNotesList"></div>
+                <h2>Rejected</h2><div id="rejectedNotesList"></div>
             </div>
         </div>
 
         <!-- ==================== PANEL 3: DAILY REPORT ==================== -->
         <div class="workspace-panel" id="panel-dailyReport">
-            <div class="card">
-                <div class="card-header"><h3><i class="fas fa-pen-alt"></i> Today's Report</h3></div>
-                <div style="display:grid;grid-template-columns:1fr 1fr;gap:1rem;margin-bottom:1rem;">
-                    <div><label>Date</label><input type="date" id="reportDate"></div>
-                    <div><label>Opening Time</label><input type="text" id="openingTime" placeholder="8:00 AM"></div>
-                    <div><label>Closing Time</label><input type="text" id="closingTime" placeholder="2:30 PM"></div>
-                </div>
-                <div style="margin-bottom:1rem;"><label>Activities / Observations</label><textarea id="reportContent" placeholder="Describe today's activities..."></textarea></div>
-                <button class="btn btn-primary" id="submitReportBtn"><i class="fas fa-paper-plane"></i> Submit</button>
-            </div>
-            <div class="card">
-                <div class="card-header"><h3><i class="fas fa-history"></i> My Reports</h3></div>
-                <div id="reportsList">Loading...</div>
-            </div>
+            <div class="card"><div class="card-header"><h3><i class="fas fa-pen-alt"></i> Today's Report</h3></div><div style="display:grid;grid-template-columns:1fr 1fr;gap:1rem;margin-bottom:1rem;"><div><label>Date</label><input type="date" id="reportDate"></div><div><label>Opening Time</label><input type="text" id="openingTime" placeholder="8:00 AM"></div><div><label>Closing Time</label><input type="text" id="closingTime" placeholder="2:30 PM"></div></div><div style="margin-bottom:1rem;"><label>Activities / Observations</label><textarea id="reportContent" placeholder="Describe today's activities..."></textarea></div><button class="btn btn-primary" id="submitReportBtn"><i class="fas fa-paper-plane"></i> Submit</button></div>
+            <div class="card"><div class="card-header"><h3><i class="fas fa-history"></i> My Reports</h3></div><div id="reportsList">Loading...</div></div>
         </div>
 
         <!-- ==================== PANEL 4: PUBLISHED/MOVED CONTENT ==================== -->
@@ -514,58 +482,22 @@
         <div class="workspace-panel" id="panel-insights">
             <div class="card">
                 <div class="card-header"><h3><i class="fas fa-chart-line"></i> My Performance Insights</h3></div>
-                <div class="stats-row">
-                    <div class="stat-card"><div class="stat-icon blue"><i class="fas fa-percentage"></i></div><div class="stat-info"><div class="stat-value" id="insightCompletion">0%</div><div class="stat-label">Completion Rate</div></div></div>
-                    <div class="stat-card"><div class="stat-icon green"><i class="fas fa-check-double"></i></div><div class="stat-info"><div class="stat-value" id="insightApproval">0%</div><div class="stat-label">Approval Rate</div></div></div>
-                </div>
+                <div class="stats-row"><div class="stat-card"><div class="stat-icon blue"><i class="fas fa-percentage"></i></div><div class="stat-info"><div class="stat-value" id="insightCompletion">0%</div><div class="stat-label">Completion Rate</div></div></div><div class="stat-card"><div class="stat-icon green"><i class="fas fa-check-double"></i></div><div class="stat-info"><div class="stat-value" id="insightApproval">0%</div><div class="stat-label">Approval Rate</div></div></div></div>
                 <canvas id="pointsChart" style="max-height:200px;"></canvas>
-                <h4 style="margin-top:1rem;">Point History</h4>
-                <div id="insightPointHistory"></div>
-                <!-- Parent/Student Preview -->
+                <h4 style="margin-top:1rem;">Point History</h4><div id="insightPointHistory"></div>
                 <h4 style="margin-top:2rem;">How Parents & Students See Me</h4>
-                <div id="parentStudentPreview" class="card" style="background:var(--published-bg); border:2px solid var(--success-text);">
-                    <div class="profile-header" style="display:flex; align-items:center; gap:1rem;">
-                        <div class="profile-pic" style="width:60px;height:60px;border-radius:50%;background:var(--accent);overflow:hidden;">
-                            <img id="previewPhoto" src="" alt="Teacher" style="width:100%;height:100%;object-fit:cover;display:none;">
-                            <span id="previewInitial">T</span>
-                        </div>
-                        <div>
-                            <h3 id="previewName">Teacher Name</h3>
-                            <p id="previewPost">Post</p>
-                        </div>
-                    </div>
-                    <p><strong>Contact:</strong> <span id="previewContact">—</span></p>
-                    <p><strong>Published Resources:</strong> <span id="previewResourceCount">0</span></p>
-                </div>
+                <div id="parentStudentPreview" class="card" style="background:var(--published-bg); border:2px solid var(--success-text);"><div class="profile-header" style="display:flex; align-items:center; gap:1rem;"><div class="profile-pic" style="width:60px;height:60px;border-radius:50%;background:var(--accent);overflow:hidden;"><img id="previewPhoto" src="" alt="Teacher" style="width:100%;height:100%;object-fit:cover;display:none;"><span id="previewInitial">T</span></div><div><h3 id="previewName">Teacher Name</h3><p id="previewPost">Post</p></div></div><p><strong>Contact:</strong> <span id="previewContact">—</span></p><p><strong>Published Resources:</strong> <span id="previewResourceCount">0</span></p></div>
             </div>
-            <!-- Resource Library -->
-            <div class="card" style="margin-top:1.5rem;">
-                <div class="card-header"><h3><i class="fas fa-share-alt"></i> School Resource Library</h3></div>
-                <div class="subject-grid" id="resourceLibraryGrid">Loading...</div>
-            </div>
+            <div class="card" style="margin-top:1.5rem;"><div class="card-header"><h3><i class="fas fa-share-alt"></i> School Resource Library</h3></div><div class="subject-grid" id="resourceLibraryGrid">Loading...</div></div>
         </div>
     </div>
 
     <!-- MODALS -->
-    <div class="modal-overlay" id="templatesModal">
-        <div class="modal-content">
-            <div class="modal-header"><h2><i class="fas fa-layer-group"></i> Templates</h2><i class="fas fa-times modal-close" onclick="closeTemplatesModal()"></i></div>
-            <div class="templates-grid" id="templatesGrid">Loading...</div>
-        </div>
-    </div>
+    <div class="modal-overlay" id="templatesModal"><div class="modal-content"><div class="modal-header"><h2><i class="fas fa-layer-group"></i> Templates</h2><i class="fas fa-times modal-close" onclick="closeTemplatesModal()"></i></div><div class="templates-grid" id="templatesGrid">Loading...</div></div></div>
     <div class="modal-overlay" id="aiAssistantModal">
         <div class="assistant-modal">
-            <div class="assistant-history">
-                <div class="history-header"><h3>Conversations</h3><button class="new-chat-btn" id="newChatBtn"><i class="fas fa-plus"></i></button></div>
-                <div class="history-list" id="historyList"></div>
-            </div>
-            <div class="assistant-main">
-                <div class="assistant-header"><div class="assistant-header-left"><i class="fas fa-robot"></i><h2>AI Teacher Assistant</h2></div><i class="fas fa-times assistant-close" onclick="closeAIAssistant()"></i></div>
-                <div class="assistant-context" id="assistantContext"></div>
-                <div class="assistant-chat" id="assistantChat"></div>
-                <div class="assistant-input-area"><input type="text" class="assistant-input" id="assistantInput" placeholder="Ask anything..."><button class="assistant-send-btn" onclick="sendAssistantMessage()"><i class="fas fa-paper-plane"></i></button></div>
-                <div class="assistant-actions"><button class="btn btn-outline" onclick="copyAssistantToEditor()">Copy to Editor</button><button class="btn btn-success" id="assistantSaveBtn" onclick="saveAssistantToTeach()">Save to Teach</button></div>
-            </div>
+            <div class="assistant-history"><div class="history-header"><h3>Conversations</h3><button class="new-chat-btn" id="newChatBtn"><i class="fas fa-plus"></i></button></div><div class="history-list" id="historyList"></div></div>
+            <div class="assistant-main"><div class="assistant-header"><div class="assistant-header-left"><i class="fas fa-robot"></i><h2>AI Teacher Assistant</h2></div><i class="fas fa-times assistant-close" onclick="closeAIAssistant()"></i></div><div class="assistant-context" id="assistantContext"></div><div class="assistant-chat" id="assistantChat"></div><div class="assistant-input-area"><input type="text" class="assistant-input" id="assistantInput" placeholder="Ask anything..."><button class="assistant-send-btn" onclick="sendAssistantMessage()"><i class="fas fa-paper-plane"></i></button></div><div class="assistant-actions"><button class="btn btn-outline" onclick="copyAssistantToEditor()">Copy to Editor</button><button class="btn btn-success" id="assistantSaveBtn" onclick="saveAssistantToTeach()">Save to Teach</button></div></div>
         </div>
     </div>
     <div class="delete-modal" id="deleteModal"><div class="delete-modal-content"><h3>Confirm</h3><p id="deleteMessage"></p><div class="delete-modal-actions"><button class="btn btn-outline" onclick="closeDeleteModal()">Cancel</button><button class="btn btn-danger" id="confirmDeleteBtn">Delete</button></div></div></div>
@@ -605,9 +537,7 @@
         })();
 
         // ==================== GLOBAL STATE ====================
-        let currentUser = null, userData = null;
-        let currentClass = null;
-        let allAssignedClasses = [];
+        let currentUser = null, userData = null, currentClass = null, allAssignedClasses = [];
         let draftId = null, draftData = [], draftType = 'academic';
         let pendingId = null, pendingData = [], pendingType = 'academic';
         let approvedList = [], currentApprovedType = null;
@@ -619,21 +549,18 @@
         let handwritingImages = [];
         let teachingProcessMoved = false, resourceMoved = false, resourcePublished = false;
         let handwritingMoved = false, handwritingPublished = false;
-        let lessonNotePushedToTeach = false;
-        let contentMerged = false;
-        let lastGeneratedText = '';
-        let assistantConversations = [], currentConversationId = null;
-        let pointsChart = null;
-        let autoSaveTimer = null;
+        let lessonNotePushedToTeach = false, contentMerged = false, lessonNoteApproved = false;
+        let lastGeneratedText = '', assistantConversations = [], currentConversationId = null, aiContextMode = 'general';
+        let pointsChart = null, autoSaveTimer = null;
         const AUTO_SAVE_KEY = 'jw_workspace_draft_';
+        const NIGERIAN_PROMPT = `You are a Nigerian teacher writing lesson notes for Nigerian students. Follow NPE/UBEC/WAEC standards. Use Nigerian names, locations, currency. Format with clear headings.`;
 
-        // ==================== HELPER FUNCTIONS ====================
+        // ==================== HELPERS ====================
         function escapeHtml(s) { return s ? s.replace(/[&<>]/g, m => ({'&':'&amp;','<':'&lt;','>':'&gt;'})[m]) : ''; }
         function showToast(title, message, type = 'info', duration = 4000) {
             const icons = { success: 'fa-check-circle', error: 'fa-exclamation-circle', warning: 'fa-exclamation-triangle', info: 'fa-info-circle' };
             const container = document.getElementById('toastContainer');
-            const toast = document.createElement('div');
-            toast.className = 'toast';
+            const toast = document.createElement('div'); toast.className = 'toast';
             toast.innerHTML = `<i class="fas ${icons[type]} toast-icon ${type}"></i><div class="toast-content"><div class="toast-title">${title}</div><div class="toast-message">${message}</div></div><button class="toast-close" onclick="this.parentElement.remove()"><i class="fas fa-times"></i></button>`;
             container.appendChild(toast);
             setTimeout(() => { toast.classList.add('removing'); setTimeout(() => toast.remove(), 300); }, duration);
@@ -643,82 +570,45 @@
         function hideLoading() { document.getElementById('loadingOverlay').classList.remove('active'); }
 
         // ==================== AUTO-SAVE ====================
-        function startAutoSave() {
-            if (autoSaveTimer) clearInterval(autoSaveTimer);
-            autoSaveTimer = setInterval(saveToLocalStorage, 30000);
-        }
+        function startAutoSave() { if (autoSaveTimer) clearInterval(autoSaveTimer); autoSaveTimer = setInterval(saveToLocalStorage, 30000); }
         function saveToLocalStorage() {
             if (!currentSubject || !currentWeek) return;
             const key = AUTO_SAVE_KEY + currentUser.uid + '_' + currentClass + '_' + currentSubject + '_' + currentWeek;
-            const data = {
-                lessonContent: document.getElementById('lessonContent').value,
-                lessonNote: quill.getText(),
-                teachingProcess: teachingProcessQuill.getText(),
-                studentResource: studentQuill.getText(),
-                savedAt: new Date().toISOString()
-            };
-            localStorage.setItem(key, JSON.stringify(data));
+            localStorage.setItem(key, JSON.stringify({ lessonContent: document.getElementById('lessonContent').value, lessonNote: quill.getText(), teachingProcess: teachingProcessQuill.getText(), studentResource: studentQuill.getText(), savedAt: new Date().toISOString() }));
             updateAutoSaveIndicator(true);
         }
         function restoreFromLocalStorage() {
             if (!currentSubject || !currentWeek) return;
             const key = AUTO_SAVE_KEY + currentUser.uid + '_' + currentClass + '_' + currentSubject + '_' + currentWeek;
             const saved = localStorage.getItem(key);
-            if (saved) {
-                try {
-                    const data = JSON.parse(saved);
-                    document.getElementById('lessonContent').value = data.lessonContent || '';
-                    quill.setText(data.lessonNote || '');
-                    teachingProcessQuill.setText(data.teachingProcess || '');
-                    studentQuill.setText(data.studentResource || '');
-                    updateAutoSaveIndicator(true);
-                    showToast('Restored', 'Unsaved work restored.', 'info');
-                } catch(e) {}
-            }
+            if (saved) { try { const data = JSON.parse(saved); document.getElementById('lessonContent').value = data.lessonContent || ''; quill.setText(data.lessonNote || ''); teachingProcessQuill.setText(data.teachingProcess || ''); studentQuill.setText(data.studentResource || ''); updateAutoSaveIndicator(true); showToast('Restored', 'Unsaved work restored.', 'info'); } catch(e) {} }
         }
-        function updateAutoSaveIndicator(saved) {
-            const el = document.getElementById('autoSaveIndicator');
-            if (saved) { el.innerHTML = '<i class="fas fa-check-circle"></i> Saved'; el.className = 'auto-save-indicator'; }
-            else { el.innerHTML = '<i class="fas fa-exclamation-circle"></i> Unsaved'; el.className = 'auto-save-indicator unsaved'; }
-        }
+        function updateAutoSaveIndicator(saved) { const el = document.getElementById('autoSaveIndicator'); if (saved) { el.innerHTML = '<i class="fas fa-check-circle"></i> Saved'; el.className = 'auto-save-indicator'; } else { el.innerHTML = '<i class="fas fa-exclamation-circle"></i> Unsaved'; el.className = 'auto-save-indicator unsaved'; } }
 
         // ==================== POINTS & STARS ====================
         function updatePointsDisplay() {
             if (!userData) return;
             const points = userData.points || 0;
-            const pointValue = window._pointValue || 200;
             document.getElementById('statPoints').textContent = points;
             document.getElementById('pointsDisplay').innerHTML = `💰 ${points} pts`;
             const stars = Math.max(1, 5 - Math.floor(points / 10));
             document.getElementById('statStars').textContent = stars;
-            const starIcons = document.getElementById('starsDisplay');
-            starIcons.innerHTML = '';
-            for (let i=0; i<5; i++) {
-                starIcons.innerHTML += i < stars ? '<i class="fas fa-star" style="color:var(--accent);"></i>' : '<i class="far fa-star" style="color:var(--text-secondary);"></i>';
-            }
+            const starIcons = document.getElementById('starsDisplay'); starIcons.innerHTML = '';
+            for (let i=0; i<5; i++) starIcons.innerHTML += i < stars ? '<i class="fas fa-star" style="color:var(--accent);"></i>' : '<i class="far fa-star" style="color:var(--text-secondary);"></i>';
             document.getElementById('previewName').textContent = `${userData.firstName||''} ${userData.surname||''}`.trim() || 'Teacher';
             document.getElementById('previewPost').textContent = userData.post || 'Teacher';
             document.getElementById('previewContact').textContent = `${userData.email||''} | ${userData.phone||''}`;
-            if (userData.photoURL) {
-                document.getElementById('previewPhoto').src = userData.photoURL; document.getElementById('previewPhoto').style.display = 'block'; document.getElementById('previewInitial').style.display = 'none';
-            } else {
-                document.getElementById('previewPhoto').style.display = 'none'; document.getElementById('previewInitial').textContent = (userData.firstName?.[0]||'') + (userData.surname?.[0]||'');
-            }
+            if (userData.photoURL) { document.getElementById('previewPhoto').src = userData.photoURL; document.getElementById('previewPhoto').style.display = 'block'; document.getElementById('previewInitial').style.display = 'none'; }
+            else { document.getElementById('previewPhoto').style.display = 'none'; document.getElementById('previewInitial').textContent = (userData.firstName?.[0]||'') + (userData.surname?.[0]||''); }
         }
 
         // ==================== CLASS SELECTOR ====================
         function populateClassSelector() {
-            const sel = document.getElementById('classSelector');
-            sel.innerHTML = '<option value="">Select Class</option>';
-            allAssignedClasses.forEach(cls => {
-                const opt = document.createElement('option'); opt.value = cls; opt.textContent = cls; sel.appendChild(opt);
-            });
+            const sel = document.getElementById('classSelector'); sel.innerHTML = '<option value="">Select Class</option>';
+            allAssignedClasses.forEach(cls => { const opt = document.createElement('option'); opt.value = cls; opt.textContent = cls; sel.appendChild(opt); });
             if (currentClass && allAssignedClasses.includes(currentClass)) sel.value = currentClass;
             else if (allAssignedClasses.length) { currentClass = allAssignedClasses[0]; sel.value = currentClass; }
-            sel.addEventListener('change', (e) => {
-                currentClass = e.target.value;
-                if (currentClass) { loadAllTimetableData(); if (currentSubject) loadSyllabus(currentSubject); }
-            });
+            sel.addEventListener('change', (e) => { currentClass = e.target.value; if (currentClass) { loadAllTimetableData(); if (currentSubject) loadSyllabus(currentSubject); } });
         }
 
         // ==================== AUTH ====================
@@ -732,45 +622,31 @@
                 currentClass = userData.classTeaching || allAssignedClasses[0] || null;
                 document.getElementById('profilePic').textContent = (userData.firstName?.[0]||'T') + (userData.surname?.[0]||'E');
                 document.getElementById('profileName').textContent = userData.firstName || 'Teacher';
-                await fetchPointValue();
-                updatePointsDisplay();
-                populateClassSelector();
-                subjects = userData.subjects || [];
-                renderSubjectGrid();
-                await loadAllLessonNotes();
-                await loadAIConversations();
+                await fetchPointValue(); updatePointsDisplay(); populateClassSelector();
+                subjects = userData.subjects || []; renderSubjectGrid();
+                await loadAllLessonNotes(); await loadAIConversations();
                 document.getElementById('reportDate').valueAsDate = new Date();
                 if (currentClass) await loadAllTimetableData();
-                loadMyReports();
-                updateWeeklyStats();
-                startAutoSave();
+                loadMyReports(); updateWeeklyStats(); startAutoSave();
             } catch(e) { console.error(e); showError('Auth error: ' + e.message); }
         });
-
         document.getElementById('logoutBtn').addEventListener('click', () => auth.signOut().then(() => window.location.href = 'index.html'));
         document.getElementById('profileLink').addEventListener('click', () => window.location.href = 'teacher-profile.html');
 
-        // ==================== FETCH POINT VALUE ====================
-        async function fetchPointValue() {
-            try { const doc = await db.collection('settings').doc('points').get(); window._pointValue = doc.exists ? (doc.data().pointValue || 200) : 200; } catch(e) { window._pointValue = 200; }
-        }
+        async function fetchPointValue() { try { const doc = await db.collection('settings').doc('points').get(); window._pointValue = doc.exists ? (doc.data().pointValue || 200) : 200; } catch(e) { window._pointValue = 200; } }
 
         // ==================== PANEL NAVIGATION ====================
-        document.querySelectorAll('#workspaceTabs .workspace-tab').forEach(tab => {
-            tab.addEventListener('click', () => {
-                document.querySelectorAll('#workspaceTabs .workspace-tab').forEach(t => t.classList.remove('active'));
-                tab.classList.add('active');
-                const panel = tab.dataset.panel;
-                document.querySelectorAll('.workspace-panel').forEach(p => p.classList.remove('active'));
-                document.getElementById('panel-' + panel).classList.add('active');
-                if (panel === 'timetable') loadAllTimetableData();
-                else if (panel === 'dailyReport') loadMyReports();
-                else if (panel === 'publishedContent') renderPublishedContent();
-                else if (panel === 'insights') renderInsights();
-            });
-        });
+        document.querySelectorAll('#workspaceTabs .workspace-tab').forEach(tab => tab.addEventListener('click', () => {
+            document.querySelectorAll('#workspaceTabs .workspace-tab').forEach(t => t.classList.remove('active')); tab.classList.add('active');
+            document.querySelectorAll('.workspace-panel').forEach(p => p.classList.remove('active'));
+            document.getElementById('panel-' + tab.dataset.panel).classList.add('active');
+            if (tab.dataset.panel === 'timetable') loadAllTimetableData();
+            else if (tab.dataset.panel === 'dailyReport') loadMyReports();
+            else if (tab.dataset.panel === 'publishedContent') renderPublishedContent();
+            else if (tab.dataset.panel === 'insights') renderInsights();
+        }));
 
-        // ==================== TIMETABLE LOGIC (unchanged) ====================
+        // ==================== TIMETABLE LOGIC ====================
         function getEmptyPeriod(type) {
             switch (type) {
                 case 'academic': return { startTime:'08:00', endTime:'08:40', monday:'', tuesday:'', wednesday:'', thursday:'', friday:'' };
@@ -790,8 +666,7 @@
         function renderDraftTable() {
             document.getElementById('draftTypeLabel').textContent = draftType.charAt(0).toUpperCase() + draftType.slice(1);
             document.getElementById('draftTableHeader').innerHTML = '<tr>'+getTHeaders(draftType).map(h=>`<th>${h}</th>`).join('')+'</tr>';
-            let html = '';
-            draftData.forEach((p,i) => {
+            let html = ''; draftData.forEach((p,i) => {
                 html += '<tr>';
                 if (draftType==='academic') {
                     html += `<td><input type="time" value="${p.startTime}" data-i="${i}" data-f="startTime"></td><td><input type="time" value="${p.endTime}" data-i="${i}" data-f="endTime"></td>`;
@@ -805,9 +680,7 @@
                 html += '<td class="delete-row" onclick="deleteTTRow('+i+')"><i class="fas fa-trash"></i></td></tr>';
             });
             document.getElementById('draftBody').innerHTML = html;
-            document.querySelectorAll('#draftBody input').forEach(inp => inp.addEventListener('input', function(){
-                const i = parseInt(this.dataset.i), f = this.dataset.f; if (draftData[i]) draftData[i][f] = this.value;
-            }));
+            document.querySelectorAll('#draftBody input').forEach(inp => inp.addEventListener('input', function(){ const i=parseInt(this.dataset.i), f=this.dataset.f; if(draftData[i]) draftData[i][f]=this.value; }));
         }
         window.deleteTTRow = i => { draftData.splice(i,1); renderDraftTable(); };
 
@@ -818,8 +691,7 @@
                 if (!ds.empty) { const d=ds.docs[0]; draftId=d.id; draftData=d.data().periods||[]; draftType=d.data().type||'academic'; } else { draftId=null; draftData=[getEmptyPeriod('academic')]; draftType='academic'; }
                 const ps = await db.collection('timetableProposals').where('classId','==',currentClass).where('teacherId','==',currentUser.uid).where('status','==','pending').orderBy('submittedAt','desc').limit(1).get();
                 if (!ps.empty) { const d=ps.docs[0]; pendingId=d.id; pendingData=d.data().periods||[]; pendingType=d.data().type||'academic'; } else { pendingId=null; pendingData=[]; }
-                approvedList = [];
-                try { const as = await db.collection('timetables').where('classId','==',currentClass).get(); as.forEach(d => approvedList.push({type:d.data().type||'academic',data:d.data(),id:d.id})); } catch(e){}
+                approvedList = []; try { const as = await db.collection('timetables').where('classId','==',currentClass).get(); as.forEach(d => approvedList.push({type:d.data().type||'academic',data:d.data(),id:d.id})); } catch(e){}
                 approvedList.sort((a,b)=>a.type.localeCompare(b.type));
                 const rs = await db.collection('timetableProposals').where('classId','==',currentClass).where('teacherId','==',currentUser.uid).where('status','==','rejected').orderBy('submittedAt','desc').limit(1).get();
                 if (!rs.empty) { const d=rs.docs[0]; rejectedId=d.id; rejectedData=d.data().periods||[]; rejectedType=d.data().type||'academic'; rejectedFeedback=d.data().feedback||''; } else { rejectedId=null; rejectedData=[]; rejectedFeedback=''; }
@@ -830,251 +702,122 @@
         function renderPendingTable() {
             if (!pendingData.length) { document.getElementById('pendingBody').innerHTML='<tr><td>No pending.</td></tr>'; return; }
             document.getElementById('pendingTableHeader').innerHTML = '<tr>'+getTHeaders(pendingType).slice(0,-1).map(h=>`<th>${h}</th>`).join('')+'</tr>';
-            let html = ''; pendingData.forEach(p => {
-                html += '<tr>';
-                if (pendingType==='academic') { html += `<td>${p.startTime}</td><td>${p.endTime}</td>`; ['monday','tuesday','wednesday','thursday','friday'].forEach(d=>html+=`<td>${p[d]||''}</td>`); }
-                else if (pendingType==='hairstyle') { html += `<td>${p.startTime}</td><td>${p.monday||''}</td><td>${p.tuesday||''}</td>`; }
-                else { html += `<td>${p.startTime}</td><td>${p.endTime}</td>`; ['monday','tuesday','wednesday'].forEach(d=>html+=`<td>${p[d]||''}</td>`); }
-                html += '</tr>';
-            }); document.getElementById('pendingBody').innerHTML = html;
+            let html=''; pendingData.forEach(p => {
+                html+='<tr>';
+                if(pendingType==='academic'){ html+=`<td>${p.startTime}</td><td>${p.endTime}</td>`; ['monday','tuesday','wednesday','thursday','friday'].forEach(d=>html+=`<td>${p[d]||''}</td>`); }
+                else if(pendingType==='hairstyle'){ html+=`<td>${p.startTime}</td><td>${p.monday||''}</td><td>${p.tuesday||''}</td>`; }
+                else{ html+=`<td>${p.startTime}</td><td>${p.endTime}</td>`; ['monday','tuesday','wednesday'].forEach(d=>html+=`<td>${p[d]||''}</td>`); }
+                html+='</tr>';
+            }); document.getElementById('pendingBody').innerHTML=html;
         }
         function renderApprovedTable() {
-            const sel = document.getElementById('approvedTypeSelect'); sel.innerHTML = '<option value="">Select</option>';
-            approvedList.forEach(a => { const o=document.createElement('option'); o.value=a.type; o.textContent=a.type; sel.appendChild(o); });
-            let st = currentApprovedType; if (!st||!approvedList.find(a=>a.type===st)) { st=approvedList.length?approvedList[0].type:null; currentApprovedType=st; }
-            if (!st) { document.getElementById('approvedBody').innerHTML='<tr><td>No approved.</td></tr>'; return; }
-            sel.value = st; const at = approvedList.find(a=>a.type===st); const periods = at.data.periods||[];
-            document.getElementById('approvedTableHeader').innerHTML = '<tr>'+getTHeaders(st).slice(0,-1).map(h=>`<th>${h}</th>`).join('')+'</tr>';
+            const sel=document.getElementById('approvedTypeSelect'); sel.innerHTML='<option value="">Select</option>';
+            approvedList.forEach(a=>{ const o=document.createElement('option'); o.value=a.type; o.textContent=a.type; sel.appendChild(o); });
+            let st=currentApprovedType; if(!st||!approvedList.find(a=>a.type===st)){ st=approvedList.length?approvedList[0].type:null; currentApprovedType=st; }
+            if(!st){ document.getElementById('approvedBody').innerHTML='<tr><td>No approved.</td></tr>'; return; }
+            sel.value=st; const at=approvedList.find(a=>a.type===st); const periods=at.data.periods||[];
+            document.getElementById('approvedTableHeader').innerHTML='<tr>'+getTHeaders(st).slice(0,-1).map(h=>`<th>${h}</th>`).join('')+'</tr>';
             periods.sort((a,b)=>(a.startTime||'').localeCompare(b.startTime||''));
-            let html = ''; periods.forEach(p => {
-                html += '<tr>';
-                if (st==='academic') { html += `<td>${p.startTime}</td><td>${p.endTime}</td>`; ['monday','tuesday','wednesday','thursday','friday'].forEach(d=>html+=`<td>${p[d]||''}</td>`); }
-                else if (st==='hairstyle') { html += `<td>${p.startTime}</td><td>${p.monday||''}</td><td>${p.tuesday||''}</td>`; }
-                else { html += `<td>${p.startTime}</td><td>${p.endTime}</td>`; ['monday','tuesday','wednesday'].forEach(d=>html+=`<td>${p[d]||''}</td>`); }
-                html += '</tr>';
-            }); document.getElementById('approvedBody').innerHTML = html;
-            window._approvedData = at.data; window._approvedType = st; window._approvedId = at.id;
+            let html=''; periods.forEach(p=>{
+                html+='<tr>';
+                if(st==='academic'){ html+=`<td>${p.startTime}</td><td>${p.endTime}</td>`; ['monday','tuesday','wednesday','thursday','friday'].forEach(d=>html+=`<td>${p[d]||''}</td>`); }
+                else if(st==='hairstyle'){ html+=`<td>${p.startTime}</td><td>${p.monday||''}</td><td>${p.tuesday||''}</td>`; }
+                else{ html+=`<td>${p.startTime}</td><td>${p.endTime}</td>`; ['monday','tuesday','wednesday'].forEach(d=>html+=`<td>${p[d]||''}</td>`); }
+                html+='</tr>';
+            }); document.getElementById('approvedBody').innerHTML=html;
+            window._approvedData=at.data; window._approvedType=st; window._approvedId=at.id;
         }
         function renderRejectedTable() {
-            if (!rejectedData.length) { document.getElementById('rejectedBody').innerHTML='<tr><td>No rejected.</td></tr>'; return; }
-            document.getElementById('rejectedTableHeader').innerHTML = '<tr>'+getTHeaders(rejectedType).slice(0,-1).map(h=>`<th>${h}</th>`).join('')+'</tr>';
-            let html = ''; rejectedData.forEach(p => {
-                html += '<tr>';
-                if (rejectedType==='academic') { html += `<td>${p.startTime}</td><td>${p.endTime}</td>`; ['monday','tuesday','wednesday','thursday','friday'].forEach(d=>html+=`<td>${p[d]||''}</td>`); }
-                else if (rejectedType==='hairstyle') { html += `<td>${p.startTime}</td><td>${p.monday||''}</td><td>${p.tuesday||''}</td>`; }
-                else { html += `<td>${p.startTime}</td><td>${p.endTime}</td>`; ['monday','tuesday','wednesday'].forEach(d=>html+=`<td>${p[d]||''}</td>`); }
-                html += '</tr>';
-            }); document.getElementById('rejectedBody').innerHTML = html;
-            document.getElementById('rejectedFeedback').style.display = rejectedFeedback?'block':'none';
-            if (rejectedFeedback) document.getElementById('rejectedFeedback').textContent = 'Feedback: '+rejectedFeedback;
+            if(!rejectedData.length){ document.getElementById('rejectedBody').innerHTML='<tr><td>No rejected.</td></tr>'; return; }
+            document.getElementById('rejectedTableHeader').innerHTML='<tr>'+getTHeaders(rejectedType).slice(0,-1).map(h=>`<th>${h}</th>`).join('')+'</tr>';
+            let html=''; rejectedData.forEach(p=>{
+                html+='<tr>';
+                if(rejectedType==='academic'){ html+=`<td>${p.startTime}</td><td>${p.endTime}</td>`; ['monday','tuesday','wednesday','thursday','friday'].forEach(d=>html+=`<td>${p[d]||''}</td>`); }
+                else if(rejectedType==='hairstyle'){ html+=`<td>${p.startTime}</td><td>${p.monday||''}</td><td>${p.tuesday||''}</td>`; }
+                else{ html+=`<td>${p.startTime}</td><td>${p.endTime}</td>`; ['monday','tuesday','wednesday'].forEach(d=>html+=`<td>${p[d]||''}</td>`); }
+                html+='</tr>';
+            }); document.getElementById('rejectedBody').innerHTML=html;
+            document.getElementById('rejectedFeedback').style.display=rejectedFeedback?'block':'none';
+            if(rejectedFeedback) document.getElementById('rejectedFeedback').textContent='Feedback: '+rejectedFeedback;
         }
-        // Tab switching for timetable
         document.querySelectorAll('#tt-tabs .sub-tab').forEach(t => t.addEventListener('click', ()=>{
             document.querySelectorAll('#tt-tabs .sub-tab').forEach(x=>x.classList.remove('active')); t.classList.add('active');
             ['draft','pending','approved','rejected'].forEach(k => document.getElementById('tt-'+k).style.display = k===t.dataset.tt?'block':'none');
-            if (currentClass) loadAllTimetableData();
+            if(currentClass) loadAllTimetableData();
         }));
-        // Timetable actions
-        document.getElementById('createNewTimetableBtn').addEventListener('click', async ()=>{
-            draftType = document.getElementById('timetableType')?.value || 'academic';
-            draftData = [getEmptyPeriod(draftType)];
-            const d = { classId:currentClass, teacherId:currentUser.uid, periods:draftData, type:draftType, status:'draft', updatedAt:firebase.firestore.FieldValue.serverTimestamp() };
-            try { const r = await db.collection('timetableProposals').add(d); draftId=r.id; renderDraftTable(); document.getElementById('deleteDraftBtn').style.display='inline-block'; showToast('Created','New draft created','success'); } catch(e){showError(e.message);}
-        });
+        document.getElementById('createNewTimetableBtn').addEventListener('click', async ()=>{ draftType = 'academic'; draftData = [getEmptyPeriod(draftType)]; const d = { classId:currentClass, teacherId:currentUser.uid, periods:draftData, type:draftType, status:'draft', updatedAt:firebase.firestore.FieldValue.serverTimestamp() }; try { const r = await db.collection('timetableProposals').add(d); draftId=r.id; renderDraftTable(); document.getElementById('deleteDraftBtn').style.display='inline-block'; showToast('Created','New draft created','success'); } catch(e){showError(e.message);} });
         document.getElementById('addTimetableRowBtn').addEventListener('click', ()=>{ draftData.push(getEmptyPeriod(draftType)); renderDraftTable(); });
-        document.getElementById('saveDraftBtn').addEventListener('click', async ()=>{
-            if (!currentClass) return;
-            const d = { classId:currentClass, teacherId:currentUser.uid, periods:draftData, type:draftType, status:'draft', updatedAt:firebase.firestore.FieldValue.serverTimestamp() };
-            try { if (draftId) await db.collection('timetableProposals').doc(draftId).update(d); else { const r = await db.collection('timetableProposals').add(d); draftId=r.id; } document.getElementById('deleteDraftBtn').style.display='inline-block'; showToast('Saved','Draft saved','success'); } catch(e){showError(e.message);}
-        });
-        document.getElementById('submitTimetableBtn').addEventListener('click', async ()=>{
-            if (!draftData.length) return showToast('Error','Add at least one row','error');
-            const d = { classId:currentClass, teacherId:currentUser.uid, periods:draftData, type:draftType, status:'pending', submittedAt:firebase.firestore.FieldValue.serverTimestamp() };
-            try { if (draftId) await db.collection('timetableProposals').doc(draftId).update(d); else { const r = await db.collection('timetableProposals').add(d); draftId=r.id; } await loadAllTimetableData(); showToast('Submitted','Sent for approval','success'); } catch(e){showError(e.message);}
-        });
-        document.getElementById('deleteDraftBtn').addEventListener('click', ()=>{ openDeleteModal('Delete this draft?', async ()=>{ if (!draftId) return; try { await db.collection('timetableProposals').doc(draftId).delete(); } catch(e){} draftId=null; draftData=[getEmptyPeriod('academic')]; renderDraftTable(); document.getElementById('deleteDraftBtn').style.display='none'; closeDeleteModal(); showToast('Deleted','Draft deleted','success'); }); });
-        document.getElementById('editPendingBtn').addEventListener('click', async ()=>{ if (!pendingId) return; try { await db.collection('timetableProposals').doc(pendingId).update({status:'draft'}); await loadAllTimetableData(); showToast('Moved','Back to draft','info'); } catch(e){showError(e.message);} });
+        document.getElementById('saveDraftBtn').addEventListener('click', async ()=>{ if(!currentClass) return; const d={ classId:currentClass, teacherId:currentUser.uid, periods:draftData, type:draftType, status:'draft', updatedAt:firebase.firestore.FieldValue.serverTimestamp() }; try { if(draftId) await db.collection('timetableProposals').doc(draftId).update(d); else { const r=await db.collection('timetableProposals').add(d); draftId=r.id; } document.getElementById('deleteDraftBtn').style.display='inline-block'; showToast('Saved','Draft saved','success'); } catch(e){showError(e.message);} });
+        document.getElementById('submitTimetableBtn').addEventListener('click', async ()=>{ if(!draftData.length) return showToast('Error','Add at least one row','error'); const d={ classId:currentClass, teacherId:currentUser.uid, periods:draftData, type:draftType, status:'pending', submittedAt:firebase.firestore.FieldValue.serverTimestamp() }; try { if(draftId) await db.collection('timetableProposals').doc(draftId).update(d); else { const r=await db.collection('timetableProposals').add(d); draftId=r.id; } await loadAllTimetableData(); showToast('Submitted','Sent for approval','success'); } catch(e){showError(e.message);} });
+        document.getElementById('deleteDraftBtn').addEventListener('click', ()=>{ openDeleteModal('Delete this draft?', async ()=>{ if(!draftId) return; try { await db.collection('timetableProposals').doc(draftId).delete(); } catch(e){} draftId=null; draftData=[getEmptyPeriod('academic')]; renderDraftTable(); document.getElementById('deleteDraftBtn').style.display='none'; closeDeleteModal(); showToast('Deleted','Draft deleted','success'); }); });
+        document.getElementById('editPendingBtn').addEventListener('click', async ()=>{ if(!pendingId) return; try { await db.collection('timetableProposals').doc(pendingId).update({status:'draft'}); await loadAllTimetableData(); showToast('Moved','Back to draft','info'); } catch(e){showError(e.message);} });
         document.getElementById('approvedTypeSelect').addEventListener('change', e=>{ currentApprovedType=e.target.value; renderApprovedTable(); });
-        document.getElementById('publishTimetableBtn').addEventListener('click', async ()=>{ if (!window._approvedId) return; try { await db.collection('timetables').doc(window._approvedId).update({published:true}); await loadAllTimetableData(); renderApprovedTable(); showToast('Published','Published to students','success'); } catch(e){showError(e.message);} });
-        document.getElementById('editApprovedBtn').addEventListener('click', async ()=>{ if (!window._approvedData) return; const d={ classId:currentClass, teacherId:currentUser.uid, periods:window._approvedData.periods, type:window._approvedType, status:'draft', updatedAt:firebase.firestore.FieldValue.serverTimestamp() }; try { await db.collection('timetableProposals').add(d); await loadAllTimetableData(); showToast('Created','New draft from approved','success'); } catch(e){showError(e.message);} });
-        document.getElementById('editRejectedBtn').addEventListener('click', async ()=>{ if (!rejectedId) return; try { await db.collection('timetableProposals').doc(rejectedId).update({status:'draft'}); await loadAllTimetableData(); showToast('Moved','Back to draft','info'); } catch(e){showError(e.message);} });
+        document.getElementById('publishTimetableBtn').addEventListener('click', async ()=>{ if(!window._approvedId) return; try { await db.collection('timetables').doc(window._approvedId).update({published:true}); await loadAllTimetableData(); renderApprovedTable(); showToast('Published','Published to students','success'); } catch(e){showError(e.message);} });
+        document.getElementById('editApprovedBtn').addEventListener('click', async ()=>{ if(!window._approvedData) return; const d={ classId:currentClass, teacherId:currentUser.uid, periods:window._approvedData.periods, type:window._approvedType, status:'draft', updatedAt:firebase.firestore.FieldValue.serverTimestamp() }; try { await db.collection('timetableProposals').add(d); await loadAllTimetableData(); showToast('Created','New draft from approved','success'); } catch(e){showError(e.message);} });
+        document.getElementById('editRejectedBtn').addEventListener('click', async ()=>{ if(!rejectedId) return; try { await db.collection('timetableProposals').doc(rejectedId).update({status:'draft'}); await loadAllTimetableData(); showToast('Moved','Back to draft','info'); } catch(e){showError(e.message);} });
 
         // ==================== LESSON NOTES LOGIC ====================
         document.querySelectorAll('#ln-subtabs .sub-tab').forEach(t => t.addEventListener('click', ()=>{
             document.querySelectorAll('#ln-subtabs .sub-tab').forEach(x=>x.classList.remove('active')); t.classList.add('active');
             ['syllabus','notebook','teach'].forEach(k => document.getElementById('ln-'+k).style.display = k===t.dataset.ln?'block':'none');
-            if (t.dataset.ln==='teach') renderTeachTab();
+            if(t.dataset.ln==='teach') renderTeachTab();
         }));
         function renderSubjectGrid() {
             const grid = document.getElementById('subjectGrid');
-            if (!subjects.length) { grid.innerHTML='<p>No subjects yet.</p>'; return; }
+            if(!subjects.length){ grid.innerHTML='<p>No subjects yet.</p>'; return; }
             grid.innerHTML = subjects.map(sub => {
                 const s = syllabusMap[sub] || { weeks:[], status:'draft' };
-                return `<div class="subject-card" onclick="selectSubject('${sub}', this)">
-                    <h3>${sub}</h3><p>${s.weeks?.length||0} weeks</p>
-                    <span class="subject-badge ${s.status||'draft'}">${s.status||'draft'}</span>
-                    <button class="delete-subject" onclick="event.stopPropagation();deleteSubject('${sub}')"><i class="fas fa-trash"></i></button>
-                </div>`;
+                return `<div class="subject-card" onclick="selectSubject('${sub}', this)"><h3>${sub}</h3><p>${s.weeks?.length||0} weeks</p><span class="subject-badge ${s.status||'draft'}">${s.status||'draft'}</span><button class="delete-subject" onclick="event.stopPropagation();deleteSubject('${sub}')"><i class="fas fa-trash"></i></button></div>`;
             }).join('');
         }
-        window.deleteSubject = async (sub) => {
-            if (!confirm(`Delete ${sub}?`)) return; showLoading();
-            try {
-                const [sS,lS] = await Promise.all([ db.collection('syllabus').where('teacherId','==',currentUser.uid).where('subject','==',sub).get(), db.collection('lessonNotes').where('teacherId','==',currentUser.uid).where('subject','==',sub).get() ]);
-                const batch = db.batch(); sS.forEach(d=>batch.delete(d.ref)); lS.forEach(d=>batch.delete(d.ref)); await batch.commit();
-                subjects = subjects.filter(s => s !== sub); await db.collection('users').doc(currentUser.uid).update({subjects});
-                delete syllabusMap[sub];
-                if (currentSubject===sub) { document.getElementById('syllabusSection').style.display='none'; document.getElementById('editorSection').style.display='none'; currentSubject=null; }
-                renderSubjectGrid(); showToast('Deleted','Subject deleted','success');
-            } catch(e) { showError(e.message); } finally { hideLoading(); }
-        };
-        window.selectSubject = async (subject, card) => {
-            currentSubject = subject;
-            document.querySelectorAll('.subject-card').forEach(c=>c.classList.remove('active')); card.classList.add('active');
-            document.getElementById('syllabusSection').style.display = 'block';
-            document.getElementById('currentSubjectTitle').textContent = `${subject} Syllabus`;
-            await loadSyllabus(subject);
-            if (window._unsubscribeLessonNotes) window._unsubscribeLessonNotes();
-            window._unsubscribeLessonNotes = db.collection('lessonNotes').where('teacherId','==',currentUser.uid).where('subject','==',subject).onSnapshot(snap => {
-                snap.docChanges().forEach(c => { const d=c.doc.data(); lessonNotesMap[`${subject}_${d.week}`] = { id:c.doc.id, ...d }; });
-                if (currentWeek) { const note = lessonNotesMap[`${currentSubject}_${currentWeek}`] || {}; lessonNoteApproved = note.status==='approved'; lessonNotePushedToTeach = !!note.teachable; updatePostApprovalVisibility(); syncLocalState(note); updateCardVisibility(); videoLinks = note.videoLinks||[]; videosPublished = note.videosPublished||false; videosReady = note.videosReady||false; renderVideoList(); handwritingImages = note.handwritingImages||[]; renderHandwritingImages(); updateAllButtons(note); checkAdminFeedback(note); }
-                renderTeachTab(); renderPublishedContent(); updateWeeklyStats();
-            });
-            await loadLessonNotes(subject); renderWeekTabs();
-        };
-        function syncLocalState(note) {
-            teachingProcessMoved=!!note.teachingProcessReady; resourceMoved=!!note.studentResourceReady; resourcePublished=!!note.resourcePublished;
-            handwritingMoved=!!note.handwritingImagesReady; handwritingPublished=!!note.handwritingImagesPublished;
-            videosReady=!!note.videosReady; videosPublished=!!note.videosPublished; lessonNotePushedToTeach=!!note.teachable;
-        }
-        async function loadSyllabus(sub) {
-            try {
-                const s = await db.collection('syllabus').where('teacherId','==',currentUser.uid).where('subject','==',sub).orderBy('submittedAt','desc').limit(1).get();
-                if (!s.empty) {
-                    const d = s.docs[0]; syllabusMap[sub] = { id:d.id, ...d.data() };
-                    renderSyllabusTable(d.data().weeks||[]); updateSyllabusStatus(d.data().status);
-                    document.getElementById('createLessonNoteBtn').style.display = d.data().status==='approved'?'inline-block':'none';
-                    document.getElementById('editSyllabusBtn').style.display = (d.data().status==='rejected'||d.data().status==='approved')?'inline-block':'none';
-                    document.getElementById('deleteSyllabusBtn').style.display = 'inline-block';
-                    document.getElementById('deleteSyllabusBtn').onclick = () => deleteSyllabus(d.id);
-                } else {
-                    syllabusMap[sub] = { weeks:[], status:'draft' }; renderSyllabusTable([]); updateSyllabusStatus('draft');
-                    document.getElementById('createLessonNoteBtn').style.display='none'; document.getElementById('editSyllabusBtn').style.display='none'; document.getElementById('deleteSyllabusBtn').style.display='none';
-                }
-                renderSubjectGrid();
-            } catch(e) { showError(e.message); }
-        }
-        async function deleteSyllabus(id) {
-            if (!confirm('Delete syllabus?')) return; showLoading();
-            try {
-                const l = await db.collection('lessonNotes').where('teacherId','==',currentUser.uid).where('subject','==',currentSubject).get();
-                const batch = db.batch(); l.forEach(d=>batch.delete(d.ref)); batch.delete(db.collection('syllabus').doc(id)); await batch.commit();
-                await loadSyllabus(currentSubject); showToast('Deleted','Syllabus deleted','success');
-            } catch(e) { showError(e.message); } finally { hideLoading(); }
-        }
-        function renderSyllabusTable(weeks) {
-            if (!weeks.length) weeks = [{week:1,topic:'',objectives:''}];
-            let html = ''; weeks.forEach((w,i) => { html += `<tr><td><input type="number" value="${w.week}" data-i="${i}" data-f="week"></td><td><input type="text" value="${w.topic||''}" data-i="${i}" data-f="topic"></td><td><input type="text" value="${w.objectives||''}" data-i="${i}" data-f="objectives"></td><td><button class="btn btn-danger btn-sm" onclick="deleteSW(${i})"><i class="fas fa-trash"></i></button></td></tr>`; });
-            document.getElementById('syllabusBody').innerHTML = html;
-            document.querySelectorAll('#syllabusBody input').forEach(inp => inp.addEventListener('input', function(){
-                const i=parseInt(this.dataset.i), f=this.dataset.f;
-                if (!syllabusMap[currentSubject].weeks[i]) syllabusMap[currentSubject].weeks[i] = {};
-                syllabusMap[currentSubject].weeks[i][f] = this.value;
-            }));
-        }
+        window.deleteSubject = async (sub) => { if(!confirm(`Delete ${sub}?`)) return; showLoading(); try { const [sS,lS] = await Promise.all([ db.collection('syllabus').where('teacherId','==',currentUser.uid).where('subject','==',sub).get(), db.collection('lessonNotes').where('teacherId','==',currentUser.uid).where('subject','==',sub).get() ]); const batch = db.batch(); sS.forEach(d=>batch.delete(d.ref)); lS.forEach(d=>batch.delete(d.ref)); await batch.commit(); subjects = subjects.filter(s => s !== sub); await db.collection('users').doc(currentUser.uid).update({subjects}); delete syllabusMap[sub]; if(currentSubject===sub){ document.getElementById('syllabusSection').style.display='none'; document.getElementById('editorSection').style.display='none'; currentSubject=null; } renderSubjectGrid(); showToast('Deleted','Subject deleted','success'); } catch(e) { showError(e.message); } finally { hideLoading(); } };
+        window.selectSubject = async (subject, card) => { currentSubject = subject; document.querySelectorAll('.subject-card').forEach(c=>c.classList.remove('active')); card.classList.add('active'); document.getElementById('syllabusSection').style.display = 'block'; document.getElementById('currentSubjectTitle').textContent = `${subject} Syllabus`; await loadSyllabus(subject); if(window._unsubscribeLessonNotes) window._unsubscribeLessonNotes(); window._unsubscribeLessonNotes = db.collection('lessonNotes').where('teacherId','==',currentUser.uid).where('subject','==',subject).onSnapshot(snap => { snap.docChanges().forEach(c => { const d=c.doc.data(); lessonNotesMap[`${subject}_${d.week}`] = { id:c.doc.id, ...d }; }); if(currentWeek) { const note = lessonNotesMap[`${currentSubject}_${currentWeek}`] || {}; lessonNoteApproved = note.status==='approved'; lessonNotePushedToTeach = !!note.teachable; updatePostApprovalVisibility(); syncLocalState(note); updateCardVisibility(); videoLinks = note.videoLinks||[]; videosPublished = note.videosPublished||false; videosReady = note.videosReady||false; renderVideoList(); handwritingImages = note.handwritingImages||[]; renderHandwritingImages(); updateAllButtons(note); checkAdminFeedback(note); } renderTeachTab(); renderPublishedContent(); updateWeeklyStats(); }); await loadLessonNotes(subject); renderWeekTabs(); };
+        function syncLocalState(note){ teachingProcessMoved=!!note.teachingProcessReady; resourceMoved=!!note.studentResourceReady; resourcePublished=!!note.resourcePublished; handwritingMoved=!!note.handwritingImagesReady; handwritingPublished=!!note.handwritingImagesPublished; videosReady=!!note.videosReady; videosPublished=!!note.videosPublished; lessonNotePushedToTeach=!!note.teachable; }
+        async function loadSyllabus(sub){ try { const s = await db.collection('syllabus').where('teacherId','==',currentUser.uid).where('subject','==',sub).orderBy('submittedAt','desc').limit(1).get(); if(!s.empty){ const d=s.docs[0]; syllabusMap[sub]={id:d.id,...d.data()}; renderSyllabusTable(d.data().weeks||[]); updateSyllabusStatus(d.data().status); document.getElementById('createLessonNoteBtn').style.display = d.data().status==='approved'?'inline-block':'none'; document.getElementById('editSyllabusBtn').style.display = (d.data().status==='rejected'||d.data().status==='approved')?'inline-block':'none'; document.getElementById('deleteSyllabusBtn').style.display = 'inline-block'; document.getElementById('deleteSyllabusBtn').onclick = () => deleteSyllabus(d.id); } else { syllabusMap[sub]={weeks:[],status:'draft'}; renderSyllabusTable([]); updateSyllabusStatus('draft'); document.getElementById('createLessonNoteBtn').style.display='none'; document.getElementById('editSyllabusBtn').style.display='none'; document.getElementById('deleteSyllabusBtn').style.display='none'; } renderSubjectGrid(); } catch(e) { showError(e.message); } }
+        async function deleteSyllabus(id){ if(!confirm('Delete syllabus?')) return; showLoading(); try { const l = await db.collection('lessonNotes').where('teacherId','==',currentUser.uid).where('subject','==',currentSubject).get(); const batch = db.batch(); l.forEach(d=>batch.delete(d.ref)); batch.delete(db.collection('syllabus').doc(id)); await batch.commit(); await loadSyllabus(currentSubject); showToast('Deleted','Syllabus deleted','success'); } catch(e) { showError(e.message); } finally { hideLoading(); } }
+        function renderSyllabusTable(weeks){ if(!weeks.length) weeks=[{week:1,topic:'',objectives:''}]; let html=''; weeks.forEach((w,i)=>{ html+=`<tr><td><input type="number" value="${w.week}" data-i="${i}" data-f="week"></td><td><input type="text" value="${w.topic||''}" data-i="${i}" data-f="topic"></td><td><input type="text" value="${w.objectives||''}" data-i="${i}" data-f="objectives"></td><td><button class="btn btn-danger btn-sm" onclick="deleteSW(${i})"><i class="fas fa-trash"></i></button></td></tr>`; }); document.getElementById('syllabusBody').innerHTML=html; document.querySelectorAll('#syllabusBody input').forEach(inp => inp.addEventListener('input', function(){ const i=parseInt(this.dataset.i), f=this.dataset.f; if(!syllabusMap[currentSubject].weeks[i]) syllabusMap[currentSubject].weeks[i]={}; syllabusMap[currentSubject].weeks[i][f]=this.value; })); }
         window.deleteSW = i => { syllabusMap[currentSubject].weeks.splice(i,1); renderSyllabusTable(syllabusMap[currentSubject].weeks); };
-        function updateSyllabusStatus(s) { const el = document.getElementById('syllabusStatus'); el.textContent = s.charAt(0).toUpperCase()+s.slice(1); el.className = `status-badge status-${s}`; }
-        // Syllabus actions
-        document.getElementById('addWeekBtn').addEventListener('click', ()=>{ if (!syllabusMap[currentSubject]) syllabusMap[currentSubject]={weeks:[]}; const last = syllabusMap[currentSubject].weeks.length ? syllabusMap[currentSubject].weeks[syllabusMap[currentSubject].weeks.length-1].week : 0; syllabusMap[currentSubject].weeks.push({week:last+1,topic:'',objectives:''}); renderSyllabusTable(syllabusMap[currentSubject].weeks); });
-        document.getElementById('saveSyllabusBtn').addEventListener('click', async ()=>{ if (!currentSubject) return; const weeks = syllabusMap[currentSubject]?.weeks; if (!weeks?.length) return showToast('Error','Add at least one week','error'); const d = { teacherId:currentUser.uid, subject:currentSubject, classId:currentClass, weeks, status:'draft', updatedAt:firebase.firestore.FieldValue.serverTimestamp() }; try { if (syllabusMap[currentSubject].id) await db.collection('syllabus').doc(syllabusMap[currentSubject].id).update(d); else { const r = await db.collection('syllabus').add(d); syllabusMap[currentSubject].id = r.id; } renderSubjectGrid(); showToast('Saved','Syllabus saved','success'); } catch(e){showError(e.message);} });
-        document.getElementById('submitSyllabusBtn').addEventListener('click', async ()=>{ if (!currentSubject) return; const weeks = syllabusMap[currentSubject]?.weeks; if (!weeks?.length) return showToast('Error','Add at least one week','error'); const d = { teacherId:currentUser.uid, subject:currentSubject, classId:currentClass, weeks, status:'pending', submittedAt:firebase.firestore.FieldValue.serverTimestamp() }; try { if (syllabusMap[currentSubject].id) await db.collection('syllabus').doc(syllabusMap[currentSubject].id).update(d); else { const r = await db.collection('syllabus').add(d); syllabusMap[currentSubject].id = r.id; } updateSyllabusStatus('pending'); renderSubjectGrid(); showToast('Submitted','Syllabus submitted for approval','success'); } catch(e){showError(e.message);} });
-        document.getElementById('editSyllabusBtn').addEventListener('click', async ()=>{ if (!currentSubject) return; const ns = syllabusMap[currentSubject].status==='rejected'?'draft':syllabusMap[currentSubject].status; try { await db.collection('syllabus').doc(syllabusMap[currentSubject].id).update({weeks:syllabusMap[currentSubject].weeks,status:ns,updatedAt:firebase.firestore.FieldValue.serverTimestamp()}); updateSyllabusStatus(ns); renderSubjectGrid(); showToast('Updated','Syllabus updated','success'); } catch(e){showError(e.message);} });
-
-        async function loadLessonNotes(sub) { try { const s = await db.collection('lessonNotes').where('teacherId','==',currentUser.uid).where('subject','==',sub).get(); s.forEach(d=>{ const dd=d.data(); lessonNotesMap[`${sub}_${dd.week}`]={id:d.id,...dd}; }); } catch(e){} }
-        async function loadAllLessonNotes() { try { const s = await db.collection('lessonNotes').where('teacherId','==',currentUser.uid).get(); lessonNotesMap={}; s.forEach(d=>{ const dd=d.data(); lessonNotesMap[`${dd.subject}_${dd.week}`]={id:d.id,...dd}; }); updateWeeklyStats(); } catch(e){} }
-
-        function renderWeekTabs() { const weeks = syllabusMap[currentSubject]?.weeks||[]; const tabs = document.getElementById('weekTabs'); tabs.innerHTML = weeks.map(wk=>`<div class="week-tab" onclick="selectWeek(${wk.week})">Week ${wk.week}: ${wk.topic||'No topic'}</div>`).join(''); }
-        window.selectWeek = (week) => {
-            currentWeek = week;
-            document.querySelectorAll('.week-tab').forEach(t=>t.classList.remove('active')); event.target.classList.add('active');
-            document.getElementById('editorSection').style.display='block'; document.getElementById('editorTitle').textContent = `Week ${week} Lesson Note`;
-            const key = `${currentSubject}_${week}`; const note = lessonNotesMap[key] || {};
-            quill.setText(note.lessonNote||''); document.getElementById('lessonContent').value = note.lessonContent||'';
-            studentQuill.setText(note.studentResource||''); teachingProcessQuill.setText(note.teachingProcess||'');
-            lessonNoteApproved = note.status==='approved'; lessonNotePushedToTeach = !!note.teachable;
-            contentMerged = !!(note.lessonContent&&note.lessonNote);
-            syncLocalState(note); updatePostApprovalVisibility(); updateCardVisibility();
-            videoLinks = note.videoLinks||[]; videosPublished = note.videosPublished||false; videosReady = note.videosReady||false;
-            renderVideoList(); handwritingImages = note.handwritingImages||[]; renderHandwritingImages();
-            updateAllButtons(note); updateMergeButtons(); updateHandwritingButtons(); updateWordCount();
-            restoreFromLocalStorage(); checkAdminFeedback(note);
-        };
-        function updatePostApprovalVisibility() { const approved = lessonNoteApproved; document.getElementById('postApprovalSections').style.display = approved?'block':'none'; document.getElementById('submitEditorBtn').style.display='none'; document.getElementById('pushToTeachBtn').style.display = approved&&!lessonNotePushedToTeach?'inline-block':'none'; }
-        function updateMergeButtons() { document.getElementById('submitEditorBtn').style.display = contentMerged&&!lessonNoteApproved&&!lessonNotePushedToTeach?'inline-block':'none'; }
-        function updateAllButtons(note) {
-            const moveResBtn=document.getElementById('moveResourceToResourcesBtn'), launchResBtn=document.getElementById('launchResourceToStudentsBtn'), copyResBtn=document.getElementById('copyResourceToResourceEditor');
-            if (note.id&&lessonNoteApproved&&studentQuill.getText().trim()) { if (!resourceMoved) moveResBtn.style.display='inline-block'; else moveResBtn.style.display='none'; if (!resourcePublished) launchResBtn.style.display='inline-block'; else launchResBtn.style.display='none'; copyResBtn.style.display='inline-block'; } else { moveResBtn.style.display='none'; launchResBtn.style.display='none'; copyResBtn.style.display='none'; }
-            document.getElementById('copyTPToTeachingProcessEditor').style.display = teachingProcessQuill.getText().trim()?'inline-block':'none';
-            document.getElementById('moveToTeachBtn').style.display = teachingProcessMoved?'none':'inline-block';
-            document.getElementById('moveVideosToTeachBtn').style.display = videoLinks.length&&!videosReady?'inline-block':'none';
-            document.getElementById('publishVideosToStudentsBtn').style.display = videoLinks.length&&!videosPublished?'inline-block':'none';
-        }
-        function updateCardVisibility() {
-            document.getElementById('lessonNoteCard').classList.toggle('locked', lessonNotePushedToTeach);
-            document.getElementById('teachingProcessCard').classList.toggle('locked', teachingProcessMoved);
-            document.getElementById('studentResourceSection').classList.toggle('locked', resourceMoved||resourcePublished);
-            document.getElementById('handwritingSection').classList.toggle('locked', handwritingMoved&&handwritingPublished);
-            document.getElementById('videoSection').classList.toggle('locked', videosReady&&videosPublished);
-        }
-        function checkAdminFeedback(note) {
-            const box = document.getElementById('adminFeedbackBox');
-            if (note.adminRemark) { box.classList.add('visible'); document.getElementById('adminFeedbackText').textContent = note.adminRemark; }
-            else { box.classList.remove('visible'); }
-        }
+        function updateSyllabusStatus(s){ const el = document.getElementById('syllabusStatus'); el.textContent = s.charAt(0).toUpperCase()+s.slice(1); el.className = `status-badge status-${s}`; }
+        document.getElementById('addWeekBtn').addEventListener('click', ()=>{ if(!syllabusMap[currentSubject]) syllabusMap[currentSubject]={weeks:[]}; const last = syllabusMap[currentSubject].weeks.length ? syllabusMap[currentSubject].weeks[syllabusMap[currentSubject].weeks.length-1].week : 0; syllabusMap[currentSubject].weeks.push({week:last+1,topic:'',objectives:''}); renderSyllabusTable(syllabusMap[currentSubject].weeks); });
+        document.getElementById('saveSyllabusBtn').addEventListener('click', async ()=>{ if(!currentSubject) return; const weeks = syllabusMap[currentSubject]?.weeks; if(!weeks?.length) return showToast('Error','Add at least one week','error'); const d={ teacherId:currentUser.uid, subject:currentSubject, classId:currentClass, weeks, status:'draft', updatedAt:firebase.firestore.FieldValue.serverTimestamp() }; try { if(syllabusMap[currentSubject].id) await db.collection('syllabus').doc(syllabusMap[currentSubject].id).update(d); else { const r=await db.collection('syllabus').add(d); syllabusMap[currentSubject].id=r.id; } renderSubjectGrid(); showToast('Saved','Syllabus saved','success'); } catch(e){showError(e.message);} });
+        document.getElementById('submitSyllabusBtn').addEventListener('click', async ()=>{ if(!currentSubject) return; const weeks = syllabusMap[currentSubject]?.weeks; if(!weeks?.length) return showToast('Error','Add at least one week','error'); const d={ teacherId:currentUser.uid, subject:currentSubject, classId:currentClass, weeks, status:'pending', submittedAt:firebase.firestore.FieldValue.serverTimestamp() }; try { if(syllabusMap[currentSubject].id) await db.collection('syllabus').doc(syllabusMap[currentSubject].id).update(d); else { const r=await db.collection('syllabus').add(d); syllabusMap[currentSubject].id=r.id; } updateSyllabusStatus('pending'); renderSubjectGrid(); showToast('Submitted','Syllabus submitted for approval','success'); } catch(e){showError(e.message);} });
+        document.getElementById('editSyllabusBtn').addEventListener('click', async ()=>{ if(!currentSubject) return; const ns = syllabusMap[currentSubject].status==='rejected'?'draft':syllabusMap[currentSubject].status; try { await db.collection('syllabus').doc(syllabusMap[currentSubject].id).update({weeks:syllabusMap[currentSubject].weeks,status:ns,updatedAt:firebase.firestore.FieldValue.serverTimestamp()}); updateSyllabusStatus(ns); renderSubjectGrid(); showToast('Updated','Syllabus updated','success'); } catch(e){showError(e.message);} });
+        async function loadLessonNotes(sub){ try { const s = await db.collection('lessonNotes').where('teacherId','==',currentUser.uid).where('subject','==',sub).get(); s.forEach(d=>{ const dd=d.data(); lessonNotesMap[`${sub}_${dd.week}`]={id:d.id,...dd}; }); } catch(e){} }
+        async function loadAllLessonNotes(){ try { const s = await db.collection('lessonNotes').where('teacherId','==',currentUser.uid).get(); lessonNotesMap={}; s.forEach(d=>{ const dd=d.data(); lessonNotesMap[`${dd.subject}_${dd.week}`]={id:d.id,...dd}; }); updateWeeklyStats(); } catch(e){} }
+        function renderWeekTabs(){ const weeks = syllabusMap[currentSubject]?.weeks||[]; const tabs = document.getElementById('weekTabs'); tabs.innerHTML = weeks.map(wk=>`<div class="week-tab" onclick="selectWeek(${wk.week})">Week ${wk.week}: ${wk.topic||'No topic'}</div>`).join(''); }
+        window.selectWeek = (week) => { currentWeek = week; document.querySelectorAll('.week-tab').forEach(t=>t.classList.remove('active')); event.target.classList.add('active'); document.getElementById('editorSection').style.display='block'; document.getElementById('editorTitle').textContent = `Week ${week} Lesson Note`; const key = `${currentSubject}_${week}`; const note = lessonNotesMap[key] || {}; quill.setText(note.lessonNote||''); document.getElementById('lessonContent').value = note.lessonContent||''; studentQuill.setText(note.studentResource||''); teachingProcessQuill.setText(note.teachingProcess||''); lessonNoteApproved = note.status==='approved'; lessonNotePushedToTeach = !!note.teachable; contentMerged = !!(note.lessonContent&&note.lessonNote); syncLocalState(note); updatePostApprovalVisibility(); updateCardVisibility(); videoLinks = note.videoLinks||[]; videosPublished = note.videosPublished||false; videosReady = note.videosReady||false; renderVideoList(); handwritingImages = note.handwritingImages||[]; renderHandwritingImages(); updateAllButtons(note); updateMergeButtons(); updateHandwritingButtons(); updateWordCount(); restoreFromLocalStorage(); checkAdminFeedback(note); };
+        function updatePostApprovalVisibility(){ const approved = lessonNoteApproved; document.getElementById('postApprovalSections').style.display = approved?'block':'none'; document.getElementById('submitEditorBtn').style.display='none'; document.getElementById('pushToTeachBtn').style.display = approved&&!lessonNotePushedToTeach?'inline-block':'none'; }
+        function updateMergeButtons(){ document.getElementById('submitEditorBtn').style.display = contentMerged&&!lessonNoteApproved&&!lessonNotePushedToTeach?'inline-block':'none'; }
+        function updateAllButtons(note){ const moveResBtn=document.getElementById('moveResourceToResourcesBtn'), launchResBtn=document.getElementById('launchResourceToStudentsBtn'), copyResBtn=document.getElementById('copyResourceToResourceEditor'); if(note.id&&lessonNoteApproved&&studentQuill.getText().trim()){ if(!resourceMoved) moveResBtn.style.display='inline-block'; else moveResBtn.style.display='none'; if(!resourcePublished) launchResBtn.style.display='inline-block'; else launchResBtn.style.display='none'; copyResBtn.style.display='inline-block'; } else { moveResBtn.style.display='none'; launchResBtn.style.display='none'; copyResBtn.style.display='none'; } document.getElementById('copyTPToTeachingProcessEditor').style.display = teachingProcessQuill.getText().trim()?'inline-block':'none'; document.getElementById('moveToTeachBtn').style.display = teachingProcessMoved?'none':'inline-block'; document.getElementById('moveVideosToTeachBtn').style.display = videoLinks.length&&!videosReady?'inline-block':'none'; document.getElementById('publishVideosToStudentsBtn').style.display = videoLinks.length&&!videosPublished?'inline-block':'none'; }
+        function updateCardVisibility(){ document.getElementById('lessonNoteCard').classList.toggle('locked', lessonNotePushedToTeach); document.getElementById('teachingProcessCard').classList.toggle('locked', teachingProcessMoved); document.getElementById('studentResourceSection').classList.toggle('locked', resourceMoved||resourcePublished); document.getElementById('handwritingSection').classList.toggle('locked', handwritingMoved&&handwritingPublished); document.getElementById('videoSection').classList.toggle('locked', videosReady&&videosPublished); }
+        function checkAdminFeedback(note){ const box = document.getElementById('adminFeedbackBox'); if(note.adminRemark){ box.classList.add('visible'); document.getElementById('adminFeedbackText').textContent = note.adminRemark; } else { box.classList.remove('visible'); } }
 
         // Quill editors
         quill = new Quill('#editor', { theme:'snow', modules:{ toolbar:[['bold','italic','underline','strike'],[{'header':[1,2,3,false]}],[{'list':'ordered'},{'list':'bullet'}],[{'align':[]}],['link','blockquote','code-block'],[{'color':[]},{'background':[]}],['clean']] }, placeholder:'Write your full lesson note here...' });
         quill.on('text-change', ()=>{ updateWordCount(); updateAutoSaveIndicator(false); });
         studentQuill = new Quill('#studentResourceEditor', { theme:'snow', modules:{ toolbar:[['bold','italic','underline'],[{'header':[1,2,false]}],[{'list':'ordered'},{'list':'bullet'}],['link','blockquote'],['clean']] }, placeholder:'Write textbook-style explanation for students...' });
         teachingProcessQuill = new Quill('#teachingProcessEditor', { theme:'snow', modules:{ toolbar:[['bold','italic','underline'],[{'header':[1,2,false]}],[{'list':'ordered'},{'list':'bullet'}],['link','blockquote'],['clean']] }, placeholder:'Write step-by-step teaching process with time frames...' });
-        function updateWordCount() { const text = quill.getText(); const words = text.trim()?text.trim().split(/\s+/).length:0; document.getElementById('wordCount').textContent = `Words: ${words}`; document.getElementById('readingTime').textContent = `Reading: ${Math.ceil(words/200)} min`; }
+        function updateWordCount(){ const text = quill.getText(); const words = text.trim()?text.trim().split(/\s+/).length:0; document.getElementById('wordCount').textContent = `Words: ${words}`; document.getElementById('readingTime').textContent = `Reading: ${Math.ceil(words/200)} min`; }
 
         // Lesson Note actions
-        document.getElementById('useAIContentBtn').addEventListener('click', async ()=>{
-            if (!groq) return showToast('Error','AI not available','error');
-            const topic = syllabusMap[currentSubject]?.weeks?.find(w=>w.week==currentWeek)?.topic||'';
-            if (!topic) return showToast('Error','No topic found','error'); showLoading();
-            try { const completion = await groq.chat.completions.create({ messages:[{role:'system',content:`You are a Nigerian teacher writing lesson content for ${currentSubject}. Write comprehensive content on "${topic}".`}], model:'llama-3.3-70b-versatile', temperature:0.5, max_tokens:3000 }); document.getElementById('lessonContent').value = completion.choices[0].message.content; updateMergeButtons(); showToast('Generated','Content generated. Merge it into the lesson note.','success'); } catch(e){ showError('AI generation failed: '+e.message); } finally { hideLoading(); }
-        });
-        document.getElementById('mergeContentBtn').addEventListener('click', ()=>{ const content = document.getElementById('lessonContent').value.trim(); if (!content) return showToast('Empty','Write lesson content first','warning'); const currentLN = quill.getText().trim(); quill.setText(currentLN?currentLN+'\n\n---\n\n'+content:content); contentMerged=true; updateMergeButtons(); showToast('Merged','Content merged. You can now submit.','success'); });
-        document.getElementById('saveEditorBtn').addEventListener('click', async ()=>{
-            if (!currentSubject||!currentWeek) return; const ln=quill.getText(); const lc=document.getElementById('lessonContent').value; if (!ln.trim()&&!lc.trim()) return showToast('Empty','Write something','warning');
-            const key=`${currentSubject}_${currentWeek}`; const existing=lessonNotesMap[key]||{}; const topic=syllabusMap[currentSubject]?.weeks?.find(w=>w.week==currentWeek)?.topic||'';
-            const d={ teacherId:currentUser.uid, subject:currentSubject, week:currentWeek, topic, lessonNote:ln, lessonContent:lc, classId:currentClass, status:existing.status||'draft', teachable:false, updatedAt:firebase.firestore.FieldValue.serverTimestamp() };
-            try { if (existing.id) await db.collection('lessonNotes').doc(existing.id).update(d); else { const r=await db.collection('lessonNotes').add(d); lessonNotesMap[key]={id:r.id,...d}; }
-            teachingProcessMoved=false; resourceMoved=false; resourcePublished=false; handwritingMoved=false; handwritingPublished=false; videosReady=false; videosPublished=false; lessonNotePushedToTeach=false;
-            updateCardVisibility(); updatePostApprovalVisibility(); updateAllButtons(lessonNotesMap[key]||{}); await loadAllLessonNotes(); renderTeachTab(); renderPublishedContent(); showToast('Saved','Lesson note saved. All boxes unlocked for editing.','success'); } catch(e){showError(e.message);}
-        });
-        document.getElementById('submitEditorBtn').addEventListener('click', async ()=>{
-            if (!currentSubject||!currentWeek) return; if (!contentMerged) return showToast('Error','Merge content into lesson note first','warning');
-            const ln=quill.getText(); const lc=document.getElementById('lessonContent').value.trim(); const key=`${currentSubject}_${currentWeek}`; const existing=lessonNotesMap[key]||{};
-            const d={ teacherId:currentUser.uid, subject:currentSubject, week:currentWeek, topic:syllabusMap[currentSubject]?.weeks?.find(w=>w.week==currentWeek)?.topic||'', lessonNote:ln, lessonContent:lc, classId:currentClass, status:'pending', submittedAt:firebase.firestore.FieldValue.serverTimestamp() };
-            try { if (existing.id) await db.collection('lessonNotes').doc(existing.id).update(d); else { const r=await db.collection('lessonNotes').add(d); lessonNotesMap[key]={id:r.id,...d}; } await loadAllLessonNotes(); renderTeachTab(); showToast('Submitted','Both content and lesson note submitted for admin approval.','success'); } catch(e){showError(e.message);}
-        });
-        document.getElementById('pushToTeachBtn').addEventListener('click', async ()=>{ if (!currentSubject||!currentWeek) return; const key=`${currentSubject}_${currentWeek}`; const note=lessonNotesMap[key]; if (!note?.id) return showToast('Error','Lesson note not found','error'); try { await db.collection('lessonNotes').doc(note.id).update({teachable:true,updatedAt:firebase.firestore.FieldValue.serverTimestamp()}); lessonNotePushedToTeach=true; updateCardVisibility(); updatePostApprovalVisibility(); showToast('Pushed','Lesson note pushed to Teach!','success'); await loadAllLessonNotes(); renderTeachTab(); renderPublishedContent(); } catch(e){showError(e.message);} });
+        document.getElementById('useAIContentBtn').addEventListener('click', async ()=>{ if(!groq) return showToast('Error','AI not available','error'); const topic = syllabusMap[currentSubject]?.weeks?.find(w=>w.week==currentWeek)?.topic||''; if(!topic) return showToast('Error','No topic found','error'); showLoading(); try { const completion = await groq.chat.completions.create({ messages:[{role:'system',content:`You are a Nigerian teacher writing lesson content for ${currentSubject}. Write comprehensive content on "${topic}".`}], model:'llama-3.3-70b-versatile', temperature:0.5, max_tokens:3000 }); document.getElementById('lessonContent').value = completion.choices[0].message.content; updateMergeButtons(); showToast('Generated','Content generated. Merge it into the lesson note.','success'); } catch(e){ showError('AI generation failed: '+e.message); } finally { hideLoading(); } });
+        document.getElementById('mergeContentBtn').addEventListener('click', ()=>{ const content = document.getElementById('lessonContent').value.trim(); if(!content) return showToast('Empty','Write lesson content first','warning'); const currentLN = quill.getText().trim(); quill.setText(currentLN?currentLN+'\n\n---\n\n'+content:content); contentMerged=true; updateMergeButtons(); showToast('Merged','Content merged. You can now submit.','success'); });
+        document.getElementById('saveEditorBtn').addEventListener('click', async ()=>{ if(!currentSubject||!currentWeek) return; const ln=quill.getText(); const lc=document.getElementById('lessonContent').value; if(!ln.trim()&&!lc.trim()) return showToast('Empty','Write something','warning'); const key=`${currentSubject}_${currentWeek}`; const existing=lessonNotesMap[key]||{}; const topic=syllabusMap[currentSubject]?.weeks?.find(w=>w.week==currentWeek)?.topic||''; const d={ teacherId:currentUser.uid, subject:currentSubject, week:currentWeek, topic, lessonNote:ln, lessonContent:lc, classId:currentClass, status:existing.status||'draft', teachable:false, updatedAt:firebase.firestore.FieldValue.serverTimestamp() }; try { if(existing.id) await db.collection('lessonNotes').doc(existing.id).update(d); else { const r=await db.collection('lessonNotes').add(d); lessonNotesMap[key]={id:r.id,...d}; } teachingProcessMoved=false; resourceMoved=false; resourcePublished=false; handwritingMoved=false; handwritingPublished=false; videosReady=false; videosPublished=false; lessonNotePushedToTeach=false; updateCardVisibility(); updatePostApprovalVisibility(); updateAllButtons(lessonNotesMap[key]||{}); await loadAllLessonNotes(); renderTeachTab(); renderPublishedContent(); showToast('Saved','Lesson note saved. All boxes unlocked for editing.','success'); } catch(e){showError(e.message);} });
+        document.getElementById('submitEditorBtn').addEventListener('click', async ()=>{ if(!currentSubject||!currentWeek) return; if(!contentMerged) return showToast('Error','Merge content into lesson note first','warning'); const ln=quill.getText(); const lc=document.getElementById('lessonContent').value.trim(); const key=`${currentSubject}_${currentWeek}`; const existing=lessonNotesMap[key]||{}; const d={ teacherId:currentUser.uid, subject:currentSubject, week:currentWeek, topic:syllabusMap[currentSubject]?.weeks?.find(w=>w.week==currentWeek)?.topic||'', lessonNote:ln, lessonContent:lc, classId:currentClass, status:'pending', submittedAt:firebase.firestore.FieldValue.serverTimestamp() }; try { if(existing.id) await db.collection('lessonNotes').doc(existing.id).update(d); else { const r=await db.collection('lessonNotes').add(d); lessonNotesMap[key]={id:r.id,...d}; } await loadAllLessonNotes(); renderTeachTab(); showToast('Submitted','Both content and lesson note submitted for admin approval.','success'); } catch(e){showError(e.message);} });
+        document.getElementById('pushToTeachBtn').addEventListener('click', async ()=>{ if(!currentSubject||!currentWeek) return; const key=`${currentSubject}_${currentWeek}`; const note=lessonNotesMap[key]; if(!note?.id) return showToast('Error','Lesson note not found','error'); try { await db.collection('lessonNotes').doc(note.id).update({teachable:true,updatedAt:firebase.firestore.FieldValue.serverTimestamp()}); lessonNotePushedToTeach=true; updateCardVisibility(); updatePostApprovalVisibility(); showToast('Pushed','Lesson note pushed to Teach!','success'); await loadAllLessonNotes(); renderTeachTab(); renderPublishedContent(); } catch(e){showError(e.message);} });
 
         // Teaching Process
-        document.getElementById('aiGenerateTPBtn').addEventListener('click', async ()=>{ if (!groq) return; const topic=syllabusMap[currentSubject]?.weeks?.find(w=>w.week==currentWeek)?.topic||''; const ln=quill.getText(); showLoading(); try { const completion=await groq.chat.completions.create({ messages:[{role:'system',content:`Create a teaching process for ${currentSubject} on "${topic}".`},{role:'user',content:ln.substring(0,2000)}], model:'llama-3.3-70b-versatile', temperature:0.5, max_tokens:3000 }); teachingProcessQuill.setText(completion.choices[0].message.content); lastGeneratedText=completion.choices[0].message.content; document.getElementById('copyTPToTeachingProcessEditor').style.display='inline-block'; showToast('Generated','Teaching process auto-generated!','success'); } catch(e){ showError('AI generation failed: '+e.message); } finally { hideLoading(); } });
-        document.getElementById('saveTeachingProcessBtn').addEventListener('click', async ()=>{ if (!lessonNoteApproved) return showToast('Locked','Lesson note must be approved first','warning'); if (!currentSubject||!currentWeek) return; const tp=teachingProcessQuill.getText(); if (!tp.trim()) return showToast('Empty','Write something','warning'); const key=`${currentSubject}_${currentWeek}`; const existing=lessonNotesMap[key]||{}; try { if (existing.id) await db.collection('lessonNotes').doc(existing.id).update({teachingProcess:tp,updatedAt:firebase.firestore.FieldValue.serverTimestamp()}); showToast('Saved','Teaching process saved','success'); } catch(e){showError(e.message);} });
-        document.getElementById('moveToTeachBtn').addEventListener('click', async ()=>{ if (!currentSubject||!currentWeek) return; const key=`${currentSubject}_${currentWeek}`; const note=lessonNotesMap[key]; if (!note?.id) return showToast('Error','Save teaching process first','error'); const tp=teachingProcessQuill.getText(); if (!tp.trim()) return showToast('Empty','Write something','warning'); try { await db.collection('lessonNotes').doc(note.id).update({teachingProcess:tp,teachingProcessReady:true,updatedAt:firebase.firestore.FieldValue.serverTimestamp()}); teachingProcessMoved=true; updateCardVisibility(); updateAllButtons(note); showToast('Moved','Teaching process moved to Teach','success'); renderPublishedContent(); } catch(e){showError(e.message);} });
-        document.getElementById('copyTPToTeachingProcessEditor').addEventListener('click', ()=>{ if (lastGeneratedText) { teachingProcessQuill.setText(lastGeneratedText); showToast('Copied','AI content copied to Teaching Process editor','success'); } else showToast('Nothing','No AI content','warning'); });
+        document.getElementById('aiGenerateTPBtn').addEventListener('click', async ()=>{ if(!groq) return; const topic=syllabusMap[currentSubject]?.weeks?.find(w=>w.week==currentWeek)?.topic||''; const ln=quill.getText(); showLoading(); try { const completion=await groq.chat.completions.create({ messages:[{role:'system',content:`Create a teaching process for ${currentSubject} on "${topic}".`},{role:'user',content:ln.substring(0,2000)}], model:'llama-3.3-70b-versatile', temperature:0.5, max_tokens:3000 }); teachingProcessQuill.setText(completion.choices[0].message.content); lastGeneratedText=completion.choices[0].message.content; document.getElementById('copyTPToTeachingProcessEditor').style.display='inline-block'; showToast('Generated','Teaching process auto-generated!','success'); } catch(e){ showError('AI generation failed: '+e.message); } finally { hideLoading(); } });
+        document.getElementById('saveTeachingProcessBtn').addEventListener('click', async ()=>{ if(!lessonNoteApproved) return showToast('Locked','Lesson note must be approved first','warning'); if(!currentSubject||!currentWeek) return; const tp=teachingProcessQuill.getText(); if(!tp.trim()) return showToast('Empty','Write something','warning'); const key=`${currentSubject}_${currentWeek}`; const existing=lessonNotesMap[key]||{}; try { if(existing.id) await db.collection('lessonNotes').doc(existing.id).update({teachingProcess:tp,updatedAt:firebase.firestore.FieldValue.serverTimestamp()}); showToast('Saved','Teaching process saved','success'); } catch(e){showError(e.message);} });
+        document.getElementById('moveToTeachBtn').addEventListener('click', async ()=>{ if(!currentSubject||!currentWeek) return; const key=`${currentSubject}_${currentWeek}`; const note=lessonNotesMap[key]; if(!note?.id) return showToast('Error','Save teaching process first','error'); const tp=teachingProcessQuill.getText(); if(!tp.trim()) return showToast('Empty','Write something','warning'); try { await db.collection('lessonNotes').doc(note.id).update({teachingProcess:tp,teachingProcessReady:true,updatedAt:firebase.firestore.FieldValue.serverTimestamp()}); teachingProcessMoved=true; updateCardVisibility(); updateAllButtons(note); showToast('Moved','Teaching process moved to Teach','success'); renderPublishedContent(); } catch(e){showError(e.message);} });
+        document.getElementById('copyTPToTeachingProcessEditor').addEventListener('click', ()=>{ if(lastGeneratedText){ teachingProcessQuill.setText(lastGeneratedText); showToast('Copied','AI content copied to Teaching Process editor','success'); } else showToast('Nothing','No AI content','warning'); });
 
         // Student Resources
-        document.getElementById('aiGenerateResourceBtn').addEventListener('click', async ()=>{ if (!groq) return; const topic=syllabusMap[currentSubject]?.weeks?.find(w=>w.week==currentWeek)?.topic||''; showLoading(); try { const completion=await groq.chat.completions.create({ messages:[{role:'system',content:`Create textbook-style student resources for ${currentSubject} on "${topic}".`}], model:'llama-3.3-70b-versatile', temperature:0.5, max_tokens:3000 }); studentQuill.setText(completion.choices[0].message.content); lastGeneratedText=completion.choices[0].message.content; updateAllButtons(lessonNotesMap[`${currentSubject}_${currentWeek}`]||{}); showToast('Generated','Student resources auto-generated!','success'); } catch(e){ showError('AI generation failed: '+e.message); } finally { hideLoading(); } });
-        document.getElementById('saveStudentResourceBtn').addEventListener('click', async ()=>{ if (!lessonNoteApproved) return showToast('Locked','Lesson note must be approved first','warning'); if (!currentSubject||!currentWeek) return; const sr=studentQuill.getText(); if (!sr.trim()) return showToast('Empty','Write something','warning'); const key=`${currentSubject}_${currentWeek}`; const existing=lessonNotesMap[key]||{}; try { if (existing.id) await db.collection('lessonNotes').doc(existing.id).update({studentResource:sr,updatedAt:firebase.firestore.FieldValue.serverTimestamp()}); showToast('Saved','Resource saved','success'); } catch(e){showError(e.message);} });
-        document.getElementById('moveResourceToResourcesBtn').addEventListener('click', async ()=>{ if (!currentSubject||!currentWeek) return; const key=`${currentSubject}_${currentWeek}`; const note=lessonNotesMap[key]; if (!note?.id) return showToast('Error','Save resource first','error'); try { await db.collection('lessonNotes').doc(note.id).update({studentResource:studentQuill.getText(),studentResourceReady:true,updatedAt:firebase.firestore.FieldValue.serverTimestamp()}); resourceMoved=true; updateCardVisibility(); updateAllButtons(note); showToast('Moved','Resources moved to Resources','success'); renderPublishedContent(); } catch(e){showError(e.message);} });
-        document.getElementById('launchResourceToStudentsBtn').addEventListener('click', async ()=>{ if (!currentSubject||!currentWeek) return; const key=`${currentSubject}_${currentWeek}`; const note=lessonNotesMap[key]; if (!note?.id) return showToast('Error','Save resource first','error'); try { await db.collection('lessonNotes').doc(note.id).update({studentResource:studentQuill.getText(),resourcePublished:true,updatedAt:firebase.firestore.FieldValue.serverTimestamp()}); resourcePublished=true; updateCardVisibility(); updateAllButtons(note); showToast('Published','Resources launched to students','success'); renderPublishedContent(); } catch(e){showError(e.message);} });
-        document.getElementById('copyResourceToResourceEditor').addEventListener('click', ()=>{ if (lastGeneratedText) { studentQuill.setText(lastGeneratedText); showToast('Copied','AI content copied to Resource editor','success'); } else showToast('Nothing','No AI content','warning'); });
+        document.getElementById('aiGenerateResourceBtn').addEventListener('click', async ()=>{ if(!groq) return; const topic=syllabusMap[currentSubject]?.weeks?.find(w=>w.week==currentWeek)?.topic||''; showLoading(); try { const completion=await groq.chat.completions.create({ messages:[{role:'system',content:`Create textbook-style student resources for ${currentSubject} on "${topic}".`}], model:'llama-3.3-70b-versatile', temperature:0.5, max_tokens:3000 }); studentQuill.setText(completion.choices[0].message.content); lastGeneratedText=completion.choices[0].message.content; updateAllButtons(lessonNotesMap[`${currentSubject}_${currentWeek}`]||{}); showToast('Generated','Student resources auto-generated!','success'); } catch(e){ showError('AI generation failed: '+e.message); } finally { hideLoading(); } });
+        document.getElementById('saveStudentResourceBtn').addEventListener('click', async ()=>{ if(!lessonNoteApproved) return showToast('Locked','Lesson note must be approved first','warning'); if(!currentSubject||!currentWeek) return; const sr=studentQuill.getText(); if(!sr.trim()) return showToast('Empty','Write something','warning'); const key=`${currentSubject}_${currentWeek}`; const existing=lessonNotesMap[key]||{}; try { if(existing.id) await db.collection('lessonNotes').doc(existing.id).update({studentResource:sr,updatedAt:firebase.firestore.FieldValue.serverTimestamp()}); showToast('Saved','Resource saved','success'); } catch(e){showError(e.message);} });
+        document.getElementById('moveResourceToResourcesBtn').addEventListener('click', async ()=>{ if(!currentSubject||!currentWeek) return; const key=`${currentSubject}_${currentWeek}`; const note=lessonNotesMap[key]; if(!note?.id) return showToast('Error','Save resource first','error'); try { await db.collection('lessonNotes').doc(note.id).update({studentResource:studentQuill.getText(),studentResourceReady:true,updatedAt:firebase.firestore.FieldValue.serverTimestamp()}); resourceMoved=true; updateCardVisibility(); updateAllButtons(note); showToast('Moved','Resources moved to Resources','success'); renderPublishedContent(); } catch(e){showError(e.message);} });
+        document.getElementById('launchResourceToStudentsBtn').addEventListener('click', async ()=>{ if(!currentSubject||!currentWeek) return; const key=`${currentSubject}_${currentWeek}`; const note=lessonNotesMap[key]; if(!note?.id) return showToast('Error','Save resource first','error'); try { await db.collection('lessonNotes').doc(note.id).update({studentResource:studentQuill.getText(),resourcePublished:true,updatedAt:firebase.firestore.FieldValue.serverTimestamp()}); resourcePublished=true; updateCardVisibility(); updateAllButtons(note); showToast('Published','Resources launched to students','success'); renderPublishedContent(); } catch(e){showError(e.message);} });
+        document.getElementById('copyResourceToResourceEditor').addEventListener('click', ()=>{ if(lastGeneratedText){ studentQuill.setText(lastGeneratedText); showToast('Copied','AI content copied to Resource editor','success'); } else showToast('Nothing','No AI content','warning'); });
 
         // Handwriting
         function renderHandwritingImages(){ const c=document.getElementById('handwritingImages'); if(!handwritingImages.length){ c.innerHTML='<p style="color:var(--text-secondary);">No visual notes yet. Click on images to enlarge.</p>'; updateHandwritingButtons(); return; } c.innerHTML=handwritingImages.map((img,i)=>`<div class="handwriting-card" onclick="window.open('${img.url}','_blank')"><img src="${img.url}" alt="Visual note"><div class="caption">Visual ${i+1} <button class="btn btn-xs btn-danger" onclick="event.stopPropagation();deleteHandwritingImage(${i})" style="float:right;"><i class="fas fa-trash"></i></button></div></div>`).join(''); updateHandwritingButtons(); }
@@ -1100,7 +843,7 @@
         async function newConv(){ const id=Date.now().toString(); const c={id,title:'New Chat',messages:[],teacherId:currentUser.uid,createdAt:firebase.firestore.FieldValue.serverTimestamp(),updatedAt:firebase.firestore.FieldValue.serverTimestamp()}; try { await db.collection('aiConversations').doc(id).set(c); assistantConversations.unshift(c); currentConversationId=id; renderHistory(); displayConv(c); document.getElementById('assistantSaveBtn').style.display='none'; } catch(e){showError(e.message);} }
         function displayConv(c){ const chat=document.getElementById('assistantChat'); chat.innerHTML=''; if(c.messages) c.messages.forEach(m=>addMsgToChat(m.role,m.content)); chat.scrollTop=chat.scrollHeight; }
         function addMsgToChat(role,content){ const w=document.createElement('div'); w.className=`message-wrapper ${role}`; const b=document.createElement('div'); b.className='message-bubble'; b.innerHTML=content.replace(/\n/g,'<br>'); const t=document.createElement('div'); t.className='message-time'; t.textContent=new Date().toLocaleTimeString([],{hour:'2-digit',minute:'2-digit'}); w.appendChild(b); w.appendChild(t); document.getElementById('assistantChat').appendChild(w); }
-        window.openAIAssistant=(mode='general')=>{ if(!currentConversationId) newConv(); if(currentSubject&&currentWeek){ const wd=syllabusMap[currentSubject]?.weeks?.find(w=>w.week==currentWeek); const modeLabel=mode==='lessonNote'?'LESSON NOTE':mode==='content'?'LESSON CONTENT':mode==='resource'?'STUDENT RESOURCES':mode==='teachingProcess'?'TEACHING PROCESS':'General'; document.getElementById('assistantContext').innerHTML=`Mode: <strong>${modeLabel}</strong> | Subject: <strong>${currentSubject}</strong> | Week: ${currentWeek} | Topic: ${wd?.topic||'N/A'}`; } document.getElementById('aiAssistantModal').classList.add('active'); };
+        window.openAIAssistant=(mode='general')=>{ aiContextMode=mode; if(!currentConversationId) newConv(); if(currentSubject&&currentWeek){ const wd=syllabusMap[currentSubject]?.weeks?.find(w=>w.week==currentWeek); const modeLabel=mode==='lessonNote'?'LESSON NOTE':mode==='content'?'LESSON CONTENT':mode==='resource'?'STUDENT RESOURCES':mode==='teachingProcess'?'TEACHING PROCESS':'General'; document.getElementById('assistantContext').innerHTML=`Mode: <strong>${modeLabel}</strong> | Subject: <strong>${currentSubject}</strong> | Week: ${currentWeek} | Topic: ${wd?.topic||'N/A'}`; } document.getElementById('aiAssistantModal').classList.add('active'); };
         window.closeAIAssistant=()=>document.getElementById('aiAssistantModal').classList.remove('active');
         window.sendAssistantMessage=async ()=>{ const prompt=document.getElementById('assistantInput').value.trim(); if(!prompt||!groq) return; addMsgToChat('user',prompt); const conv=assistantConversations.find(c=>c.id===currentConversationId); if(conv){ conv.messages=conv.messages||[]; conv.messages.push({role:'user',content:prompt,timestamp:new Date().toISOString()}); if(conv.messages.filter(m=>m.role==='user').length===1) conv.title=prompt.substring(0,30); } document.getElementById('assistantInput').value=''; const thinking=document.createElement('div'); thinking.className='assistant-thinking'; thinking.innerHTML='<i class="fas fa-robot fa-spin"></i> Thinking...'; document.getElementById('assistantChat').appendChild(thinking); try { const wd=syllabusMap[currentSubject]?.weeks?.find(w=>w.week==currentWeek); const ctx=`Subject: ${currentSubject||'N/A'}, Class: ${currentClass||'N/A'}, Week: ${currentWeek||'N/A'}, Topic: ${wd?.topic||'N/A'}`; let ctxIns=''; switch(aiContextMode){ case'lessonNote':ctxIns='You are helping write a LESSON NOTE.';break; case'content':ctxIns='You are helping write LESSON CONTENT.';break; case'resource':ctxIns='You are helping create STUDENT RESOURCES.';break; case'teachingProcess':ctxIns='You are helping write a TEACHING PROCESS.';break; default:ctxIns='You are a general AI assistant for a Nigerian teacher.'; } const completion=await groq.chat.completions.create({ messages:[{role:'system',content:`You are a Nigerian teacher assistant. ${ctx}\n${ctxIns}`},...(conv?.messages||[]).map(m=>({role:m.role,content:m.content})),{role:'user',content:prompt}], model:'llama-3.3-70b-versatile', temperature:0.5, max_tokens:4096 }); lastGeneratedText=completion.choices[0].message.content; document.getElementById('assistantChat').removeChild(thinking); addMsgToChat('assistant',lastGeneratedText); if(conv){ conv.messages.push({role:'assistant',content:lastGeneratedText,timestamp:new Date().toISOString()}); conv.updatedAt=firebase.firestore.FieldValue.serverTimestamp(); await db.collection('aiConversations').doc(conv.id).update({messages:conv.messages,title:conv.title,updatedAt:conv.updatedAt}); } document.getElementById('assistantSaveBtn').style.display='inline-block'; renderHistory(); } catch(e){ document.getElementById('assistantChat').removeChild(thinking); addMsgToChat('assistant','Error: '+e.message); } };
         window.copyAssistantToEditor=()=>{ if(lastGeneratedText){ quill.setText(lastGeneratedText); closeAIAssistant(); showToast('Copied','AI content copied to Lesson Note Editor','success'); } else showToast('Nothing','No content','warning'); };
@@ -1152,72 +895,22 @@
         window.closeDeleteModal=()=>document.getElementById('deleteModal').classList.remove('active');
 
         // Print
-        window.printLessonNote=()=>{
-            const letterhead=document.createElement('div'); letterhead.innerHTML='<h1>Judah Wonders Model School</h1><p>Raising Generational Wonders</p>'; letterhead.style.textAlign='center'; letterhead.style.borderBottom='3px double var(--accent)'; letterhead.style.paddingBottom='1rem'; letterhead.style.marginBottom='2rem';
-            document.querySelector('.main-container').prepend(letterhead); window.print(); setTimeout(()=>letterhead.remove(),100);
-        };
+        window.printLessonNote=()=>{ const lh=document.createElement('div'); lh.innerHTML='<h1>Judah Wonders Model School</h1><p>Raising Generational Wonders</p>'; lh.style.cssText='text-align:center;border-bottom:3px double var(--accent);padding-bottom:1rem;margin-bottom:2rem;'; document.querySelector('.main-container').prepend(lh); window.print(); setTimeout(()=>lh.remove(),100); };
 
         // ==================== STRUCTURED TEMPLATE ====================
-        document.getElementById('useTemplateBtn').addEventListener('click',()=>{
-            if(!currentWeek||!currentSubject) return showToast('Error','Select a subject and week first.','warning');
-            const topic=syllabusMap[currentSubject]?.weeks?.find(w=>w.week==currentWeek)?.topic||'________________';
-            const template=`LESSON NOTE
-Subject: ${currentSubject}          Class: ${currentClass||'___'}          Term: ___________
-Week: ${currentWeek}            Topic: ${topic}            Duration: ___________
-Instructional Materials: ___________
-Objectives: By the end of the lesson, pupils should be able to:
-1. ____________________________________________________________
-2. ____________________________________________________________
-Content / Presentation (Step‑by‑step):
-Introduction (5 mins):
-Teacher asks… Pupils respond…
-Main Activity (20 mins):
-Step 1 – … Step 2 – …
-Evaluation (5 mins):
-Teacher asks the following questions: 1) … 2) …
-Assignment:
-1) … 2) …
-`.trim();
-            quill.setText(template);
-            updateAutoSaveIndicator(false);
-            showToast('Template','Lesson note template inserted. Now fill in the details.','success');
-        });
+        document.getElementById('useTemplateBtn').addEventListener('click',()=>{ if(!currentWeek||!currentSubject) return showToast('Error','Select a subject and week first.','warning'); const topic=syllabusMap[currentSubject]?.weeks?.find(w=>w.week==currentWeek)?.topic||'________________'; const template=`LESSON NOTE\nSubject: ${currentSubject}          Class: ${currentClass||'___'}          Term: ___________\nWeek: ${currentWeek}            Topic: ${topic}            Duration: ___________\nInstructional Materials: ___________\nObjectives: By the end of the lesson, pupils should be able to:\n1. ____________________________________________________________\n2. ____________________________________________________________\nContent / Presentation (Step‑by‑step):\nIntroduction (5 mins):\nTeacher asks… Pupils respond…\nMain Activity (20 mins):\nStep 1 – … Step 2 – …\nEvaluation (5 mins):\nTeacher asks the following questions: 1) … 2) …\nAssignment:\n1) … 2) …`; quill.setText(template); updateAutoSaveIndicator(false); showToast('Template','Lesson note template inserted. Now fill in the details.','success'); });
 
         // ==================== VOICE-TO-TEXT ====================
-        const SpeechRecognition=window.SpeechRecognition||window.webkitSpeechRecognition;
-        let recognition=null;
-        if(SpeechRecognition){
-            recognition=new SpeechRecognition(); recognition.continuous=true; recognition.interimResults=true; recognition.lang='en-NG';
-            recognition.onresult=(event)=>{ let transcript=''; for(let i=event.resultIndex;i<event.results.length;++i){ transcript+=event.results[i][0].transcript; } quill.setText(quill.getText()+' '+transcript); updateAutoSaveIndicator(false); };
-            recognition.onerror=(event)=>{ console.error('Speech error:',event.error); document.getElementById('voiceBtn').classList.remove('listening'); };
-        }
-        document.getElementById('voiceBtn').addEventListener('click',()=>{
-            if(!recognition) return showToast('Error','Speech recognition not supported in this browser.','error');
-            const btn=document.getElementById('voiceBtn');
-            if(btn.classList.contains('listening')){ recognition.stop(); btn.classList.remove('listening'); btn.innerHTML='<i class="fas fa-microphone"></i>'; }
-            else { recognition.start(); btn.classList.add('listening'); btn.innerHTML='<i class="fas fa-microphone-slash"></i>'; }
-        });
+        const SpeechRecognition=window.SpeechRecognition||window.webkitSpeechRecognition; let recognition=null;
+        if(SpeechRecognition){ recognition=new SpeechRecognition(); recognition.continuous=true; recognition.interimResults=true; recognition.lang='en-NG'; recognition.onresult=(event)=>{ let transcript=''; for(let i=event.resultIndex;i<event.results.length;++i){ transcript+=event.results[i][0].transcript; } quill.setText(quill.getText()+' '+transcript); updateAutoSaveIndicator(false); }; recognition.onerror=(event)=>{ console.error('Speech error:',event.error); document.getElementById('voiceBtn').classList.remove('listening'); }; }
+        document.getElementById('voiceBtn').addEventListener('click',()=>{ if(!recognition) return showToast('Error','Speech recognition not supported in this browser.','error'); const btn=document.getElementById('voiceBtn'); if(btn.classList.contains('listening')){ recognition.stop(); btn.classList.remove('listening'); btn.innerHTML='<i class="fas fa-microphone"></i>'; } else { recognition.start(); btn.classList.add('listening'); btn.innerHTML='<i class="fas fa-microphone-slash"></i>'; } });
 
         // ==================== RESOURCE LIBRARY ====================
-        async function loadResourceLibrary(){
-            const grid=document.getElementById('resourceLibraryGrid'); grid.innerHTML='<p>Loading shared resources...</p>';
-            try { const snap=await db.collection('resourceLibrary').orderBy('createdAt','desc').limit(20).get(); if(snap.empty){ grid.innerHTML='<p>No shared resources yet.</p>'; return; } grid.innerHTML=snap.docs.map(d=>{ const r=d.data(); return `<div class="card resource-library-card" onclick="importResource('${d.id}')"><h4>${r.subject} – Week ${r.week}</h4><p>${r.topic||''}</p><small>Shared by ${r.teacherName}</small></div>`; }).join(''); } catch(e){ grid.innerHTML='<p>Error loading resources.</p>'; }
-        }
+        async function loadResourceLibrary(){ const grid=document.getElementById('resourceLibraryGrid'); grid.innerHTML='<p>Loading shared resources...</p>'; try { const snap=await db.collection('resourceLibrary').orderBy('createdAt','desc').limit(20).get(); if(snap.empty){ grid.innerHTML='<p>No shared resources yet. Mark your own as "Share to Library" to contribute.</p>'; return; } grid.innerHTML=snap.docs.map(d=>{ const r=d.data(); return `<div class="card resource-library-card" onclick="importResource('${d.id}')"><h4>${r.subject} – Week ${r.week}</h4><p>${r.topic||''}</p><small>Shared by ${r.teacherName}</small></div>`; }).join(''); } catch(e){ grid.innerHTML='<p>Error loading resources.</p>'; } }
         window.importResource=async(id)=>{ const doc=await db.collection('resourceLibrary').doc(id).get(); if(!doc.exists) return; const data=doc.data(); if(confirm(`Import "${data.subject} Week ${data.week}" into your current lesson note?`)){ quill.setText(data.lessonNote||''); studentQuill.setText(data.studentResource||''); teachingProcessQuill.setText(data.teachingProcess||''); showToast('Imported','Resource imported. Save to keep it.','success'); } };
 
         // ==================== INSIGHTS PANEL ====================
-        function renderInsights(){
-            const all=Object.values(lessonNotesMap); const totalWeeks=all.length; const approved=all.filter(n=>n.status==='approved').length;
-            document.getElementById('insightCompletion').textContent=totalWeeks?((approved/totalWeeks)*100).toFixed(1)+'%':'0%';
-            document.getElementById('insightApproval').textContent=approved?((approved/totalWeeks)*100).toFixed(1)+'%':'0%';
-            const history=userData?.pointHistory||[]; const histDiv=document.getElementById('insightPointHistory');
-            if(history.length){ histDiv.innerHTML=history.map(h=>`<div style="margin-bottom:0.5rem; padding:0.3rem 0; border-bottom:1px dashed var(--border);"><strong>${new Date(h.date).toLocaleDateString()}</strong> – ${h.points>0?'+':''}${h.points} pts : ${h.reason} (balance: ${h.newPoints})</div>`).join(''); } else { histDiv.innerHTML='<p>No point history.</p>'; }
-            const ctx=document.getElementById('pointsChart').getContext('2d'); if(pointsChart) pointsChart.destroy();
-            const pointsArray=history.map(h=>h.newPoints);
-            pointsChart=new Chart(ctx,{ type:'line', data:{ labels:history.map(h=>new Date(h.date).toLocaleDateString()), datasets:[{ label:'Points Balance', data:pointsArray, borderColor:'#C8963E', backgroundColor:'rgba(200,150,62,0.1)', fill:true }] }, options:{ responsive:true, maintainAspectRatio:true } });
-            const pubCount=all.filter(n=>n.teachable||n.resourcePublished).length; document.getElementById('previewResourceCount').textContent=pubCount;
-            loadResourceLibrary();
-        }
+        function renderInsights(){ const all=Object.values(lessonNotesMap); const approved=all.filter(n=>n.status==='approved').length; document.getElementById('insightCompletion').textContent=all.length?((approved/all.length)*100).toFixed(1)+'%':'0%'; document.getElementById('insightApproval').textContent=approved?((approved/all.length)*100).toFixed(1)+'%':'0%'; const history=userData?.pointHistory||[]; const histDiv=document.getElementById('insightPointHistory'); if(history.length){ histDiv.innerHTML=history.map(h=>`<div style="margin-bottom:0.5rem; padding:0.3rem 0; border-bottom:1px dashed var(--border);"><strong>${new Date(h.date).toLocaleDateString()}</strong> – ${h.points>0?'+':''}${h.points} pts : ${h.reason} (balance: ${h.newPoints})</div>`).join(''); } else { histDiv.innerHTML='<p>No point history.</p>'; } const ctx=document.getElementById('pointsChart').getContext('2d'); if(pointsChart) pointsChart.destroy(); const pointsArray=history.map(h=>h.newPoints); pointsChart=new Chart(ctx,{ type:'line', data:{ labels:history.map(h=>new Date(h.date).toLocaleDateString()), datasets:[{ label:'Points Balance', data:pointsArray, borderColor:'#C8963E', backgroundColor:'rgba(200,150,62,0.1)', fill:true }] }, options:{ responsive:true, maintainAspectRatio:true } }); const pubCount=all.filter(n=>n.teachable||n.resourcePublished).length; document.getElementById('previewResourceCount').textContent=pubCount; loadResourceLibrary(); }
         document.querySelector('.workspace-tab[data-panel="insights"]').addEventListener('click', renderInsights);
     </script>
 </body>
