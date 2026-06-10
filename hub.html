@@ -230,6 +230,7 @@
         <button class="tab-btn" data-tab="approvals"><i class="fas fa-user-check"></i> Student Approvals</button>
         <button class="tab-btn" data-tab="attendance"><i class="fas fa-fingerprint"></i> Attendance</button>
         <button class="tab-btn" data-tab="announcements"><i class="fas fa-bullhorn"></i> Class Announcements</button>
+        <button class="tab-btn" data-tab="actions"><i class="fas fa-clock"></i> Action Requests</button>
     </div>
 
     <!-- Tab 1: Class Roster -->
@@ -303,6 +304,16 @@
         <div class="card">
             <div class="card-header"><h3><i class="fas fa-history"></i> My Class Announcements</h3></div>
             <div id="announcementsList" class="empty-state"><i class="fas fa-spinner fa-spin"></i><p>Loading...</p></div>
+        </div>
+    </div>
+
+    <!-- Tab 5: Action Requests -->
+    <div class="tab-content" id="tab-actions">
+        <div class="card">
+            <div class="card-header">
+                <h3><i class="fas fa-clock"></i> Pending Action Requests</h3>
+            </div>
+            <div id="pendingActionsList"><div class="empty-state"><i class="fas fa-spinner fa-spin"></i><p>Loading...</p></div></div>
         </div>
     </div>
 </div>
@@ -389,6 +400,7 @@
         document.getElementById('tab-' + btn.dataset.tab).classList.add('active');
         if (btn.dataset.tab === 'approvals') loadPendingStudents();
         else if (btn.dataset.tab === 'announcements') loadAnnouncements();
+        else if (btn.dataset.tab === 'actions') loadPendingActions();
     });
 
     // Load students
@@ -429,12 +441,47 @@
                 <td>
                     <div class="btn-group">
                         <button class="btn btn-outline btn-sm" onclick="editStudent('${s.id}')"><i class="fas fa-edit"></i></button>
-                        <button class="btn ${s.suspended?'btn-outline':'btn-outline'} btn-sm" onclick="toggleSuspend('${s.id}',${!!s.suspended})"><i class="fas ${s.suspended?'fa-play':'fa-pause'}"></i></button>
+                        <button class="btn btn-outline btn-sm" onclick="requestAction('assign_prefect','${s.id}')"><i class="fas fa-crown"></i></button>
+                        <button class="btn ${s.suspended?'btn-outline':'btn-outline'} btn-sm" onclick="requestAction('${s.suspended ? 'activate' : 'suspend'}','${s.id}')"><i class="fas ${s.suspended?'fa-play':'fa-pause'}"></i></button>
+                        <button class="btn btn-outline btn-sm" onclick="requestAction('delete','${s.id}')"><i class="fas fa-trash"></i></button>
                     </div>
                 </td>
             </tr>`;
         }).join('');
     }
+
+    // Request action (suspend, activate, assign_prefect, delete)
+    window.requestAction = async (actionType, studentId) => {
+        const student = allStudents.find(s => s.id === studentId);
+        if (!student) return;
+        const name = `${student.firstName||''} ${student.surname||''}`.trim() || 'Unknown';
+
+        let details = {};
+        if (actionType === 'assign_prefect') {
+            const role = prompt('Enter prefect role:');
+            if (!role) return;
+            details = { prefectRole: role };
+        }
+
+        if (!confirm(`Request to ${actionType.replace('_',' ')} ${name}? The admin must approve.`)) return;
+
+        try {
+            await db.collection('pendingActions').add({
+                teacherId: currentUser.uid,
+                teacherName: `${userData?.firstName||''} ${userData?.surname||''}`.trim(),
+                actionType: actionType,
+                studentId: studentId,
+                studentName: name,
+                classId: teacherClass,
+                details: details,
+                status: 'pending',
+                requestedAt: firebase.firestore.FieldValue.serverTimestamp()
+            });
+            await logAudit('ACTION_REQUESTED', `Teacher requested ${actionType} for student ${name}`);
+            alert('Request sent to admin for approval.');
+            loadPendingActions();
+        } catch(e) { console.error('Request error:', e); alert('Error: ' + e.message); }
+    };
 
     // Edit student modal
     window.editStudent = (id) => {
@@ -459,18 +506,12 @@
             suspended: document.getElementById('editStatus').value === 'suspended',
             updatedAt: firebase.firestore.FieldValue.serverTimestamp()
         };
+        // For now, direct edit is allowed. You could also turn this into a request.
         await db.collection('users').doc(id).update(updates);
         logAudit('UPDATE_STUDENT', `Updated ${updates.firstName} ${updates.surname}`);
         closeEditStudentModal();
         loadAllStudents();
     });
-
-    window.toggleSuspend = async (id, suspended) => {
-        if (!confirm(`${suspended?'Activate':'Suspend'} this student?`)) return;
-        await db.collection('users').doc(id).update({ suspended: !suspended });
-        logAudit(suspended?'ACTIVATE_STUDENT':'SUSPEND_STUDENT', `Student ${id}`);
-        loadAllStudents();
-    };
 
     // Approvals
     function updateApprovalCount() {
@@ -578,12 +619,13 @@
                 studentId: s.id, studentName: `${s.firstName||''} ${s.surname||''}`.trim(),
                 classId: teacherClass, date, session, status, remark,
                 teacherId: currentUser.uid, teacherName: `${userData?.firstName||''} ${userData?.surname||''}`.trim(),
+                status: 'pending_acknowledgement',
                 recordedAt: firebase.firestore.FieldValue.serverTimestamp()
             });
         });
         await batch.commit();
         logAudit('ATTENDANCE_SAVED', `Date: ${date}, Session: ${session}`);
-        alert('Attendance saved!');
+        alert('Attendance saved and sent for admin acknowledgement.');
     });
 
     // Announcements
@@ -623,6 +665,29 @@
     window.deleteAnnouncement = (id) => {
         if (confirm('Delete?')) { db.collection('classAnnouncements').doc(id).delete(); loadAnnouncements(); }
     };
+
+    // Pending Actions
+    async function loadPendingActions() {
+        if (!currentUser) return;
+        const snap = await db.collection('pendingActions')
+            .where('teacherId', '==', currentUser.uid)
+            .orderBy('requestedAt', 'desc')
+            .get();
+        const container = document.getElementById('pendingActionsList');
+        if (snap.empty) {
+            container.innerHTML = '<div class="empty-state"><i class="fas fa-check-circle"></i><h3>No pending requests</h3></div>';
+            return;
+        }
+        container.innerHTML = snap.docs.map(doc => {
+            const a = doc.data();
+            const statusClass = a.status === 'approved' ? 'badge-active' : a.status === 'rejected' ? 'badge-suspended' : 'badge-pending';
+            return `<div class="card" style="padding:1rem; margin-bottom:0.5rem;">
+                <strong>${escapeHtml(a.actionType.replace('_',' '))}</strong> for ${escapeHtml(a.studentName)}<br>
+                <small>Status: <span class="badge ${statusClass}">${a.status}</span></small>
+                ${a.details?.prefectRole ? `<br>Role: ${escapeHtml(a.details.prefectRole)}` : ''}
+            </div>`;
+        }).join('');
+    }
 
     // Auth
     auth.onAuthStateChanged(async (user) => {
