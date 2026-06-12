@@ -145,7 +145,6 @@
             .sidebar-overlay.active { display: block; }
         }
 
-        /* Additional form styles for edit modal */
         .form-group { margin-bottom: 1rem; }
         .form-group label { display: block; margin-bottom: 0.3rem; color: var(--text-secondary); font-size: 0.85rem; }
         .form-control { width: 100%; padding: 0.5rem 1rem; background: var(--input-bg); border: 1px solid var(--border); border-radius: 1rem; color: var(--text-primary); font-family: 'Inter', sans-serif; }
@@ -179,7 +178,7 @@
     <div class="top-bar">
         <div class="page-title">
             <h1>Approvals Hub</h1>
-            <p>Manage registrations, lesson content, reports & timetables</p>
+            <p>Manage registrations, lesson content, reports &amp; timetables</p>
         </div>
         <div class="profile-area">
             <div class="theme-toggle" id="themeToggle"><i class="fas fa-sun"></i><span>Light</span></div>
@@ -365,7 +364,7 @@
     </div>
 </div>
 
-<!-- Edit User Modal (NEW) -->
+<!-- Edit User Modal -->
 <div class="modal-overlay" id="editUserModal">
     <div class="modal-content">
         <h3>Edit User</h3>
@@ -377,7 +376,7 @@
     </div>
 </div>
 
-<!-- Point History Modal (NEW) -->
+<!-- Point History Modal -->
 <div class="modal-overlay" id="pointHistoryModal">
     <div class="modal-content">
         <h3>Point History</h3>
@@ -388,7 +387,7 @@
     </div>
 </div>
 
-<!-- Post Categories Modal (NEW) -->
+<!-- Post Categories Modal -->
 <div class="modal-overlay" id="postCategoriesModal">
     <div class="modal-content">
         <h3>Post Categories</h3>
@@ -403,7 +402,7 @@
     </div>
 </div>
 
-<!-- Settings Modal (Point Value) (NEW) -->
+<!-- Settings Modal (Point Value) -->
 <div class="modal-overlay" id="settingsModal">
     <div class="modal-content">
         <h3>Point &amp; Deduction Settings</h3>
@@ -432,20 +431,21 @@
     const auth = firebase.auth();
     const db = firebase.firestore();
 
+    // ==================== GLOBAL STATE ====================
     let currentUserData = null;
     let allUsers = [];
     let postCategories = [];
     let settings = { pointValue: 200 };
     let selectedUserId = null;
 
-    // Data for approvals
+    // Approval data
     let pendingSyllabi = [], pendingNotes = [];
     let allSyllabi = [], allLessonNotes = [];
     let pendingDailyReports = [], allDailyReports = [];
     let pendingTimetableProposals = [], allTimetableProposals = [];
     let unsubscribers = {};
 
-    // ==================== UTILITIES ====================
+    // ==================== HELPERS ====================
     function escapeHtml(t) { const d = document.createElement('div'); d.textContent = t||''; return d.innerHTML; }
     function showToast(title, msg, type='info', undo=null) {
         const icons = { success:'fa-check-circle', error:'fa-exclamation-circle', warning:'fa-exclamation-triangle', info:'fa-info-circle' };
@@ -456,7 +456,7 @@
     }
     function showError(msg) { showToast('Error', msg, 'error'); }
 
-    // ==================== SIDEBAR & MOBILE ====================
+    // Sidebar & Mobile
     const sidebar = document.getElementById('sidebar'), mainContent = document.getElementById('mainContent'), overlay = document.getElementById('sidebarOverlay');
     document.getElementById('sidebarToggle').addEventListener('click', () => { sidebar.classList.add('collapsed'); mainContent.classList.add('expanded'); closeSidebar(); });
     window.openSidebar = () => { sidebar.classList.add('open'); overlay.classList.add('active'); }
@@ -476,7 +476,7 @@
         updateThemeUI(next);
     });
 
-    // ==================== CONFIRMATION MODAL ====================
+    // Confirmation modal
     let confirmCallback = null;
     function showConfirm(title, msg, cb) {
         document.getElementById('confirmTitle').textContent = title;
@@ -487,7 +487,7 @@
     document.getElementById('confirmActionBtn').addEventListener('click', () => { if (confirmCallback) confirmCallback(); document.getElementById('confirmModal').classList.remove('active'); });
     window.closeConfirmModal = () => document.getElementById('confirmModal').classList.remove('active');
 
-    // ==================== DETAIL MODAL (Lesson Notes / Syllabi / Daily Reports) ====================
+    // Detail modal
     let detailCurrentDoc = null, detailType = '';
     let detailRating = 0;
     window.closeDetailModal = () => { document.getElementById('detailModal').classList.remove('active'); detailCurrentDoc = null; };
@@ -525,7 +525,7 @@
         closeDetailModal();
     });
 
-    // ==================== TIMETABLE PREVIEW MODAL ====================
+    // Timetable preview
     window.closeTtPreview = () => document.getElementById('ttPreviewModal').classList.remove('active');
     window.viewTimetablePreview = async (id) => {
         const doc = await db.collection('timetableProposals').doc(id).get();
@@ -547,7 +547,7 @@
         document.getElementById('ttPreviewModal').classList.add('active');
     };
 
-    // ==================== NOTIFICATION BADGE ====================
+    // Notification badge
     function updateBadge() {
         let total = allUsers.filter(u => !u.approved).length;
         total += pendingSyllabi.length + pendingNotes.length;
@@ -611,7 +611,7 @@
         renderPostCategories();
     };
 
-    // Updated render for users table with enhanced columns
+    // Render users table
     function renderRegistrations() {
         const search = document.getElementById('regSearch').value.toLowerCase();
         const status = document.getElementById('regStatusFilter').value;
@@ -736,7 +736,6 @@
         const a = document.createElement('a'); a.href = URL.createObjectURL(blob); a.download = 'users.csv'; a.click();
     };
 
-    // New helper to filter users for export (reuse the filter logic)
     function filterUsers() {
         const search = document.getElementById('regSearch').value.toLowerCase();
         const status = document.getElementById('regStatusFilter').value;
@@ -758,7 +757,7 @@
         await db.collection('users').doc(uid).update({ suspended: newState });
     };
 
-    // Edit user modal (post, salary, permissions)
+    // Edit user modal
     window.editUser = (uid) => {
         const user = allUsers.find(u => u.id === uid);
         if (!user) return;
@@ -817,7 +816,7 @@
         document.getElementById('pointHistoryModal').classList.add('active');
     };
 
-    // Modal open/close helpers for new modals
+    // Modal open/close helpers
     window.openPostCategories = () => renderPostCategories();
     window.closePostCategories = () => document.getElementById('postCategoriesModal').classList.remove('active');
     window.openSettings = () => document.getElementById('settingsModal').classList.add('active');
@@ -825,7 +824,8 @@
     window.closeEditModal = () => { document.getElementById('editUserModal').classList.remove('active'); selectedUserId = null; };
     window.closePointHistory = () => document.getElementById('pointHistoryModal').classList.remove('active');
 
-    // ==================== USERS TAB DATA LOADING ====================
+    // ==================== REAL-TIME LISTENERS ====================
+
     function loadUsers() {
         if (unsubscribers['users']) unsubscribers['users']();
         unsubscribers['users'] = db.collection('users').onSnapshot(snap => {
@@ -836,7 +836,6 @@
         }, err => showError('Users listener error: ' + err.message));
     }
 
-    // ==================== LESSON NOTES & SYLLABI (unchanged) ====================
     function loadLessonNotesData() {
         if (unsubscribers['syllabi']) unsubscribers['syllabi']();
         if (unsubscribers['lessonNotes']) unsubscribers['lessonNotes']();
@@ -856,16 +855,94 @@
         });
     }
 
-    function renderLessonNotesPending() { /* same as previous */ }
-    function renderLessonNotesHistory() { /* same as previous */ }
-    window.viewSyllabusDetail = async (id) => { /* same */ }
-    window.viewNoteDetail = async (id) => { /* same */ }
+    function renderLessonNotesPending() {
+        const search = document.getElementById('lnSearch').value.toLowerCase();
+        const type = document.getElementById('lnTypeFilter').value;
+        let s = pendingSyllabi, n = pendingNotes;
+        if (type === 'syllabus') n = [];
+        if (type === 'lessonNote') s = [];
+        if (search) {
+            s = s.filter(si => (si.subject||'').toLowerCase().includes(search));
+            n = n.filter(ni => (ni.subject||'').toLowerCase().includes(search) || (ni.topic||'').toLowerCase().includes(search));
+        }
+        document.getElementById('syllabusPendingGrid').innerHTML = s.length ? s.map(si => `
+            <div class="item-card">
+                <strong>${escapeHtml(si.subject)}</strong> (${escapeHtml(si.classId)})<br>
+                Weeks: ${si.weeks?.length||0} | Teacher: ${escapeHtml(si.teacherName || si.teacherId)}<br>
+                <button class="btn btn-outline btn-sm" onclick="viewSyllabusDetail('${si.id}')">Review</button>
+                <button class="btn btn-success btn-sm" onclick="quickApproveSyllabus('${si.id}')">Approve</button>
+                <button class="btn btn-danger btn-sm" onclick="quickRejectSyllabus('${si.id}')">Reject</button>
+            </div>`) : '<p>No pending syllabi.</p>';
+        document.getElementById('notesPendingGrid').innerHTML = n.length ? n.map(ni => `
+            <div class="item-card">
+                <strong>${escapeHtml(ni.subject)}</strong> Week ${ni.week}: ${escapeHtml(ni.topic)}<br>
+                Teacher: ${escapeHtml(ni.teacherName || ni.teacherId)}<br>
+                <button class="btn btn-outline btn-sm" onclick="viewNoteDetail('${ni.id}')">Review</button>
+                <button class="btn btn-success btn-sm" onclick="quickApproveNote('${ni.id}')">Approve</button>
+                <button class="btn btn-danger btn-sm" onclick="quickRejectNote('${ni.id}')">Reject</button>
+            </div>`) : '<p>No pending lesson notes.</p>';
+    }
+
+    function renderLessonNotesHistory() {
+        const search = document.getElementById('lnHistSearch')?.value?.toLowerCase() || '';
+        const status = document.getElementById('lnHistStatus')?.value || 'approved';
+        const combined = [...allSyllabi.filter(s => s.status === status), ...allLessonNotes.filter(n => n.status === status)];
+        const filtered = combined.filter(item => (item.subject||'').toLowerCase().includes(search) || (item.topic||'').toLowerCase().includes(search));
+        const container = document.getElementById('historyLessonNotesGrid');
+        if (!filtered.length) { container.innerHTML = '<p>No history.</p>'; return; }
+        container.innerHTML = filtered.map(item => {
+            const isSyllabus = !!item.weeks;
+            return `<div class="item-card">
+                <strong>${escapeHtml(item.subject)}</strong> ${isSyllabus ? 'Syllabus' : `Week ${item.week}: ${escapeHtml(item.topic)}`} <span class="badge badge-${item.status==='approved'?'success':'danger'}">${item.status}</span><br>
+                ${item.adminRating ? `<div>Rating: ${'★'.repeat(item.adminRating)}${'☆'.repeat(5-item.adminRating)}</div>` : ''}
+                ${item.adminFeedback ? `<div><em>Feedback:</em> ${escapeHtml(item.adminFeedback)}</div>` : ''}
+                <small>${item.reviewedAt?.toDate().toLocaleString()||''}</small>
+            </div>`;
+        }).join('');
+    }
+
+    window.viewSyllabusDetail = async (id) => {
+        const doc = await db.collection('syllabus').doc(id).get();
+        if (!doc.exists) return;
+        detailCurrentDoc = { id: doc.id, data: () => doc.data() };
+        detailType = 'syllabus';
+        const s = doc.data();
+        document.getElementById('detailTitle').textContent = `Syllabus: ${s.subject}`;
+        document.getElementById('detailBody').innerHTML = `
+            <p><strong>Class:</strong> ${escapeHtml(s.classId)}</p>
+            <p><strong>Weeks:</strong> ${s.weeks?.length}</p>
+            <ul>${s.weeks?.map(w => `<li>Week ${w.week}: ${escapeHtml(w.topic)}</li>`).join('')||''}</ul>
+        `;
+        detailRating = 0;
+        document.querySelectorAll('#adminRatingStars i').forEach(s => s.className = 'far fa-star');
+        document.getElementById('adminFeedback').value = '';
+        document.getElementById('detailModal').classList.add('active');
+    };
+
+    window.viewNoteDetail = async (id) => {
+        const doc = await db.collection('lessonNotes').doc(id).get();
+        if (!doc.exists) return;
+        detailCurrentDoc = { id: doc.id, data: () => doc.data() };
+        detailType = 'lessonNote';
+        const n = doc.data();
+        document.getElementById('detailTitle').textContent = `Lesson Note: ${n.subject} Week ${n.week}`;
+        document.getElementById('detailBody').innerHTML = `
+            <p><strong>Topic:</strong> ${escapeHtml(n.topic)}</p>
+            <p><strong>Content:</strong><br>${escapeHtml(n.lessonNote?.substring(0, 500)||'')}...</p>
+            <p><strong>Teaching Process:</strong><br>${escapeHtml(n.teachingProcess?.substring(0, 300)||'')}...</p>
+        `;
+        detailRating = 0;
+        document.querySelectorAll('#adminRatingStars i').forEach(s => s.className = 'far fa-star');
+        document.getElementById('adminFeedback').value = '';
+        document.getElementById('detailModal').classList.add('active');
+    };
+
     window.quickApproveSyllabus = async (id) => { await db.collection('syllabus').doc(id).update({ status:'approved' }); }
     window.quickRejectSyllabus = async (id) => { await db.collection('syllabus').doc(id).update({ status:'rejected' }); }
     window.quickApproveNote = async (id) => { await db.collection('lessonNotes').doc(id).update({ status:'approved' }); }
     window.quickRejectNote = async (id) => { await db.collection('lessonNotes').doc(id).update({ status:'rejected' }); }
 
-    // ==================== DAILY REPORTS (unchanged) ====================
+    // Daily reports
     function loadDailyReportsData() {
         if (unsubscribers['dailyreports']) unsubscribers['dailyreports']();
         unsubscribers['dailyreports'] = db.collection('dailyReports').orderBy('date','desc').limit(50).onSnapshot(snap => {
@@ -876,9 +953,53 @@
             updateBadge();
         });
     }
-    function renderDailyReportsPending() { /* same */ }
-    function renderDailyReportsHistory() { /* same */ }
-    window.viewDailyReport = async (id) => { /* same */ }
+
+    function renderDailyReportsPending() {
+        const search = document.getElementById('drSearch').value.toLowerCase();
+        const filtered = pendingDailyReports.filter(r => (r.teacherName||'').toLowerCase().includes(search));
+        const container = document.getElementById('dailyReportsPendingList');
+        if (!filtered.length) { container.innerHTML = '<p>No pending reports.</p>'; return; }
+        container.innerHTML = filtered.map(r => {
+            return `<div class="item-card">
+                <strong>${escapeHtml(r.teacherName)}</strong> (${r.teacherClass}) — ${r.date} <span class="badge badge-warning">${r.status}</span><br>
+                <div style="white-space:pre-wrap;">${escapeHtml(r.content)}</div>
+                <button class="btn btn-outline btn-sm" onclick="viewDailyReport('${r.id}')">View</button>
+                <button class="btn btn-success btn-sm" onclick="ackDailyReport('${r.id}')">Acknowledge</button>
+            </div>`;
+        }).join('');
+    }
+
+    function renderDailyReportsHistory() {
+        const filtered = allDailyReports.filter(r => r.status === 'acknowledged');
+        const container = document.getElementById('dailyReportsHistoryList');
+        if (!filtered.length) { container.innerHTML = '<p>No acknowledged reports.</p>'; return; }
+        container.innerHTML = filtered.map(r => `
+            <div class="item-card">
+                <strong>${escapeHtml(r.teacherName)}</strong> (${r.teacherClass}) — ${r.date} <span class="badge badge-success">Acknowledged</span><br>
+                <div style="white-space:pre-wrap;">${escapeHtml(r.content)}</div>
+                <small>Acknowledged: ${r.acknowledgedAt?.toDate().toLocaleString()||'N/A'}</small>
+            </div>
+        `).join('');
+    }
+
+    window.viewDailyReport = async (id) => {
+        const doc = await db.collection('dailyReports').doc(id).get();
+        if (!doc.exists) return;
+        detailCurrentDoc = { id: doc.id, data: () => doc.data() };
+        detailType = 'dailyReport';
+        const r = doc.data();
+        document.getElementById('detailTitle').textContent = `Daily Report: ${r.teacherName} - ${r.date}`;
+        document.getElementById('detailBody').innerHTML = `
+            <p><strong>Class:</strong> ${escapeHtml(r.teacherClass)}</p>
+            <p><strong>Time:</strong> ${r.openingTime||'?'} - ${r.closingTime||'?'}</p>
+            <div style="white-space:pre-wrap; margin-top:1rem;">${escapeHtml(r.content)}</div>
+        `;
+        detailRating = 0;
+        document.querySelectorAll('#adminRatingStars i').forEach(s => s.className = 'far fa-star');
+        document.getElementById('adminFeedback').value = r.adminRemark || '';
+        document.getElementById('detailModal').classList.add('active');
+    };
+
     window.ackDailyReport = async (id) => {
         await db.collection('dailyReports').doc(id).update({
             status:'acknowledged',
@@ -887,7 +1008,7 @@
         showToast('Acknowledged','Report acknowledged','success');
     };
 
-    // ==================== TIMETABLES (unchanged) ====================
+    // Timetables
     function loadTimetableData() {
         if (unsubscribers['timetables']) unsubscribers['timetables']();
         unsubscribers['timetables'] = db.collection('timetableProposals').orderBy('submittedAt','desc').limit(30).onSnapshot(snap => {
@@ -898,10 +1019,53 @@
             updateBadge();
         });
     }
-    function renderTimetablesPending() { /* same */ }
-    function renderTimetablesHistory() { /* same */ }
-    window.approveTimetable = async (id) => { /* same */ }
-    window.rejectTimetable = async (id) => { /* same */ }
+
+    function renderTimetablesPending() {
+        const search = document.getElementById('ttSearch').value.toLowerCase();
+        const filtered = pendingTimetableProposals.filter(t => (t.classId||'').toLowerCase().includes(search) || (t.teacherName||'').toLowerCase().includes(search));
+        const container = document.getElementById('timetablePendingList');
+        if (!filtered.length) { container.innerHTML = '<p>No pending timetables.</p>'; return; }
+        container.innerHTML = filtered.map(t => `
+            <div class="item-card">
+                <strong>${escapeHtml(t.classId)}</strong> by ${escapeHtml(t.teacherName)} (${t.type})<br>
+                <small>${t.submittedAt?.toDate().toLocaleString()||''}</small>
+                <div>
+                    <button class="btn btn-outline btn-sm" onclick="viewTimetablePreview('${t.id}')">Preview</button>
+                    <button class="btn btn-success btn-sm" onclick="approveTimetable('${t.id}')">Approve</button>
+                    <button class="btn btn-danger btn-sm" onclick="rejectTimetable('${t.id}')">Reject</button>
+                </div>
+            </div>
+        `).join('');
+    }
+
+    function renderTimetablesHistory() {
+        const filtered = allTimetableProposals.filter(t => t.status === 'approved' || t.status === 'rejected');
+        const container = document.getElementById('timetableHistoryList');
+        if (!filtered.length) { container.innerHTML = '<p>No history.</p>'; return; }
+        container.innerHTML = filtered.map(t => `
+            <div class="item-card">
+                <strong>${escapeHtml(t.classId)}</strong> by ${escapeHtml(t.teacherName)} (${t.type})<br>
+                Status: <span class="badge badge-${t.status==='approved'?'success':'danger'}">${t.status}</span><br>
+                ${t.adminRating ? `<div>Rating: ${'★'.repeat(t.adminRating)}${'☆'.repeat(5-t.adminRating)}</div>` : ''}
+                ${t.adminFeedback ? `<div><em>Feedback:</em> ${escapeHtml(t.adminFeedback)}</div>` : ''}
+                <small>${t.reviewedAt?.toDate().toLocaleString()||''}</small>
+                <div><button class="btn btn-outline btn-sm" onclick="viewTimetablePreview('${t.id}')">Preview</button></div>
+            </div>
+        `).join('');
+    }
+
+    window.approveTimetable = async (id) => {
+        showConfirm('Approve', 'Approve this timetable?', async () => {
+            await db.collection('timetableProposals').doc(id).update({ status:'approved', reviewedAt: firebase.firestore.FieldValue.serverTimestamp() });
+            showToast('Approved','Timetable approved','success');
+        });
+    };
+    window.rejectTimetable = async (id) => {
+        showConfirm('Reject', 'Reject this timetable?', async () => {
+            await db.collection('timetableProposals').doc(id).update({ status:'rejected', reviewedAt: firebase.firestore.FieldValue.serverTimestamp() });
+            showToast('Rejected','Timetable rejected','warning');
+        });
+    };
 
     // ==================== SUB-TAB SWITCHING ====================
     document.querySelectorAll('.sub-tabs').forEach(group => {
@@ -965,7 +1129,6 @@
         } else {
             pic.textContent = (currentUserData.firstName?.[0]||'A') + (currentUserData.surname?.[0]||'A');
         }
-        // Load settings and post categories once
         await loadSettings();
         await loadPostCategories();
     });
