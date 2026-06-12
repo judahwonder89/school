@@ -309,7 +309,7 @@
                                 <button class="btn btn-outline btn-sm" id="useAIContentBtn"><i class="fas fa-robot"></i> AI Generate</button>
                                 <button class="btn btn-outline btn-sm" id="useTemplateBtn"><i class="fas fa-file-alt"></i> Template</button>
                                 <button class="btn btn-outline btn-sm" id="autoFormatLessonNoteBtn"><i class="fas fa-magic"></i> Auto-Format</button>
-                                <button class="btn btn-outline btn-sm" id="saveAsTemplateBtn"><i class="fas fa-layer-group"></i> Template</button>
+                                <button class="btn btn-outline btn-sm" id="saveAsTemplateBtn"><i class="fas fa-layer-group"></i> Save Template</button>
                                 <button class="btn btn-outline" id="useAIAssistantLessonNoteBtn"><i class="fas fa-robot"></i> AI Assistant</button>
                                 <button class="btn btn-primary" id="saveEditorBtn">Save Draft</button>
                                 <button class="btn btn-success" id="submitEditorBtn" style="display:none;">Submit</button>
@@ -388,7 +388,7 @@
         const CLOUD_NAME = 'dda7kpir8';
         const UPLOAD_PRESET = 'Judahschool';
 
-        // ★ GLOBAL NIGERIAN PROMPT – defined at top level so all AI functions can access it
+        // ★ TOP-LEVEL NIGERIAN SYSTEM PROMPT – accessible to all AI functions
         const NIGERIAN_SYSTEM_PROMPT = `You are a Nigerian teacher using the NERDC curriculum. Write lesson notes following this exact format:
 LESSON NOTE
 Subject: [subject]
@@ -469,7 +469,6 @@ Include Nigerian names, locations, naira (₦), and references to Nigerian textb
             const cur = data.points || 0;
             const newPoints = cur + amount;
             await ref.update({ points: newPoints, pointHistory: firebase.firestore.FieldValue.arrayUnion({ points: amount, reason, date: new Date().toISOString(), newPoints }) });
-            if (!userData) userData = {};
             userData.points = newPoints;
             updatePointsDisplay();
         }
@@ -689,7 +688,7 @@ Include Nigerian names, locations, naira (₦), and references to Nigerian textb
             } catch (e) { showToast('Error', e.message, 'error'); } finally { hideLoading(); }
         });
 
-        // ★ AUTO‑FORMAT – uses root.innerHTML (not setText) so it never wipes content
+        // ★ AUTO‑FORMAT – uses root.innerHTML (never wipes content)
         async function aiFormatEditor(quillInstance) {
             if (!window.groq) return showToast('Error', 'AI not available', 'error');
             const content = quillInstance.getText();
@@ -746,7 +745,7 @@ Include Nigerian names, locations, naira (₦), and references to Nigerian textb
             document.getElementById('pushToTeachBtn').style.display = 'none'; renderPublishedTab(); showToast('Pushed', 'Moved to Teach', 'success');
         });
 
-        // Submitted, Published, Library tabs (same as before, fully functional)
+        // Submitted, Published, Library tabs
         function renderSubmittedTab() {
             if (!currentSubjectDraft) return;
             const notes = Object.values(lessonNotesMap).filter(n => n.subject === currentSubjectDraft && ['pending', 'approved', 'rejected'].includes(n.status));
@@ -770,7 +769,7 @@ Include Nigerian names, locations, naira (₦), and references to Nigerian textb
             if (confirm(`Import ${data.subject} Week ${data.week}?`)) { selectDraftSubject(data.subject); selectDraftWeek(data.week); quill.setText(data.lessonNote || ''); showToast('Imported', 'Done.', 'success'); }
         };
 
-        // AI Assistant (now uses the global NIGERIAN_SYSTEM_PROMPT)
+        // ==================== AI ASSISTANT ====================
         async function loadAIConversations() { const s = await db.collection('aiConversations').where('teacherId', '==', currentUser.uid).orderBy('updatedAt', 'desc').get(); assistantConversations = s.docs.map(d => ({ id: d.id, ...d.data() })); if (assistantConversations.length) currentConversationId = assistantConversations[0].id; renderHistory(); }
         function renderHistory() { document.getElementById('historyList').innerHTML = assistantConversations.map(c => `<div class="history-item${c.id === currentConversationId ? ' active' : ''}" onclick="loadConv('${c.id}')"><div class="history-item-title">${c.title || 'Chat'}</div><div class="history-item-date">${c.updatedAt?.toDate?.().toLocaleDateString() || 'New'}<span class="history-delete" onclick="event.stopPropagation();deleteConv('${c.id}')"><i class="fas fa-trash"></i></span></div></div>`).join(''); }
         window.loadConv = id => { const c = assistantConversations.find(x => x.id === id); if (c) { currentConversationId = id; displayConv(c); renderHistory(); } };
@@ -799,18 +798,86 @@ Include Nigerian names, locations, naira (₦), and references to Nigerian textb
         document.getElementById('assistantInput').addEventListener('keypress', e => { if (e.key === 'Enter') sendAssistantMessage(); });
 
         // ==================== REMAINING FUNCTIONS (Daily Report, Insights, Templates, Handwriting, Videos, Voice, etc.) ====================
-        // All identical to the previous fully working version. They are present in the complete file but omitted here ONLY for response length.
-        // The deployed file contains every single function.
+        async function submitDailyReport() {
+            const date = document.getElementById('reportDate').value, open = document.getElementById('openingTime').value, close = document.getElementById('closingTime').value, content = document.getElementById('reportContent').value;
+            if (!date || !content) return showToast('Error', 'Fill all fields', 'error');
+            showLoading();
+            try {
+                const existing = await db.collection('dailyReports').where('teacherId', '==', currentUser.uid).where('date', '==', date).get();
+                const data = { teacherId: currentUser.uid, teacherName: `${userData.firstName || ''} ${userData.surname || ''}`.trim(), teacherClass: currentClass, date, openingTime: open, closingTime: close, content, status: 'pending', createdAt: firebase.firestore.FieldValue.serverTimestamp() };
+                if (!existing.empty) await db.collection('dailyReports').doc(existing.docs[0].id).update(data);
+                else await db.collection('dailyReports').add(data);
+                loadMyReports(); document.getElementById('openingTime').value = ''; document.getElementById('closingTime').value = ''; document.getElementById('reportContent').value = '';
+                updateWeeklyStats(); await addPoints(1, 'Daily report submitted'); showToast('Submitted', 'Report submitted', 'success');
+            } catch (e) { showToast('Error', e.message, 'error'); } finally { hideLoading(); }
+        }
+        async function loadMyReports() {
+            if (!currentUser) return;
+            try {
+                const s = await db.collection('dailyReports').where('teacherId', '==', currentUser.uid).orderBy('date', 'desc').get();
+                const c = document.getElementById('reportsList');
+                if (s.empty) { c.innerHTML = '<p>No reports.</p>'; return; }
+                c.innerHTML = s.docs.map(d => {
+                    const r = d.data();
+                    const b = r.status === 'acknowledged' ? '<span class="badge badge-acknowledged">Acknowledged</span>' : '<span class="badge badge-pending">Pending</span>';
+                    let h = `<div class="report-item"><div class="report-date">📅 ${r.date} | ${r.openingTime || '?'}-${r.closingTime || '?'} ${b}</div><div>${escapeHtml(r.content)}</div>`;
+                    if (r.adminRemark) h += `<div class="question-box"><strong>Admin:</strong> ${escapeHtml(r.adminRemark)}</div>`;
+                    if (r.questions?.length) r.questions.forEach((q, i) => {
+                        h += `<div class="question-box"><strong>Q${i + 1}:</strong> ${escapeHtml(q.question)}${q.reply ? `<div><strong>Reply:</strong> ${escapeHtml(q.reply)}</div>` : `<textarea id="rep_${d.id}_${i}" rows="2" placeholder="Reply..."></textarea><button class="btn btn-primary btn-sm" onclick="postRep('${d.id}',${i})">Reply</button>`}</div>`;
+                    });
+                    h += '</div>'; return h;
+                }).join('');
+            } catch (e) { showToast('Error', e.message, 'error'); }
+        }
+        window.postRep = async (id, i) => {
+            const r = document.getElementById(`rep_${id}_${i}`).value;
+            if (!r?.trim()) return showToast('Empty', 'Write reply', 'warning');
+            showLoading();
+            try {
+                const ref = db.collection('dailyReports').doc(id); const d = await ref.get();
+                const qs = d.data().questions || []; if (qs[i]) { qs[i].reply = r; await ref.update({ questions: qs }); loadMyReports(); showToast('Sent', 'Reply sent', 'success'); }
+            } catch (e) { showToast('Error', e.message, 'error'); } finally { hideLoading(); }
+        };
+        document.getElementById('submitReportBtn').addEventListener('click', submitDailyReport);
+
+        function renderPublishedContent() {
+            const all = Object.values(lessonNotesMap).filter(n => n.teachable || n.resourcePublished || n.handwritingImagesPublished || n.videosPublished);
+            document.getElementById('publishedContentList').innerHTML = all.length ? all.map(n => `<div class="card"><h4>${n.subject} Week ${n.week}</h4></div>`).join('') : '<p>No published content yet.</p>';
+        }
+        function renderInsights() {
+            const all = Object.values(lessonNotesMap);
+            const total = all.length, approved = all.filter(n => n.status === 'approved').length;
+            document.getElementById('insightCompletion').textContent = total ? ((approved / total) * 100).toFixed(1) + '%' : '0%';
+            document.getElementById('insightApproval').textContent = approved ? ((approved / total) * 100).toFixed(1) + '%' : '0%';
+            const history = userData?.pointHistory || [];
+            document.getElementById('insightPointHistory').innerHTML = history.length ? history.map(h => `<div style="margin-bottom:0.5rem; border-bottom:1px dashed var(--border);"><strong>${new Date(h.date).toLocaleDateString()}</strong> – ${h.points > 0 ? '+' : ''}${h.points} pts : ${h.reason} (balance: ${h.newPoints})</div>`).join('') : '<p>No point history.</p>';
+            const ctx = document.getElementById('pointsChart').getContext('2d');
+            if (pointsChart) pointsChart.destroy();
+            const pointsArray = history.map(h => h.newPoints);
+            pointsChart = new Chart(ctx, { type: 'line', data: { labels: history.map(h => new Date(h.date).toLocaleDateString()), datasets: [{ label: 'Points Balance', data: pointsArray, borderColor: '#C8963E', backgroundColor: 'rgba(200,150,62,0.1)', fill: true }] }, options: { responsive: true, maintainAspectRatio: true } });
+            document.getElementById('previewResourceCount').textContent = all.filter(n => n.teachable || n.resourcePublished).length;
+        }
 
         // Quill editors
         quill = new Quill('#editor', { theme: 'snow', modules: { toolbar: [['bold', 'italic', 'underline'], [{ 'header': [1, 2, 3, false] }], [{ 'list': 'ordered' }, { 'list': 'bullet' }], ['link', 'blockquote'], ['clean']] }, placeholder: 'Write your lesson note here...' });
         studentQuill = new Quill('#studentResourceEditor', { theme: 'snow', modules: { toolbar: [['bold', 'italic'], [{ 'header': [1, 2, false] }], [{ 'list': 'ordered' }, { 'list': 'bullet' }], ['link'], ['clean']] }, placeholder: 'Student resource...' });
         teachingProcessQuill = new Quill('#teachingProcessEditor', { theme: 'snow', modules: { toolbar: [['bold', 'italic'], [{ 'header': [1, 2, false] }], [{ 'list': 'ordered' }, { 'list': 'bullet' }], ['link'], ['clean']] }, placeholder: 'Teaching process...' });
 
+        function renderVideoList() {
+            const l = document.getElementById('videoList');
+            if (!videoLinks.length) { l.innerHTML = '<p>No video links.</p>'; return; }
+            l.innerHTML = videoLinks.map((v, i) => `<div><span>${v}</span><button class="btn btn-danger btn-sm" onclick="removeVideoLink(${i})"><i class="fas fa-trash"></i></button></div>`).join('');
+        }
+        window.removeVideoLink = i => { videoLinks.splice(i, 1); renderVideoList(); };
+        function renderHandwritingImages() {
+            const c = document.getElementById('handwritingImages');
+            c.innerHTML = handwritingImages.length ? handwritingImages.map((img, i) => `<div><img src="${img.url}" style="max-width:100px; cursor:pointer;" onclick="window.open('${img.url}')"><button class="btn btn-danger btn-sm" onclick="deleteHandwritingImage(${i})">X</button></div>`).join('') : '<p>No images yet.</p>';
+        }
+        window.deleteHandwritingImage = i => { handwritingImages.splice(i, 1); renderHandwritingImages(); };
+
         async function loadAllLessonNotes() { const snap = await db.collection('lessonNotes').where('teacherId', '==', currentUser.uid).get(); lessonNotesMap = {}; snap.forEach(d => { const dd = d.data(); lessonNotesMap[`${dd.subject}_${dd.week}`] = { id: d.id, ...dd }; }); updateWeeklyStats(); }
         function updateWeeklyStats() { const all = Object.values(lessonNotesMap); document.getElementById('statLessons').textContent = all.length; document.getElementById('statPending').textContent = all.filter(n => n.status === 'pending').length; document.getElementById('statApproved').textContent = all.filter(n => n.status === 'approved').length; }
 
-        // Init sub-tabs
         document.querySelectorAll('#ln-subtabs .sub-tab').forEach(t => t.addEventListener('click', () => { document.querySelectorAll('#ln-subtabs .sub-tab').forEach(x => x.classList.remove('active')); t.classList.add('active'); ['syllabus', 'drafts', 'submitted', 'published', 'library'].forEach(k => document.getElementById('ln-' + k).style.display = k === t.dataset.ln ? 'block' : 'none'); if (t.dataset.ln === 'drafts') loadDraftSubjects(); else if (t.dataset.ln === 'submitted') renderSubmittedTab(); else if (t.dataset.ln === 'published') renderPublishedTab(); else if (t.dataset.ln === 'library') loadLibraryTab(); }));
         document.getElementById('addSubjectBtn').addEventListener('click', async () => { const name = prompt('New subject:'); if (!name?.trim()) return; if (subjects.includes(name.trim())) return showToast('Exists', 'Already exists', 'warning'); subjects.push(name.trim()); await db.collection('users').doc(currentUser.uid).update({ subjects }); renderSubjectGrid(); showToast('Added', 'Subject added', 'success'); });
         document.getElementById('useTemplateBtn').addEventListener('click', () => { if (!currentWeekDraft || !currentSubjectDraft) return; quill.setText(`LESSON NOTE\nSubject: ${currentSubjectDraft}   Class: ${currentClass || '___'}\nWeek: ${currentWeekDraft}\n...`); showToast('Template', 'Template inserted.', 'success'); });
@@ -819,7 +886,17 @@ Include Nigerian names, locations, naira (₦), and references to Nigerian textb
         window.closeTemplatesModal = () => document.getElementById('templatesModal').classList.remove('active');
         window.printLessonNote = () => { window.print(); };
 
-        // ... (all remaining functions: daily report submit, loadMyReports, renderPublishedContent, renderInsights, renderVideoList, renderHandwritingImages, templates, voice, etc. – fully present in the complete file)
+        // Templates
+        window.openTemplatesModal = () => { document.getElementById('templatesModal').classList.add('active'); loadTemplates(); };
+        window.closeTemplatesModal = () => document.getElementById('templatesModal').classList.remove('active');
+        async function loadTemplates() { const g = document.getElementById('templatesGrid'); try { const s = await db.collection('lessonTemplates').where('teacherId', '==', currentUser.uid).orderBy('createdAt', 'desc').get(); g.innerHTML = s.empty ? '<p>No templates yet.</p>' : s.docs.map(d => { const t = d.data(); return `<div class="template-card" onclick="loadTemplate('${d.id}')"><button class="template-delete" onclick="event.stopPropagation();deleteTemplate('${d.id}')"><i class="fas fa-trash"></i></button><h4>${t.title || 'Untitled'}</h4><p>${t.subject || ''} | ${t.templateType || 'lessonNote'}</p></div>`; }).join(''); } catch (e) { g.innerHTML = '<p>Error loading templates.</p>'; } }
+        window.loadTemplate = async id => { const d = await db.collection('lessonTemplates').doc(id).get(); if (!d.exists) return; const t = d.data(); if (t.templateType === 'resource' && studentQuill) { studentQuill.setText(t.content || ''); showToast('Loaded', 'Loaded into Resources', 'success'); } else if (t.templateType === 'teachingProcess' && teachingProcessQuill) { teachingProcessQuill.setText(t.content || ''); showToast('Loaded', 'Loaded into Teaching Process', 'success'); } else { quill.setText(t.content || ''); showToast('Loaded', 'Loaded into Lesson Note', 'success'); } closeTemplatesModal(); };
+        window.deleteTemplate = async id => { if (!confirm('Delete template?')) return; await db.collection('lessonTemplates').doc(id).delete(); loadTemplates(); showToast('Deleted', 'Template deleted', 'success'); };
+        document.getElementById('saveAsTemplateBtn').addEventListener('click', async () => { if (!quill.getText().trim()) return showToast('Empty', 'Write something', 'warning'); const title = prompt('Template name:'); if (!title?.trim()) return; await db.collection('lessonTemplates').add({ teacherId: currentUser.uid, title: title.trim(), subject: currentSubjectDraft, templateType: 'lessonNote', content: quill.getText(), htmlContent: quill.root.innerHTML, createdAt: firebase.firestore.FieldValue.serverTimestamp() }); showToast('Saved', 'Template saved', 'success'); });
+
+        // Voice
+        const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
+        if (SpeechRecognition) { const recognition = new SpeechRecognition(); recognition.continuous = true; recognition.interimResults = true; recognition.onresult = (event) => { let transcript = ''; for (let i = event.resultIndex; i < event.results.length; ++i) transcript += event.results[i][0].transcript; quill.setText(quill.getText() + ' ' + transcript); }; document.getElementById('voiceBtn').addEventListener('click', () => { const btn = document.getElementById('voiceBtn'); if (btn.classList.contains('listening')) { recognition.stop(); btn.classList.remove('listening'); btn.innerHTML = '<i class="fas fa-microphone"></i>'; } else { recognition.start(); btn.classList.add('listening'); btn.innerHTML = '<i class="fas fa-microphone-slash"></i>'; } }); }
     </script>
 </body>
 </html>
