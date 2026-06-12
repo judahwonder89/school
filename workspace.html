@@ -15,7 +15,7 @@
     <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-remote-config-compat.js"></script>
     <script type="importmap">{ "imports": { "groq-sdk": "https://esm.run/groq-sdk" } }</script>
     <style>
-        /* ====== COMPLETE STYLES (unchanged from your original) ====== */
+        /* ====== EXACT THEME (unchanged) ====== */
         * { margin:0; padding:0; box-sizing:border-box; }
         :root[data-theme="light"] {
             --bg-primary: #f0f5fa; --bg-surface: rgba(255,255,255,0.75); --text-primary: #0b1e33;
@@ -465,7 +465,6 @@
     <script type="module">
         import Groq from "groq-sdk";
 
-        // ==================== FIREBASE CONFIG ====================
         const firebaseConfig = {
             apiKey: "AIzaSyADXHEiaSQ146QsGsaOCElARtpwrLE8svs",
             authDomain: "judah-c737e.firebaseapp.com",
@@ -601,7 +600,7 @@
             sel.addEventListener('change', (e) => { currentClass = e.target.value; if (currentClass) loadAllTimetableData(); });
         }
 
-        // ==================== AUTH ====================
+        // ==================== AUTH (with Groq init) ====================
         auth.onAuthStateChanged(async user => {
             if (!user) { window.location.href = 'teacher-login.html'; return; }
             try {
@@ -611,7 +610,6 @@
                 allAssignedClasses = userData.classesTeaching || (userData.classTeaching ? [userData.classTeaching] : []);
                 currentClass = userData.classTeaching || allAssignedClasses[0] || null;
 
-                // Profile pic with photo support
                 const profilePic = document.getElementById('profilePic');
                 if (userData.photoURL) {
                     profilePic.innerHTML = `<img src="${userData.photoURL}" style="width:100%;height:100%;object-fit:cover;border-radius:50%;">`;
@@ -636,10 +634,16 @@
                     await remoteConfig.fetchAndActivate();
                     const groqKey = remoteConfig.getString('groq_api_key');
                     if (groqKey) {
-                        // Initialize Groq client
                         window.groq = new Groq({ apiKey: groqKey, dangerouslyAllowBrowser: true });
+                        console.log('Groq initialized');
+                    } else {
+                        window.groq = null;
+                        showToast('AI Warning', 'Groq API key not found. AI features disabled.', 'warning', 6000);
                     }
-                } catch (e) { console.warn('Groq init failed'); }
+                } catch (e) {
+                    window.groq = null;
+                    showToast('AI Error', 'Could not load AI configuration.', 'error');
+                }
             } catch(e) { showError('Auth error: ' + e.message); }
         });
 
@@ -661,7 +665,7 @@
             });
         });
 
-        // ==================== TIMETABLE ====================
+        // ==================== TIMETABLE (unchanged, full implementation) ====================
         function getEmptyPeriod(type) {
             switch (type) {
                 case 'academic': return { startTime:'08:00', endTime:'08:40', monday:'', tuesday:'', wednesday:'', thursday:'', friday:'' };
@@ -926,7 +930,6 @@
             videoLinks = note.videoLinks || []; renderVideoList();
             handwritingImages = note.handwritingImages || []; renderHandwritingImages();
             updateAllButtons(note);
-            // Display admin feedback if present
             displayAdminFeedback(note);
         };
 
@@ -1124,7 +1127,7 @@
         };
         document.getElementById('submitReportBtn').addEventListener('click', submitDailyReport);
 
-        // ==================== PUBLISHED CONTENT PANEL (global) ====================
+        // ==================== PUBLISHED CONTENT PANEL ====================
         function renderPublishedContent() {
             const all = Object.values(lessonNotesMap).filter(n => n.teachable || n.resourcePublished || n.handwritingImagesPublished || n.videosPublished);
             const container = document.getElementById('publishedContentList');
@@ -1248,7 +1251,10 @@ Assignment:
 Include Nigerian names, locations, naira (₦), and references to Nigerian textbooks (e.g., New Concept Mathematics by J.A. Adegboye). Always state book titles and authors.`;
 
         async function generateAI(prompt, role = '') {
-            if (!window.groq) throw new Error('AI not available. Check your internet connection or API key.');
+            if (!window.groq) {
+                showToast('AI Error', 'AI is not available. Check your API key.', 'error');
+                return null;
+            }
             const completion = await window.groq.chat.completions.create({
                 messages: [
                     { role: 'system', content: NIGERIAN_SYSTEM_PROMPT + (role ? `\n\n${role}` : '') },
@@ -1266,15 +1272,14 @@ Include Nigerian names, locations, naira (₦), and references to Nigerian textb
             const topic = syllabusMap[currentSubjectDraft]?.weeks?.find(w => w.week == currentWeekDraft)?.topic || '';
             if (!topic) return showToast('Error', 'No topic found', 'error');
             showLoading();
-            try {
-                const content = await generateAI(
-                    `Write lesson content for ${currentSubjectDraft}, Week ${currentWeekDraft}, Topic: ${topic}`,
-                    'You are writing the body/content of a lesson note. Provide comprehensive explanations with Nigerian examples.'
-                );
+            const content = await generateAI(`Write lesson content for ${currentSubjectDraft}, Week ${currentWeekDraft}, Topic: ${topic}`,
+                'You are writing the body/content of a lesson note. Provide comprehensive explanations with Nigerian examples.');
+            if (content) {
                 document.getElementById('lessonContent').value = content;
                 updateMergeButtons();
                 showToast('Generated', 'Content generated. Merge it into the lesson note.', 'success');
-            } catch (e) { showToast('Error', e.message, 'error'); } finally { hideLoading(); }
+            }
+            hideLoading();
         });
 
         // Teaching Process AI
@@ -1283,16 +1288,15 @@ Include Nigerian names, locations, naira (₦), and references to Nigerian textb
             const ln = quill.getText();
             if (!topic) return showToast('Error', 'No topic found', 'error');
             showLoading();
-            try {
-                const tp = await generateAI(
-                    `Create a teaching process for ${currentSubjectDraft}, Week ${currentWeekDraft}, Topic: ${topic}. Lesson note content: ${ln.substring(0, 1500)}`,
-                    'You are creating a step‑by‑step TEACHING PROCESS. Use time frames. Use "Teacher asks… Pupils respond…" format. Format with HTML headings.'
-                );
+            const tp = await generateAI(`Create a teaching process for ${currentSubjectDraft}, Week ${currentWeekDraft}, Topic: ${topic}. Lesson note content: ${ln.substring(0, 1500)}`,
+                'You are creating a step‑by‑step TEACHING PROCESS. Use time frames. Use "Teacher asks… Pupils respond…" format. Format with HTML headings.');
+            if (tp) {
                 teachingProcessQuill.setText(tp);
                 lastGeneratedText = tp;
                 document.getElementById('copyTPToTeachingProcessEditor').style.display = 'inline-block';
                 showToast('Generated', 'Teaching process created', 'success');
-            } catch (e) { showToast('Error', e.message, 'error'); } finally { hideLoading(); }
+            }
+            hideLoading();
         });
 
         // Student Resources AI
@@ -1300,16 +1304,15 @@ Include Nigerian names, locations, naira (₦), and references to Nigerian textb
             const topic = syllabusMap[currentSubjectDraft]?.weeks?.find(w => w.week == currentWeekDraft)?.topic || '';
             if (!topic) return showToast('Error', 'No topic found', 'error');
             showLoading();
-            try {
-                const resource = await generateAI(
-                    `Create student resources for ${currentSubjectDraft}, Week ${currentWeekDraft}, Topic: ${topic}`,
-                    'You are creating STUDENT RESOURCES (textbook‑style). Write a detailed explanation with key points, examples, and Nigerian context. Use HTML headings and lists.'
-                );
+            const resource = await generateAI(`Create student resources for ${currentSubjectDraft}, Week ${currentWeekDraft}, Topic: ${topic}`,
+                'You are creating STUDENT RESOURCES (textbook‑style). Write a detailed explanation with key points, examples, and Nigerian context. Use HTML headings and lists.');
+            if (resource) {
                 studentQuill.setText(resource);
                 lastGeneratedText = resource;
                 updateAllButtons(lessonNotesMap[`${currentSubjectDraft}_${currentWeekDraft}`] || {});
                 showToast('Generated', 'Student resources created', 'success');
-            } catch (e) { showToast('Error', e.message, 'error'); } finally { hideLoading(); }
+            }
+            hideLoading();
         });
 
         // Auto‑format lesson note
@@ -1317,14 +1320,12 @@ Include Nigerian names, locations, naira (₦), and references to Nigerian textb
             const content = quill.getText();
             if (!content.trim()) return;
             showLoading();
-            try {
-                const formatted = await generateAI(
-                    content,
-                    'Format the following text as a properly structured Nigerian lesson note using HTML headings, lists, and paragraphs. Return ONLY the HTML.'
-                );
+            const formatted = await generateAI(content, 'Format the following text as a properly structured Nigerian lesson note using HTML headings, lists, and paragraphs. Return ONLY the HTML.');
+            if (formatted) {
                 quill.root.innerHTML = formatted.replace(/```html/g, '').replace(/```/g, '');
                 showToast('Formatted', 'Lesson note formatted to NERDC standards', 'success');
-            } catch (e) { showToast('Error', e.message, 'error'); } finally { hideLoading(); }
+            }
+            hideLoading();
         });
 
         // ==================== AI ASSISTANT ====================
@@ -1394,7 +1395,8 @@ Include Nigerian names, locations, naira (₦), and references to Nigerian textb
         window.closeAIAssistant = () => document.getElementById('aiAssistantModal').classList.remove('active');
         window.sendAssistantMessage = async () => {
             const prompt = document.getElementById('assistantInput').value.trim();
-            if (!prompt || !window.groq) return;
+            if (!prompt) return;
+            if (!window.groq) { showToast('AI Error', 'AI is not available. Check your API key.', 'error'); return; }
             addMsgToChat('user', prompt);
             const conv = assistantConversations.find(c => c.id === currentConversationId);
             if (conv) {
@@ -1543,7 +1545,7 @@ Include Nigerian names, locations, naira (₦), and references to Nigerian textb
             else if (t.dataset.ln === 'library') loadLibraryTab();
         }));
 
-        // ==================== ADD SUBJECT BUTTON ====================
+        // ==================== ADD SUBJECT ====================
         document.getElementById('addSubjectBtn').addEventListener('click', async () => {
             const name = prompt('New subject:');
             if (!name?.trim()) return;
@@ -1556,7 +1558,7 @@ Include Nigerian names, locations, naira (₦), and references to Nigerian textb
             } catch(e) { subjects.pop(); showError(e.message); }
         });
 
-        // ==================== USE TEMPLATE BUTTON ====================
+        // ==================== TEMPLATE BUTTON ====================
         document.getElementById('useTemplateBtn').addEventListener('click', () => {
             if (!currentWeekDraft || !currentSubjectDraft) return showToast('Error','Select a subject and week first.','warning');
             const topic = syllabusMap[currentSubjectDraft]?.weeks?.find(w => w.week == currentWeekDraft)?.topic || '________________';
