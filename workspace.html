@@ -15,7 +15,7 @@
     <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-remote-config-compat.js"></script>
     <script type="importmap">{ "imports": { "groq-sdk": "https://esm.run/groq-sdk" } }</script>
     <style>
-        /* ====== EXACT THEME (unchanged) ====== */
+        /* ====== COMPLETE STYLES (identical to your original) ====== */
         * { margin:0; padding:0; box-sizing:border-box; }
         :root[data-theme="light"] {
             --bg-primary: #f0f5fa; --bg-surface: rgba(255,255,255,0.75); --text-primary: #0b1e33;
@@ -517,6 +517,7 @@
         let pointsChart = null;
         let autoSaveTimer = null;
         const AUTO_SAVE_KEY = 'jw_draft_';
+        let aiContextMode = 'general';   // ★ FIX: added missing variable
 
         // ==================== TIMETABLE STATE ====================
         let draftId = null, draftData = [], draftType = 'academic';
@@ -570,7 +571,6 @@
             for (let i = 0; i < 5; i++) {
                 starDiv.innerHTML += i < stars ? '<i class="fas fa-star" style="color:var(--accent);"></i>' : '<i class="far fa-star" style="color:var(--text-secondary);"></i>';
             }
-            // Preview (Insights)
             const previewName = document.getElementById('previewName');
             if (previewName) previewName.textContent = `${userData.firstName||''} ${userData.surname||''}`.trim() || 'Teacher';
             const previewPost = document.getElementById('previewPost');
@@ -600,7 +600,7 @@
             sel.addEventListener('change', (e) => { currentClass = e.target.value; if (currentClass) loadAllTimetableData(); });
         }
 
-        // ==================== AUTH (with Groq init) ====================
+        // ==================== AUTH ====================
         auth.onAuthStateChanged(async user => {
             if (!user) { window.location.href = 'teacher-login.html'; return; }
             try {
@@ -635,7 +635,6 @@
                     const groqKey = remoteConfig.getString('groq_api_key');
                     if (groqKey) {
                         window.groq = new Groq({ apiKey: groqKey, dangerouslyAllowBrowser: true });
-                        console.log('Groq initialized');
                     } else {
                         window.groq = null;
                         showToast('AI Warning', 'Groq API key not found. AI features disabled.', 'warning', 6000);
@@ -665,7 +664,7 @@
             });
         });
 
-        // ==================== TIMETABLE (unchanged, full implementation) ====================
+        // ==================== TIMETABLE (unchanged) ====================
         function getEmptyPeriod(type) {
             switch (type) {
                 case 'academic': return { startTime:'08:00', endTime:'08:40', monday:'', tuesday:'', wednesday:'', thursday:'', friday:'' };
@@ -822,7 +821,7 @@
         document.getElementById('editApprovedBtn').addEventListener('click', async ()=>{ if (!window._approvedData) return; const d={ classId:currentClass, teacherId:currentUser.uid, periods:window._approvedData.periods, type:window._approvedType, status:'draft', updatedAt:firebase.firestore.FieldValue.serverTimestamp() }; try { await db.collection('timetableProposals').add(d); await loadAllTimetableData(); showToast('Created','New draft from approved','success'); } catch(e){showError(e.message);} });
         document.getElementById('editRejectedBtn').addEventListener('click', async ()=>{ if (!rejectedId) return; try { await db.collection('timetableProposals').doc(rejectedId).update({status:'draft'}); await loadAllTimetableData(); showToast('Moved','Back to draft','info'); } catch(e){showError(e.message);} });
 
-        // ==================== SYLLABUS ====================
+        // ==================== SYLLABUS (unchanged) ====================
         function renderSubjectGrid() {
             const grid = document.getElementById('subjectGrid');
             if (!subjects.length) { grid.innerHTML='<p>No subjects yet.</p>'; return; }
@@ -1267,19 +1266,23 @@ Include Nigerian names, locations, naira (₦), and references to Nigerian textb
             return completion.choices[0].message.content;
         }
 
-        // Content AI button
+        // Content AI button – wrapped in try/finally
         document.getElementById('useAIContentBtn').addEventListener('click', async () => {
             const topic = syllabusMap[currentSubjectDraft]?.weeks?.find(w => w.week == currentWeekDraft)?.topic || '';
             if (!topic) return showToast('Error', 'No topic found', 'error');
             showLoading();
-            const content = await generateAI(`Write lesson content for ${currentSubjectDraft}, Week ${currentWeekDraft}, Topic: ${topic}`,
-                'You are writing the body/content of a lesson note. Provide comprehensive explanations with Nigerian examples.');
-            if (content) {
-                document.getElementById('lessonContent').value = content;
-                updateMergeButtons();
-                showToast('Generated', 'Content generated. Merge it into the lesson note.', 'success');
-            }
-            hideLoading();
+            try {
+                const content = await generateAI(
+                    `Write lesson content for ${currentSubjectDraft}, Week ${currentWeekDraft}, Topic: ${topic}`,
+                    'You are writing the body/content of a lesson note. Provide comprehensive explanations with Nigerian examples.'
+                );
+                if (content) {
+                    document.getElementById('lessonContent').value = content;
+                    updateMergeButtons();
+                    showToast('Generated', 'Content generated. Merge it into the lesson note.', 'success');
+                }
+            } catch(e) { showToast('Error', e.message, 'error'); }
+            finally { hideLoading(); }
         });
 
         // Teaching Process AI
@@ -1288,15 +1291,19 @@ Include Nigerian names, locations, naira (₦), and references to Nigerian textb
             const ln = quill.getText();
             if (!topic) return showToast('Error', 'No topic found', 'error');
             showLoading();
-            const tp = await generateAI(`Create a teaching process for ${currentSubjectDraft}, Week ${currentWeekDraft}, Topic: ${topic}. Lesson note content: ${ln.substring(0, 1500)}`,
-                'You are creating a step‑by‑step TEACHING PROCESS. Use time frames. Use "Teacher asks… Pupils respond…" format. Format with HTML headings.');
-            if (tp) {
-                teachingProcessQuill.setText(tp);
-                lastGeneratedText = tp;
-                document.getElementById('copyTPToTeachingProcessEditor').style.display = 'inline-block';
-                showToast('Generated', 'Teaching process created', 'success');
-            }
-            hideLoading();
+            try {
+                const tp = await generateAI(
+                    `Create a teaching process for ${currentSubjectDraft}, Week ${currentWeekDraft}, Topic: ${topic}. Lesson note content: ${ln.substring(0, 1500)}`,
+                    'You are creating a step‑by‑step TEACHING PROCESS. Use time frames. Use "Teacher asks… Pupils respond…" format. Format with HTML headings.'
+                );
+                if (tp) {
+                    teachingProcessQuill.setText(tp);
+                    lastGeneratedText = tp;
+                    document.getElementById('copyTPToTeachingProcessEditor').style.display = 'inline-block';
+                    showToast('Generated', 'Teaching process created', 'success');
+                }
+            } catch(e) { showToast('Error', e.message, 'error'); }
+            finally { hideLoading(); }
         });
 
         // Student Resources AI
@@ -1304,15 +1311,19 @@ Include Nigerian names, locations, naira (₦), and references to Nigerian textb
             const topic = syllabusMap[currentSubjectDraft]?.weeks?.find(w => w.week == currentWeekDraft)?.topic || '';
             if (!topic) return showToast('Error', 'No topic found', 'error');
             showLoading();
-            const resource = await generateAI(`Create student resources for ${currentSubjectDraft}, Week ${currentWeekDraft}, Topic: ${topic}`,
-                'You are creating STUDENT RESOURCES (textbook‑style). Write a detailed explanation with key points, examples, and Nigerian context. Use HTML headings and lists.');
-            if (resource) {
-                studentQuill.setText(resource);
-                lastGeneratedText = resource;
-                updateAllButtons(lessonNotesMap[`${currentSubjectDraft}_${currentWeekDraft}`] || {});
-                showToast('Generated', 'Student resources created', 'success');
-            }
-            hideLoading();
+            try {
+                const resource = await generateAI(
+                    `Create student resources for ${currentSubjectDraft}, Week ${currentWeekDraft}, Topic: ${topic}`,
+                    'You are creating STUDENT RESOURCES (textbook‑style). Write a detailed explanation with key points, examples, and Nigerian context. Use HTML headings and lists.'
+                );
+                if (resource) {
+                    studentQuill.setText(resource);
+                    lastGeneratedText = resource;
+                    updateAllButtons(lessonNotesMap[`${currentSubjectDraft}_${currentWeekDraft}`] || {});
+                    showToast('Generated', 'Student resources created', 'success');
+                }
+            } catch(e) { showToast('Error', e.message, 'error'); }
+            finally { hideLoading(); }
         });
 
         // Auto‑format lesson note
@@ -1320,12 +1331,17 @@ Include Nigerian names, locations, naira (₦), and references to Nigerian textb
             const content = quill.getText();
             if (!content.trim()) return;
             showLoading();
-            const formatted = await generateAI(content, 'Format the following text as a properly structured Nigerian lesson note using HTML headings, lists, and paragraphs. Return ONLY the HTML.');
-            if (formatted) {
-                quill.root.innerHTML = formatted.replace(/```html/g, '').replace(/```/g, '');
-                showToast('Formatted', 'Lesson note formatted to NERDC standards', 'success');
-            }
-            hideLoading();
+            try {
+                const formatted = await generateAI(
+                    content,
+                    'Format the following text as a properly structured Nigerian lesson note using HTML headings, lists, and paragraphs. Return ONLY the HTML.'
+                );
+                if (formatted) {
+                    quill.root.innerHTML = formatted.replace(/```html/g, '').replace(/```/g, '');
+                    showToast('Formatted', 'Lesson note formatted to NERDC standards', 'success');
+                }
+            } catch(e) { showToast('Error', e.message, 'error'); }
+            finally { hideLoading(); }
         });
 
         // ==================== AI ASSISTANT ====================
