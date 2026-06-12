@@ -738,12 +738,11 @@
         const container = document.getElementById('dailyReportsPendingList');
         if (!filtered.length) { container.innerHTML = '<p>No pending reports.</p>'; return; }
         container.innerHTML = filtered.map(r => {
-            const statusBadge = r.status==='acknowledged' ? 'badge-success' : 'badge-warning';
             return `<div class="item-card">
-                <strong>${escapeHtml(r.teacherName)}</strong> (${r.teacherClass}) — ${r.date} <span class="badge ${statusBadge}">${r.status}</span><br>
+                <strong>${escapeHtml(r.teacherName)}</strong> (${r.teacherClass}) — ${r.date} <span class="badge badge-warning">${r.status}</span><br>
                 <div style="white-space:pre-wrap;">${escapeHtml(r.content)}</div>
                 <button class="btn btn-outline btn-sm" onclick="viewDailyReport('${r.id}')">View</button>
-                ${r.status!=='acknowledged' ? `<button class="btn btn-success btn-sm" onclick="ackDailyReport('${r.id}')">Acknowledge</button>` : ''}
+                <button class="btn btn-success btn-sm" onclick="ackDailyReport('${r.id}')">Acknowledge</button>
             </div>`;
         }).join('');
     }
@@ -779,8 +778,12 @@
         document.getElementById('detailModal').classList.add('active');
     };
 
+    // ★ FIXED: acknowledgedAt is now allowed by the updated rule
     window.ackDailyReport = async (id) => {
-        await db.collection('dailyReports').doc(id).update({ status:'acknowledged', acknowledgedAt: firebase.firestore.FieldValue.serverTimestamp() });
+        await db.collection('dailyReports').doc(id).update({
+            status:'acknowledged',
+            acknowledgedAt: firebase.firestore.FieldValue.serverTimestamp()
+        });
         showToast('Acknowledged','Report acknowledged','success');
     };
 
@@ -814,6 +817,7 @@
         `).join('');
     }
 
+    // ★ NOW INCLUDES PREVIEW BUTTON IN HISTORY CARDS
     function renderTimetablesHistory() {
         const filtered = allTimetableProposals.filter(t => t.status === 'approved' || t.status === 'rejected');
         const container = document.getElementById('timetableHistoryList');
@@ -825,6 +829,7 @@
                 ${t.adminRating ? `<div>Rating: ${'★'.repeat(t.adminRating)}${'☆'.repeat(5-t.adminRating)}</div>` : ''}
                 ${t.adminFeedback ? `<div><em>Feedback:</em> ${escapeHtml(t.adminFeedback)}</div>` : ''}
                 <small>${t.reviewedAt?.toDate().toLocaleString()||''}</small>
+                <div><button class="btn btn-outline btn-sm" onclick="viewTimetablePreview('${t.id}')">Preview</button></div>
             </div>
         `).join('');
     }
