@@ -290,10 +290,17 @@
                 <div class="sub-tab" data-ln="library">📚 Library</div>
             </div>
             <div id="ln-syllabus" style="display:block;">
-                <h2>Your Subjects</h2><div class="subject-grid" id="subjectGrid"></div>
+                <h2>Your Subjects</h2>
+                <div class="subject-grid" id="subjectGrid"></div>
                 <button class="btn btn-outline" id="addSubjectBtn" style="margin-bottom:1rem;"><i class="fas fa-plus"></i> Add Subject</button>
                 <div id="syllabusSection" style="display:none;">
-                    <div class="card"><div class="card-header"><div><h2 id="currentSubjectTitle"></h2><span id="syllabusStatus" class="status-badge status-draft">Draft</span></div><div class="actions"><button class="btn btn-outline" id="addWeekBtn"><i class="fas fa-plus"></i> Week</button><button class="btn btn-primary" id="saveSyllabusBtn">Save Draft</button><button class="btn btn-success" id="submitSyllabusBtn">Submit</button></div></div><div class="table-responsive"><table><thead><tr><th>Week</th><th>Topic</th><th>Objectives</th></tr></thead><tbody id="syllabusBody"></tbody></table></div></div>
+                    <div class="card">
+                        <div class="card-header">
+                            <div><h2 id="currentSubjectTitle"></h2><span id="syllabusStatus" class="status-badge status-draft">Draft</span></div>
+                            <div class="actions"><button class="btn btn-outline" id="addWeekBtn"><i class="fas fa-plus"></i> Week</button><button class="btn btn-primary" id="saveSyllabusBtn">Save Draft</button><button class="btn btn-success" id="submitSyllabusBtn">Submit</button></div>
+                        </div>
+                        <div class="table-responsive"><table><thead><tr><th>Week</th><th>Topic</th><th>Objectives</th></tr></thead><tbody id="syllabusBody"></tbody></table></div>
+                    </div>
                 </div>
             </div>
             <div id="ln-drafts" style="display:none;">
@@ -324,33 +331,90 @@
                     <div class="ai-review-box" id="aiReviewBox"></div>
                     <div id="postApprovalSections" style="display:none;">
                         <div class="card"><button class="btn btn-success" id="pushToTeachBtn" style="display:none;">Push to Teach</button></div>
-                        <div class="card" id="teachingProcessCard"><h3>Teaching Process</h3><button class="btn btn-primary btn-sm" id="aiGenerateTPBtn"><i class="fas fa-robot"></i> Auto-Generate</button><button class="btn btn-outline btn-sm" id="autoFormatTPBtn"><i class="fas fa-magic"></i> Auto-Format</button><div class="editor-container"><div id="teachingProcessEditor"></div></div><button class="btn btn-primary" id="saveTeachingProcessBtn">Save</button><button class="btn btn-success" id="moveToTeachBtn">Move to Teach</button></div>
-                        <div class="card" id="studentResourceSection"><h3>Student Resources</h3><button class="btn btn-primary btn-sm" id="aiGenerateResourceBtn"><i class="fas fa-robot"></i> Auto-Generate</button><button class="btn btn-outline btn-sm" id="autoFormatResourceBtn"><i class="fas fa-magic"></i> Auto-Format</button><div class="editor-container"><div id="studentResourceEditor"></div></div><button class="btn btn-primary" id="saveStudentResourceBtn">Save</button></div>
-                        <div class="card" id="handwritingSection"><h3>Handwriting & Visual Notes</h3><div id="handwritingImages"></div><input type="text" id="handwritingPrompt"><button class="btn btn-primary" id="generateHandwritingBtn">Generate</button></div>
-                        <div class="card" id="videoSection"><h3>Video Links</h3><button class="btn btn-sm btn-outline" id="addVideoLinkBtn">+ Add Link</button><div id="videoInputArea" style="display:none;"><input type="url" id="videoLinkInput"><button class="btn btn-sm btn-primary" id="previewVideoBtn">Preview</button></div><div id="videoList"></div></div>
+                        <div class="card" id="teachingProcessCard">
+                            <div class="card-header"><h3>Teaching Process</h3></div>
+                            <button class="btn btn-primary btn-sm" id="aiGenerateTPBtn"><i class="fas fa-robot"></i> Auto-Generate</button>
+                            <button class="btn btn-outline btn-sm" id="autoFormatTPBtn"><i class="fas fa-magic"></i> Auto-Format</button>
+                            <div class="editor-container"><div id="teachingProcessEditor"></div></div>
+                            <button class="btn btn-primary" id="saveTeachingProcessBtn">Save</button>
+                            <button class="btn btn-success" id="moveToTeachBtn">Move to Teach</button>
+                        </div>
+                        <div class="card" id="studentResourceSection">
+                            <div class="card-header"><h3>Student Resources</h3></div>
+                            <button class="btn btn-primary btn-sm" id="aiGenerateResourceBtn"><i class="fas fa-robot"></i> Auto-Generate</button>
+                            <button class="btn btn-outline btn-sm" id="autoFormatResourceBtn"><i class="fas fa-magic"></i> Auto-Format</button>
+                            <div class="editor-container"><div id="studentResourceEditor"></div></div>
+                            <button class="btn btn-primary" id="saveStudentResourceBtn">Save</button>
+                        </div>
+                        <div class="card" id="handwritingSection">
+                            <div class="card-header"><h3>Handwriting & Visual Notes</h3></div>
+                            <div id="handwritingImages"></div>
+                            <input type="text" id="handwritingPrompt"><button class="btn btn-primary" id="generateHandwritingBtn">Generate</button>
+                        </div>
+                        <div class="card" id="videoSection">
+                            <div class="card-header"><h3>Video Links</h3></div>
+                            <button class="btn btn-sm btn-outline" id="addVideoLinkBtn">+ Add Link</button>
+                            <div id="videoInputArea" style="display:none;"><input type="url" id="videoLinkInput"><button class="btn btn-sm btn-primary" id="previewVideoBtn">Preview</button></div>
+                            <div id="videoList"></div>
+                        </div>
                         <button class="btn btn-outline" id="shareToLibraryBtn"><i class="fas fa-share"></i> Share to Library</button>
                     </div>
                 </div>
             </div>
-            <div id="ln-submitted" style="display:none;"><h2>Submitted & Awaiting Approval</h2><div id="submittedNotesList">Select a subject in the Drafts tab first.</div></div>
-            <div id="ln-published" style="display:none;"><h2>Published Content</h2><div id="publishedNotesList">Select a subject.</div></div>
-            <div id="ln-library" style="display:none;"><h2>School Resource Library</h2><div class="subject-grid" id="resourceLibraryGrid">Loading...</div></div>
+            <div id="ln-submitted" style="display:none;">
+                <h2>Submitted & Awaiting Approval</h2>
+                <div id="submittedNotesList">Select a subject in the Drafts tab first.</div>
+            </div>
+            <div id="ln-published" style="display:none;">
+                <h2>Published Content</h2>
+                <div id="publishedNotesList">Select a subject.</div>
+            </div>
+            <div id="ln-library" style="display:none;">
+                <h2>School Resource Library</h2>
+                <div class="subject-grid" id="resourceLibraryGrid">Loading...</div>
+            </div>
         </div>
 
         <!-- PANEL 3: DAILY REPORT -->
         <div class="workspace-panel" id="panel-dailyReport">
-            <div class="card"><div class="card-header"><h3><i class="fas fa-pen-alt"></i> Today's Report</h3></div><div style="display:grid;grid-template-columns:1fr 1fr;gap:1rem;margin-bottom:1rem;"><div><label>Date</label><input type="date" id="reportDate"></div><div><label>Opening Time</label><input type="text" id="openingTime" placeholder="8:00 AM"></div><div><label>Closing Time</label><input type="text" id="closingTime" placeholder="2:30 PM"></div></div><div><label>Activities</label><textarea id="reportContent"></textarea></div><button class="btn btn-primary" id="submitReportBtn"><i class="fas fa-paper-plane"></i> Submit</button></div>
-            <div class="card"><div class="card-header"><h3><i class="fas fa-history"></i> My Reports</h3></div><div id="reportsList">Loading...</div></div>
+            <div class="card">
+                <div class="card-header"><h3><i class="fas fa-pen-alt"></i> Today's Report</h3></div>
+                <div style="display:grid;grid-template-columns:1fr 1fr;gap:1rem;margin-bottom:1rem;">
+                    <div><label>Date</label><input type="date" id="reportDate"></div>
+                    <div><label>Opening Time</label><input type="text" id="openingTime" placeholder="8:00 AM"></div>
+                    <div><label>Closing Time</label><input type="text" id="closingTime" placeholder="2:30 PM"></div>
+                </div>
+                <div><label>Activities</label><textarea id="reportContent"></textarea></div>
+                <button class="btn btn-primary" id="submitReportBtn"><i class="fas fa-paper-plane"></i> Submit</button>
+            </div>
+            <div class="card">
+                <div class="card-header"><h3><i class="fas fa-history"></i> My Reports</h3></div>
+                <div id="reportsList">Loading...</div>
+            </div>
         </div>
 
         <!-- PANEL 4: PUBLISHED/MOVED -->
-        <div class="workspace-panel" id="panel-publishedContent"><h2><i class="fas fa-check-double"></i> Published & Moved Content</h2><div id="publishedContentList">Loading...</div></div>
+        <div class="workspace-panel" id="panel-publishedContent">
+            <h2><i class="fas fa-check-double"></i> Published & Moved Content</h2>
+            <div id="publishedContentList">Loading...</div>
+        </div>
 
         <!-- PANEL 5: INSIGHTS -->
         <div class="workspace-panel" id="panel-insights">
-            <div class="card"><div class="card-header"><h3><i class="fas fa-chart-line"></i> My Performance Insights</h3></div><canvas id="pointsChart" style="max-height:200px;"></canvas><h4>Point History</h4><div id="insightPointHistory"></div>
+            <div class="card">
+                <div class="card-header"><h3><i class="fas fa-chart-line"></i> My Performance Insights</h3></div>
+                <canvas id="pointsChart" style="max-height:200px;"></canvas>
+                <h4>Point History</h4>
+                <div id="insightPointHistory"></div>
                 <h4>How Parents & Students See Me</h4>
-                <div id="parentStudentPreview" class="card"><div style="display:flex;align-items:center;gap:1rem;"><div class="profile-pic" style="width:60px;height:60px;"><img id="previewPhoto" src="" style="display:none;"><span id="previewInitial">T</span></div><div><h3 id="previewName">Teacher</h3><p id="previewPost">Post</p></div></div><p><strong>Contact:</strong> <span id="previewContact">—</span></p><p><strong>Published Resources:</strong> <span id="previewResourceCount">0</span></p></div>
+                <div id="parentStudentPreview" class="card">
+                    <div style="display:flex;align-items:center;gap:1rem;">
+                        <div class="profile-pic" style="width:60px;height:60px;"><img id="previewPhoto" src="" style="display:none;"><span id="previewInitial">T</span></div>
+                        <div><h3 id="previewName">Teacher</h3><p id="previewPost">Post</p></div>
+                    </div>
+                    <p><strong>Contact:</strong> <span id="previewContact">—</span></p>
+                    <p><strong>Published Resources:</strong> <span id="previewResourceCount">0</span></p>
+                </div>
             </div>
         </div>
     </div>
@@ -361,7 +425,8 @@
         <div class="assistant-history"><div class="history-header"><h3>Conversations</h3><button class="btn btn-sm btn-outline" id="newChatBtn"><i class="fas fa-plus"></i></button></div><div class="history-list" id="historyList"></div></div>
         <div class="assistant-main">
             <div class="assistant-header"><div class="assistant-header-left"><i class="fas fa-robot"></i><h2>AI Teacher Assistant</h2></div><i class="fas fa-times assistant-close" onclick="closeAIAssistant()"></i></div>
-            <div class="assistant-context" id="assistantContext"></div><div class="assistant-chat" id="assistantChat"></div>
+            <div class="assistant-context" id="assistantContext"></div>
+            <div class="assistant-chat" id="assistantChat"></div>
             <div class="assistant-input-area"><input type="text" class="assistant-input" id="assistantInput" placeholder="Ask anything..."><button class="assistant-send-btn" onclick="sendAssistantMessage()"><i class="fas fa-paper-plane"></i></button></div>
             <div class="assistant-actions"><button class="btn btn-outline" onclick="copyAssistantToEditor()">Copy to Editor</button><button class="btn btn-success" id="assistantSaveBtn" onclick="saveAssistantToTeach()">Save to Teach</button></div>
         </div>
@@ -388,7 +453,7 @@
         const CLOUD_NAME = 'dda7kpir8';
         const UPLOAD_PRESET = 'Judahschool';
 
-        // ★ TOP-LEVEL NIGERIAN SYSTEM PROMPT – accessible to all AI functions
+        // ★ TOP-LEVEL NIGERIAN SYSTEM PROMPT
         const NIGERIAN_SYSTEM_PROMPT = `You are a Nigerian teacher using the NERDC curriculum. Write lesson notes following this exact format:
 LESSON NOTE
 Subject: [subject]
@@ -450,6 +515,7 @@ Include Nigerian names, locations, naira (₦), and references to Nigerian textb
 
         // ==================== HELPERS ====================
         function escapeHtml(s) { return s ? s.replace(/[&<>]/g, m => ({'&':'&amp;','<':'&lt;','>':'&gt;'})[m]) : ''; }
+        function escapeAttr(s) { return s ? s.replace(/"/g, '&quot;') : ''; }
         function showToast(title, message, type = 'info', duration = 4000) {
             const icons = { success: 'fa-check-circle', error: 'fa-exclamation-circle', warning: 'fa-exclamation-triangle', info: 'fa-info-circle' };
             const toast = document.createElement('div'); toast.className = 'toast';
@@ -549,8 +615,8 @@ Include Nigerian names, locations, naira (₦), and references to Nigerian textb
             document.getElementById('draftTableHeader').innerHTML = '<tr>' + getTHeaders(draftType).map(h => `<th>${h}</th>`).join('') + '</tr>';
             let html = ''; draftData.forEach((p, i) => {
                 html += '<tr>';
-                html += `<td><input type="time" value="${p.startTime}" data-i="${i}" data-f="startTime"></td><td><input type="time" value="${p.endTime}" data-i="${i}" data-f="endTime"></td>`;
-                ['monday', 'tuesday', 'wednesday', 'thursday', 'friday'].forEach(d => { if (draftType === 'academic' || ['monday', 'tuesday', 'wednesday'].includes(d)) html += `<td><input type="text" value="${p[d] || ''}" data-i="${i}" data-f="${d}"></td>`; });
+                html += `<td><input type="time" value="${escapeAttr(p.startTime)}" data-i="${i}" data-f="startTime"></td><td><input type="time" value="${escapeAttr(p.endTime)}" data-i="${i}" data-f="endTime"></td>`;
+                ['monday', 'tuesday', 'wednesday', 'thursday', 'friday'].forEach(d => { if (draftType === 'academic' || ['monday', 'tuesday', 'wednesday'].includes(d)) html += `<td><input type="text" value="${escapeAttr(p[d] || '')}" data-i="${i}" data-f="${d}"></td>`; });
                 html += '<td class="delete-row" onclick="deleteTTRow(' + i + ')"><i class="fas fa-trash"></i></td></tr>';
             });
             document.getElementById('draftBody').innerHTML = html;
@@ -583,7 +649,77 @@ Include Nigerian names, locations, naira (₦), and references to Nigerian textb
         document.getElementById('submitTimetableBtn').addEventListener('click', async () => { const d = { classId: currentClass, teacherId: currentUser.uid, periods: draftData, type: draftType, status: 'pending', submittedAt: firebase.firestore.FieldValue.serverTimestamp() }; if (draftId) await db.collection('timetableProposals').doc(draftId).update(d); else { const r = await db.collection('timetableProposals').add(d); draftId = r.id; } await loadAllTimetableData(); addPoints(1, 'Timetable submitted'); showToast('Submitted', 'Sent for approval', 'success'); });
         document.getElementById('deleteDraftBtn').addEventListener('click', () => { openDeleteModal('Delete this draft?', async () => { if (!draftId) return; await db.collection('timetableProposals').doc(draftId).delete(); draftId = null; draftData = [getEmptyPeriod('academic')]; renderDraftTable(); document.getElementById('deleteDraftBtn').style.display = 'none'; closeDeleteModal(); showToast('Deleted', 'Draft deleted', 'success'); }); });
         document.getElementById('editPendingBtn').addEventListener('click', async () => { if (!pendingId) return; await db.collection('timetableProposals').doc(pendingId).update({ status: 'draft' }); await loadAllTimetableData(); showToast('Moved', 'Back to draft', 'info'); });
-        document.getElementById('publishTimetableBtn').addEventListener('click', async () => { if (!window._approvedId) return; await db.collection('timetables').doc(window._approvedId).update({ published: true }); await loadAllTimetableData(); addPoints(2, 'Timetable published'); showToast('Published', 'Published to students', 'success'); });
+
+        // Approved timetable handling
+        function renderApprovedTimetableList() {
+            const select = document.getElementById('approvedTypeSelect');
+            select.innerHTML = '';
+            const types = [...new Set(approvedList.map(a => a.type))];
+            types.forEach(t => { const o = document.createElement('option'); o.value = t; o.textContent = t.charAt(0).toUpperCase() + t.slice(1); select.appendChild(o); });
+            if (types.length) {
+                currentApprovedType = types[0];
+                select.value = currentApprovedType;
+                renderApprovedTable(currentApprovedType);
+                select.addEventListener('change', e => { currentApprovedType = e.target.value; renderApprovedTable(currentApprovedType); });
+            }
+        }
+        function renderApprovedTable(type) {
+            const entry = approvedList.find(a => a.type === type);
+            if (!entry) { document.getElementById('approvedBody').innerHTML = ''; return; }
+            const periods = entry.data.periods || [];
+            document.getElementById('approvedTableHeader').innerHTML = '<tr>' + getTHeaders(type).map(h => `<th>${h}</th>`).join('') + '</tr>';
+            let html = '';
+            periods.forEach((p, i) => {
+                html += '<tr>';
+                html += `<td>${p.startTime}</td><td>${p.endTime}</td>`;
+                ['monday', 'tuesday', 'wednesday', 'thursday', 'friday'].forEach(d => { if (type === 'academic' || ['monday', 'tuesday', 'wednesday'].includes(d)) html += `<td>${p[d] || ''}</td>`; });
+                html += '</tr>';
+            });
+            document.getElementById('approvedBody').innerHTML = html;
+            window._approvedId = entry.id; // set for publish button
+        }
+        document.getElementById('publishTimetableBtn').addEventListener('click', async () => {
+            if (!window._approvedId) return;
+            await db.collection('timetables').doc(window._approvedId).update({ published: true });
+            await loadAllTimetableData();
+            addPoints(2, 'Timetable published');
+            showToast('Published', 'Published to students', 'success');
+        });
+        document.getElementById('editApprovedBtn').addEventListener('click', async () => {
+            if (!window._approvedId) return;
+            const doc = await db.collection('timetables').doc(window._approvedId).get();
+            if (!doc.exists) return;
+            const d = doc.data();
+            draftType = d.type || 'academic';
+            draftData = JSON.parse(JSON.stringify(d.periods || []));
+            const newDraft = { classId: currentClass, teacherId: currentUser.uid, periods: draftData, type: draftType, status: 'draft', updatedAt: firebase.firestore.FieldValue.serverTimestamp() };
+            const ref = await db.collection('timetableProposals').add(newDraft);
+            draftId = ref.id;
+            renderDraftTable();
+            document.getElementById('deleteDraftBtn').style.display = 'inline-block';
+            document.querySelector('#tt-tabs .sub-tab[data-tt="draft"]').click();
+            showToast('Draft', 'Created from approved', 'success');
+        });
+
+        // Rejected timetable rendering
+        function renderRejectedTable() {
+            if (!rejectedId) { document.getElementById('rejectedBody').innerHTML = '<tr><td colspan="7">No rejected submission.</td></tr>'; return; }
+            document.getElementById('rejectedTableHeader').innerHTML = '<tr>' + getTHeaders(draftType).map(h => `<th>${h}</th>`).join('') + '</tr>';
+            let html = '';
+            rejectedData.forEach((p, i) => {
+                html += '<tr>';
+                html += `<td>${p.startTime}</td><td>${p.endTime}</td>`;
+                ['monday', 'tuesday', 'wednesday', 'thursday', 'friday'].forEach(d => { if (draftType === 'academic' || ['monday', 'tuesday', 'wednesday'].includes(d)) html += `<td>${p[d] || ''}</td>`; });
+                html += '</tr>';
+            });
+            document.getElementById('rejectedBody').innerHTML = html;
+        }
+        document.getElementById('editRejectedBtn').addEventListener('click', async () => {
+            if (!rejectedId) return;
+            await db.collection('timetableProposals').doc(rejectedId).update({ status: 'draft' });
+            await loadAllTimetableData();
+            showToast('Moved', 'Back to draft', 'info');
+        });
 
         // ==================== SYLLABUS ====================
         function renderSubjectGrid() {
@@ -592,10 +728,20 @@ Include Nigerian names, locations, naira (₦), and references to Nigerian textb
             grid.innerHTML = subjects.map(sub => {
                 const s = syllabusMap[sub] || { weeks: [], status: 'draft' };
                 const btn = s.status === 'approved' ? `<button class="btn btn-primary btn-sm" onclick="event.stopPropagation();createLessonNoteForSyllabus('${sub}')">Create Lesson Note</button>` : '';
-                return `<div class="subject-card" onclick="selectSubject('${sub}', this)"><h3>${sub}</h3><p>${s.weeks?.length || 0} weeks</p><span class="subject-badge ${s.status || 'draft'}">${s.status || 'draft'}</span>${btn}</div>`;
+                return `<div class="subject-card" onclick="selectSubject('${escapeAttr(sub)}', this)"><h3>${escapeHtml(sub)}</h3><p>${s.weeks?.length || 0} weeks</p><span class="status-badge status-${s.status || 'draft'}">${s.status || 'draft'}</span>${btn}</div>`;
             }).join('');
         }
-        window.createLessonNoteForSyllabus = (sub) => { currentSubject = sub; const w = syllabusMap[sub]?.weeks; if (w?.length) selectWeek(w[0].week); document.getElementById('ln-subtabs').querySelector('[data-ln="drafts"]').click(); };
+        window.createLessonNoteForSyllabus = (sub) => {
+            currentSubject = sub;
+            currentSubjectDraft = sub; // set for draft selection
+            const w = syllabusMap[sub]?.weeks;
+            if (w?.length) {
+                // switch to drafts tab, select subject and week
+                document.getElementById('ln-subtabs').querySelector('[data-ln="drafts"]').click();
+                selectDraftSubject(null, sub); // we'll modify selectDraftSubject to accept optional event
+                selectDraftWeek(null, w[0].week);
+            }
+        };
         window.selectSubject = async (subject, card) => {
             currentSubject = subject;
             document.querySelectorAll('#subjectGrid .subject-card').forEach(c => c.classList.remove('active')); card.classList.add('active');
@@ -608,7 +754,7 @@ Include Nigerian names, locations, naira (₦), and references to Nigerian textb
         };
         function renderSyllabusTable(weeks) {
             if (!weeks.length) weeks = [{ week: 1, topic: '', objectives: '' }];
-            document.getElementById('syllabusBody').innerHTML = weeks.map((w, i) => `<tr><td><input type="number" value="${w.week}" data-i="${i}" data-f="week"></td><td><input type="text" value="${w.topic || ''}" data-i="${i}" data-f="topic"></td><td><input type="text" value="${w.objectives || ''}" data-i="${i}" data-f="objectives"></td><td><button class="btn btn-danger btn-sm" onclick="deleteSW(${i})"><i class="fas fa-trash"></i></button></td></tr>`).join('');
+            document.getElementById('syllabusBody').innerHTML = weeks.map((w, i) => `<tr><td><input type="number" value="${w.week}" data-i="${i}" data-f="week"></td><td><input type="text" value="${escapeAttr(w.topic || '')}" data-i="${i}" data-f="topic"></td><td><input type="text" value="${escapeAttr(w.objectives || '')}" data-i="${i}" data-f="objectives"></td><td><button class="btn btn-danger btn-sm" onclick="deleteSW(${i})"><i class="fas fa-trash"></i></button></td></tr>`).join('');
             document.querySelectorAll('#syllabusBody input').forEach(inp => inp.addEventListener('input', function () { const i = parseInt(this.dataset.i), f = this.dataset.f; if (!syllabusMap[currentSubject].weeks[i]) syllabusMap[currentSubject].weeks[i] = {}; syllabusMap[currentSubject].weeks[i][f] = this.value; }));
         }
         window.deleteSW = i => { syllabusMap[currentSubject].weeks.splice(i, 1); renderSyllabusTable(syllabusMap[currentSubject].weeks); };
@@ -620,35 +766,41 @@ Include Nigerian names, locations, naira (₦), and references to Nigerian textb
         // ==================== DRAFTS TAB ====================
         function loadDraftSubjects() {
             const grid = document.getElementById('draftSubjectGrid');
-            grid.innerHTML = subjects.map(sub => { const drafts = Object.values(lessonNotesMap).filter(n => n.subject === sub && (!n.status || n.status === 'draft')).length; return `<div class="subject-card" onclick="selectDraftSubject('${sub}')"><h3>${sub}</h3><p>${drafts} drafts</p></div>`; }).join('');
+            grid.innerHTML = subjects.map(sub => { const drafts = Object.values(lessonNotesMap).filter(n => n.subject === sub && (!n.status || n.status === 'draft')).length; return `<div class="subject-card" onclick="selectDraftSubject(event, '${escapeAttr(sub)}')"><h3>${escapeHtml(sub)}</h3><p>${drafts} drafts</p></div>`; }).join('');
         }
-        window.selectDraftSubject = (subject) => {
+        // Fixed: accept event as first argument
+        window.selectDraftSubject = (e, subject) => {
+            if (e) e.target.closest('.subject-card').classList.add('active');
             currentSubjectDraft = subject;
-            document.querySelectorAll('#draftSubjectGrid .subject-card').forEach(c => c.classList.remove('active')); event.target.closest('.subject-card').classList.add('active');
             const allNotes = Object.values(lessonNotesMap).filter(n => n.subject === subject);
             const syllabusWeeks = syllabusMap[subject]?.weeks || [];
             const draftWeeks = syllabusWeeks.filter(w => { const note = allNotes.find(n => n.week == w.week); return !note || note.status === 'draft' || !note.status; });
-            document.getElementById('draftWeekList').innerHTML = draftWeeks.map(wk => `<div class="week-tab" onclick="selectDraftWeek(${wk.week})">Week ${wk.week}: ${wk.topic || 'No topic'}</div>`).join('');
+            document.getElementById('draftWeekList').innerHTML = draftWeeks.map(wk => `<div class="week-tab" onclick="selectDraftWeek(event, ${wk.week})">Week ${wk.week}: ${escapeHtml(wk.topic || 'No topic')}</div>`).join('');
             document.getElementById('draftEditorSection').style.display = 'none';
+            // Quill update when shown
         };
-        window.selectDraftWeek = (week) => {
+        window.selectDraftWeek = (e, week) => {
+            if (e) { document.querySelectorAll('#draftWeekList .week-tab').forEach(t => t.classList.remove('active')); e.target.classList.add('active'); }
             currentWeekDraft = week;
-            document.querySelectorAll('#draftWeekList .week-tab').forEach(t => t.classList.remove('active')); event.target.classList.add('active');
             const key = `${currentSubjectDraft}_${week}`; const note = lessonNotesMap[key] || {};
             if (note.status && note.status !== 'draft') { showToast('Info', 'This week is not a draft.', 'warning'); document.getElementById('draftEditorSection').style.display = 'none'; return; }
             document.getElementById('draftEditorSection').style.display = 'block';
             document.getElementById('editorTitle').textContent = `Week ${week} – ${currentSubjectDraft}`;
-            quill.setText(note.lessonNote || '');
+            quill.root.innerHTML = note.lessonNote || '';
             lessonNoteApproved = note.status === 'approved';
             document.getElementById('postApprovalSections').style.display = lessonNoteApproved ? 'block' : 'none';
             document.getElementById('pushToTeachBtn').style.display = lessonNoteApproved && !note.teachable ? 'inline-block' : 'none';
             contentMerged = !!(note.lessonNote);
             document.getElementById('submitEditorBtn').style.display = (!lessonNoteApproved) ? 'inline-block' : 'none';
-            studentQuill.setText(note.studentResource || '');
-            teachingProcessQuill.setText(note.teachingProcess || '');
+            studentQuill.root.innerHTML = note.studentResource || '';
+            teachingProcessQuill.root.innerHTML = note.teachingProcess || '';
             videoLinks = note.videoLinks || []; renderVideoList();
             handwritingImages = note.handwritingImages || []; renderHandwritingImages();
             displayAdminFeedback(note);
+            // Update Quill editors after making them visible
+            quill.update();
+            studentQuill.update();
+            teachingProcessQuill.update();
         };
         function displayAdminFeedback(note) {
             const box = document.getElementById('adminFeedbackBox');
@@ -688,7 +840,7 @@ Include Nigerian names, locations, naira (₦), and references to Nigerian textb
             } catch (e) { showToast('Error', e.message, 'error'); } finally { hideLoading(); }
         });
 
-        // ★ AUTO‑FORMAT – uses root.innerHTML (never wipes content)
+        // ★ AUTO‑FORMAT – uses root.innerHTML
         async function aiFormatEditor(quillInstance) {
             if (!window.groq) return showToast('Error', 'AI not available', 'error');
             const content = quillInstance.getText();
@@ -719,22 +871,24 @@ Include Nigerian names, locations, naira (₦), and references to Nigerian textb
         async function checkDuplicate(subject, week) { const snap = await db.collection('lessonNotes').where('teacherId', '==', currentUser.uid).where('subject', '==', subject).where('week', '==', week).where('status', 'in', ['approved', 'pending']).get(); return !snap.empty; }
         document.getElementById('saveEditorBtn').addEventListener('click', async () => {
             if (!currentSubjectDraft || !currentWeekDraft) return;
-            const ln = quill.getText(); if (!ln.trim()) return showToast('Empty', 'Write something', 'warning');
+            const lnHtml = quill.root.innerHTML; const lnText = quill.getText();
+            if (!lnText.trim()) return showToast('Empty', 'Write something', 'warning');
             if (await checkDuplicate(currentSubjectDraft, currentWeekDraft) && !confirm('A lesson note for this week already exists. Overwrite?')) return;
             const key = `${currentSubjectDraft}_${currentWeekDraft}`; const existing = lessonNotesMap[key] || {};
-            const d = { teacherId: currentUser.uid, subject: currentSubjectDraft, week: currentWeekDraft, topic: syllabusMap[currentSubjectDraft]?.weeks?.find(w => w.week == currentWeekDraft)?.topic || '', lessonNote: ln, classId: currentClass, status: existing.status || 'draft', updatedAt: firebase.firestore.FieldValue.serverTimestamp() };
+            const d = { teacherId: currentUser.uid, subject: currentSubjectDraft, week: currentWeekDraft, topic: syllabusMap[currentSubjectDraft]?.weeks?.find(w => w.week == currentWeekDraft)?.topic || '', lessonNote: lnHtml, classId: currentClass, status: existing.status || 'draft', updatedAt: firebase.firestore.FieldValue.serverTimestamp() };
             if (existing.id) await db.collection('lessonNotes').doc(existing.id).update(d); else { const r = await db.collection('lessonNotes').add(d); lessonNotesMap[key] = { id: r.id, ...d }; }
             showToast('Saved', 'Draft saved', 'success'); loadDraftSubjects();
         });
         document.getElementById('submitEditorBtn').addEventListener('click', async () => {
             if (!currentSubjectDraft || !currentWeekDraft) return;
-            const ln = quill.getText(); const wc = ln.trim() ? ln.trim().split(/\s+/).length : 0;
+            const lnHtml = quill.root.innerHTML; const lnText = quill.getText();
+            const wc = lnText.trim() ? lnText.trim().split(/\s+/).length : 0;
             if (wc < 200) return showToast('Incomplete', `Only ${wc} words. Minimum 200 required.`, 'warning');
-            if (!ln.includes('Objectives') || !ln.includes('Evaluation')) return showToast('Missing Sections', 'Include "Objectives" and "Evaluation".', 'warning');
+            if (!lnText.includes('Objectives') || !lnText.includes('Evaluation')) return showToast('Missing Sections', 'Include "Objectives" and "Evaluation".', 'warning');
             if (await checkDuplicate(currentSubjectDraft, currentWeekDraft) && !confirm('A lesson note already exists. Submit anyway?')) return;
             const key = `${currentSubjectDraft}_${currentWeekDraft}`; const existing = lessonNotesMap[key] || {};
             const d = { status: 'pending', submittedAt: firebase.firestore.FieldValue.serverTimestamp() };
-            if (existing.id) await db.collection('lessonNotes').doc(existing.id).update(d); else { const r = await db.collection('lessonNotes').add({ ...existing, teacherId: currentUser.uid, subject: currentSubjectDraft, week: currentWeekDraft, classId: currentClass, ...d }); lessonNotesMap[key] = { id: r.id, ...d }; }
+            if (existing.id) await db.collection('lessonNotes').doc(existing.id).update({ ...d, lessonNote: lnHtml }); else { const r = await db.collection('lessonNotes').add({ ...existing, teacherId: currentUser.uid, subject: currentSubjectDraft, week: currentWeekDraft, classId: currentClass, lessonNote: lnHtml, ...d }); lessonNotesMap[key] = { id: r.id, ...d }; }
             await addPoints(2, 'Lesson note submitted');
             document.getElementById('draftEditorSection').style.display = 'none'; loadDraftSubjects(); renderSubmittedTab();
             showToast('Submitted', 'Sent for approval', 'success');
@@ -761,23 +915,32 @@ Include Nigerian names, locations, naira (₦), and references to Nigerian textb
         async function loadLibraryTab() {
             const grid = document.getElementById('resourceLibraryGrid');
             const snap = await db.collection('resourceLibrary').orderBy('createdAt', 'desc').limit(30).get();
-            grid.innerHTML = snap.empty ? '<p>No shared resources yet.</p>' : snap.docs.map(d => { const r = d.data(); return `<div class="card" onclick="importLibraryResource('${d.id}')"><h4>${r.subject} – Week ${r.week}</h4><p>${r.topic}</p><small>By ${r.teacherName}</small></div>`; }).join('');
+            grid.innerHTML = snap.empty ? '<p>No shared resources yet.</p>' : snap.docs.map(d => { const r = d.data(); return `<div class="card" onclick="importLibraryResource('${d.id}')"><h4>${escapeHtml(r.subject)} – Week ${r.week}</h4><p>${escapeHtml(r.topic)}</p><small>By ${escapeHtml(r.teacherName)}</small></div>`; }).join('');
         }
         window.importLibraryResource = async id => {
             const doc = await db.collection('resourceLibrary').doc(id).get(); if (!doc.exists) return;
             const data = doc.data(); if (!subjects.includes(data.subject)) return showToast('Error', 'Subject not in your list.', 'error');
-            if (confirm(`Import ${data.subject} Week ${data.week}?`)) { selectDraftSubject(data.subject); selectDraftWeek(data.week); quill.setText(data.lessonNote || ''); showToast('Imported', 'Done.', 'success'); }
+            if (confirm(`Import ${data.subject} Week ${data.week}?`)) { selectDraftSubject(null, data.subject); selectDraftWeek(null, data.week); quill.root.innerHTML = data.lessonNote || ''; showToast('Imported', 'Done.', 'success'); }
         };
 
         // ==================== AI ASSISTANT ====================
         async function loadAIConversations() { const s = await db.collection('aiConversations').where('teacherId', '==', currentUser.uid).orderBy('updatedAt', 'desc').get(); assistantConversations = s.docs.map(d => ({ id: d.id, ...d.data() })); if (assistantConversations.length) currentConversationId = assistantConversations[0].id; renderHistory(); }
-        function renderHistory() { document.getElementById('historyList').innerHTML = assistantConversations.map(c => `<div class="history-item${c.id === currentConversationId ? ' active' : ''}" onclick="loadConv('${c.id}')"><div class="history-item-title">${c.title || 'Chat'}</div><div class="history-item-date">${c.updatedAt?.toDate?.().toLocaleDateString() || 'New'}<span class="history-delete" onclick="event.stopPropagation();deleteConv('${c.id}')"><i class="fas fa-trash"></i></span></div></div>`).join(''); }
+        function renderHistory() { document.getElementById('historyList').innerHTML = assistantConversations.map(c => `<div class="history-item${c.id === currentConversationId ? ' active' : ''}" onclick="loadConv('${c.id}')"><div class="history-item-title">${escapeHtml(c.title || 'Chat')}</div><div class="history-item-date">${c.updatedAt?.toDate?.().toLocaleDateString() || 'New'}<span class="history-delete" onclick="event.stopPropagation();deleteConv('${c.id}')"><i class="fas fa-trash"></i></span></div></div>`).join(''); }
         window.loadConv = id => { const c = assistantConversations.find(x => x.id === id); if (c) { currentConversationId = id; displayConv(c); renderHistory(); } };
         window.deleteConv = async id => { await db.collection('aiConversations').doc(id).delete(); assistantConversations = assistantConversations.filter(c => c.id !== id); if (currentConversationId === id) currentConversationId = assistantConversations.length ? assistantConversations[0].id : null; renderHistory(); };
         async function newConv() { const id = Date.now().toString(); const c = { id, title: 'New Chat', messages: [], teacherId: currentUser.uid, createdAt: firebase.firestore.FieldValue.serverTimestamp(), updatedAt: firebase.firestore.FieldValue.serverTimestamp() }; await db.collection('aiConversations').doc(id).set(c); assistantConversations.unshift(c); currentConversationId = id; renderHistory(); displayConv(c); }
         function displayConv(c) { const chat = document.getElementById('assistantChat'); chat.innerHTML = ''; if (c.messages) c.messages.forEach(m => addMsgToChat(m.role, m.content)); }
         function addMsgToChat(role, content) { const w = document.createElement('div'); w.className = `message-wrapper ${role}`; const b = document.createElement('div'); b.className = 'message-bubble'; b.innerHTML = content.replace(/\n/g, '<br>'); const t = document.createElement('div'); t.className = 'message-time'; t.textContent = new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }); w.appendChild(b); w.appendChild(t); document.getElementById('assistantChat').appendChild(w); }
-        window.openAIAssistant = (mode = 'general') => { aiContextMode = mode; if (!currentConversationId) newConv(); if (currentSubjectDraft && currentWeekDraft) { const wd = syllabusMap[currentSubjectDraft]?.weeks?.find(w => w.week == currentWeekDraft); document.getElementById('assistantContext').innerHTML = `Mode: <strong>${mode.toUpperCase()}</strong> | Subject: ${currentSubjectDraft} | Week: ${currentWeekDraft} | Topic: ${wd?.topic || 'N/A'}`; } document.getElementById('aiAssistantModal').classList.add('active'); };
+        window.openAIAssistant = (mode = 'general') => {
+            aiContextMode = mode;
+            if (!currentConversationId) newConv();
+            if (currentSubjectDraft && currentWeekDraft) {
+                const wd = syllabusMap[currentSubjectDraft]?.weeks?.find(w => w.week == currentWeekDraft);
+                document.getElementById('assistantContext').innerHTML = `Mode: <strong>${mode.toUpperCase()}</strong> | Subject: ${currentSubjectDraft} | Week: ${currentWeekDraft} | Topic: ${escapeHtml(wd?.topic || 'N/A')}`;
+            }
+            document.getElementById('aiAssistantModal').classList.add('active');
+            loadAIConversations(); // load history on open
+        };
         window.closeAIAssistant = () => document.getElementById('aiAssistantModal').classList.remove('active');
         window.sendAssistantMessage = async () => {
             const prompt = document.getElementById('assistantInput').value.trim(); if (!prompt || !window.groq) return;
@@ -792,12 +955,23 @@ Include Nigerian names, locations, naira (₦), and references to Nigerian textb
                 document.getElementById('assistantSaveBtn').style.display = 'inline-block'; renderHistory();
             } catch (e) { document.getElementById('assistantChat').removeChild(thinking); addMsgToChat('assistant', 'Error: ' + e.message); }
         };
-        window.copyAssistantToEditor = () => { if (lastGeneratedText) { quill.setText(lastGeneratedText); closeAIAssistant(); showToast('Copied', 'Done.', 'success'); } };
+        window.copyAssistantToEditor = () => { if (lastGeneratedText) { quill.root.innerHTML = lastGeneratedText; closeAIAssistant(); showToast('Copied', 'Done.', 'success'); } };
+        window.saveAssistantToTeach = async () => {
+            if (!lastGeneratedText) return showToast('Nothing', 'No content to save', 'warning');
+            if (!currentSubjectDraft || !currentWeekDraft) return showToast('Error', 'Select a subject and week first', 'error');
+            const key = `${currentSubjectDraft}_${currentWeekDraft}`;
+            const existing = lessonNotesMap[key] || {};
+            const d = { teacherId: currentUser.uid, subject: currentSubjectDraft, week: currentWeekDraft, topic: syllabusMap[currentSubjectDraft]?.weeks?.find(w => w.week == currentWeekDraft)?.topic || '', lessonNote: lastGeneratedText, classId: currentClass, status: existing.status || 'draft', updatedAt: firebase.firestore.FieldValue.serverTimestamp() };
+            if (existing.id) await db.collection('lessonNotes').doc(existing.id).update(d);
+            else { const r = await db.collection('lessonNotes').add(d); lessonNotesMap[key] = { id: r.id, ...d }; }
+            showToast('Saved', 'Content saved to lesson note', 'success');
+            closeAIAssistant();
+        };
         document.getElementById('newChatBtn').addEventListener('click', newConv);
         document.getElementById('useAIAssistantLessonNoteBtn').addEventListener('click', () => openAIAssistant('lessonNote'));
         document.getElementById('assistantInput').addEventListener('keypress', e => { if (e.key === 'Enter') sendAssistantMessage(); });
 
-        // ==================== REMAINING FUNCTIONS (Daily Report, Insights, Templates, Handwriting, Videos, Voice, etc.) ====================
+        // ==================== REMAINING FUNCTIONS ====================
         async function submitDailyReport() {
             const date = document.getElementById('reportDate').value, open = document.getElementById('openingTime').value, close = document.getElementById('closingTime').value, content = document.getElementById('reportContent').value;
             if (!date || !content) return showToast('Error', 'Fill all fields', 'error');
@@ -842,7 +1016,7 @@ Include Nigerian names, locations, naira (₦), and references to Nigerian textb
 
         function renderPublishedContent() {
             const all = Object.values(lessonNotesMap).filter(n => n.teachable || n.resourcePublished || n.handwritingImagesPublished || n.videosPublished);
-            document.getElementById('publishedContentList').innerHTML = all.length ? all.map(n => `<div class="card"><h4>${n.subject} Week ${n.week}</h4></div>`).join('') : '<p>No published content yet.</p>';
+            document.getElementById('publishedContentList').innerHTML = all.length ? all.map(n => `<div class="card"><h4>${escapeHtml(n.subject)} Week ${n.week}</h4></div>`).join('') : '<p>No published content yet.</p>';
         }
         function renderInsights() {
             const all = Object.values(lessonNotesMap);
@@ -858,15 +1032,22 @@ Include Nigerian names, locations, naira (₦), and references to Nigerian textb
             document.getElementById('previewResourceCount').textContent = all.filter(n => n.teachable || n.resourcePublished).length;
         }
 
-        // Quill editors
+        // Quill editors initialization – set container to block but height 0, then later hide via CSS
+        const draftEditorSection = document.getElementById('draftEditorSection');
+        draftEditorSection.style.display = 'block'; // temporarily visible for Quill initialization
+        draftEditorSection.style.height = '0';
+        draftEditorSection.style.overflow = 'hidden';
         quill = new Quill('#editor', { theme: 'snow', modules: { toolbar: [['bold', 'italic', 'underline'], [{ 'header': [1, 2, 3, false] }], [{ 'list': 'ordered' }, { 'list': 'bullet' }], ['link', 'blockquote'], ['clean']] }, placeholder: 'Write your lesson note here...' });
         studentQuill = new Quill('#studentResourceEditor', { theme: 'snow', modules: { toolbar: [['bold', 'italic'], [{ 'header': [1, 2, false] }], [{ 'list': 'ordered' }, { 'list': 'bullet' }], ['link'], ['clean']] }, placeholder: 'Student resource...' });
         teachingProcessQuill = new Quill('#teachingProcessEditor', { theme: 'snow', modules: { toolbar: [['bold', 'italic'], [{ 'header': [1, 2, false] }], [{ 'list': 'ordered' }, { 'list': 'bullet' }], ['link'], ['clean']] }, placeholder: 'Teaching process...' });
+        draftEditorSection.style.display = 'none'; // re-hide
+        draftEditorSection.style.height = '';
+        draftEditorSection.style.overflow = '';
 
         function renderVideoList() {
             const l = document.getElementById('videoList');
             if (!videoLinks.length) { l.innerHTML = '<p>No video links.</p>'; return; }
-            l.innerHTML = videoLinks.map((v, i) => `<div><span>${v}</span><button class="btn btn-danger btn-sm" onclick="removeVideoLink(${i})"><i class="fas fa-trash"></i></button></div>`).join('');
+            l.innerHTML = videoLinks.map((v, i) => `<div><span>${escapeHtml(v)}</span><button class="btn btn-danger btn-sm" onclick="removeVideoLink(${i})"><i class="fas fa-trash"></i></button></div>`).join('');
         }
         window.removeVideoLink = i => { videoLinks.splice(i, 1); renderVideoList(); };
         function renderHandwritingImages() {
@@ -875,12 +1056,105 @@ Include Nigerian names, locations, naira (₦), and references to Nigerian textb
         }
         window.deleteHandwritingImage = i => { handwritingImages.splice(i, 1); renderHandwritingImages(); };
 
+        // Added missing handlers for post-approval sections
+        document.getElementById('saveTeachingProcessBtn').addEventListener('click', async () => {
+            if (!currentSubjectDraft || !currentWeekDraft) return;
+            const key = `${currentSubjectDraft}_${currentWeekDraft}`;
+            const existing = lessonNotesMap[key] || {};
+            const teachingProcessHtml = teachingProcessQuill.root.innerHTML;
+            if (!teachingProcessHtml.trim()) return showToast('Empty', 'Write teaching process', 'warning');
+            const d = { teachingProcess: teachingProcessHtml, updatedAt: firebase.firestore.FieldValue.serverTimestamp() };
+            if (existing.id) await db.collection('lessonNotes').doc(existing.id).update(d);
+            showToast('Saved', 'Teaching process saved', 'success');
+        });
+        document.getElementById('saveStudentResourceBtn').addEventListener('click', async () => {
+            if (!currentSubjectDraft || !currentWeekDraft) return;
+            const key = `${currentSubjectDraft}_${currentWeekDraft}`;
+            const existing = lessonNotesMap[key] || {};
+            const resourceHtml = studentQuill.root.innerHTML;
+            if (!resourceHtml.trim()) return showToast('Empty', 'Write student resource', 'warning');
+            const d = { studentResource: resourceHtml, updatedAt: firebase.firestore.FieldValue.serverTimestamp() };
+            if (existing.id) await db.collection('lessonNotes').doc(existing.id).update(d);
+            showToast('Saved', 'Student resource saved', 'success');
+        });
+        document.getElementById('moveToTeachBtn').addEventListener('click', async () => {
+            if (!currentSubjectDraft || !currentWeekDraft) return;
+            const key = `${currentSubjectDraft}_${currentWeekDraft}`;
+            const note = lessonNotesMap[key];
+            if (!note?.id) return showToast('Error', 'Save first', 'error');
+            await db.collection('lessonNotes').doc(note.id).update({ teachable: true });
+            addPoints(2, 'Lesson moved to Teach');
+            showToast('Moved', 'Moved to Teach', 'success');
+        });
+        document.getElementById('aiGenerateTPBtn').addEventListener('click', async () => {
+            if (!window.groq) return showToast('Error', 'AI not available', 'error');
+            const key = `${currentSubjectDraft}_${currentWeekDraft}`;
+            const note = lessonNotesMap[key] || {};
+            const topic = note.topic || syllabusMap[currentSubjectDraft]?.weeks?.find(w => w.week == currentWeekDraft)?.topic || 'this topic';
+            showLoading();
+            try {
+                const content = await generateAI(`Create a detailed teaching process for ${currentSubjectDraft} Week ${currentWeekDraft} topic "${topic}". Include step-by-step activities, timing, materials, and evaluation.`, NIGERIAN_SYSTEM_PROMPT);
+                teachingProcessQuill.root.innerHTML = content;
+                showToast('Generated', 'Teaching process ready', 'success');
+            } catch (e) { showToast('Error', e.message, 'error'); } finally { hideLoading(); }
+        });
+        document.getElementById('aiGenerateResourceBtn').addEventListener('click', async () => {
+            if (!window.groq) return showToast('Error', 'AI not available', 'error');
+            const key = `${currentSubjectDraft}_${currentWeekDraft}`;
+            const note = lessonNotesMap[key] || {};
+            const topic = note.topic || syllabusMap[currentSubjectDraft]?.weeks?.find(w => w.week == currentWeekDraft)?.topic || 'this topic';
+            showLoading();
+            try {
+                const content = await generateAI(`Create student resources (worksheets, reading materials) for ${currentSubjectDraft} Week ${currentWeekDraft} topic "${topic}". Use clear language and include practice exercises.`, NIGERIAN_SYSTEM_PROMPT);
+                studentQuill.root.innerHTML = content;
+                showToast('Generated', 'Student resources ready', 'success');
+            } catch (e) { showToast('Error', e.message, 'error'); } finally { hideLoading(); }
+        });
+        document.getElementById('generateHandwritingBtn').addEventListener('click', async () => {
+            showToast('Info', 'Handwriting generation not yet implemented', 'info');
+        });
+        document.getElementById('addVideoLinkBtn').addEventListener('click', () => {
+            document.getElementById('videoInputArea').style.display = 'block';
+        });
+        document.getElementById('previewVideoBtn').addEventListener('click', () => {
+            const url = document.getElementById('videoLinkInput').value.trim();
+            if (url) window.open(url, '_blank');
+        });
+        document.getElementById('videoLinkInput').addEventListener('keypress', e => {
+            if (e.key === 'Enter' && e.target.value.trim()) {
+                videoLinks.push(e.target.value.trim());
+                renderVideoList();
+                e.target.value = '';
+                document.getElementById('videoInputArea').style.display = 'none';
+            }
+        });
+        document.getElementById('shareToLibraryBtn').addEventListener('click', async () => {
+            if (!currentSubjectDraft || !currentWeekDraft) return;
+            const key = `${currentSubjectDraft}_${currentWeekDraft}`;
+            const note = lessonNotesMap[key];
+            if (!note?.id) return showToast('Error', 'Save lesson note first', 'error');
+            await db.collection('resourceLibrary').add({
+                teacherId: currentUser.uid,
+                teacherName: `${userData.firstName||''} ${userData.surname||''}`.trim(),
+                subject: currentSubjectDraft,
+                week: currentWeekDraft,
+                topic: note.topic || '',
+                lessonNote: note.lessonNote || '',
+                studentResource: note.studentResource || '',
+                teachingProcess: note.teachingProcess || '',
+                videoLinks: videoLinks,
+                handwritingImages: handwritingImages,
+                createdAt: firebase.firestore.FieldValue.serverTimestamp()
+            });
+            showToast('Shared', 'Added to library', 'success');
+        });
+
         async function loadAllLessonNotes() { const snap = await db.collection('lessonNotes').where('teacherId', '==', currentUser.uid).get(); lessonNotesMap = {}; snap.forEach(d => { const dd = d.data(); lessonNotesMap[`${dd.subject}_${dd.week}`] = { id: d.id, ...dd }; }); updateWeeklyStats(); }
         function updateWeeklyStats() { const all = Object.values(lessonNotesMap); document.getElementById('statLessons').textContent = all.length; document.getElementById('statPending').textContent = all.filter(n => n.status === 'pending').length; document.getElementById('statApproved').textContent = all.filter(n => n.status === 'approved').length; }
 
         document.querySelectorAll('#ln-subtabs .sub-tab').forEach(t => t.addEventListener('click', () => { document.querySelectorAll('#ln-subtabs .sub-tab').forEach(x => x.classList.remove('active')); t.classList.add('active'); ['syllabus', 'drafts', 'submitted', 'published', 'library'].forEach(k => document.getElementById('ln-' + k).style.display = k === t.dataset.ln ? 'block' : 'none'); if (t.dataset.ln === 'drafts') loadDraftSubjects(); else if (t.dataset.ln === 'submitted') renderSubmittedTab(); else if (t.dataset.ln === 'published') renderPublishedTab(); else if (t.dataset.ln === 'library') loadLibraryTab(); }));
         document.getElementById('addSubjectBtn').addEventListener('click', async () => { const name = prompt('New subject:'); if (!name?.trim()) return; if (subjects.includes(name.trim())) return showToast('Exists', 'Already exists', 'warning'); subjects.push(name.trim()); await db.collection('users').doc(currentUser.uid).update({ subjects }); renderSubjectGrid(); showToast('Added', 'Subject added', 'success'); });
-        document.getElementById('useTemplateBtn').addEventListener('click', () => { if (!currentWeekDraft || !currentSubjectDraft) return; quill.setText(`LESSON NOTE\nSubject: ${currentSubjectDraft}   Class: ${currentClass || '___'}\nWeek: ${currentWeekDraft}\n...`); showToast('Template', 'Template inserted.', 'success'); });
+        document.getElementById('useTemplateBtn').addEventListener('click', () => { if (!currentWeekDraft || !currentSubjectDraft) return; quill.root.innerHTML = `<h2>LESSON NOTE</h2><p>Subject: ${currentSubjectDraft}   Class: ${currentClass || '___'}<br>Week: ${currentWeekDraft}<br>...</p>`; showToast('Template', 'Template inserted.', 'success'); });
         window.openDeleteModal = (msg, cb) => { document.getElementById('deleteMessage').textContent = msg; document.getElementById('deleteModal').classList.add('active'); document.getElementById('confirmDeleteBtn').onclick = () => { cb(); closeDeleteModal(); }; };
         window.closeDeleteModal = () => document.getElementById('deleteModal').classList.remove('active');
         window.closeTemplatesModal = () => document.getElementById('templatesModal').classList.remove('active');
@@ -889,14 +1163,28 @@ Include Nigerian names, locations, naira (₦), and references to Nigerian textb
         // Templates
         window.openTemplatesModal = () => { document.getElementById('templatesModal').classList.add('active'); loadTemplates(); };
         window.closeTemplatesModal = () => document.getElementById('templatesModal').classList.remove('active');
-        async function loadTemplates() { const g = document.getElementById('templatesGrid'); try { const s = await db.collection('lessonTemplates').where('teacherId', '==', currentUser.uid).orderBy('createdAt', 'desc').get(); g.innerHTML = s.empty ? '<p>No templates yet.</p>' : s.docs.map(d => { const t = d.data(); return `<div class="template-card" onclick="loadTemplate('${d.id}')"><button class="template-delete" onclick="event.stopPropagation();deleteTemplate('${d.id}')"><i class="fas fa-trash"></i></button><h4>${t.title || 'Untitled'}</h4><p>${t.subject || ''} | ${t.templateType || 'lessonNote'}</p></div>`; }).join(''); } catch (e) { g.innerHTML = '<p>Error loading templates.</p>'; } }
-        window.loadTemplate = async id => { const d = await db.collection('lessonTemplates').doc(id).get(); if (!d.exists) return; const t = d.data(); if (t.templateType === 'resource' && studentQuill) { studentQuill.setText(t.content || ''); showToast('Loaded', 'Loaded into Resources', 'success'); } else if (t.templateType === 'teachingProcess' && teachingProcessQuill) { teachingProcessQuill.setText(t.content || ''); showToast('Loaded', 'Loaded into Teaching Process', 'success'); } else { quill.setText(t.content || ''); showToast('Loaded', 'Loaded into Lesson Note', 'success'); } closeTemplatesModal(); };
+        async function loadTemplates() { const g = document.getElementById('templatesGrid'); try { const s = await db.collection('lessonTemplates').where('teacherId', '==', currentUser.uid).orderBy('createdAt', 'desc').get(); g.innerHTML = s.empty ? '<p>No templates yet.</p>' : s.docs.map(d => { const t = d.data(); return `<div class="template-card" onclick="loadTemplate('${d.id}')"><button class="template-delete" onclick="event.stopPropagation();deleteTemplate('${d.id}')"><i class="fas fa-trash"></i></button><h4>${escapeHtml(t.title || 'Untitled')}</h4><p>${escapeHtml(t.subject || '')} | ${escapeHtml(t.templateType || 'lessonNote')}</p></div>`; }).join(''); } catch (e) { g.innerHTML = '<p>Error loading templates.</p>'; } }
+        window.loadTemplate = async id => { const d = await db.collection('lessonTemplates').doc(id).get(); if (!d.exists) return; const t = d.data(); if (t.templateType === 'resource' && studentQuill) { studentQuill.root.innerHTML = t.content || ''; showToast('Loaded', 'Loaded into Resources', 'success'); } else if (t.templateType === 'teachingProcess' && teachingProcessQuill) { teachingProcessQuill.root.innerHTML = t.content || ''; showToast('Loaded', 'Loaded into Teaching Process', 'success'); } else { quill.root.innerHTML = t.content || ''; showToast('Loaded', 'Loaded into Lesson Note', 'success'); } closeTemplatesModal(); };
         window.deleteTemplate = async id => { if (!confirm('Delete template?')) return; await db.collection('lessonTemplates').doc(id).delete(); loadTemplates(); showToast('Deleted', 'Template deleted', 'success'); };
-        document.getElementById('saveAsTemplateBtn').addEventListener('click', async () => { if (!quill.getText().trim()) return showToast('Empty', 'Write something', 'warning'); const title = prompt('Template name:'); if (!title?.trim()) return; await db.collection('lessonTemplates').add({ teacherId: currentUser.uid, title: title.trim(), subject: currentSubjectDraft, templateType: 'lessonNote', content: quill.getText(), htmlContent: quill.root.innerHTML, createdAt: firebase.firestore.FieldValue.serverTimestamp() }); showToast('Saved', 'Template saved', 'success'); });
+        document.getElementById('saveAsTemplateBtn').addEventListener('click', async () => { if (!quill.getText().trim()) return showToast('Empty', 'Write something', 'warning'); const title = prompt('Template name:'); if (!title?.trim()) return; await db.collection('lessonTemplates').add({ teacherId: currentUser.uid, title: title.trim(), subject: currentSubjectDraft, templateType: 'lessonNote', content: quill.root.innerHTML, createdAt: firebase.firestore.FieldValue.serverTimestamp() }); showToast('Saved', 'Template saved', 'success'); });
 
         // Voice
         const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
         if (SpeechRecognition) { const recognition = new SpeechRecognition(); recognition.continuous = true; recognition.interimResults = true; recognition.onresult = (event) => { let transcript = ''; for (let i = event.resultIndex; i < event.results.length; ++i) transcript += event.results[i][0].transcript; quill.setText(quill.getText() + ' ' + transcript); }; document.getElementById('voiceBtn').addEventListener('click', () => { const btn = document.getElementById('voiceBtn'); if (btn.classList.contains('listening')) { recognition.stop(); btn.classList.remove('listening'); btn.innerHTML = '<i class="fas fa-microphone"></i>'; } else { recognition.start(); btn.classList.add('listening'); btn.innerHTML = '<i class="fas fa-microphone-slash"></i>'; } }); }
+
+        // Ensure approved/rejected tables are rendered when switching sub-tabs in timetable
+        const approvedSubTab = document.querySelector('#tt-tabs .sub-tab[data-tt="approved"]');
+        approvedSubTab.addEventListener('click', () => { if (approvedList.length) renderApprovedTimetableList(); });
+        const rejectedSubTab = document.querySelector('#tt-tabs .sub-tab[data-tt="rejected"]');
+        rejectedSubTab.addEventListener('click', () => { renderRejectedTable(); });
+
+        // Initial data load for timetable when class is set
+        if (currentClass) {
+            loadAllTimetableData().then(() => {
+                if (approvedList.length) renderApprovedTimetableList();
+                renderRejectedTable();
+            });
+        }
     </script>
 </body>
 </html>
