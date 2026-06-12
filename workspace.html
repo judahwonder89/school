@@ -15,7 +15,7 @@
     <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-remote-config-compat.js"></script>
     <script type="importmap">{ "imports": { "groq-sdk": "https://esm.run/groq-sdk" } }</script>
     <style>
-        /* ====== COMPLETE STYLES (identical to your original) ====== */
+        /* ====== COMPLETE STYLES ====== */
         * { margin:0; padding:0; box-sizing:border-box; }
         :root[data-theme="light"] {
             --bg-primary: #f0f5fa; --bg-surface: rgba(255,255,255,0.75); --text-primary: #0b1e33;
@@ -77,7 +77,7 @@
         .voice-btn { background: var(--accent); color: white; border: none; border-radius: 50%; width: 34px; height: 34px; cursor: pointer; font-size: 0.9rem; margin-left: 0.5rem; }
         .voice-btn.listening { background: var(--danger-text); animation: pulse 1s infinite; }
         @keyframes pulse { 0% { transform: scale(1); } 50% { transform: scale(1.1); } 100% { transform: scale(1); } }
-        .ai-format-btn { background: var(--success-text); color: white; border: none; border-radius: 50%; width: 34px; height: 34px; cursor: pointer; font-size: 0.9rem; margin-left: 0.5rem; display: flex; align-items: center; justify-content: center; }
+        .ai-format-btn, .file-upload-btn { background: var(--success-text); color: white; border: none; border-radius: 50%; width: 34px; height: 34px; cursor: pointer; font-size: 0.9rem; margin-left: 0.5rem; display: flex; align-items: center; justify-content: center; }
         .admin-feedback-box { background: var(--info-bg); border-left: 4px solid var(--accent); padding: 1rem; border-radius: 1rem; margin-bottom: 1rem; display: none; }
         .admin-feedback-box.visible { display: block; }
         .ai-review-box { background: var(--success-bg); border-left: 4px solid var(--success-text); padding: 0.8rem; border-radius: 1rem; margin-top: 1rem; display: none; font-size: 0.85rem; }
@@ -310,7 +310,6 @@
                 <div class="subject-grid" id="draftSubjectGrid"></div>
                 <div id="draftWeekList" class="week-tabs"></div>
                 <div id="draftEditorSection" style="display:none;">
-                    <!-- Unified editor – no separate content box -->
                     <div class="admin-feedback-box" id="adminFeedbackBox"><strong>Admin Feedback:</strong> <span id="adminFeedbackText"></span></div>
                     <div class="card" id="lessonNoteCard">
                         <div class="card-header">
@@ -324,6 +323,8 @@
                                 <button class="btn btn-success" id="submitEditorBtn" style="display:none;">Submit</button>
                                 <button class="voice-btn" id="voiceBtn"><i class="fas fa-microphone"></i></button>
                                 <button class="ai-format-btn" id="aiFormatBtn" title="AI Format"><i class="fas fa-magic"></i></button>
+                                <button class="file-upload-btn" id="fileUploadBtn" title="Upload file"><i class="fas fa-paperclip"></i></button>
+                                <input type="file" id="fileUploadInput" accept=".txt,.md,text/plain" style="display:none;">
                             </div>
                         </div>
                         <div class="editor-container"><div id="editor"></div></div>
@@ -533,6 +534,33 @@
         let approvedList = [], currentApprovedType = null;
         let rejectedId = null, rejectedData = [], rejectedType = 'academic', rejectedFeedback = '';
 
+        // ==================== NIGERIAN SYSTEM PROMPT ====================
+        const NIGERIAN_SYSTEM_PROMPT = `You are a Nigerian teacher using the NERDC curriculum. Write lesson notes following this exact format:
+LESSON NOTE
+Subject: [subject]
+Class: [class]
+Week: [week number]
+Term: [term]
+Topic: [topic]
+Duration: [minutes]
+Instructional Materials: [list]
+Objectives: By the end of the lesson, pupils should be able to:
+1. [objective 1]
+2. [objective 2]
+Content / Presentation (Step‑by‑step):
+Introduction (5 mins):
+Teacher asks… Pupils respond…
+Main Activity (20 mins):
+Step 1 – … Step 2 – …
+Evaluation (5 mins):
+Teacher asks the following questions:
+1) …
+2) …
+Assignment:
+1) …
+2) …
+Include Nigerian names, locations, naira (₦), and references to Nigerian textbooks (e.g., New Concept Mathematics by J.A. Adegboye). Always state book titles and authors.`;
+
         // ==================== HELPERS ====================
         function escapeHtml(s) { return s ? s.replace(/[&<>]/g, m => ({'&':'&amp;','<':'&lt;','>':'&gt;'})[m]) : ''; }
         function showToast(title, message, type = 'info', duration = 4000) {
@@ -672,7 +700,7 @@
             });
         });
 
-        // ==================== TIMETABLE (unchanged) ====================
+        // ==================== TIMETABLE ====================
         function getEmptyPeriod(type) {
             switch (type) {
                 case 'academic': return { startTime:'08:00', endTime:'08:40', monday:'', tuesday:'', wednesday:'', thursday:'', friday:'' };
@@ -829,7 +857,7 @@
         document.getElementById('editApprovedBtn').addEventListener('click', async ()=>{ if (!window._approvedData) return; const d={ classId:currentClass, teacherId:currentUser.uid, periods:window._approvedData.periods, type:window._approvedType, status:'draft', updatedAt:firebase.firestore.FieldValue.serverTimestamp() }; try { await db.collection('timetableProposals').add(d); await loadAllTimetableData(); showToast('Created','New draft from approved','success'); } catch(e){showError(e.message);} });
         document.getElementById('editRejectedBtn').addEventListener('click', async ()=>{ if (!rejectedId) return; try { await db.collection('timetableProposals').doc(rejectedId).update({status:'draft'}); await loadAllTimetableData(); showToast('Moved','Back to draft','info'); } catch(e){showError(e.message);} });
 
-        // ==================== SYLLABUS (unchanged) ====================
+        // ==================== SYLLABUS ====================
         function renderSubjectGrid() {
             const grid = document.getElementById('subjectGrid');
             if (!subjects.length) { grid.innerHTML='<p>No subjects yet.</p>'; return; }
@@ -1043,12 +1071,38 @@
                     content,
                     'Apply professional HTML formatting: use <h2> for main title, <h3> for section headings, <strong> for key terms, <ol> for numbered lists, <ul> for bullets. Return ONLY the HTML.'
                 );
-                quillInstance.root.innerHTML = formatted.replace(/```html|```/g, '');
-                showToast('Formatted', 'Document formatted', 'success');
+                if (formatted && formatted.trim().length > 0) {
+                    quillInstance.root.innerHTML = formatted.replace(/```html|```/g, '');
+                    showToast('Formatted', 'Document formatted', 'success');
+                } else {
+                    showToast('Error', 'AI returned empty response.', 'error');
+                }
             } catch (e) { showToast('Error', e.message, 'error'); }
             finally { hideLoading(); }
         }
         document.getElementById('aiFormatBtn').addEventListener('click', () => aiFormatEditor(quill));
+
+        // File upload
+        document.getElementById('fileUploadBtn').addEventListener('click', () => {
+            document.getElementById('fileUploadInput').click();
+        });
+        document.getElementById('fileUploadInput').addEventListener('change', (e) => {
+            const file = e.target.files[0];
+            if (!file) return;
+            const reader = new FileReader();
+            reader.onload = (ev) => {
+                const text = ev.target.result;
+                if (!quill.getText().trim()) {
+                    quill.setText(text);
+                } else {
+                    const range = quill.getSelection() || { index: quill.getLength() };
+                    quill.insertText(range.index, '\n' + text);
+                }
+                showToast('Uploaded', 'File content inserted into lesson note.', 'success');
+                markUnsaved();
+            };
+            reader.readAsText(file);
+        });
 
         // Duplicate detection
         async function checkDuplicate(subject, week) {
