@@ -140,7 +140,7 @@
     <div class="top-bar">
         <div class="page-title">
             <h1>My Profile</h1>
-            <p>View and edit your personal information, salary &amp; points</p>
+            <p>View and edit your personal information, salary &amp; bonuses</p>
         </div>
         <div class="profile-area">
             <div class="theme-toggle" id="themeToggle"><i class="fas fa-sun"></i><span>Light</span></div>
@@ -197,13 +197,14 @@
                 <div class="info-row"><span class="info-label">Qualifications</span><span class="info-value" id="qualifications">—</span></div>
                 <div class="info-row"><span class="info-label">Schools Attended</span><span class="info-value" id="schoolsAttended">—</span></div>
 
-                <!-- Salary & Points Card -->
+                <!-- Salary & Points Card (CORRECTED) -->
                 <div style="margin-top:2rem; padding-top:1rem; border-top:2px solid var(--accent);">
-                    <h3 style="margin-bottom:0.5rem;"><i class="fas fa-coins"></i> Salary & Points</h3>
+                    <h3 style="margin-bottom:0.5rem;"><i class="fas fa-coins"></i> Salary &amp; Point Bonus</h3>
                     <div class="info-row"><span class="info-label">Monthly Salary</span><span class="info-value" id="salaryDisplay" style="font-weight:700; color:var(--accent);">—</span></div>
                     <div class="info-row"><span class="info-label">Current Points</span><span class="info-value" id="pointsDisplay" style="font-weight:700;">—</span></div>
-                    <div class="info-row"><span class="info-label">Deduction</span><span class="info-value" id="pointDeductionDisplay" style="font-weight:700; color:var(--danger-text);">—</span></div>
+                    <div class="info-row"><span class="info-label">Point Bonus</span><span class="info-value" id="pointBonusDisplay" style="font-weight:700; color:var(--success-text);">—</span></div>
                     <div class="info-row"><span class="info-label">Net Pay</span><span class="info-value" id="netPayDisplay" style="font-weight:700; color:var(--success-text);">—</span></div>
+                    <small style="color:var(--text-secondary);">1 point = ₦<span id="pointValueDisplay"></span> (set by admin)</small>
                 </div>
 
                 <!-- Point History -->
@@ -338,19 +339,21 @@
             starHTML += ` <span style="font-size:0.9rem; color:var(--text-secondary);">(${stars}/5 stars)</span>`;
             document.getElementById('starRatingDisplay').innerHTML = starHTML;
 
-            // Salary & Points
+            // Salary & Points (NOW CORRECTLY AS BONUS)
             const salary = userData.salary || 0;
             document.getElementById('salaryDisplay').textContent = `₦${salary.toLocaleString()}`;
             document.getElementById('pointsDisplay').textContent = points;
 
-            let pointValue = 200;
+            let pointValue = 200; // default
             try {
                 const settingsDoc = await db.collection('settings').doc('points').get();
                 if (settingsDoc.exists) pointValue = settingsDoc.data().pointValue || 200;
             } catch (e) {}
-            const deduction = points * pointValue;
-            document.getElementById('pointDeductionDisplay').textContent = `-₦${deduction.toLocaleString()}`;
-            const netPay = Math.max(salary - deduction, 0);
+            document.getElementById('pointValueDisplay').textContent = pointValue;
+
+            const bonus = points * pointValue;
+            document.getElementById('pointBonusDisplay').textContent = `+₦${bonus.toLocaleString()}`;
+            const netPay = salary + bonus;
             document.getElementById('netPayDisplay').textContent = `₦${netPay.toLocaleString()}`;
 
             // Point history
@@ -360,7 +363,7 @@
                 tbody.innerHTML = history.map(h => `
                     <tr>
                         <td>${new Date(h.date).toLocaleString()}</td>
-                        <td class="${h.points >= 0 ? 'point-positive' : 'point-negative'}">${h.points > 0 ? '+' : ''}${h.points}</td>
+                        <td class="point-positive">+${h.points}</td>
                         <td>${h.reason}</td>
                         <td>${h.newPoints}</td>
                     </tr>
@@ -400,7 +403,7 @@
         }
     });
 
-    // Simple toast (in case not already defined)
+    // Simple toast
     function showToast(title, msg, type='info') {
         const icons = { success:'fa-check-circle', error:'fa-exclamation-circle', warning:'fa-exclamation-triangle', info:'fa-info-circle' };
         const toast = document.createElement('div');
