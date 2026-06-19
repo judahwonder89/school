@@ -1,0 +1,662 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="dark">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=yes">
+    <title>Judah Wonders Model School · Analysis & Scoring Engine</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:opsz,wght@14..32,400;500;600;700;800&family=Playfair+Display:wght@600;700&display=swap" rel="stylesheet">
+    <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-auth-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-firestore-compat.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        :root[data-theme="light"] {
+            --bg-primary: #f0f5fa; --bg-sidebar: rgba(255,255,255,0.75); --text-primary: #0b1e33;
+            --text-secondary: #2c3e50; --accent: #0A2540; --accent-glow: #C8963E;
+            --border: rgba(0,0,0,0.08); --card-bg: rgba(255,255,255,0.7); --hover-bg: rgba(255,255,255,0.9);
+            --shadow: 0 8px 20px -5px rgba(0,0,0,0.08); --input-bg: #ffffff;
+            --success-bg: rgba(34,197,94,0.15); --success-text: #16a34a;
+            --warning-bg: rgba(245,158,11,0.15); --warning-text: #b45309;
+            --danger-bg: rgba(239,68,68,0.15); --danger-text: #b91c1c;
+            --info-bg: rgba(10,37,64,0.1); --info-text: #0A2540;
+            --gradient-start: #0A2540; --gradient-end: #C8963E;
+        }
+        :root[data-theme="dark"] {
+            --bg-primary: #0a0f1e; --bg-sidebar: rgba(15,23,42,0.8); --text-primary: #f0f4fa;
+            --text-secondary: #a0b3d9; --accent: #C8963E; --accent-glow: #D4AF37;
+            --border: rgba(255,255,255,0.06); --card-bg: rgba(15,23,42,0.6); --hover-bg: rgba(30,41,59,0.8);
+            --shadow: 0 8px 20px -5px rgba(0,0,0,0.4); --input-bg: rgba(30,41,59,0.9);
+            --success-bg: rgba(34,197,94,0.15); --success-text: #4ade80;
+            --warning-bg: rgba(245,158,11,0.15); --warning-text: #fbbf24;
+            --danger-bg: rgba(239,68,68,0.15); --danger-text: #f87171;
+            --info-bg: rgba(200,150,62,0.15); --info-text: #D4AF37;
+            --gradient-start: #0A2540; --gradient-end: #C8963E;
+        }
+
+        body { font-family: 'Inter', sans-serif; background: var(--bg-primary); color: var(--text-primary); min-height: 100vh; display: flex; position: relative; overflow-x: hidden; }
+        .bg-logo { position: fixed; top: 50%; left: 50%; transform: translate(-50%, -50%); width: 400px; max-width: 70vw; opacity: 0.03; pointer-events: none; animation: breathe 6s ease-in-out infinite; }
+        @keyframes breathe { 0%,100% { transform: translate(-50%, -50%) scale(1); opacity: 0.03; } 50% { transform: translate(-50%, -50%) scale(1.06); opacity: 0.06; } }
+        .orb { position: fixed; width: 250px; height: 250px; border-radius: 50%; filter: blur(80px); pointer-events: none; animation: float 25s infinite alternate; }
+        .orb-1 { top: -100px; left: -100px; background: radial-gradient(circle at 30% 30%, rgba(10,37,64,0.12), transparent 70%); }
+        .orb-2 { bottom: -150px; right: -50px; width: 350px; height: 350px; background: radial-gradient(circle at 70% 70%, rgba(200,150,62,0.12), transparent); animation-duration: 30s; }
+        @keyframes float { 0% { transform: translate(0,0) scale(1); } 100% { transform: translate(40px,30px) scale(1.15); } }
+
+        .sidebar { width: 260px; background: var(--bg-sidebar); backdrop-filter: blur(16px); border-right: 1px solid var(--border); padding: 1.5rem 0.8rem; display: flex; flex-direction: column; transition: width 0.3s; position: fixed; top: 0; left: 0; height: 100vh; overflow-y: auto; z-index: 100; box-shadow: var(--shadow); }
+        .sidebar.collapsed { width: 85px; }
+        .sidebar .logo-area { display: flex; align-items: center; gap: 0.8rem; margin-bottom: 1.8rem; padding: 0 0.3rem; text-decoration: none; }
+        .sidebar .logo-area img { width: 38px; height: 38px; object-fit: contain; animation: logoPulse 3s ease-in-out infinite; }
+        @keyframes logoPulse { 0%,100%{transform:scale(1);} 50%{transform:scale(1.05);} }
+        .sidebar .logo-area h2 { font-family: 'Playfair Display', serif; font-size: 1.1rem; font-weight: 700; white-space: nowrap; color: var(--accent); line-height: 1.2; }
+        .sidebar .logo-area h2 span { display: block; font-size: 0.6rem; letter-spacing: 1.5px; color: var(--accent-glow); }
+        .sidebar.collapsed .logo-area h2 { display: none; }
+        .sidebar .nav-item { display: flex; align-items: center; gap: 0.9rem; padding: 0.7rem 1rem; border-radius: 1rem; color: var(--text-secondary); transition: all 0.2s; cursor: pointer; margin-bottom: 0.25rem; text-decoration: none; font-weight: 500; white-space: nowrap; border: 1px solid transparent; font-size: 0.9rem; }
+        .sidebar .nav-item:hover { background: var(--hover-bg); color: var(--accent); border-color: var(--border); transform: translateX(3px); }
+        .sidebar .nav-item.active { background: linear-gradient(135deg, var(--accent), var(--accent-glow)); color: white; box-shadow: 0 6px 15px -5px var(--accent); }
+        .sidebar .nav-item i { font-size: 1.2rem; width: 1.6rem; text-align: center; }
+        .sidebar.collapsed .nav-item span { display: none; }
+        .sidebar.collapsed .nav-item { justify-content: center; padding: 0.7rem; }
+        .sidebar .toggle-btn { margin-top: auto; display: flex; justify-content: flex-end; padding: 0.8rem 0.5rem; cursor: pointer; color: var(--text-secondary); font-size: 1.1rem; }
+        .sidebar .toggle-btn:hover { color: var(--accent); }
+
+        .main-content { flex: 1; margin-left: 260px; padding: 1.5rem; transition: margin-left 0.3s; max-width: calc(100vw - 260px); position: relative; z-index: 5; }
+        .main-content.expanded { margin-left: 85px; max-width: calc(100vw - 85px); }
+
+        .top-bar { display: flex; justify-content: space-between; align-items: center; margin-bottom: 1.5rem; flex-wrap: wrap; gap: 1rem; }
+        .page-title h1 { font-family: 'Playfair Display', serif; font-size: 1.8rem; font-weight: 700; color: var(--accent); margin-bottom: 0.1rem; }
+        .page-title p { color: var(--text-secondary); font-size: 0.85rem; }
+        .profile-area { display: flex; align-items: center; gap: 1rem; }
+        .theme-toggle { background: var(--card-bg); border: 1px solid var(--border); border-radius: 2rem; padding: 0.4rem 1rem; display: flex; align-items: center; gap: 0.4rem; cursor: pointer; color: var(--text-secondary); font-size: 0.8rem; transition: 0.2s; }
+        .profile-pic { width: 36px; height: 36px; border-radius: 50%; background: linear-gradient(135deg, var(--accent), var(--accent-glow)); display: flex; align-items: center; justify-content: center; color: white; font-weight: 600; font-size: 0.9rem; box-shadow: 0 4px 10px var(--accent); overflow: hidden; }
+        .profile-pic img { width: 100%; height: 100%; object-fit: cover; border-radius: 50%; }
+        .dropdown-menu { position: absolute; right: 0; top: 50px; background: var(--bg-sidebar); border: 1px solid var(--border); border-radius: 1rem; padding: 0.4rem; min-width: 160px; display: none; z-index: 1000; }
+        .profile-dropdown { position: relative; cursor: pointer; }
+        .profile-dropdown:hover .dropdown-menu { display: block; animation: fadeIn 0.2s; }
+        @keyframes fadeIn { from { opacity: 0; transform: translateY(-10px); } to { opacity: 1; transform: translateY(0); } }
+        .dropdown-item { padding: 0.6rem 1rem; color: var(--text-primary); border-radius: 0.8rem; display: flex; align-items: center; gap: 0.6rem; font-size: 0.85rem; cursor: pointer; }
+        .dropdown-item:hover { background: var(--hover-bg); color: var(--accent); }
+        .save-indicator { font-size: 0.75rem; display: flex; align-items: center; gap: 0.3rem; }
+        .save-indicator.saved { color: var(--success-text); }
+        .save-indicator.unsaved { color: var(--warning-text); }
+
+        .card { background: var(--card-bg); border: 1px solid var(--border); border-radius: 1.5rem; padding: 1.5rem; box-shadow: var(--shadow); margin-bottom: 1.5rem; }
+        .card-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 1rem; flex-wrap: wrap; gap: 0.75rem; padding-bottom: 1rem; border-bottom: 1px solid var(--border); }
+        .card-header h3 { font-size: 1.1rem; font-weight: 600; display: flex; align-items: center; gap: 0.5rem; }
+        .btn { padding: 0.6rem 1.3rem; border: none; border-radius: 2rem; font-weight: 500; font-size: 0.85rem; cursor: pointer; transition: 0.2s; display: inline-flex; align-items: center; gap: 0.4rem; white-space: nowrap; font-family: inherit; text-decoration: none; }
+        .btn-primary { background: linear-gradient(135deg, var(--gradient-start), var(--gradient-end)); color: white; }
+        .btn-success { background: var(--success-text); color: white; }
+        .btn-outline { background: transparent; border: 1px solid var(--border); color: var(--text-primary); }
+        .btn-outline:hover { background: var(--hover-bg); border-color: var(--accent); }
+        .btn-sm { padding: 0.35rem 0.9rem; font-size: 0.75rem; border-radius: 1.5rem; }
+        .btn:hover { opacity: 0.9; transform: translateY(-1px); }
+        .btn-group { display: flex; gap: 0.75rem; flex-wrap: wrap; }
+
+        .weight-config { display: grid; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); gap: 1rem; }
+        .weight-card { background: var(--hover-bg); border: 2px solid var(--border); border-radius: 1rem; padding: 1rem; text-align: center; }
+        .weight-card.assign { border-color: #3b82f6; }
+        .weight-card.test { border-color: #8b5cf6; }
+        .weight-card.exam { border-color: #ec4899; }
+        .weight-card i { font-size: 1.5rem; margin-bottom: 0.5rem; display: block; }
+        .weight-card.assign i { color: #3b82f6; }
+        .weight-card.test i { color: #8b5cf6; }
+        .weight-card.exam i { color: #ec4899; }
+        .weight-card h4 { font-size: 0.8rem; margin-bottom: 0.5rem; text-transform: uppercase; letter-spacing: 0.04em; }
+        .weight-input { width: 70px; padding: 0.45rem; border-radius: 0.5rem; background: var(--input-bg); border: 1px solid var(--border); color: var(--text-primary); text-align: center; font-size: 1.2rem; font-weight: 700; }
+        .weight-card .select-count { margin-top: 0.4rem; }
+        .weight-card .select-count select { padding: 0.3rem 0.5rem; border-radius: 0.5rem; background: var(--input-bg); border: 1px solid var(--border); color: var(--text-primary); font-size: 0.75rem; }
+        .weight-total { text-align: center; margin-top: 0.75rem; padding: 0.6rem; border-radius: 0.75rem; font-weight: 600; font-size: 0.9rem; }
+        .weight-total.ok { background: var(--success-bg); color: var(--success-text); }
+        .weight-total.err { background: var(--danger-bg); color: var(--danger-text); }
+
+        .subject-selector { display: flex; gap: 0.3rem; flex-wrap: wrap; margin-bottom: 1rem; }
+        .subject-chip { padding: 0.35rem 0.8rem; border-radius: 2rem; font-size: 0.75rem; cursor: pointer; background: var(--card-bg); border: 1px solid var(--border); color: var(--text-secondary); transition: 0.2s; }
+        .subject-chip.active { background: var(--accent); color: white; border-color: var(--accent); }
+        .subject-chip:hover:not(.active) { border-color: var(--accent); }
+
+        .assignment-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(280px, 1fr)); gap: 0.75rem; margin-bottom: 1rem; }
+        .assignment-card { background: var(--hover-bg); border: 1px solid var(--border); border-radius: 0.75rem; padding: 0.75rem; cursor: pointer; transition: 0.2s; display: flex; gap: 0.5rem; align-items: center; }
+        .assignment-card:hover { border-color: var(--accent); }
+        .assignment-card.selected { border-color: var(--accent); background: var(--info-bg); }
+        .assignment-card input { accent-color: var(--accent); width: 1rem; height: 1rem; cursor: pointer; }
+        .assignment-card .info { flex: 1; font-size: 0.8rem; }
+        .assignment-card .info strong { font-size: 0.85rem; }
+
+        .table-scroll { overflow-x: auto; }
+        table { width: 100%; border-collapse: collapse; min-width: 900px; }
+        th { text-align: left; padding: 0.7rem 0.6rem; color: var(--text-secondary); font-weight: 600; border-bottom: 1px solid var(--border); background: var(--hover-bg); font-size: 0.72rem; white-space: nowrap; }
+        td { padding: 0.6rem; border-bottom: 1px solid var(--border); font-size: 0.78rem; }
+        tr:hover td { background: var(--hover-bg); }
+        .student-photo { width: 32px; height: 32px; border-radius: 50%; object-fit: cover; background: var(--hover-bg); }
+        .grade-A { color: #22c55e; font-weight: 700; }
+        .grade-B { color: #3b82f6; font-weight: 700; }
+        .grade-C { color: #f59e0b; font-weight: 700; }
+        .grade-D { color: #f97316; font-weight: 700; }
+        .grade-E { color: #ef4444; font-weight: 700; }
+        .grade-F { color: #dc2626; font-weight: 700; }
+        .remark-input { width: 140px; padding: 0.3rem 0.5rem; border-radius: 0.5rem; background: var(--input-bg); border: 1px solid var(--border); color: var(--text-primary); font-size: 0.75rem; font-family: inherit; }
+
+        .loading-overlay { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.9); display: none; justify-content: center; align-items: center; z-index: 3000; }
+        .loading-overlay.active { display: flex; }
+        .loading-content { background: var(--card-bg); padding: 2rem; border-radius: 1.5rem; text-align: center; }
+        .loading-content i { font-size: 3rem; color: var(--accent); margin-bottom: 1rem; }
+
+        .toast-container { position: fixed; top: 1rem; right: 1rem; z-index: 5000; display: flex; flex-direction: column; gap: 0.5rem; }
+        .toast { background: var(--card-bg); backdrop-filter: blur(16px); border: 1px solid var(--border); border-radius: 1rem; padding: 1rem 1.5rem; min-width: 300px; max-width: 450px; box-shadow: 0 15px 35px rgba(0,0,0,0.4); display: flex; align-items: flex-start; gap: 0.8rem; animation: slideInRight 0.3s; }
+        .toast.removing { animation: slideOutRight 0.3s ease-in forwards; }
+        .toast-icon { font-size: 1.2rem; margin-top: 2px; }
+        .toast-icon.success { color: var(--success-text); }
+        .toast-icon.error { color: var(--danger-text); }
+        .toast-icon.info { color: var(--info-text); }
+        @keyframes slideInRight { from { transform: translateX(120%); opacity: 0; } to { transform: translateX(0); opacity: 1; } }
+        @keyframes slideOutRight { from { transform: translateX(0); opacity: 1; } to { transform: translateX(120%); opacity: 0; } }
+
+        @media (max-width: 768px) {
+            .sidebar { width: 85px; }
+            .sidebar .logo-area h2, .sidebar .nav-item span { display: none; }
+            .main-content { margin-left: 85px; max-width: calc(100vw - 85px); padding: 1rem; }
+            .weight-config { grid-template-columns: 1fr; }
+        }
+    </style>
+</head>
+<body>
+    <img src="https://res.cloudinary.com/dda7kpir8/image/upload/q_auto/f_auto/v1781038310/ChatGPT_Image_Jun_9_2026_09_25_06_AM_elnine.png" alt="" class="bg-logo" aria-hidden="true">
+    <div class="orb orb-1"></div><div class="orb orb-2"></div>
+    <div class="toast-container" id="toastContainer"></div>
+
+    <!-- SIDEBAR -->
+    <div class="sidebar" id="sidebar">
+        <a href="index.html" class="logo-area">
+            <img src="https://res.cloudinary.com/dda7kpir8/image/upload/q_auto/f_auto/v1781038310/ChatGPT_Image_Jun_9_2026_09_25_06_AM_elnine.png" alt="JWMS Logo">
+            <h2>Judah Wonders<span>Model School</span></h2>
+        </a>
+        <a href="teacher-dashboard.html" class="nav-item"><i class="fas fa-chart-pie"></i><span>Dashboard</span></a>
+        <a href="teacher-workspace.html" class="nav-item"><i class="fas fa-book-open"></i><span>Workspace</span></a>
+        <a href="teacher-assessments.html" class="nav-item"><i class="fas fa-pen-fancy"></i><span>Create Assessment</span></a>
+        <a href="teacher-assessment-history.html" class="nav-item"><i class="fas fa-history"></i><span>History</span></a>
+        <a href="teacher-assessment-evaluation.html" class="nav-item"><i class="fas fa-clipboard-check"></i><span>Evaluation</span></a>
+        <a href="teacher-scoring-engine.html" class="nav-item active"><i class="fas fa-calculator"></i><span>Scoring Engine</span></a>
+        <a href="teacher-profile.html" class="nav-item"><i class="fas fa-user-edit"></i><span>Profile</span></a>
+        <div class="toggle-btn" id="sidebarToggle"><i class="fas fa-chevron-left"></i></div>
+    </div>
+
+    <!-- MAIN CONTENT -->
+    <div class="main-content" id="mainContent">
+        <div class="top-bar">
+            <div class="page-title">
+                <h1>Scoring Engine</h1>
+                <p>Configure weights, compute scores, and push to report cards</p>
+            </div>
+            <div class="profile-area">
+                <div class="save-indicator saved" id="saveIndicator"><i class="fas fa-check-circle"></i> Saved</div>
+                <div class="theme-toggle" id="themeToggle"><i class="fas fa-sun"></i><span>Light</span><i class="fas fa-moon"></i></div>
+                <div class="profile-dropdown">
+                    <div class="profile-pic" id="profilePic">TE</div>
+                    <div class="dropdown-menu"><div class="dropdown-item" id="logoutBtn"><i class="fas fa-sign-out-alt"></i> Logout</div></div>
+                </div>
+            </div>
+        </div>
+
+        <!-- TERM SELECTOR + WEIGHT CONFIG -->
+        <div class="card">
+            <div class="card-header">
+                <h3><i class="fas fa-sliders-h"></i> Scoring Configuration</h3>
+                <div class="btn-group">
+                    <select id="termSelect" class="btn btn-outline btn-sm" style="padding:0.5rem 1rem;">
+                        <option value="first">First Term</option>
+                        <option value="second">Second Term</option>
+                        <option value="third">Third Term</option>
+                    </select>
+                    <button class="btn btn-primary" id="saveConfigBtn"><i class="fas fa-save"></i> Save Configuration</button>
+                </div>
+            </div>
+            <p style="font-size:0.8rem;color:var(--text-secondary);margin-bottom:1rem;">
+                <strong>Session:</strong> <span id="sessionDisplay">2025/2026</span> &nbsp;|&nbsp;
+                <strong>Rules:</strong> Select assignments, tests, and exam. Weights must total 100. Scores are computed per student.
+            </p>
+            <div class="weight-config">
+                <div class="weight-card assign">
+                    <i class="fas fa-tasks"></i><h4>Assignments</h4>
+                    <input type="number" id="weightAssign" class="weight-input" value="10" min="0" max="100" onchange="onWeightChange()">
+                    <span style="font-size:0.75rem;">marks</span>
+                    <div class="select-count"><label style="font-size:0.7rem;">Use how many?</label>
+                        <select id="assignCountSelect"><option value="0">0 (None)</option><option value="1">1</option><option value="2" selected>2</option><option value="3">3</option></select>
+                    </div>
+                </div>
+                <div class="weight-card test">
+                    <i class="fas fa-file-alt"></i><h4>Tests</h4>
+                    <input type="number" id="weightTest" class="weight-input" value="30" min="0" max="100" onchange="onWeightChange()">
+                    <span style="font-size:0.75rem;">marks</span>
+                    <div class="select-count"><label style="font-size:0.7rem;">Use how many?</label>
+                        <select id="testCountSelect"><option value="1">1</option><option value="2" selected>2</option></select>
+                    </div>
+                </div>
+                <div class="weight-card exam">
+                    <i class="fas fa-pen-fancy"></i><h4>Exam</h4>
+                    <input type="number" id="weightExam" class="weight-input" value="60" min="0" max="100" onchange="onWeightChange()">
+                    <span style="font-size:0.75rem;">marks</span>
+                </div>
+            </div>
+            <div class="weight-total ok" id="weightTotalMsg">Total: 100 marks ✓</div>
+        </div>
+
+        <!-- SUBJECT TABS -->
+        <div class="subject-selector" id="subjectSelector"></div>
+
+        <!-- ASSIGNMENT/TEST/EXAM SELECTION -->
+        <div class="card" id="selectionCard">
+            <div class="card-header">
+                <h3><i class="fas fa-check-square"></i> Select Items for: <span id="currentSubjectLabel">-</span></h3>
+                <button class="btn btn-outline btn-sm" id="fetchScoresBtn"><i class="fas fa-sync-alt"></i> Refresh Scores</button>
+            </div>
+            <div id="selectionContent"><p style="color:var(--text-secondary);font-size:0.85rem;">Select a subject above.</p></div>
+        </div>
+
+        <!-- STUDENT SCORES TABLE -->
+        <div class="card" id="scoresTableWrap" style="display:none;">
+            <div class="card-header">
+                <h3><i class="fas fa-table"></i> Student Scores — <span id="scoresSubjectLabel"></span></h3>
+                <div class="btn-group">
+                    <button class="btn btn-success btn-sm" id="saveScoresBtn"><i class="fas fa-save"></i> Save Scores</button>
+                    <button class="btn btn-primary btn-sm" id="pushToReportCardBtn"><i class="fas fa-graduation-cap"></i> Push to Report Card</button>
+                    <button class="btn btn-outline btn-sm" id="printTableBtn"><i class="fas fa-print"></i> Print</button>
+                </div>
+            </div>
+            <div class="table-scroll">
+                <table id="scoresTable">
+                    <thead id="scoresTableHead"></thead>
+                    <tbody id="scoresTableBody"><tr><td colspan="20" style="text-align:center;padding:2rem;">Fetch scores to see data.</td></tr></tbody>
+                </table>
+            </div>
+        </div>
+
+        <!-- SCORE DISTRIBUTION CHART -->
+        <div class="card" id="chartCard" style="display:none;">
+            <div class="card-header"><h3><i class="fas fa-chart-bar"></i> Score Distribution — <span id="chartSubjectLabel"></span></h3></div>
+            <canvas id="scoreChart" style="max-height:280px;"></canvas>
+        </div>
+    </div>
+
+    <!-- LOADING -->
+    <div class="loading-overlay" id="loadingOverlay"><div class="loading-content"><i class="fas fa-spinner fa-spin fa-2x"></i><h3 style="margin-top:1rem;">Processing...</h3></div></div>
+
+    <script>
+        // ==================== FIREBASE ====================
+        const firebaseConfig = {
+            apiKey: "AIzaSyADXHEiaSQ146QsGsaOCElARtpwrLE8svs",
+            authDomain: "judah-c737e.firebaseapp.com",
+            projectId: "judah-c737e",
+            storageBucket: "judah-c737e.firebasestorage.app",
+            messagingSenderId: "739196063078",
+            appId: "1:739196063078:web:c0ee1c1da2cc3794ca8ca7",
+            measurementId: "G-YEM22F1C39"
+        };
+        firebase.initializeApp(firebaseConfig);
+        const auth = firebase.auth();
+        const db = firebase.firestore();
+
+        // ==================== SIDEBAR & THEME ====================
+        const sidebar = document.getElementById('sidebar'), mainContent = document.getElementById('mainContent');
+        document.getElementById('sidebarToggle').addEventListener('click', () => {
+            sidebar.classList.toggle('collapsed'); mainContent.classList.toggle('expanded');
+            const icon = document.getElementById('sidebarToggle').querySelector('i');
+            icon.classList.toggle('fa-chevron-left'); icon.classList.toggle('fa-chevron-right');
+        });
+        const html = document.documentElement, themeToggle = document.getElementById('themeToggle');
+        const savedTheme = localStorage.getItem('judah-theme') || 'dark';
+        html.setAttribute('data-theme', savedTheme);
+        themeToggle.querySelector('span').textContent = savedTheme === 'dark' ? 'Light' : 'Dark';
+        themeToggle.addEventListener('click', () => {
+            const next = html.getAttribute('data-theme') === 'dark' ? 'light' : 'dark';
+            html.setAttribute('data-theme', next); localStorage.setItem('judah-theme', next);
+            themeToggle.querySelector('span').textContent = next === 'dark' ? 'Light' : 'Dark';
+        });
+
+        // ==================== HELPERS ====================
+        function showToast(title, message, type = 'info') {
+            const icons = { success: 'fa-check-circle', error: 'fa-exclamation-circle', info: 'fa-info-circle' };
+            const container = document.getElementById('toastContainer');
+            const toast = document.createElement('div'); toast.className = 'toast';
+            toast.innerHTML = `<i class="fas ${icons[type]} toast-icon ${type}"></i><div class="toast-content"><div class="toast-title">${title}</div><div class="toast-message">${message}</div></div><button class="toast-close" onclick="this.parentElement.remove()"><i class="fas fa-times"></i></button>`;
+            container.appendChild(toast);
+            setTimeout(() => { toast.classList.add('removing'); setTimeout(() => toast.remove(), 300); }, 4000);
+        }
+        function showLoading() { document.getElementById('loadingOverlay').classList.add('active'); }
+        function hideLoading() { document.getElementById('loadingOverlay').classList.remove('active'); }
+        function escapeHtml(t) { const d = document.createElement('div'); d.textContent = t || ''; return d.innerHTML; }
+        function getGrade(score) {
+            if (score >= 75) return 'A'; if (score >= 65) return 'B'; if (score >= 50) return 'C';
+            if (score >= 40) return 'D'; if (score < 40) return 'F'; return 'F';
+        }
+        function updateSaveIndicator(saved) {
+            const el = document.getElementById('saveIndicator');
+            if (saved) { el.innerHTML = '<i class="fas fa-check-circle"></i> Saved'; el.className = 'save-indicator saved'; }
+            else { el.innerHTML = '<i class="fas fa-exclamation-circle"></i> Unsaved'; el.className = 'save-indicator unsaved'; }
+        }
+
+        // ==================== STATE ====================
+        let currentUser = null, userData = null, currentTerm = 'first';
+        let subjects = [], currentSubject = null, classId = null;
+        let allStudents = [], allAssignments = [], allTests = [], allExams = [];
+        let allSubmissions = [], allTestSubs = [], allExamSubs = [];
+        let selectedAssignIds = new Set(), selectedTestIds = new Set(), selectedExamId = null;
+        let studentScoreMap = {}, remarksMap = {};
+        let scoreChart = null;
+
+        // ==================== WEIGHT VALIDATION ====================
+        function onWeightChange() {
+            const a = parseInt(document.getElementById('weightAssign').value) || 0;
+            const t = parseInt(document.getElementById('weightTest').value) || 0;
+            const e = parseInt(document.getElementById('weightExam').value) || 0;
+            const total = a + t + e;
+            const el = document.getElementById('weightTotalMsg');
+            el.textContent = `Total: ${total} marks${total === 100 ? ' ✓' : ' (must = 100)'}`;
+            el.className = total === 100 ? 'weight-total ok' : 'weight-total err';
+            if (currentSubject) { computeAndRenderScores(); updateSaveIndicator(false); }
+        }
+
+        // ==================== INIT ====================
+        async function init() {
+            showLoading();
+            try {
+                classId = userData.classTeaching || 'basic3';
+                document.getElementById('sessionDisplay').textContent = new Date().getFullYear() + '/' + (new Date().getFullYear() + 1);
+                subjects = userData.subjects || [];
+                currentTerm = document.getElementById('termSelect').value;
+
+                const stuSnap = await db.collection('users').where('role', '==', 'student').where('class', '==', classId).where('approved', '==', true).get();
+                allStudents = [];
+                stuSnap.forEach(d => { const dd = d.data(); allStudents.push({ id: d.id, name: `${dd.firstName||''} ${dd.surname||''}`.trim(), photoURL: dd.photoURL || null, userId: dd.userId || '' }); });
+                allStudents.sort((a, b) => a.name.localeCompare(b.name));
+
+                const [aSnap, tSnap, eSnap] = await Promise.all([
+                    db.collection('assessments').where('classId', '==', classId).where('status', '==', 'published').get(),
+                    db.collection('assessments').where('classId', '==', classId).where('status', '==', 'published').get(),
+                    db.collection('assessments').where('classId', '==', classId).where('status', '==', 'published').get()
+                ]);
+                allAssignments = []; aSnap.forEach(d => { const dd = d.data(); if (dd.type === 'assignment') allAssignments.push({ id: d.id, title: dd.title, subject: dd.subject, totalPoints: dd.totalPoints || dd.totalMarks || 10 }); });
+                allTests = []; tSnap.forEach(d => { const dd = d.data(); if (dd.type === 'test') allTests.push({ id: d.id, title: dd.title, subject: dd.subject, totalPoints: dd.totalPoints || 30 }); });
+                allExams = []; eSnap.forEach(d => { const dd = d.data(); if (dd.type === 'exam') allExams.push({ id: d.id, title: dd.title, subject: dd.subject, totalPoints: dd.totalPoints || 60 }); });
+
+                const [sSnap, tsSnap, esSnap] = await Promise.all([
+                    db.collection('submissions').where('classId', '==', classId).get(),
+                    db.collection('testSubmissions').where('classId', '==', classId).get(),
+                    db.collection('examSubmissions').where('classId', '==', classId).get()
+                ]);
+                allSubmissions = []; sSnap.forEach(d => { const dd = d.data(); if (dd.studentId) allSubmissions.push({ id: d.id, assignmentId: dd.assessmentId || dd.assignmentId, studentId: dd.studentId, score: dd.score || 0 }); });
+                allTestSubs = []; tsSnap.forEach(d => { const dd = d.data(); if (dd.studentId) allTestSubs.push({ id: d.id, testId: dd.assessmentId || dd.testId, studentId: dd.studentId, score: dd.score || 0 }); });
+                allExamSubs = []; esSnap.forEach(d => { const dd = d.data(); if (dd.studentId) allExamSubs.push({ id: d.id, examId: dd.assessmentId || dd.examId, studentId: dd.studentId, score: dd.score || 0 }); });
+
+                await loadSavedConfig();
+                renderSubjectSelector();
+                if (subjects.length) selectSubject(subjects[0]);
+            } catch (e) { console.error('Init error:', e); showToast('Error', e.message, 'error'); } finally { hideLoading(); }
+        }
+
+        async function loadSavedConfig() {
+            try {
+                const doc = await db.collection('scoringConfigs').doc(`${currentUser.uid}_${classId}_${currentTerm}`).get();
+                if (doc.exists) {
+                    const cfg = doc.data();
+                    document.getElementById('weightAssign').value = cfg.weightAssign || 10;
+                    document.getElementById('weightTest').value = cfg.weightTest || 30;
+                    document.getElementById('weightExam').value = cfg.weightExam || 60;
+                    document.getElementById('assignCountSelect').value = cfg.assignCount || 2;
+                    document.getElementById('testCountSelect').value = cfg.testCount || 2;
+                    if (cfg.selectedAssignIds) selectedAssignIds = new Set(cfg.selectedAssignIds);
+                    if (cfg.selectedTestIds) selectedTestIds = new Set(cfg.selectedTestIds);
+                    if (cfg.selectedExamId) selectedExamId = cfg.selectedExamId;
+                    if (cfg.remarksMap) remarksMap = cfg.remarksMap;
+                    updateSaveIndicator(true);
+                }
+                onWeightChange();
+            } catch (e) { updateSaveIndicator(false); }
+        }
+
+        function renderSubjectSelector() {
+            const el = document.getElementById('subjectSelector');
+            el.innerHTML = subjects.map(s => `<span class="subject-chip${s === currentSubject ? ' active' : ''}" onclick="selectSubject('${s.replace(/'/g, "\\'")}')">${s}</span>`).join('');
+        }
+
+        window.selectSubject = (sub) => {
+            currentSubject = sub;
+            document.querySelectorAll('.subject-chip').forEach(c => c.classList.remove('active'));
+            document.querySelectorAll('.subject-chip').forEach(c => { if (c.textContent === sub) c.classList.add('active'); });
+            document.getElementById('currentSubjectLabel').textContent = sub;
+            renderSelection();
+        };
+
+        function renderSelection() {
+            if (!currentSubject) return;
+            const subj = currentSubject;
+            const subjAssignments = allAssignments.filter(a => a.subject === subj);
+            const subjTests = allTests.filter(t => t.subject === subj);
+            const subjExams = allExams.filter(e => e.subject === subj);
+            const assignCount = parseInt(document.getElementById('assignCountSelect').value) || 0;
+            const testCount = parseInt(document.getElementById('testCountSelect').value) || 2;
+
+            if (subjExams.length && !selectedExamId) selectedExamId = subjExams[0].id;
+
+            let html = '<div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(300px,1fr));gap:1rem;">';
+            html += `<div><h4 style="font-size:0.85rem;margin-bottom:0.5rem;"><i class="fas fa-tasks"></i> Assignments (max ${assignCount})</h4>`;
+            if (!subjAssignments.length) html += '<p style="color:var(--text-secondary);font-size:0.8rem;">No assignments found.</p>';
+            else subjAssignments.forEach(a => {
+                const isSel = selectedAssignIds.has(a.id);
+                html += `<div class="assignment-card${isSel ? ' selected' : ''}" onclick="toggleAssign('${a.id}',${assignCount})"><input type="checkbox" ${isSel ? 'checked' : ''} onclick="event.stopPropagation();toggleAssign('${a.id}',${assignCount})"><div class="info"><strong>${escapeHtml(a.title)}</strong><br>${a.totalPoints} pts</div></div>`;
+            });
+            html += `</div><div><h4 style="font-size:0.85rem;margin-bottom:0.5rem;"><i class="fas fa-file-alt"></i> Tests (max ${testCount})</h4>`;
+            if (!subjTests.length) html += '<p style="color:var(--text-secondary);font-size:0.8rem;">No tests found.</p>';
+            else subjTests.forEach(t => {
+                const isSel = selectedTestIds.has(t.id);
+                html += `<div class="assignment-card${isSel ? ' selected' : ''}" onclick="toggleTest('${t.id}',${testCount})"><input type="checkbox" ${isSel ? 'checked' : ''} onclick="event.stopPropagation();toggleTest('${t.id}',${testCount})"><div class="info"><strong>${escapeHtml(t.title)}</strong><br>${t.totalPoints} pts</div></div>`;
+            });
+            html += `</div><div><h4 style="font-size:0.85rem;margin-bottom:0.5rem;"><i class="fas fa-pen-fancy"></i> Exam</h4>`;
+            if (!subjExams.length) html += '<p style="color:var(--text-secondary);font-size:0.8rem;">No exams found.</p>';
+            else subjExams.forEach(e => {
+                const isSel = selectedExamId === e.id;
+                html += `<div class="assignment-card${isSel ? ' selected' : ''}" onclick="selectExam('${e.id}')"><input type="radio" name="examSel" ${isSel ? 'checked' : ''} onclick="event.stopPropagation();selectExam('${e.id}')"><div class="info"><strong>${escapeHtml(e.title)}</strong><br>${e.totalPoints} pts</div></div>`;
+            });
+            html += '</div></div>';
+            document.getElementById('selectionContent').innerHTML = html;
+            document.getElementById('scoresTableWrap').style.display = 'block';
+            document.getElementById('chartCard').style.display = 'block';
+            computeAndRenderScores();
+        }
+
+        window.toggleAssign = (id, max) => {
+            if (selectedAssignIds.has(id)) { selectedAssignIds.delete(id); } else if (selectedAssignIds.size < max) { selectedAssignIds.add(id); } else { showToast('Limit', `Maximum ${max} assignments.`, 'error'); return; }
+            renderSelection(); updateSaveIndicator(false);
+        };
+        window.toggleTest = (id, max) => {
+            if (selectedTestIds.has(id)) { selectedTestIds.delete(id); } else if (selectedTestIds.size < max) { selectedTestIds.add(id); } else { showToast('Limit', `Maximum ${max} tests.`, 'error'); return; }
+            renderSelection(); updateSaveIndicator(false);
+        };
+        window.selectExam = (id) => { selectedExamId = id; renderSelection(); updateSaveIndicator(false); };
+
+        function computeAndRenderScores() {
+            if (!currentSubject) return;
+            const subj = currentSubject;
+            const weightA = parseInt(document.getElementById('weightAssign').value) || 0;
+            const weightT = parseInt(document.getElementById('weightTest').value) || 0;
+            const weightE = parseInt(document.getElementById('weightExam').value) || 0;
+            document.getElementById('scoresSubjectLabel').textContent = `${subj} (${currentTerm} term)`;
+            document.getElementById('chartSubjectLabel').textContent = subj;
+            studentScoreMap = {};
+
+            allStudents.forEach(stu => {
+                let assignSum = 0, assignCount = 0;
+                selectedAssignIds.forEach(aid => {
+                    const sub = allSubmissions.find(s => s.assignmentId === aid && s.studentId === stu.id);
+                    const assign = allAssignments.find(a => a.id === aid);
+                    if (sub && assign && assign.totalPoints > 0) { assignSum += (sub.score / assign.totalPoints) * weightA; assignCount++; }
+                });
+                const assignAvg = assignCount > 0 ? assignSum / assignCount : 0;
+                let testSum = 0, testCount = 0;
+                selectedTestIds.forEach(tid => {
+                    const sub = allTestSubs.find(s => s.testId === tid && s.studentId === stu.id);
+                    const test = allTests.find(t => t.id === tid);
+                    if (sub && test && test.totalPoints > 0) { testSum += (sub.score / test.totalPoints) * weightT; testCount++; }
+                });
+                const testAvg = testCount > 0 ? testSum / testCount : 0;
+                let examScore = 0;
+                if (selectedExamId) {
+                    const sub = allExamSubs.find(s => s.examId === selectedExamId && s.studentId === stu.id);
+                    const exam = allExams.find(e => e.id === selectedExamId);
+                    if (sub && exam && exam.totalPoints > 0) examScore = (sub.score / exam.totalPoints) * weightE;
+                }
+                const total = Math.round((assignAvg + testAvg + examScore) * 10) / 10;
+                studentScoreMap[stu.id] = {
+                    assignAvg: Math.round(assignAvg * 10) / 10,
+                    testAvg: Math.round(testAvg * 10) / 10,
+                    examScore: Math.round(examScore * 10) / 10,
+                    total,
+                    grade: getGrade(total)
+                };
+            });
+            renderScoresTable();
+            renderChart();
+        }
+
+        function renderScoresTable() {
+            const head = document.getElementById('scoresTableHead');
+            const body = document.getElementById('scoresTableBody');
+            head.innerHTML = `<tr><th>#</th><th>Photo</th><th>Student</th><th>Student ID</th><th>Assign (/${document.getElementById('weightAssign').value||0})</th><th>Tests (/${document.getElementById('weightTest').value||0})</th><th>Exam (/${document.getElementById('weightExam').value||0})</th><th>Total (100)</th><th>Grade</th><th>Remark</th></tr>`;
+
+            const sorted = allStudents.map(s => ({ ...s, scores: studentScoreMap[s.id] || { assignAvg: 0, testAvg: 0, examScore: 0, total: 0, grade: 'F' } })).sort((a, b) => b.scores.total - a.scores.total);
+
+            body.innerHTML = sorted.map((s, i) => {
+                const sc = s.scores, g = sc.grade;
+                const photo = s.photoURL ? `<img src="${s.photoURL}" class="student-photo" alt="">` : `<div class="student-photo" style="display:flex;align-items:center;justify-content:center;font-size:0.7rem;">${(s.name||'?')[0]}</div>`;
+                const remark = remarksMap[s.id] || '';
+                return `<tr>
+                    <td>${i + 1}</td><td>${photo}</td>
+                    <td><strong>${escapeHtml(s.name)}</strong></td><td style="font-family:monospace;">${s.userId || '—'}</td>
+                    <td>${sc.assignAvg}</td><td>${sc.testAvg}</td><td>${sc.examScore}</td>
+                    <td><strong>${sc.total}</strong></td><td><strong class="grade-${g}">${g}</strong></td>
+                    <td><input type="text" class="remark-input" value="${escapeHtml(remark)}" onchange="updateRemark('${s.id}', this.value)" placeholder="Add remark..."></td>
+                </tr>`;
+            }).join('');
+        }
+
+        window.updateRemark = (studentId, value) => {
+            remarksMap[studentId] = value;
+            updateSaveIndicator(false);
+        };
+
+        function renderChart() {
+            const scores = Object.values(studentScoreMap).map(s => s.total);
+            const ranges = { 'A (75+)': 0, 'B (65-74)': 0, 'C (50-64)': 0, 'D (40-49)': 0, 'F (<40)': 0 };
+            scores.forEach(s => {
+                if (s >= 75) ranges['A (75+)']++;
+                else if (s >= 65) ranges['B (65-74)']++;
+                else if (s >= 50) ranges['C (50-64)']++;
+                else if (s >= 40) ranges['D (40-49)']++;
+                else ranges['F (<40)']++;
+            });
+            const ctx = document.getElementById('scoreChart').getContext('2d');
+            if (scoreChart) scoreChart.destroy();
+            scoreChart = new Chart(ctx, {
+                type: 'bar',
+                data: {
+                    labels: Object.keys(ranges),
+                    datasets: [{ label: 'Students', data: Object.values(ranges), backgroundColor: ['#22c55e', '#3b82f6', '#f59e0b', '#f97316', '#dc2626'], borderRadius: 8 }]
+                },
+                options: { responsive: true, maintainAspectRatio: true, plugins: { legend: { display: false } }, scales: { y: { beginAtZero: true, ticks: { stepSize: 1 } } } }
+            });
+        }
+
+        async function saveConfig() {
+            if (parseInt(document.getElementById('weightAssign').value) + parseInt(document.getElementById('weightTest').value) + parseInt(document.getElementById('weightExam').value) !== 100) {
+                showToast('Invalid Weights', 'Weights must total 100.', 'error'); return;
+            }
+            showLoading();
+            try {
+                const data = {
+                    teacherId: currentUser.uid, classId, term: currentTerm,
+                    weightAssign: parseInt(document.getElementById('weightAssign').value),
+                    weightTest: parseInt(document.getElementById('weightTest').value),
+                    weightExam: parseInt(document.getElementById('weightExam').value),
+                    assignCount: parseInt(document.getElementById('assignCountSelect').value),
+                    testCount: parseInt(document.getElementById('testCountSelect').value),
+                    selectedAssignIds: [...selectedAssignIds], selectedTestIds: [...selectedTestIds], selectedExamId,
+                    studentScoreMap, remarksMap, subjects,
+                    updatedAt: firebase.firestore.FieldValue.serverTimestamp()
+                };
+                await db.collection('scoringConfigs').doc(`${currentUser.uid}_${classId}_${currentTerm}`).set(data, { merge: true });
+                updateSaveIndicator(true);
+                showToast('Saved', 'Configuration and scores saved.', 'success');
+            } catch (e) { showToast('Error', e.message, 'error'); } finally { hideLoading(); }
+        }
+
+        async function pushToReportCard() {
+            if (!Object.keys(studentScoreMap).length) { showToast('No Data', 'Compute scores first.', 'error'); return; }
+            showLoading();
+            try {
+                const results = allStudents.map(s => ({
+                    studentId: s.id,
+                    studentName: s.name,
+                    studentUserId: s.userId,
+                    photoURL: s.photoURL,
+                    ...studentScoreMap[s.id] || { assignAvg: 0, testAvg: 0, examScore: 0, total: 0, grade: 'F' },
+                    remark: remarksMap[s.id] || ''
+                }));
+                await db.collection('reportCardData').doc(`${classId}_${currentSubject}_${currentTerm}`).set({
+                    teacherId: currentUser.uid,
+                    teacherName: `${userData.firstName||''} ${userData.surname||''}`.trim(),
+                    classId, subject: currentSubject, term: currentTerm,
+                    session: document.getElementById('sessionDisplay').textContent,
+                    weightAssign: parseInt(document.getElementById('weightAssign').value),
+                    weightTest: parseInt(document.getElementById('weightTest').value),
+                    weightExam: parseInt(document.getElementById('weightExam').value),
+                    results,
+                    studentCount: results.length,
+                    classAverage: results.length ? (results.reduce((a, r) => a + r.total, 0) / results.length).toFixed(1) : 0,
+                    generatedAt: firebase.firestore.FieldValue.serverTimestamp()
+                }, { merge: true });
+                await db.collection('auditLogs').add({
+                    userId: currentUser.uid,
+                    userName: `${userData.firstName||''} ${userData.surname||''}`.trim(),
+                    action: 'REPORT_CARD_DATA_PUSHED',
+                    details: { classId, subject: currentSubject, term: currentTerm, studentCount: results.length },
+                    timestamp: firebase.firestore.FieldValue.serverTimestamp()
+                }).catch(() => {});
+                showToast('Pushed', `Report card data for ${results.length} students saved.`, 'success');
+            } catch (e) { showToast('Error', e.message, 'error'); } finally { hideLoading(); }
+        }
+
+        function printTable() {
+            const w = window.open('', '_blank');
+            w.document.write(`<html><head><title>Scores - ${currentSubject} (${currentTerm} term)</title><style>body{font-family:Inter,sans-serif;padding:2rem;}table{border-collapse:collapse;width:100%;}th,td{border:1px solid #ccc;padding:0.5rem;font-size:0.8rem;}th{background:#f0f0f0;}.grade-A{color:#22c55e;font-weight:700;}.grade-B{color:#3b82f6;font-weight:700;}.grade-C{color:#f59e0b;font-weight:700;}.grade-D{color:#f97316;font-weight:700;}.grade-F{color:#dc2626;font-weight:700;}</style></head><body><h1>Judah Wonders Model School</h1><h2>${currentSubject} - ${currentTerm} Term Scores</h2>${document.getElementById('scoresTable').outerHTML}</body></html>`);
+            w.print();
+        }
+
+        document.getElementById('termSelect').addEventListener('change', async () => {
+            currentTerm = document.getElementById('termSelect').value;
+            selectedAssignIds = new Set(); selectedTestIds = new Set(); selectedExamId = null;
+            remarksMap = {};
+            studentScoreMap = {};
+            await loadSavedConfig();
+            if (currentSubject) renderSelection();
+        });
+        document.getElementById('saveConfigBtn').addEventListener('click', saveConfig);
+        document.getElementById('saveScoresBtn').addEventListener('click', saveConfig);
+        document.getElementById('pushToReportCardBtn').addEventListener('click', pushToReportCard);
+        document.getElementById('printTableBtn').addEventListener('click', printTable);
+        document.getElementById('fetchScoresBtn').addEventListener('click', () => { if (currentSubject) renderSelection(); });
+        document.getElementById('assignCountSelect').addEventListener('change', () => { if (currentSubject) renderSelection(); });
+        document.getElementById('testCountSelect').addEventListener('change', () => { if (currentSubject) renderSelection(); });
+
+        auth.onAuthStateChanged(async (user) => {
+            if (!user) { window.location.href = 'teacher-login.html'; return; }
+            const doc = await db.collection('users').doc(user.uid).get();
+            if (!doc.exists || doc.data().role !== 'teacher') { auth.signOut(); window.location.href = 'index.html'; return; }
+            currentUser = user; userData = doc.data();
+            const pic = document.getElementById('profilePic');
+            if (userData.photoURL) pic.innerHTML = `<img src="${userData.photoURL}" alt="Profile">`;
+            else pic.textContent = (userData.firstName?.[0]||'T') + (userData.surname?.[0]||'E');
+            await init();
+        });
+        document.getElementById('logoutBtn').addEventListener('click', () => auth.signOut().then(() => window.location.href = 'index.html'));
+    </script>
+</body>
+</html>
