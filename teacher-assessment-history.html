@@ -1,1 +1,387 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="dark">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=yes">
+    <title>Judah Wonders Model School · Assessment History</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:opsz,wght@14..32,400;500;600;700;800&family=Playfair+Display:wght@600;700&display=swap" rel="stylesheet">
+    <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-auth-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-firestore-compat.js"></script>
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        :root[data-theme="light"] {
+            --bg-primary: #f0f5fa; --bg-sidebar: rgba(255,255,255,0.75); --text-primary: #0b1e33;
+            --text-secondary: #2c3e50; --accent: #0A2540; --accent-glow: #C8963E;
+            --border: rgba(0,0,0,0.08); --card-bg: rgba(255,255,255,0.7); --hover-bg: rgba(255,255,255,0.9);
+            --shadow: 0 8px 20px -5px rgba(0,0,0,0.08); --input-bg: #ffffff;
+            --success-bg: rgba(34,197,94,0.15); --success-text: #16a34a;
+            --warning-bg: rgba(245,158,11,0.15); --warning-text: #b45309;
+            --danger-bg: rgba(239,68,68,0.15); --danger-text: #b91c1c;
+            --info-bg: rgba(10,37,64,0.1); --info-text: #0A2540;
+            --gradient-start: #0A2540; --gradient-end: #C8963E;
+        }
+        :root[data-theme="dark"] {
+            --bg-primary: #0a0f1e; --bg-sidebar: rgba(15,23,42,0.8); --text-primary: #f0f4fa;
+            --text-secondary: #a0b3d9; --accent: #C8963E; --accent-glow: #D4AF37;
+            --border: rgba(255,255,255,0.06); --card-bg: rgba(15,23,42,0.6); --hover-bg: rgba(30,41,59,0.8);
+            --shadow: 0 8px 20px -5px rgba(0,0,0,0.4); --input-bg: rgba(30,41,59,0.9);
+            --success-bg: rgba(34,197,94,0.15); --success-text: #4ade80;
+            --warning-bg: rgba(245,158,11,0.15); --warning-text: #fbbf24;
+            --danger-bg: rgba(239,68,68,0.15); --danger-text: #f87171;
+            --info-bg: rgba(200,150,62,0.15); --info-text: #D4AF37;
+            --gradient-start: #0A2540; --gradient-end: #C8963E;
+        }
 
+        body { font-family: 'Inter', sans-serif; background: var(--bg-primary); color: var(--text-primary); min-height: 100vh; display: flex; position: relative; overflow-x: hidden; }
+        .bg-logo { position: fixed; top: 50%; left: 50%; transform: translate(-50%, -50%); width: 400px; max-width: 70vw; opacity: 0.03; pointer-events: none; animation: breathe 6s ease-in-out infinite; }
+        @keyframes breathe { 0%,100% { transform: translate(-50%, -50%) scale(1); opacity: 0.03; } 50% { transform: translate(-50%, -50%) scale(1.06); opacity: 0.06; } }
+        .orb { position: fixed; width: 250px; height: 250px; border-radius: 50%; filter: blur(80px); pointer-events: none; animation: float 25s infinite alternate; }
+        .orb-1 { top: -100px; left: -100px; background: radial-gradient(circle at 30% 30%, rgba(10,37,64,0.12), transparent 70%); }
+        .orb-2 { bottom: -150px; right: -50px; width: 350px; height: 350px; background: radial-gradient(circle at 70% 70%, rgba(200,150,62,0.12), transparent); animation-duration: 30s; }
+        @keyframes float { 0% { transform: translate(0,0) scale(1); } 100% { transform: translate(40px,30px) scale(1.15); } }
+
+        .sidebar { width: 260px; background: var(--bg-sidebar); backdrop-filter: blur(16px); border-right: 1px solid var(--border); padding: 1.5rem 0.8rem; display: flex; flex-direction: column; transition: width 0.3s; position: fixed; top: 0; left: 0; height: 100vh; overflow-y: auto; z-index: 100; box-shadow: var(--shadow); }
+        .sidebar.collapsed { width: 85px; }
+        .sidebar .logo-area { display: flex; align-items: center; gap: 0.8rem; margin-bottom: 1.8rem; padding: 0 0.3rem; text-decoration: none; }
+        .sidebar .logo-area img { width: 38px; height: 38px; object-fit: contain; animation: logoPulse 3s ease-in-out infinite; }
+        @keyframes logoPulse { 0%,100%{transform:scale(1);} 50%{transform:scale(1.05);} }
+        .sidebar .logo-area h2 { font-family: 'Playfair Display', serif; font-size: 1.1rem; font-weight: 700; white-space: nowrap; color: var(--accent); line-height: 1.2; }
+        .sidebar .logo-area h2 span { display: block; font-size: 0.6rem; letter-spacing: 1.5px; color: var(--accent-glow); }
+        .sidebar.collapsed .logo-area h2 { display: none; }
+        .sidebar .nav-item { display: flex; align-items: center; gap: 0.9rem; padding: 0.7rem 1rem; border-radius: 1rem; color: var(--text-secondary); transition: all 0.2s; cursor: pointer; margin-bottom: 0.25rem; text-decoration: none; font-weight: 500; white-space: nowrap; border: 1px solid transparent; font-size: 0.9rem; }
+        .sidebar .nav-item:hover { background: var(--hover-bg); color: var(--accent); border-color: var(--border); transform: translateX(3px); }
+        .sidebar .nav-item.active { background: linear-gradient(135deg, var(--accent), var(--accent-glow)); color: white; box-shadow: 0 6px 15px -5px var(--accent); }
+        .sidebar .nav-item i { font-size: 1.2rem; width: 1.6rem; text-align: center; }
+        .sidebar.collapsed .nav-item span { display: none; }
+        .sidebar.collapsed .nav-item { justify-content: center; padding: 0.7rem; }
+        .sidebar .toggle-btn { margin-top: auto; display: flex; justify-content: flex-end; padding: 0.8rem 0.5rem; cursor: pointer; color: var(--text-secondary); font-size: 1.1rem; }
+        .sidebar .toggle-btn:hover { color: var(--accent); }
+
+        .main-content { flex: 1; margin-left: 260px; padding: 1.5rem; transition: margin-left 0.3s; max-width: calc(100vw - 260px); position: relative; z-index: 5; }
+        .main-content.expanded { margin-left: 85px; max-width: calc(100vw - 85px); }
+
+        .top-bar { display: flex; justify-content: space-between; align-items: center; margin-bottom: 1.5rem; flex-wrap: wrap; gap: 1rem; }
+        .page-title h1 { font-family: 'Playfair Display', serif; font-size: 1.8rem; font-weight: 700; color: var(--accent); margin-bottom: 0.1rem; }
+        .page-title p { color: var(--text-secondary); font-size: 0.85rem; }
+        .profile-area { display: flex; align-items: center; gap: 1rem; }
+        .theme-toggle { background: var(--card-bg); border: 1px solid var(--border); border-radius: 2rem; padding: 0.4rem 1rem; display: flex; align-items: center; gap: 0.4rem; cursor: pointer; color: var(--text-secondary); font-size: 0.8rem; transition: 0.2s; }
+        .profile-pic { width: 36px; height: 36px; border-radius: 50%; background: linear-gradient(135deg, var(--accent), var(--accent-glow)); display: flex; align-items: center; justify-content: center; color: white; font-weight: 600; font-size: 0.9rem; box-shadow: 0 4px 10px var(--accent); overflow: hidden; }
+        .profile-pic img { width: 100%; height: 100%; object-fit: cover; border-radius: 50%; }
+        .dropdown-menu { position: absolute; right: 0; top: 50px; background: var(--bg-sidebar); border: 1px solid var(--border); border-radius: 1rem; padding: 0.4rem; min-width: 160px; display: none; z-index: 1000; }
+        .profile-dropdown { position: relative; cursor: pointer; }
+        .profile-dropdown:hover .dropdown-menu { display: block; animation: fadeIn 0.2s; }
+        @keyframes fadeIn { from { opacity: 0; transform: translateY(-10px); } to { opacity: 1; transform: translateY(0); } }
+        .dropdown-item { padding: 0.6rem 1rem; color: var(--text-primary); border-radius: 0.8rem; display: flex; align-items: center; gap: 0.6rem; font-size: 0.85rem; cursor: pointer; }
+        .dropdown-item:hover { background: var(--hover-bg); color: var(--accent); }
+
+        .filter-bar { display: flex; gap: 1rem; margin-bottom: 1.5rem; flex-wrap: wrap; align-items: center; }
+        .filter-bar select, .filter-bar input { padding: 0.6rem 1.2rem; background: var(--card-bg); border: 1px solid var(--border); border-radius: 2rem; color: var(--text-primary); font-family: inherit; font-size: 0.85rem; }
+        .filter-bar input { flex: 1; min-width: 200px; }
+        .btn { padding: 0.6rem 1.3rem; border: none; border-radius: 2rem; font-weight: 500; font-size: 0.85rem; cursor: pointer; transition: 0.2s; display: inline-flex; align-items: center; gap: 0.4rem; white-space: nowrap; font-family: inherit; text-decoration: none; }
+        .btn-primary { background: linear-gradient(135deg, var(--gradient-start), var(--gradient-end)); color: white; }
+        .btn-outline { background: transparent; border: 1px solid var(--border); color: var(--text-primary); }
+        .btn-outline:hover { background: var(--hover-bg); border-color: var(--accent); }
+        .btn-danger { background: var(--danger-text); color: white; }
+        .btn-sm { padding: 0.35rem 0.9rem; font-size: 0.75rem; border-radius: 1.5rem; }
+        .btn:hover { opacity: 0.9; transform: translateY(-1px); }
+
+        .stats-row { display: grid; grid-template-columns: repeat(auto-fit, minmax(150px, 1fr)); gap: 1rem; margin-bottom: 1.5rem; }
+        .stat-card { background: var(--card-bg); border: 1px solid var(--border); border-radius: 1.2rem; padding: 1rem; text-align: center; }
+        .stat-card .val { font-size: 1.8rem; font-weight: 700; color: var(--accent); }
+        .stat-card .lbl { font-size: 0.7rem; color: var(--text-secondary); }
+
+        .card { background: var(--card-bg); border: 1px solid var(--border); border-radius: 1.5rem; padding: 1.5rem; box-shadow: var(--shadow); margin-bottom: 1.5rem; }
+        .card-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 1rem; flex-wrap: wrap; gap: 0.5rem; padding-bottom: 1rem; border-bottom: 1px solid var(--border); }
+        .card-header h3 { font-size: 1.2rem; font-weight: 600; display: flex; align-items: center; gap: 0.5rem; }
+
+        .assessment-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(350px, 1fr)); gap: 1rem; }
+        .assessment-card { background: var(--card-bg); border: 1px solid var(--border); border-radius: 1.2rem; padding: 1.2rem; transition: all 0.2s; cursor: pointer; }
+        .assessment-card:hover { border-color: var(--accent); transform: translateY(-3px); box-shadow: var(--shadow); }
+        .assessment-card .type-badge { padding: 0.2rem 0.8rem; border-radius: 1rem; font-size: 0.7rem; font-weight: 600; display: inline-block; text-transform: uppercase; }
+        .type-test { background: rgba(59,130,246,0.2); color: #3b82f6; }
+        .type-assignment { background: rgba(34,197,94,0.2); color: #16a34a; }
+        .type-exam { background: rgba(239,68,68,0.2); color: #dc2626; }
+        .assessment-card h3 { font-size: 1.05rem; margin: 0.5rem 0; }
+        .assessment-card .meta { font-size: 0.75rem; color: var(--text-secondary); display: flex; flex-wrap: wrap; gap: 0.75rem; margin-bottom: 0.5rem; }
+        .assessment-card .actions { display: flex; gap: 0.5rem; margin-top: 0.8rem; flex-wrap: wrap; }
+        .status-badge { padding: 0.2rem 0.7rem; border-radius: 1rem; font-size: 0.7rem; font-weight: 600; }
+        .status-published { background: var(--success-bg); color: var(--success-text); }
+        .status-draft { background: var(--warning-bg); color: var(--warning-text); }
+
+        .empty-state { text-align: center; padding: 3rem; color: var(--text-secondary); }
+        .empty-state i { font-size: 3rem; margin-bottom: 1rem; color: var(--accent); }
+
+        .modal-overlay { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.7); backdrop-filter: blur(5px); display: none; justify-content: center; align-items: center; z-index: 2000; }
+        .modal-overlay.active { display: flex; }
+        .modal-content { background: var(--card-bg); border: 1px solid var(--border); border-radius: 1.5rem; padding: 2rem; max-width: 500px; width: 90%; }
+        .modal-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 1rem; }
+        .modal-header h3 { font-size: 1.2rem; }
+        .modal-header i { cursor: pointer; font-size: 1.2rem; color: var(--text-secondary); }
+        .modal-header i:hover { color: var(--danger-text); }
+        .modal-actions { display: flex; gap: 1rem; justify-content: flex-end; margin-top: 1.5rem; }
+
+        .toast-container { position: fixed; top: 1rem; right: 1rem; z-index: 5000; display: flex; flex-direction: column; gap: 0.5rem; }
+        .toast { background: var(--card-bg); backdrop-filter: blur(16px); border: 1px solid var(--border); border-radius: 1rem; padding: 1rem 1.5rem; min-width: 300px; max-width: 450px; box-shadow: 0 15px 35px rgba(0,0,0,0.4); display: flex; align-items: flex-start; gap: 0.8rem; animation: slideInRight 0.3s; }
+        .toast.removing { animation: slideOutRight 0.3s ease-in forwards; }
+        .toast-icon { font-size: 1.2rem; margin-top: 2px; }
+        .toast-icon.success { color: var(--success-text); }
+        .toast-icon.error { color: var(--danger-text); }
+        .toast-icon.info { color: var(--info-text); }
+        @keyframes slideInRight { from { transform: translateX(120%); opacity: 0; } to { transform: translateX(0); opacity: 1; } }
+        @keyframes slideOutRight { from { transform: translateX(0); opacity: 1; } to { transform: translateX(120%); opacity: 0; } }
+
+        @media (max-width: 768px) {
+            .sidebar { width: 85px; }
+            .sidebar .logo-area h2, .sidebar .nav-item span { display: none; }
+            .main-content { margin-left: 85px; max-width: calc(100vw - 85px); padding: 1rem; }
+            .assessment-grid { grid-template-columns: 1fr; }
+        }
+    </style>
+</head>
+<body>
+    <img src="https://res.cloudinary.com/dda7kpir8/image/upload/q_auto/f_auto/v1781038310/ChatGPT_Image_Jun_9_2026_09_25_06_AM_elnine.png" alt="" class="bg-logo" aria-hidden="true">
+    <div class="orb orb-1"></div><div class="orb orb-2"></div>
+    <div class="toast-container" id="toastContainer"></div>
+
+    <!-- SIDEBAR -->
+    <div class="sidebar" id="sidebar">
+        <a href="index.html" class="logo-area">
+            <img src="https://res.cloudinary.com/dda7kpir8/image/upload/q_auto/f_auto/v1781038310/ChatGPT_Image_Jun_9_2026_09_25_06_AM_elnine.png" alt="JWMS Logo">
+            <h2>Judah Wonders<span>Model School</span></h2>
+        </a>
+        <a href="teacher-dashboard.html" class="nav-item"><i class="fas fa-chart-pie"></i><span>Dashboard</span></a>
+        <a href="teacher-workspace.html" class="nav-item"><i class="fas fa-book-open"></i><span>Workspace</span></a>
+        <a href="teacher-assessments.html" class="nav-item"><i class="fas fa-pen-fancy"></i><span>Create Assessment</span></a>
+        <a href="teacher-assessment-history.html" class="nav-item active"><i class="fas fa-history"></i><span>Assessment History</span></a>
+        <a href="teacher-profile.html" class="nav-item"><i class="fas fa-user-edit"></i><span>Profile</span></a>
+        <div class="toggle-btn" id="sidebarToggle"><i class="fas fa-chevron-left"></i></div>
+    </div>
+
+    <!-- MAIN CONTENT -->
+    <div class="main-content" id="mainContent">
+        <div class="top-bar">
+            <div class="page-title">
+                <h1>Assessment History</h1>
+                <p>All your created tests, assignments, and exams</p>
+            </div>
+            <div class="profile-area">
+                <div class="theme-toggle" id="themeToggle"><i class="fas fa-sun"></i><span>Light</span><i class="fas fa-moon"></i></div>
+                <div class="profile-dropdown">
+                    <div class="profile-pic" id="profilePic">TE</div>
+                    <div class="dropdown-menu"><div class="dropdown-item" id="logoutBtn"><i class="fas fa-sign-out-alt"></i> Logout</div></div>
+                </div>
+            </div>
+        </div>
+
+        <!-- STATS -->
+        <div class="stats-row">
+            <div class="stat-card"><div class="val" id="statTotal">0</div><div class="lbl">Total Assessments</div></div>
+            <div class="stat-card"><div class="val" id="statTests">0</div><div class="lbl">Tests</div></div>
+            <div class="stat-card"><div class="val" id="statAssignments">0</div><div class="lbl">Assignments</div></div>
+            <div class="stat-card"><div class="val" id="statExams">0</div><div class="lbl">Exams</div></div>
+            <div class="stat-card"><div class="val" id="statPublished">0</div><div class="lbl">Published</div></div>
+            <div class="stat-card"><div class="val" id="statDrafts">0</div><div class="lbl">Drafts</div></div>
+        </div>
+
+        <!-- FILTERS -->
+        <div class="filter-bar">
+            <input type="text" id="searchInput" placeholder="Search by title or subject...">
+            <select id="typeFilter">
+                <option value="all">All Types</option>
+                <option value="test">Tests</option>
+                <option value="assignment">Assignments</option>
+                <option value="exam">Exams</option>
+            </select>
+            <select id="statusFilter">
+                <option value="all">All Status</option>
+                <option value="published">Published</option>
+                <option value="draft">Drafts</option>
+            </select>
+            <a href="teacher-assessments.html" class="btn btn-primary"><i class="fas fa-plus"></i> Create New</a>
+        </div>
+
+        <!-- ASSESSMENTS GRID -->
+        <div class="card">
+            <div class="card-header">
+                <h3><i class="fas fa-list"></i> My Assessments</h3>
+                <span id="resultCount" style="font-size:0.8rem;color:var(--text-secondary);">0 results</span>
+            </div>
+            <div id="assessmentsGrid" class="assessment-grid">
+                <div class="empty-state"><i class="fas fa-spinner fa-spin"></i><p>Loading assessments...</p></div>
+            </div>
+        </div>
+    </div>
+
+    <!-- DELETE MODAL -->
+    <div class="modal-overlay" id="deleteModal">
+        <div class="modal-content">
+            <div class="modal-header"><h3>Delete Assessment</h3><i class="fas fa-times" onclick="closeDeleteModal()"></i></div>
+            <p id="deleteMessage">Are you sure you want to delete this assessment? This action cannot be undone.</p>
+            <div class="modal-actions">
+                <button class="btn btn-outline" onclick="closeDeleteModal()">Cancel</button>
+                <button class="btn btn-danger" id="confirmDeleteBtn">Delete</button>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // ==================== FIREBASE ====================
+        const firebaseConfig = {
+            apiKey: "AIzaSyADXHEiaSQ146QsGsaOCElARtpwrLE8svs",
+            authDomain: "judah-c737e.firebaseapp.com",
+            projectId: "judah-c737e",
+            storageBucket: "judah-c737e.firebasestorage.app",
+            messagingSenderId: "739196063078",
+            appId: "1:739196063078:web:c0ee1c1da2cc3794ca8ca7",
+            measurementId: "G-YEM22F1C39"
+        };
+        firebase.initializeApp(firebaseConfig);
+        const auth = firebase.auth();
+        const db = firebase.firestore();
+
+        // ==================== SIDEBAR & THEME ====================
+        const sidebar = document.getElementById('sidebar'), mainContent = document.getElementById('mainContent');
+        document.getElementById('sidebarToggle').addEventListener('click', () => {
+            sidebar.classList.toggle('collapsed'); mainContent.classList.toggle('expanded');
+            const icon = document.getElementById('sidebarToggle').querySelector('i');
+            icon.classList.toggle('fa-chevron-left'); icon.classList.toggle('fa-chevron-right');
+        });
+        const html = document.documentElement, themeToggle = document.getElementById('themeToggle');
+        const savedTheme = localStorage.getItem('judah-theme') || 'dark';
+        html.setAttribute('data-theme', savedTheme);
+        themeToggle.querySelector('span').textContent = savedTheme === 'dark' ? 'Light' : 'Dark';
+        themeToggle.addEventListener('click', () => {
+            const next = html.getAttribute('data-theme') === 'dark' ? 'light' : 'dark';
+            html.setAttribute('data-theme', next); localStorage.setItem('judah-theme', next);
+            themeToggle.querySelector('span').textContent = next === 'dark' ? 'Light' : 'Dark';
+        });
+
+        // ==================== HELPERS ====================
+        function showToast(title, message, type = 'info') {
+            const icons = { success: 'fa-check-circle', error: 'fa-exclamation-circle', info: 'fa-info-circle' };
+            const container = document.getElementById('toastContainer');
+            const toast = document.createElement('div'); toast.className = 'toast';
+            toast.innerHTML = `<i class="fas ${icons[type]} toast-icon ${type}"></i><div class="toast-content"><div class="toast-title">${title}</div><div class="toast-message">${message}</div></div><button class="toast-close" onclick="this.parentElement.remove()"><i class="fas fa-times"></i></button>`;
+            container.appendChild(toast);
+            setTimeout(() => { toast.classList.add('removing'); setTimeout(() => toast.remove(), 300); }, 4000);
+        }
+        function escapeHtml(s) { const d = document.createElement('div'); d.textContent = s || ''; return d.innerHTML; }
+        function formatDate(d) { if (!d) return '—'; const date = d.toDate ? d.toDate() : new Date(d); return date.toLocaleDateString('en-GB', { day: 'numeric', month: 'short', year: 'numeric' }); }
+
+        // ==================== GLOBAL STATE ====================
+        let currentUser = null, userData = null, allAssessments = [], deleteTargetId = null;
+
+        // ==================== AUTH ====================
+        auth.onAuthStateChanged(async (user) => {
+            if (!user) { window.location.href = 'teacher-login.html'; return; }
+            const doc = await db.collection('users').doc(user.uid).get();
+            if (!doc.exists || doc.data().role !== 'teacher') { auth.signOut(); window.location.href = 'index.html'; return; }
+            currentUser = user; userData = doc.data();
+            const pic = document.getElementById('profilePic');
+            if (userData.photoURL) pic.innerHTML = `<img src="${userData.photoURL}" alt="Profile">`;
+            else pic.textContent = (userData.firstName?.[0]||'T')+(userData.surname?.[0]||'E');
+            loadAssessments();
+        });
+        document.getElementById('logoutBtn').addEventListener('click', () => auth.signOut().then(() => window.location.href = 'index.html'));
+
+        // ==================== LOAD ASSESSMENTS ====================
+        async function loadAssessments() {
+            try {
+                const snap = await db.collection('assessments')
+                    .where('teacherId', '==', auth.currentUser.uid)
+                    .orderBy('createdAt', 'desc')
+                    .get();
+                allAssessments = snap.docs.map(d => ({ id: d.id, ...d.data() }));
+                renderStats();
+                renderGrid();
+            } catch (e) {
+                console.error('Load error:', e);
+                document.getElementById('assessmentsGrid').innerHTML = `<div class="empty-state"><i class="fas fa-exclamation-triangle"></i><p>Error loading assessments. Check console.</p></div>`;
+            }
+        }
+
+        function renderStats() {
+            document.getElementById('statTotal').textContent = allAssessments.length;
+            document.getElementById('statTests').textContent = allAssessments.filter(a => a.type === 'test').length;
+            document.getElementById('statAssignments').textContent = allAssessments.filter(a => a.type === 'assignment').length;
+            document.getElementById('statExams').textContent = allAssessments.filter(a => a.type === 'exam').length;
+            document.getElementById('statPublished').textContent = allAssessments.filter(a => a.status === 'published').length;
+            document.getElementById('statDrafts').textContent = allAssessments.filter(a => a.status === 'draft').length;
+        }
+
+        function renderGrid() {
+            const typeFilter = document.getElementById('typeFilter').value;
+            const statusFilter = document.getElementById('statusFilter').value;
+            const search = document.getElementById('searchInput').value.toLowerCase();
+
+            const filtered = allAssessments.filter(a => {
+                if (typeFilter !== 'all' && a.type !== typeFilter) return false;
+                if (statusFilter !== 'all' && a.status !== statusFilter) return false;
+                if (search && !(a.title||'').toLowerCase().includes(search) && !(a.subject||'').toLowerCase().includes(search)) return false;
+                return true;
+            });
+
+            document.getElementById('resultCount').textContent = `${filtered.length} result${filtered.length !== 1 ? 's' : ''}`;
+            const grid = document.getElementById('assessmentsGrid');
+
+            if (!filtered.length) {
+                grid.innerHTML = `<div class="empty-state"><i class="fas fa-inbox"></i><h3>No assessments found</h3><p>Create your first assessment to see it here.</p><a href="teacher-assessments.html" class="btn btn-primary" style="margin-top:1rem;">Create Assessment</a></div>`;
+                return;
+            }
+
+            grid.innerHTML = filtered.map(a => {
+                const typeBadge = a.type === 'test' ? 'type-test' : a.type === 'assignment' ? 'type-assignment' : 'type-exam';
+                const typeIcon = a.type === 'test' ? 'fa-laptop' : a.type === 'assignment' ? 'fa-tasks' : 'fa-pen-fancy';
+                const statusClass = a.status === 'published' ? 'status-published' : 'status-draft';
+                const statusLabel = a.status === 'published' ? 'Published' : 'Draft';
+                const questionCount = a.questions?.length || 0;
+                const weekInfo = a.weeksCovered?.length ? `Weeks: ${a.weeksCovered.join(', ')}` : '';
+
+                return `
+                <div class="assessment-card">
+                    <span class="type-badge ${typeBadge}"><i class="fas ${typeIcon}"></i> ${a.type}</span>
+                    <span class="status-badge ${statusClass}" style="margin-left:0.5rem;">${statusLabel}</span>
+                    <h3>${escapeHtml(a.title)}</h3>
+                    <div class="meta">
+                        <span><i class="fas fa-book"></i> ${escapeHtml(a.subject)}</span>
+                        <span><i class="fas fa-question-circle"></i> ${questionCount} question${questionCount !== 1 ? 's' : ''}</span>
+                        ${a.duration ? `<span><i class="fas fa-clock"></i> ${a.duration} min</span>` : ''}
+                        ${a.dueDate ? `<span><i class="fas fa-calendar-alt"></i> Due: ${a.dueDate}</span>` : ''}
+                    </div>
+                    ${weekInfo ? `<div class="meta"><span><i class="fas fa-calendar-week"></i> ${weekInfo}</span></div>` : ''}
+                    <div class="meta"><span><i class="fas fa-calendar"></i> Created: ${formatDate(a.createdAt)}</span></div>
+                    <div class="actions">
+                        <a href="teacher-assessment-evaluation.html?id=${a.id}" class="btn btn-primary btn-sm"><i class="fas fa-eye"></i> View Submissions</a>
+                        ${a.status === 'draft' ? `<a href="teacher-assessments.html?edit=${a.id}" class="btn btn-outline btn-sm"><i class="fas fa-edit"></i> Edit</a>` : ''}
+                        <button class="btn btn-danger btn-sm" onclick="promptDelete('${a.id}', '${escapeHtml(a.title).replace(/'/g, "\\'")}')"><i class="fas fa-trash"></i></button>
+                    </div>
+                </div>`;
+            }).join('');
+        }
+
+        // ==================== FILTERS ====================
+        document.getElementById('searchInput').addEventListener('input', renderGrid);
+        document.getElementById('typeFilter').addEventListener('change', renderGrid);
+        document.getElementById('statusFilter').addEventListener('change', renderGrid);
+
+        // ==================== DELETE ====================
+        window.promptDelete = (id, title) => {
+            deleteTargetId = id;
+            document.getElementById('deleteMessage').textContent = `Delete "${title}"? This cannot be undone.`;
+            document.getElementById('deleteModal').classList.add('active');
+        };
+        window.closeDeleteModal = () => { document.getElementById('deleteModal').classList.remove('active'); deleteTargetId = null; };
+        document.getElementById('confirmDeleteBtn').addEventListener('click', async () => {
+            if (!deleteTargetId) return;
+            try {
+                await db.collection('assessments').doc(deleteTargetId).delete();
+                showToast('Deleted', 'Assessment deleted.', 'success');
+                closeDeleteModal();
+                loadAssessments();
+            } catch (e) { showToast('Error', e.message, 'error'); }
+        });
+    </script>
+</body>
+</html>
