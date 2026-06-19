@@ -1,0 +1,573 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="dark">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=yes">
+    <title>Judah Wonders Model School · Assessment Evaluation</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:opsz,wght@14..32,400;500;600;700;800&family=Playfair+Display:wght@600;700&display=swap" rel="stylesheet">
+    <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-auth-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-firestore-compat.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        :root[data-theme="light"] {
+            --bg-primary: #f0f5fa; --bg-sidebar: rgba(255,255,255,0.75); --text-primary: #0b1e33;
+            --text-secondary: #2c3e50; --accent: #0A2540; --accent-glow: #C8963E;
+            --border: rgba(0,0,0,0.08); --card-bg: rgba(255,255,255,0.7); --hover-bg: rgba(255,255,255,0.9);
+            --shadow: 0 8px 20px -5px rgba(0,0,0,0.08); --input-bg: #ffffff;
+            --success-bg: rgba(34,197,94,0.15); --success-text: #16a34a;
+            --warning-bg: rgba(245,158,11,0.15); --warning-text: #b45309;
+            --danger-bg: rgba(239,68,68,0.15); --danger-text: #b91c1c;
+            --info-bg: rgba(10,37,64,0.1); --info-text: #0A2540;
+            --gradient-start: #0A2540; --gradient-end: #C8963E;
+        }
+        :root[data-theme="dark"] {
+            --bg-primary: #0a0f1e; --bg-sidebar: rgba(15,23,42,0.8); --text-primary: #f0f4fa;
+            --text-secondary: #a0b3d9; --accent: #C8963E; --accent-glow: #D4AF37;
+            --border: rgba(255,255,255,0.06); --card-bg: rgba(15,23,42,0.6); --hover-bg: rgba(30,41,59,0.8);
+            --shadow: 0 8px 20px -5px rgba(0,0,0,0.4); --input-bg: rgba(30,41,59,0.9);
+            --success-bg: rgba(34,197,94,0.15); --success-text: #4ade80;
+            --warning-bg: rgba(245,158,11,0.15); --warning-text: #fbbf24;
+            --danger-bg: rgba(239,68,68,0.15); --danger-text: #f87171;
+            --info-bg: rgba(200,150,62,0.15); --info-text: #D4AF37;
+            --gradient-start: #0A2540; --gradient-end: #C8963E;
+        }
+
+        body { font-family: 'Inter', sans-serif; background: var(--bg-primary); color: var(--text-primary); min-height: 100vh; display: flex; position: relative; overflow-x: hidden; }
+        .bg-logo { position: fixed; top: 50%; left: 50%; transform: translate(-50%, -50%); width: 400px; max-width: 70vw; opacity: 0.03; pointer-events: none; animation: breathe 6s ease-in-out infinite; }
+        @keyframes breathe { 0%,100% { transform: translate(-50%, -50%) scale(1); opacity: 0.03; } 50% { transform: translate(-50%, -50%) scale(1.06); opacity: 0.06; } }
+        .orb { position: fixed; width: 250px; height: 250px; border-radius: 50%; filter: blur(80px); pointer-events: none; animation: float 25s infinite alternate; }
+        .orb-1 { top: -100px; left: -100px; background: radial-gradient(circle at 30% 30%, rgba(10,37,64,0.12), transparent 70%); }
+        .orb-2 { bottom: -150px; right: -50px; width: 350px; height: 350px; background: radial-gradient(circle at 70% 70%, rgba(200,150,62,0.12), transparent); animation-duration: 30s; }
+        @keyframes float { 0% { transform: translate(0,0) scale(1); } 100% { transform: translate(40px,30px) scale(1.15); } }
+
+        .sidebar { width: 260px; background: var(--bg-sidebar); backdrop-filter: blur(16px); border-right: 1px solid var(--border); padding: 1.5rem 0.8rem; display: flex; flex-direction: column; transition: width 0.3s; position: fixed; top: 0; left: 0; height: 100vh; overflow-y: auto; z-index: 100; box-shadow: var(--shadow); }
+        .sidebar.collapsed { width: 85px; }
+        .sidebar .logo-area { display: flex; align-items: center; gap: 0.8rem; margin-bottom: 1.8rem; padding: 0 0.3rem; text-decoration: none; }
+        .sidebar .logo-area img { width: 38px; height: 38px; object-fit: contain; animation: logoPulse 3s ease-in-out infinite; }
+        @keyframes logoPulse { 0%,100%{transform:scale(1);} 50%{transform:scale(1.05);} }
+        .sidebar .logo-area h2 { font-family: 'Playfair Display', serif; font-size: 1.1rem; font-weight: 700; white-space: nowrap; color: var(--accent); line-height: 1.2; }
+        .sidebar .logo-area h2 span { display: block; font-size: 0.6rem; letter-spacing: 1.5px; color: var(--accent-glow); }
+        .sidebar.collapsed .logo-area h2 { display: none; }
+        .sidebar .nav-item { display: flex; align-items: center; gap: 0.9rem; padding: 0.7rem 1rem; border-radius: 1rem; color: var(--text-secondary); transition: all 0.2s; cursor: pointer; margin-bottom: 0.25rem; text-decoration: none; font-weight: 500; white-space: nowrap; border: 1px solid transparent; font-size: 0.9rem; }
+        .sidebar .nav-item:hover { background: var(--hover-bg); color: var(--accent); border-color: var(--border); transform: translateX(3px); }
+        .sidebar .nav-item.active { background: linear-gradient(135deg, var(--accent), var(--accent-glow)); color: white; box-shadow: 0 6px 15px -5px var(--accent); }
+        .sidebar .nav-item i { font-size: 1.2rem; width: 1.6rem; text-align: center; }
+        .sidebar.collapsed .nav-item span { display: none; }
+        .sidebar.collapsed .nav-item { justify-content: center; padding: 0.7rem; }
+        .sidebar .toggle-btn { margin-top: auto; display: flex; justify-content: flex-end; padding: 0.8rem 0.5rem; cursor: pointer; color: var(--text-secondary); font-size: 1.1rem; }
+        .sidebar .toggle-btn:hover { color: var(--accent); }
+
+        .main-content { flex: 1; margin-left: 260px; padding: 1.5rem; transition: margin-left 0.3s; max-width: calc(100vw - 260px); position: relative; z-index: 5; }
+        .main-content.expanded { margin-left: 85px; max-width: calc(100vw - 85px); }
+
+        .top-bar { display: flex; justify-content: space-between; align-items: center; margin-bottom: 1.5rem; flex-wrap: wrap; gap: 1rem; }
+        .page-title h1 { font-family: 'Playfair Display', serif; font-size: 1.8rem; font-weight: 700; color: var(--accent); margin-bottom: 0.1rem; }
+        .page-title p { color: var(--text-secondary); font-size: 0.85rem; }
+        .profile-area { display: flex; align-items: center; gap: 1rem; }
+        .theme-toggle { background: var(--card-bg); border: 1px solid var(--border); border-radius: 2rem; padding: 0.4rem 1rem; display: flex; align-items: center; gap: 0.4rem; cursor: pointer; color: var(--text-secondary); font-size: 0.8rem; transition: 0.2s; }
+        .profile-pic { width: 36px; height: 36px; border-radius: 50%; background: linear-gradient(135deg, var(--accent), var(--accent-glow)); display: flex; align-items: center; justify-content: center; color: white; font-weight: 600; font-size: 0.9rem; box-shadow: 0 4px 10px var(--accent); overflow: hidden; }
+        .profile-pic img { width: 100%; height: 100%; object-fit: cover; border-radius: 50%; }
+        .dropdown-menu { position: absolute; right: 0; top: 50px; background: var(--bg-sidebar); border: 1px solid var(--border); border-radius: 1rem; padding: 0.4rem; min-width: 160px; display: none; z-index: 1000; }
+        .profile-dropdown { position: relative; cursor: pointer; }
+        .profile-dropdown:hover .dropdown-menu { display: block; animation: fadeIn 0.2s; }
+        @keyframes fadeIn { from { opacity: 0; transform: translateY(-10px); } to { opacity: 1; transform: translateY(0); } }
+        .dropdown-item { padding: 0.6rem 1rem; color: var(--text-primary); border-radius: 0.8rem; display: flex; align-items: center; gap: 0.6rem; font-size: 0.85rem; cursor: pointer; }
+        .dropdown-item:hover { background: var(--hover-bg); color: var(--accent); }
+
+        .card { background: var(--card-bg); border: 1px solid var(--border); border-radius: 1.5rem; padding: 1.5rem; box-shadow: var(--shadow); margin-bottom: 1.5rem; }
+        .card-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 1rem; flex-wrap: wrap; gap: 0.5rem; padding-bottom: 1rem; border-bottom: 1px solid var(--border); }
+        .card-header h3 { font-size: 1.2rem; font-weight: 600; display: flex; align-items: center; gap: 0.5rem; }
+        .btn { padding: 0.6rem 1.3rem; border: none; border-radius: 2rem; font-weight: 500; font-size: 0.85rem; cursor: pointer; transition: 0.2s; display: inline-flex; align-items: center; gap: 0.4rem; white-space: nowrap; font-family: inherit; text-decoration: none; }
+        .btn-primary { background: linear-gradient(135deg, var(--gradient-start), var(--gradient-end)); color: white; }
+        .btn-success { background: var(--success-text); color: white; }
+        .btn-outline { background: transparent; border: 1px solid var(--border); color: var(--text-primary); }
+        .btn-outline:hover { background: var(--hover-bg); border-color: var(--accent); }
+        .btn-sm { padding: 0.35rem 0.9rem; font-size: 0.75rem; border-radius: 1.5rem; }
+        .btn:hover { opacity: 0.9; transform: translateY(-1px); }
+        .btn-group { display: flex; gap: 1rem; flex-wrap: wrap; margin-top: 1rem; }
+
+        .stats-row { display: grid; grid-template-columns: repeat(auto-fit, minmax(140px, 1fr)); gap: 1rem; margin-bottom: 1.5rem; }
+        .stat-card { background: var(--card-bg); border: 1px solid var(--border); border-radius: 1.2rem; padding: 1rem; text-align: center; }
+        .stat-card .val { font-size: 1.8rem; font-weight: 700; color: var(--accent); }
+        .stat-card .lbl { font-size: 0.7rem; color: var(--text-secondary); }
+        .stat-card .icon { font-size: 1.5rem; color: var(--accent); margin-bottom: 0.3rem; }
+
+        .table-responsive { overflow-x: auto; }
+        table { width: 100%; border-collapse: collapse; }
+        th, td { padding: 0.6rem 0.5rem; border-bottom: 1px solid var(--border); font-size: 0.8rem; text-align: left; }
+        th { background: var(--hover-bg); font-weight: 600; color: var(--text-secondary); white-space: nowrap; }
+        tr:hover td { background: var(--hover-bg); }
+        .badge { padding: 0.2rem 0.6rem; border-radius: 2rem; font-size: 0.7rem; font-weight: 600; display: inline-block; }
+        .badge-success { background: var(--success-bg); color: var(--success-text); }
+        .badge-warning { background: var(--warning-bg); color: var(--warning-text); }
+        .badge-danger { background: var(--danger-bg); color: var(--danger-text); }
+        .grade-A { color: var(--success-text); font-weight: 700; }
+        .grade-B { color: #3b82f6; font-weight: 700; }
+        .grade-C { color: #d97706; font-weight: 700; }
+        .grade-D { color: #ea580c; font-weight: 700; }
+        .grade-F { color: var(--danger-text); font-weight: 700; }
+
+        .modal-overlay { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.8); backdrop-filter: blur(5px); display: none; justify-content: center; align-items: center; z-index: 2000; }
+        .modal-overlay.active { display: flex; }
+        .modal-content { background: var(--card-bg); border: 1px solid var(--border); border-radius: 1.5rem; padding: 2rem; max-width: 700px; width: 90%; max-height: 85vh; overflow-y: auto; }
+        .modal-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 1rem; }
+        .modal-header h3 { font-size: 1.2rem; }
+        .modal-header i { cursor: pointer; font-size: 1.2rem; color: var(--text-secondary); }
+        .modal-header i:hover { color: var(--danger-text); }
+        .form-group { margin-bottom: 1rem; }
+        .form-group label { display: block; margin-bottom: 0.3rem; color: var(--text-secondary); font-weight: 500; font-size: 0.85rem; }
+        .form-control { width: 100%; padding: 0.6rem 1rem; background: var(--input-bg); border: 1px solid var(--border); border-radius: 1rem; color: var(--text-primary); font-size: 0.9rem; font-family: inherit; }
+        textarea.form-control { min-height: 80px; resize: vertical; }
+        .modal-actions { display: flex; gap: 1rem; justify-content: flex-end; margin-top: 1.5rem; }
+
+        .toast-container { position: fixed; top: 1rem; right: 1rem; z-index: 5000; display: flex; flex-direction: column; gap: 0.5rem; }
+        .toast { background: var(--card-bg); backdrop-filter: blur(16px); border: 1px solid var(--border); border-radius: 1rem; padding: 1rem 1.5rem; min-width: 300px; max-width: 450px; box-shadow: 0 15px 35px rgba(0,0,0,0.4); display: flex; align-items: flex-start; gap: 0.8rem; animation: slideInRight 0.3s; }
+        .toast.removing { animation: slideOutRight 0.3s ease-in forwards; }
+        .toast-icon { font-size: 1.2rem; margin-top: 2px; }
+        .toast-icon.success { color: var(--success-text); }
+        .toast-icon.error { color: var(--danger-text); }
+        .toast-icon.info { color: var(--info-text); }
+        @keyframes slideInRight { from { transform: translateX(120%); opacity: 0; } to { transform: translateX(0); opacity: 1; } }
+        @keyframes slideOutRight { from { transform: translateX(0); opacity: 1; } to { transform: translateX(120%); opacity: 0; } }
+
+        .loading-overlay { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.9); display: none; justify-content: center; align-items: center; z-index: 3000; }
+        .loading-overlay.active { display: flex; }
+        .loading-content { background: var(--card-bg); padding: 2rem; border-radius: 1.5rem; text-align: center; }
+        .loading-content i { font-size: 3rem; color: var(--accent); margin-bottom: 1rem; }
+
+        @media (max-width: 768px) {
+            .sidebar { width: 85px; }
+            .sidebar .logo-area h2, .sidebar .nav-item span { display: none; }
+            .main-content { margin-left: 85px; max-width: calc(100vw - 85px); padding: 1rem; }
+            .stats-row { grid-template-columns: repeat(2, 1fr); }
+        }
+    </style>
+</head>
+<body>
+    <img src="https://res.cloudinary.com/dda7kpir8/image/upload/q_auto/f_auto/v1781038310/ChatGPT_Image_Jun_9_2026_09_25_06_AM_elnine.png" alt="" class="bg-logo" aria-hidden="true">
+    <div class="orb orb-1"></div><div class="orb orb-2"></div>
+    <div class="toast-container" id="toastContainer"></div>
+
+    <!-- SIDEBAR -->
+    <div class="sidebar" id="sidebar">
+        <a href="index.html" class="logo-area">
+            <img src="https://res.cloudinary.com/dda7kpir8/image/upload/q_auto/f_auto/v1781038310/ChatGPT_Image_Jun_9_2026_09_25_06_AM_elnine.png" alt="JWMS Logo">
+            <h2>Judah Wonders<span>Model School</span></h2>
+        </a>
+        <a href="teacher-dashboard.html" class="nav-item"><i class="fas fa-chart-pie"></i><span>Dashboard</span></a>
+        <a href="teacher-workspace.html" class="nav-item"><i class="fas fa-book-open"></i><span>Workspace</span></a>
+        <a href="teacher-assessments.html" class="nav-item"><i class="fas fa-pen-fancy"></i><span>Create Assessment</span></a>
+        <a href="teacher-assessment-history.html" class="nav-item"><i class="fas fa-history"></i><span>History</span></a>
+        <a href="teacher-assessment-evaluation.html" class="nav-item active"><i class="fas fa-clipboard-check"></i><span>Evaluation</span></a>
+        <a href="teacher-profile.html" class="nav-item"><i class="fas fa-user-edit"></i><span>Profile</span></a>
+        <div class="toggle-btn" id="sidebarToggle"><i class="fas fa-chevron-left"></i></div>
+    </div>
+
+    <!-- MAIN CONTENT -->
+    <div class="main-content" id="mainContent">
+        <div class="top-bar">
+            <div class="page-title">
+                <h1>Assessment Evaluation</h1>
+                <p id="assessmentMeta">Loading assessment...</p>
+            </div>
+            <div class="profile-area">
+                <div class="theme-toggle" id="themeToggle"><i class="fas fa-sun"></i><span>Light</span><i class="fas fa-moon"></i></div>
+                <div class="profile-dropdown">
+                    <div class="profile-pic" id="profilePic">TE</div>
+                    <div class="dropdown-menu"><div class="dropdown-item" id="logoutBtn"><i class="fas fa-sign-out-alt"></i> Logout</div></div>
+                </div>
+            </div>
+        </div>
+
+        <!-- STATS -->
+        <div class="stats-row" id="statsRow">
+            <div class="stat-card"><div class="icon"><i class="fas fa-users"></i></div><div class="val" id="statTotal">0</div><div class="lbl">Enrolled Students</div></div>
+            <div class="stat-card"><div class="icon"><i class="fas fa-check-circle"></i></div><div class="val" id="statSubmitted">0</div><div class="lbl">Submitted</div></div>
+            <div class="stat-card"><div class="icon"><i class="fas fa-clock"></i></div><div class="val" id="statPending">0</div><div class="lbl">Not Submitted</div></div>
+            <div class="stat-card"><div class="icon"><i class="fas fa-star"></i></div><div class="val" id="statAvg">0%</div><div class="lbl">Class Average</div></div>
+            <div class="stat-card"><div class="icon"><i class="fas fa-trophy"></i></div><div class="val" id="statHighest">0%</div><div class="lbl">Highest Score</div></div>
+            <div class="stat-card"><div class="icon"><i class="fas fa-arrow-down"></i></div><div class="val" id="statLowest">0%</div><div class="lbl">Lowest Score</div></div>
+        </div>
+
+        <!-- STUDENT LIST -->
+        <div class="card">
+            <div class="card-header">
+                <h3><i class="fas fa-list-ul"></i> Student Submissions</h3>
+                <div>
+                    <button class="btn btn-outline btn-sm" onclick="refreshData()"><i class="fas fa-sync-alt"></i> Refresh</button>
+                    <button class="btn btn-primary btn-sm" id="exportBtn"><i class="fas fa-download"></i> Export CSV</button>
+                    <button class="btn btn-success btn-sm" id="generateReportCardBtn"><i class="fas fa-graduation-cap"></i> Generate Report Card Data</button>
+                </div>
+            </div>
+            <div class="table-responsive">
+                <table>
+                    <thead>
+                        <tr>
+                            <th>#</th>
+                            <th>Student Name</th>
+                            <th>Student ID</th>
+                            <th>Score</th>
+                            <th>Percentage</th>
+                            <th>Grade</th>
+                            <th>Status</th>
+                            <th>Submitted</th>
+                            <th>Action</th>
+                        </tr>
+                    </thead>
+                    <tbody id="studentsBody">
+                        <tr><td colspan="9" style="text-align:center;padding:2rem;"><i class="fas fa-spinner fa-spin"></i> Loading students...</td></tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+
+        <!-- PERFORMANCE CHART -->
+        <div class="card">
+            <div class="card-header"><h3><i class="fas fa-chart-bar"></i> Score Distribution</h3></div>
+            <canvas id="scoreChart" style="max-height:300px;"></canvas>
+        </div>
+    </div>
+
+    <!-- GRADE MODAL -->
+    <div class="modal-overlay" id="gradeModal">
+        <div class="modal-content">
+            <div class="modal-header"><h3>Grade Submission</h3><i class="fas fa-times" onclick="closeGradeModal()"></i></div>
+            <div id="gradeModalContent"></div>
+            <div class="modal-actions">
+                <button class="btn btn-outline" onclick="closeGradeModal()">Cancel</button>
+                <button class="btn btn-success" id="saveGradeBtn">Save Grade</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- LOADING -->
+    <div class="loading-overlay" id="loadingOverlay"><div class="loading-content"><i class="fas fa-spinner fa-spin fa-2x"></i><h3 style="margin-top:1rem;">Processing...</h3></div></div>
+
+    <script type="module">
+        // ==================== FIREBASE ====================
+        const firebaseConfig = {
+            apiKey: "AIzaSyADXHEiaSQ146QsGsaOCElARtpwrLE8svs",
+            authDomain: "judah-c737e.firebaseapp.com",
+            projectId: "judah-c737e",
+            storageBucket: "judah-c737e.firebasestorage.app",
+            messagingSenderId: "739196063078",
+            appId: "1:739196063078:web:c0ee1c1da2cc3794ca8ca7",
+            measurementId: "G-YEM22F1C39"
+        };
+        firebase.initializeApp(firebaseConfig);
+        const auth = firebase.auth();
+        const db = firebase.firestore();
+
+        // ==================== SIDEBAR & THEME ====================
+        const sidebar = document.getElementById('sidebar'), mainContent = document.getElementById('mainContent');
+        document.getElementById('sidebarToggle').addEventListener('click', () => {
+            sidebar.classList.toggle('collapsed'); mainContent.classList.toggle('expanded');
+            const icon = document.getElementById('sidebarToggle').querySelector('i');
+            icon.classList.toggle('fa-chevron-left'); icon.classList.toggle('fa-chevron-right');
+        });
+        const html = document.documentElement, themeToggle = document.getElementById('themeToggle');
+        const savedTheme = localStorage.getItem('judah-theme') || 'dark';
+        html.setAttribute('data-theme', savedTheme);
+        themeToggle.querySelector('span').textContent = savedTheme === 'dark' ? 'Light' : 'Dark';
+        themeToggle.addEventListener('click', () => {
+            const next = html.getAttribute('data-theme') === 'dark' ? 'light' : 'dark';
+            html.setAttribute('data-theme', next); localStorage.setItem('judah-theme', next);
+            themeToggle.querySelector('span').textContent = next === 'dark' ? 'Light' : 'Dark';
+        });
+
+        // ==================== HELPERS ====================
+        function showToast(title, message, type = 'info') {
+            const icons = { success: 'fa-check-circle', error: 'fa-exclamation-circle', info: 'fa-info-circle' };
+            const container = document.getElementById('toastContainer');
+            const toast = document.createElement('div'); toast.className = 'toast';
+            toast.innerHTML = `<i class="fas ${icons[type]} toast-icon ${type}"></i><div class="toast-content"><div class="toast-title">${title}</div><div class="toast-message">${message}</div></div><button class="toast-close" onclick="this.parentElement.remove()"><i class="fas fa-times"></i></button>`;
+            container.appendChild(toast);
+            setTimeout(() => { toast.classList.add('removing'); setTimeout(() => toast.remove(), 300); }, 4000);
+        }
+        function showLoading() { document.getElementById('loadingOverlay').classList.add('active'); }
+        function hideLoading() { document.getElementById('loadingOverlay').classList.remove('active'); }
+        function escapeHtml(s) { const d = document.createElement('div'); d.textContent = s || ''; return d.innerHTML; }
+        function getGrade(score, total) {
+            const pct = total > 0 ? (score / total) * 100 : 0;
+            if (pct >= 75) return 'A'; if (pct >= 65) return 'B'; if (pct >= 50) return 'C'; if (pct >= 40) return 'D'; return 'F';
+        }
+        function getGradeClass(score, total) {
+            const pct = total > 0 ? (score / total) * 100 : 0;
+            if (pct >= 75) return 'grade-A'; if (pct >= 65) return 'grade-B'; if (pct >= 50) return 'grade-C'; if (pct >= 40) return 'grade-D'; return 'grade-F';
+        }
+
+        // ==================== GLOBAL STATE ====================
+        let currentUser = null, userData = null, assessmentId = null;
+        let assessment = null, allStudents = [], submissionsMap = {}, currentGradeStudentId = null, scoreChart = null;
+
+        // ==================== AUTH ====================
+        auth.onAuthStateChanged(async (user) => {
+            if (!user) { window.location.href = 'teacher-login.html'; return; }
+            const doc = await db.collection('users').doc(user.uid).get();
+            if (!doc.exists || doc.data().role !== 'teacher') { auth.signOut(); window.location.href = 'index.html'; return; }
+            currentUser = user; userData = doc.data();
+            const pic = document.getElementById('profilePic');
+            if (userData.photoURL) pic.innerHTML = `<img src="${userData.photoURL}" alt="Profile">`;
+            else pic.textContent = (userData.firstName?.[0]||'T')+(userData.surname?.[0]||'E');
+            assessmentId = new URLSearchParams(window.location.search).get('id');
+            if (!assessmentId) { showToast('Error', 'No assessment specified.', 'error'); return; }
+            loadAssessmentData();
+        });
+        document.getElementById('logoutBtn').addEventListener('click', () => auth.signOut().then(() => window.location.href = 'index.html'));
+
+        // ==================== LOAD DATA ====================
+        async function loadAssessmentData() {
+            showLoading();
+            try {
+                const aDoc = await db.collection('assessments').doc(assessmentId).get();
+                if (!aDoc.exists) { showToast('Error', 'Assessment not found.', 'error'); hideLoading(); return; }
+                assessment = aDoc.data();
+                document.getElementById('assessmentMeta').textContent = `${assessment.title} — ${assessment.subject} (${assessment.type})`;
+
+                const classId = assessment.classId || userData.classTeaching;
+                if (classId) {
+                    const studentsSnap = await db.collection('users')
+                        .where('role', '==', 'student')
+                        .where('class', '==', classId)
+                        .get();
+                    allStudents = studentsSnap.docs.map(d => ({ id: d.id, ...d.data() }));
+                    allStudents.sort((a, b) => `${a.surname}${a.firstName}`.localeCompare(`${b.surname}${b.firstName}`));
+                }
+
+                const submissionsSnap = await db.collection('submissions')
+                    .where('assessmentId', '==', assessmentId)
+                    .get();
+                submissionsMap = {};
+                submissionsSnap.forEach(d => {
+                    const data = d.data();
+                    if (data.studentId) submissionsMap[data.studentId] = { id: d.id, ...data };
+                });
+
+                renderStats();
+                renderStudents();
+                renderChart();
+            } catch (e) { console.error('Load error:', e); showToast('Error', e.message, 'error'); } finally { hideLoading(); }
+        }
+
+        window.refreshData = () => loadAssessmentData();
+
+        // ==================== STATS ====================
+        function renderStats() {
+            const total = allStudents.length;
+            const submitted = Object.keys(submissionsMap).length;
+            const pending = total - submitted;
+            const scores = Object.values(submissionsMap).filter(s => s.graded && s.score !== undefined).map(s => ({ score: s.score, total: s.totalPoints || assessment.totalPoints || 100 }));
+            const avg = scores.length ? (scores.reduce((a, s) => a + (s.score / (s.total || 100)) * 100, 0) / scores.length).toFixed(1) : 0;
+            const highest = scores.length ? Math.max(...scores.map(s => (s.score / (s.total || 100)) * 100)).toFixed(1) : 0;
+            const lowest = scores.length ? Math.min(...scores.map(s => (s.score / (s.total || 100)) * 100)).toFixed(1) : 0;
+
+            document.getElementById('statTotal').textContent = total;
+            document.getElementById('statSubmitted').textContent = submitted;
+            document.getElementById('statPending').textContent = pending;
+            document.getElementById('statAvg').textContent = avg + '%';
+            document.getElementById('statHighest').textContent = highest + '%';
+            document.getElementById('statLowest').textContent = lowest + '%';
+        }
+
+        // ==================== RENDER STUDENTS TABLE ====================
+        function renderStudents() {
+            const tbody = document.getElementById('studentsBody');
+            if (!allStudents.length) {
+                tbody.innerHTML = '<tr><td colspan="9" style="text-align:center;">No students found in this class.</td></tr>';
+                return;
+            }
+            tbody.innerHTML = allStudents.map((student, i) => {
+                const submission = submissionsMap[student.id];
+                const name = `${student.firstName||''} ${student.surname||''}`.trim() || 'Unknown';
+                const studentId = student.userId || student.id?.substring(0, 8) || '—';
+                const totalPoints = assessment.totalPoints || 100;
+
+                if (!submission) {
+                    return `<tr>
+                        <td>${i + 1}</td>
+                        <td><strong>${escapeHtml(name)}</strong></td>
+                        <td>${escapeHtml(studentId)}</td>
+                        <td>—</td><td>—</td><td>—</td>
+                        <td><span class="badge badge-warning">Not Submitted</span></td>
+                        <td>—</td>
+                        <td>—</td>
+                    </tr>`;
+                }
+
+                const score = submission.score ?? '—';
+                const pct = submission.graded && submission.score !== undefined ? ((submission.score / totalPoints) * 100).toFixed(1) : '—';
+                const grade = submission.graded && submission.score !== undefined ? getGrade(submission.score, totalPoints) : '—';
+                const gradeClass = submission.graded && submission.score !== undefined ? getGradeClass(submission.score, totalPoints) : '';
+                const status = submission.graded ? `<span class="badge badge-success">Graded</span>` : `<span class="badge badge-warning">Needs Grading</span>`;
+                const submittedDate = submission.submittedAt?.toDate?.()?.toLocaleDateString() || '—';
+
+                return `<tr>
+                    <td>${i + 1}</td>
+                    <td><strong>${escapeHtml(name)}</strong></td>
+                    <td>${escapeHtml(studentId)}</td>
+                    <td><strong>${score}</strong> / ${totalPoints}</td>
+                    <td><strong>${pct}%</strong></td>
+                    <td><span class="${gradeClass}">${grade}</span></td>
+                    <td>${status}</td>
+                    <td>${submittedDate}</td>
+                    <td>
+                        <button class="btn btn-sm btn-primary" onclick="openGradeModal('${student.id}', '${escapeHtml(name).replace(/'/g, "\\'")}')">
+                            <i class="fas ${submission.graded ? 'fa-eye' : 'fa-pen'}"></i> ${submission.graded ? 'View' : 'Grade'}
+                        </button>
+                    </td>
+                </tr>`;
+            }).join('');
+        }
+
+        // ==================== CHART ====================
+        function renderChart() {
+            const scores = Object.values(submissionsMap).filter(s => s.graded && s.score !== undefined).map(s => (s.score / (s.totalPoints || assessment.totalPoints || 100)) * 100);
+            const ctx = document.getElementById('scoreChart').getContext('2d');
+            if (scoreChart) scoreChart.destroy();
+            if (!scores.length) return;
+
+            const ranges = { '0-39': 0, '40-49': 0, '50-64': 0, '65-74': 0, '75-100': 0 };
+            scores.forEach(s => {
+                if (s < 40) ranges['0-39']++;
+                else if (s < 50) ranges['40-49']++;
+                else if (s < 65) ranges['50-64']++;
+                else if (s < 75) ranges['65-74']++;
+                else ranges['75-100']++;
+            });
+
+            scoreChart = new Chart(ctx, {
+                type: 'bar',
+                data: {
+                    labels: ['0-39 (F)', '40-49 (D)', '50-64 (C)', '65-74 (B)', '75-100 (A)'],
+                    datasets: [{
+                        label: 'Students',
+                        data: Object.values(ranges),
+                        backgroundColor: ['#dc2626', '#ea580c', '#d97706', '#3b82f6', '#16a34a'],
+                        borderRadius: 8
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: true,
+                    plugins: { legend: { display: false } },
+                    scales: { y: { beginAtZero: true, ticks: { stepSize: 1 } } }
+                }
+            });
+        }
+
+        // ==================== GRADE MODAL ====================
+        window.openGradeModal = (studentId, studentName) => {
+            currentGradeStudentId = studentId;
+            const submission = submissionsMap[studentId];
+            const totalPoints = assessment.totalPoints || 100;
+            const currentScore = submission?.score ?? '';
+            const currentFeedback = submission?.feedback ?? '';
+            const content = document.getElementById('gradeModalContent');
+            content.innerHTML = `
+                <p><strong>Student:</strong> ${escapeHtml(studentName)}</p>
+                <div class="form-group"><label>Score (out of ${totalPoints})</label><input type="number" id="gradeScore" class="form-control" value="${currentScore}" min="0" max="${totalPoints}"></div>
+                <div class="form-group"><label>Feedback (optional)</label><textarea id="gradeFeedback" class="form-control" rows="3">${escapeHtml(currentFeedback)}</textarea></div>
+            `;
+            document.getElementById('gradeModal').classList.add('active');
+        };
+
+        window.closeGradeModal = () => { document.getElementById('gradeModal').classList.remove('active'); currentGradeStudentId = null; };
+
+        document.getElementById('saveGradeBtn').addEventListener('click', async () => {
+            if (!currentGradeStudentId) return;
+            const score = parseInt(document.getElementById('gradeScore').value);
+            const feedback = document.getElementById('gradeFeedback').value.trim();
+            if (isNaN(score) || score < 0) { showToast('Invalid', 'Enter a valid score.', 'error'); return; }
+            showLoading();
+            try {
+                const submission = submissionsMap[currentGradeStudentId];
+                const data = {
+                    score,
+                    feedback,
+                    totalPoints: assessment.totalPoints || 100,
+                    graded: true,
+                    gradedBy: currentUser.uid,
+                    gradedByName: `${userData.firstName||''} ${userData.surname||''}`.trim(),
+                    gradedAt: firebase.firestore.FieldValue.serverTimestamp()
+                };
+                if (submission?.id) {
+                    await db.collection('submissions').doc(submission.id).update(data);
+                } else {
+                    const student = allStudents.find(s => s.id === currentGradeStudentId);
+                    await db.collection('submissions').add({
+                        assessmentId,
+                        studentId: currentGradeStudentId,
+                        studentName: `${student?.firstName||''} ${student?.surname||''}`.trim(),
+                        ...data,
+                        submittedAt: firebase.firestore.FieldValue.serverTimestamp()
+                    });
+                }
+                showToast('Saved', 'Grade saved successfully.', 'success');
+                closeGradeModal();
+                loadAssessmentData();
+            } catch (e) { showToast('Error', e.message, 'error'); } finally { hideLoading(); }
+        });
+
+        // ==================== EXPORT CSV ====================
+        document.getElementById('exportBtn').addEventListener('click', () => {
+            const totalPoints = assessment.totalPoints || 100;
+            const rows = allStudents.map((student, i) => {
+                const submission = submissionsMap[student.id];
+                const name = `${student.firstName||''} ${student.surname||''}`.trim();
+                const studentId = student.userId || student.id?.substring(0, 8) || '';
+                const score = submission?.score ?? '';
+                const pct = submission?.graded && submission?.score !== undefined ? ((submission.score / totalPoints) * 100).toFixed(1) : '';
+                const grade = submission?.graded && submission?.score !== undefined ? getGrade(submission.score, totalPoints) : '';
+                const status = submission?.graded ? 'Graded' : submission ? 'Submitted' : 'Not Submitted';
+                return [i + 1, name, studentId, score, totalPoints, pct, grade, status].join(',');
+            });
+            const csv = 'No,Name,Student ID,Score,Total,Percentage,Grade,Status\n' + rows.join('\n');
+            const blob = new Blob([csv], { type: 'text/csv' });
+            const a = document.createElement('a'); a.href = URL.createObjectURL(blob);
+            a.download = `${assessment.title?.replace(/\s+/g, '_') || 'assessment'}_results.csv`; a.click();
+            showToast('Exported', 'CSV downloaded.', 'success');
+        });
+
+        // ==================== GENERATE REPORT CARD DATA ====================
+        document.getElementById('generateReportCardBtn').addEventListener('click', async () => {
+            const totalPoints = assessment.totalPoints || 100;
+            const gradedSubmissions = Object.values(submissionsMap).filter(s => s.graded && s.score !== undefined);
+            if (!gradedSubmissions.length) { showToast('No Data', 'No graded submissions to generate report card data.', 'error'); return; }
+            showLoading();
+            try {
+                const reportData = {
+                    assessmentId,
+                    title: assessment.title,
+                    subject: assessment.subject,
+                    type: assessment.type,
+                    totalPoints,
+                    classId: assessment.classId || userData.classTeaching,
+                    teacherId: currentUser.uid,
+                    teacherName: `${userData.firstName||''} ${userData.surname||''}`.trim(),
+                    generatedAt: firebase.firestore.FieldValue.serverTimestamp(),
+                    results: gradedSubmissions.map(s => ({
+                        studentId: s.studentId,
+                        studentName: s.studentName,
+                        score: s.score,
+                        percentage: ((s.score / totalPoints) * 100).toFixed(1),
+                        grade: getGrade(s.score, totalPoints),
+                        feedback: s.feedback || ''
+                    }))
+                };
+                await db.collection('reportCardData').add(reportData);
+                await db.collection('auditLogs').add({
+                    userId: currentUser.uid,
+                    userName: reportData.teacherName,
+                    action: 'REPORT_CARD_DATA_GENERATED',
+                    details: { assessmentId, subject: assessment.subject, studentCount: gradedSubmissions.length },
+                    timestamp: firebase.firestore.FieldValue.serverTimestamp()
+                }).catch(() => {});
+                showToast('Generated', `Report card data for ${gradedSubmissions.length} students saved. Ready for report card creation.`, 'success');
+            } catch (e) { showToast('Error', e.message, 'error'); } finally { hideLoading(); }
+        });
+    </script>
+</body>
+</html>
