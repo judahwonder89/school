@@ -521,6 +521,15 @@
             text-decoration: none;
             letter-spacing: 0.3px;
         }
+        .btn-primary {
+            background: linear-gradient(135deg, var(--gradient-start), var(--gradient-end));
+            color: white;
+            box-shadow: 0 4px 12px rgba(200,150,62,0.3);
+        }
+        .btn-primary:hover {
+            box-shadow: 0 6px 20px rgba(200,150,62,0.5);
+            transform: translateY(-2px);
+        }
         .btn-outline {
             background: transparent;
             border: 2px solid var(--border);
@@ -535,6 +544,11 @@
             padding: 0.3rem 0.8rem;
             font-size: 0.72rem;
             border-radius: 1.5rem;
+        }
+        .btn:disabled {
+            opacity: 0.5;
+            cursor: not-allowed;
+            transform: none !important;
         }
 
         /* Tables */
@@ -578,10 +592,12 @@
         .badge-present {
             background: var(--success-bg);
             color: var(--success-text);
+            border: 1px solid var(--success-border);
         }
         .badge-absent {
             background: var(--danger-bg);
             color: var(--danger-text);
+            border: 1px solid var(--danger-border);
         }
         .badge-prefect {
             background: var(--accent-light);
@@ -591,6 +607,22 @@
         .badge-info {
             background: var(--info-bg);
             color: var(--info-text);
+            border: 1px solid var(--info-border);
+        }
+        .badge-pending {
+            background: var(--warning-bg);
+            color: var(--warning-text);
+            border: 1px solid var(--warning-border);
+        }
+        .badge-approved {
+            background: var(--success-bg);
+            color: var(--success-text);
+            border: 1px solid var(--success-border);
+        }
+        .badge-rejected {
+            background: var(--danger-bg);
+            color: var(--danger-text);
+            border: 1px solid var(--danger-border);
         }
 
         /* Class Info Grid */
@@ -717,7 +749,7 @@
             line-height: 1.5;
         }
 
-        /* Attendance Row */
+        /* Attendance Summary */
         .attendance-summary {
             display: grid;
             grid-template-columns: repeat(3, 1fr);
@@ -802,7 +834,7 @@
             font-size: 0.85rem;
         }
 
-        /* Search */
+        /* Search Box */
         .search-box {
             position: relative;
             margin-bottom: 1rem;
@@ -847,6 +879,92 @@
             color: var(--text-primary);
             font-family: inherit;
             font-size: 0.8rem;
+        }
+
+        /* Form Elements */
+        .form-group {
+            margin-bottom: 1.25rem;
+        }
+        .form-group label {
+            display: block;
+            margin-bottom: 0.5rem;
+            color: var(--text-secondary);
+            font-weight: 600;
+            font-size: 0.9rem;
+        }
+        .form-control {
+            width: 100%;
+            padding: 0.75rem 1rem;
+            background: var(--input-bg);
+            border: 2px solid var(--input-border);
+            border-radius: 1rem;
+            color: var(--text-primary);
+            font-size: 0.95rem;
+            font-family: inherit;
+            transition: border-color 0.2s;
+            outline: none;
+        }
+        .form-control:focus {
+            border-color: var(--accent);
+            box-shadow: 0 0 15px rgba(200,150,62,0.15);
+        }
+        textarea.form-control {
+            min-height: 100px;
+            resize: vertical;
+        }
+        select.form-control {
+            cursor: pointer;
+        }
+
+        /* Modals */
+        .modal-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: var(--overlay-bg);
+            backdrop-filter: blur(8px);
+            -webkit-backdrop-filter: blur(8px);
+            display: none;
+            align-items: center;
+            justify-content: center;
+            z-index: 2000;
+            animation: fadeIn 0.3s;
+        }
+        .modal-overlay.active {
+            display: flex;
+        }
+        .modal-content {
+            background: var(--card-bg-solid);
+            border: 1px solid var(--border);
+            border-radius: 1.5rem;
+            padding: 1.5rem;
+            max-width: 550px;
+            width: 90%;
+            max-height: 85vh;
+            overflow-y: auto;
+            box-shadow: 0 20px 60px rgba(0,0,0,0.5);
+            animation: slideUp 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+        @keyframes slideUp {
+            from { transform: translateY(30px); opacity: 0; }
+            to { transform: translateY(0); opacity: 1; }
+        }
+
+        /* Loading Spinner */
+        .loading-spinner {
+            display: inline-block;
+            width: 18px;
+            height: 18px;
+            border: 3px solid rgba(255,255,255,0.3);
+            border-top: 3px solid white;
+            border-radius: 50%;
+            animation: spin 0.8s linear infinite;
+        }
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
         }
 
         /* Mobile Responsive */
@@ -1085,12 +1203,12 @@
         <div class="tab-content" id="tab-attendance">
             <div class="attendance-summary" id="attendanceSummary">
                 <div class="att-summary-card present">
-                    <div class="stat-icon" style="font-size:1.5rem;color:var(--success-text);">📅</div>
+                    <div class="stat-icon" style="font-size:1.5rem;color:var(--success-text);">✅</div>
                     <div class="val" id="attPresent" style="color:var(--success-text);font-size:1.8rem;">0</div>
                     <div class="lbl">Days Present</div>
                 </div>
                 <div class="att-summary-card absent">
-                    <div class="stat-icon" style="font-size:1.5rem;color:var(--danger-text);">⚠</div>
+                    <div class="stat-icon" style="font-size:1.5rem;color:var(--danger-text);">❌</div>
                     <div class="val" id="attAbsent" style="color:var(--danger-text);font-size:1.8rem;">0</div>
                     <div class="lbl">Days Absent</div>
                 </div>
@@ -1100,6 +1218,24 @@
                     <div class="lbl">Attendance Rate</div>
                 </div>
             </div>
+
+            <!-- Absence Requests Section -->
+            <div class="card" id="absenceRequestCard">
+                <div class="card-header">
+                    <h3><i class="fas fa-envelope-open-text"></i> Absence Requests & Explanations</h3>
+                    <button class="btn btn-primary btn-sm" id="newAbsenceRequestBtn" onclick="openAbsenceRequestModal()">
+                        <i class="fas fa-plus"></i> New Request
+                    </button>
+                </div>
+                <div id="absenceRequestsList">
+                    <div class="empty-state">
+                        <i class="fas fa-spinner fa-spin"></i>
+                        <p>Loading requests...</p>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Attendance Record -->
             <div class="card">
                 <div class="card-header">
                     <h3><i class="fas fa-list-ul"></i> Attendance Record</h3>
@@ -1123,10 +1259,11 @@
                                 <th>Status</th>
                                 <th>Remark</th>
                                 <th>Recorded By</th>
+                                <th>Actions</th>
                             </tr>
                         </thead>
                         <tbody id="attendanceBody">
-                            <tr><td colspan="5"><div class="empty-state"><i class="fas fa-spinner fa-spin"></i><p>Loading...</p></div></td></tr>
+                            <tr><td colspan="6"><div class="empty-state"><i class="fas fa-spinner fa-spin"></i><p>Loading...</p></div></td></tr>
                         </tbody>
                     </table>
                 </div>
@@ -1145,6 +1282,64 @@
                         <p>Loading timetable...</p>
                     </div>
                 </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Absence Request Modal -->
+    <div class="modal-overlay" id="absenceRequestModal">
+        <div class="modal-content">
+            <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:1.2rem;padding-bottom:1rem;border-bottom:1px solid var(--border);">
+                <h3><i class="fas fa-envelope-open-text"></i> <span id="absenceModalTitle">Absence Request / Explanation</span></h3>
+                <i class="fas fa-times" style="cursor:pointer;font-size:1.3rem;color:var(--text-secondary);padding:0.3rem;border-radius:0.5rem;" onclick="closeAbsenceRequestModal()"></i>
+            </div>
+            <div class="form-group">
+                <label><i class="fas fa-calendar-alt"></i> Date(s) of Absence *</label>
+                <input type="date" id="absenceDate" class="form-control" required>
+                <small style="color:var(--text-muted);">For multiple days, mention in the reason below</small>
+            </div>
+            <div class="form-group">
+                <label><i class="fas fa-tag"></i> Type *</label>
+                <select id="absenceType" class="form-control" required onchange="updateAbsenceModalTitle()">
+                    <option value="upcoming">Upcoming Absence (Request)</option>
+                    <option value="past">Past Absence (Explanation)</option>
+                </select>
+            </div>
+            <div class="form-group">
+                <label><i class="fas fa-clock"></i> Session(s) Affected *</label>
+                <select id="absenceSession" class="form-control" required>
+                    <option value="morning">Morning Only</option>
+                    <option value="afternoon">Afternoon Only</option>
+                    <option value="both">Both Sessions (Full Day)</option>
+                </select>
+            </div>
+            <div class="form-group">
+                <label><i class="fas fa-align-left"></i> Reason *</label>
+                <textarea id="absenceReason" class="form-control" rows="4" required 
+                          placeholder="Explain the reason for your absence... 
+Examples: 
+- Medical appointment with doctor's note
+- Family emergency
+- Religious observance
+- School-approved activity"></textarea>
+            </div>
+            <div class="form-group">
+                <label><i class="fas fa-paperclip"></i> Supporting Document (optional)</label>
+                <input type="text" id="absenceDocument" class="form-control" 
+                       placeholder="Link to document or reference number (e.g., Doctor's note ref)">
+            </div>
+            <div style="background:var(--info-bg);border-left:4px solid var(--accent);padding:0.8rem;border-radius:0.8rem;margin-bottom:1rem;font-size:0.8rem;color:var(--info-text);">
+                <i class="fas fa-info-circle"></i> 
+                <strong>Note:</strong> Your request will be sent to your class teacher for review. 
+                Approved absences will be marked as "Excused" in your attendance record.
+            </div>
+            <div class="btn-group" style="justify-content:flex-end;display:flex;gap:0.5rem;">
+                <button class="btn btn-outline" onclick="closeAbsenceRequestModal()">
+                    <i class="fas fa-times"></i> Cancel
+                </button>
+                <button class="btn btn-primary" id="submitAbsenceBtn">
+                    <i class="fas fa-paper-plane"></i> Submit Request
+                </button>
             </div>
         </div>
     </div>
@@ -1207,6 +1402,7 @@
         let allAttendance = [];
         let allAnnouncements = [];
         let classTimetable = null;
+        let absenceRequests = [];
 
         // ============================================
         // UTILITY FUNCTIONS
@@ -1251,7 +1447,6 @@
             const tabContent = document.getElementById('tab-' + btn.dataset.tab);
             if (tabContent) tabContent.classList.add('active');
             
-            // Lazy load tab content
             const tab = btn.dataset.tab;
             if (tab === 'announcements') loadAnnouncements();
             else if (tab === 'classmates') loadClassmates();
@@ -1266,7 +1461,7 @@
             if (!studentClass) return;
 
             try {
-                // Load classmates (approved, non-suspended students in same class)
+                // Load classmates
                 const classmatesSnap = await db.collection('users')
                     .where('role', '==', 'student')
                     .where('class', '==', studentClass)
@@ -1328,6 +1523,18 @@
                     classTimetable = { id: doc.id, ...doc.data() };
                 });
 
+                // Load absence requests
+                const absenceSnap = await db.collection('pendingActions')
+                    .where('studentId', '==', currentUser.uid)
+                    .where('actionType', 'in', ['absence_request', 'absence_explanation'])
+                    .orderBy('requestedAt', 'desc')
+                    .get();
+
+                absenceRequests = [];
+                absenceSnap.forEach(doc => {
+                    absenceRequests.push({ id: doc.id, ...doc.data() });
+                });
+
                 // Update stats
                 updateStats();
 
@@ -1336,7 +1543,7 @@
                 renderClassTeacher();
                 renderPrefects();
 
-                console.log(`📚 Class data loaded: ${allClassmates.length} classmates, ${allAttendance.length} attendance records`);
+                console.log(`📚 Class data loaded: ${allClassmates.length} classmates, ${allAttendance.length} attendance records, ${absenceRequests.length} absence requests`);
             } catch (e) {
                 console.error('Load class data error:', e);
             }
@@ -1348,7 +1555,6 @@
             document.getElementById('statSubjects').textContent = classTimetable?.subjects?.length || 
                 (classTimetable?.days ? Object.values(classTimetable.days).flat().length : 0);
             
-            // Calculate attendance rate
             if (allAttendance.length > 0) {
                 const presentCount = allAttendance.filter(a => a.status === 'present').length;
                 const rate = Math.round((presentCount / allAttendance.length) * 100);
@@ -1591,7 +1797,6 @@
         // TAB 4: MY ATTENDANCE
         // ============================================
         function loadMyAttendance() {
-            // Update summary
             const presentCount = allAttendance.filter(a => a.status === 'present').length;
             const absentCount = allAttendance.filter(a => a.status === 'absent').length;
             const rate = allAttendance.length > 0 ? Math.round((presentCount / allAttendance.length) * 100) : 0;
@@ -1619,6 +1824,7 @@
             });
 
             renderAttendanceTable();
+            loadAbsenceRequests();
         }
 
         function renderAttendanceTable() {
@@ -1642,7 +1848,7 @@
             }
 
             if (!filtered.length) {
-                tbody.innerHTML = '<tr><td colspan="5"><div class="empty-state"><i class="fas fa-calendar-check"></i><h3>No records found</h3><p>No attendance records match your filters.</p></div></td></tr>';
+                tbody.innerHTML = '<tr><td colspan="6"><div class="empty-state"><i class="fas fa-calendar-check"></i><h3>No records found</h3><p>No attendance records match your filters.</p></div></td></tr>';
                 return;
             }
 
@@ -1652,6 +1858,11 @@
                 const statusBadge = a.status === 'present' ? 'badge-present' : 'badge-absent';
                 const statusIcon = a.status === 'present' ? 'fa-check-circle' : 'fa-times-circle';
                 const statusLabel = a.status === 'present' ? 'Present' : 'Absent';
+                
+                const hasExplanation = absenceRequests.some(req => 
+                    req.details?.absenceDate === a.date && 
+                    req.actionType === 'absence_explanation'
+                );
 
                 return `
                     <tr>
@@ -1660,11 +1871,187 @@
                         <td><span class="badge ${statusBadge}"><i class="fas ${statusIcon}"></i> ${statusLabel}</span></td>
                         <td>${escapeHtml(a.remark || '—')}</td>
                         <td>${escapeHtml(a.teacherName || '—')}</td>
+                        <td>
+                            ${a.status === 'absent' && !hasExplanation ? `
+                                <button class="btn btn-outline btn-sm" onclick="explainAbsence('${a.date}', '${a.session || ''}')">
+                                    <i class="fas fa-envelope"></i> Explain
+                                </button>
+                            ` : a.status === 'absent' ? `
+                                <span class="badge badge-info" style="font-size:0.65rem;">
+                                    <i class="fas fa-check"></i> Explained
+                                </span>
+                            ` : '—'}
+                        </td>
                     </tr>
                 `;
             }).join('');
         }
         window.renderAttendanceTable = renderAttendanceTable;
+
+        // ============================================
+        // ABSENCE REQUESTS
+        // ============================================
+        function loadAbsenceRequests() {
+            const container = document.getElementById('absenceRequestsList');
+            
+            if (!absenceRequests.length) {
+                container.innerHTML = `
+                    <div class="empty-state">
+                        <i class="fas fa-envelope-open"></i>
+                        <h3>No Absence Requests</h3>
+                        <p>You haven't submitted any absence requests or explanations yet.</p>
+                    </div>`;
+                return;
+            }
+
+            container.innerHTML = absenceRequests.map(req => {
+                const statusClass = req.status === 'approved' ? 'badge-approved' : 
+                                    req.status === 'rejected' ? 'badge-rejected' : 'badge-pending';
+                const statusIcon = req.status === 'approved' ? 'fa-check-circle' : 
+                                   req.status === 'rejected' ? 'fa-times-circle' : 'fa-clock';
+                const typeLabel = req.actionType === 'absence_request' ? 'Upcoming Request' : 'Past Explanation';
+                const dateStr = req.requestedAt?.toDate ? req.requestedAt.toDate().toLocaleDateString('en-GB', {
+                    day: 'numeric', month: 'short', year: 'numeric'
+                }) : 'Unknown';
+
+                return `
+                    <div class="card" style="padding:1rem; margin-bottom:0.75rem;">
+                        <div style="display:flex;justify-content:space-between;align-items:flex-start;gap:1rem;flex-wrap:wrap;">
+                            <div style="flex:1;min-width:200px;">
+                                <div style="display:flex;gap:0.5rem;align-items:center;flex-wrap:wrap;margin-bottom:0.3rem;">
+                                    <span class="badge badge-info">${typeLabel}</span>
+                                    <span class="badge ${statusClass}">
+                                        <i class="fas ${statusIcon}"></i> ${req.status?.toUpperCase() || 'PENDING'}
+                                    </span>
+                                </div>
+                                <p style="font-size:0.85rem;margin:0.3rem 0;">
+                                    <strong>Date:</strong> ${escapeHtml(req.details?.absenceDate || '—')}
+                                    <br><strong>Session:</strong> ${escapeHtml(req.details?.session || '—')}
+                                </p>
+                                <p style="font-size:0.85rem;color:var(--text-secondary);margin:0.3rem 0;">
+                                    <strong>Reason:</strong> ${escapeHtml(req.details?.reason || 'No reason provided')}
+                                </p>
+                                ${req.details?.document ? `<p style="font-size:0.8rem;"><strong>Doc Ref:</strong> ${escapeHtml(req.details.document)}</p>` : ''}
+                                ${req.adminNote ? `<p style="font-size:0.8rem;color:var(--accent);margin-top:0.3rem;"><strong>Response:</strong> ${escapeHtml(req.adminNote)}</p>` : ''}
+                            </div>
+                            <small style="color:var(--text-muted);">Submitted: ${dateStr}</small>
+                        </div>
+                    </div>
+                `;
+            }).join('');
+        }
+
+        function updateAbsenceModalTitle() {
+            const type = document.getElementById('absenceType').value;
+            const title = document.getElementById('absenceModalTitle');
+            title.textContent = type === 'upcoming' ? 'Request Upcoming Absence' : 'Explain Past Absence';
+        }
+        window.updateAbsenceModalTitle = updateAbsenceModalTitle;
+
+        function openAbsenceRequestModal() {
+            document.getElementById('absenceDate').valueAsDate = new Date();
+            document.getElementById('absenceType').value = 'upcoming';
+            document.getElementById('absenceSession').value = 'morning';
+            document.getElementById('absenceReason').value = '';
+            document.getElementById('absenceDocument').value = '';
+            updateAbsenceModalTitle();
+            document.getElementById('absenceRequestModal').classList.add('active');
+        }
+        window.openAbsenceRequestModal = openAbsenceRequestModal;
+
+        function closeAbsenceRequestModal() {
+            document.getElementById('absenceRequestModal').classList.remove('active');
+        }
+        window.closeAbsenceRequestModal = closeAbsenceRequestModal;
+
+        function explainAbsence(date, session) {
+            document.getElementById('absenceDate').value = date;
+            document.getElementById('absenceType').value = 'past';
+            document.getElementById('absenceSession').value = session || 'morning';
+            document.getElementById('absenceReason').value = '';
+            document.getElementById('absenceDocument').value = '';
+            updateAbsenceModalTitle();
+            document.getElementById('absenceRequestModal').classList.add('active');
+        }
+        window.explainAbsence = explainAbsence;
+
+        // Close modal on overlay click
+        document.getElementById('absenceRequestModal').addEventListener('click', function(e) {
+            if (e.target === this) closeAbsenceRequestModal();
+        });
+
+        // Close modal on Escape
+        document.addEventListener('keydown', function(e) {
+            if (e.key === 'Escape') closeAbsenceRequestModal();
+        });
+
+        // Submit absence request
+        document.getElementById('submitAbsenceBtn').addEventListener('click', async () => {
+            const date = document.getElementById('absenceDate').value;
+            const type = document.getElementById('absenceType').value;
+            const session = document.getElementById('absenceSession').value;
+            const reason = document.getElementById('absenceReason').value.trim();
+            const doc = document.getElementById('absenceDocument').value.trim();
+
+            if (!date) {
+                alert('Please select a date.');
+                return;
+            }
+            if (!reason) {
+                alert('Please provide a reason for your absence.');
+                return;
+            }
+
+            const actionType = type === 'upcoming' ? 'absence_request' : 'absence_explanation';
+            const typeLabel = type === 'upcoming' ? 'upcoming absence request' : 'past absence explanation';
+
+            if (!confirm(`Submit ${typeLabel} for ${date}?`)) return;
+
+            const btn = document.getElementById('submitAbsenceBtn');
+            btn.disabled = true;
+            btn.innerHTML = '<span class="loading-spinner"></span> Submitting...';
+
+            try {
+                await db.collection('pendingActions').add({
+                    teacherId: classTeacher?.id || '',
+                    studentId: currentUser.uid,
+                    studentName: `${userData?.firstName || ''} ${userData?.surname || ''}`.trim(),
+                    actionType: actionType,
+                    classId: studentClass,
+                    details: {
+                        absenceDate: date,
+                        session: session,
+                        reason: reason,
+                        document: doc || null
+                    },
+                    status: 'pending',
+                    requestedAt: firebase.firestore.FieldValue.serverTimestamp()
+                });
+
+                // Reload requests
+                const snap = await db.collection('pendingActions')
+                    .where('studentId', '==', currentUser.uid)
+                    .where('actionType', 'in', ['absence_request', 'absence_explanation'])
+                    .orderBy('requestedAt', 'desc')
+                    .get();
+
+                absenceRequests = [];
+                snap.forEach(d => {
+                    absenceRequests.push({ id: d.id, ...d.data() });
+                });
+
+                loadAbsenceRequests();
+                renderAttendanceTable();
+                closeAbsenceRequestModal();
+                alert(`Your ${typeLabel} has been submitted for review.`);
+            } catch (e) {
+                console.error('Submit error:', e);
+                alert('Error: ' + e.message);
+            } finally {
+                btn.disabled = false;
+                btn.innerHTML = '<i class="fas fa-paper-plane"></i> Submit Request';
+            }
+        });
 
         // ============================================
         // TAB 5: TIMETABLE
@@ -1770,7 +2157,7 @@
             }
         });
 
-        console.log('📚 Student Class Hub ready');
+        console.log('📚 Student Class Hub ready - with Absence Requests');
     </script>
 </body>
 </html>
