@@ -140,7 +140,7 @@
     <div class="top-bar">
         <div class="page-title">
             <h1>My Profile</h1>
-            <p>View and edit your personal information, salary &amp; bonuses</p>
+            <p>View and edit your personal information</p>
         </div>
         <div class="profile-area">
             <div class="theme-toggle" id="themeToggle"><i class="fas fa-sun"></i><span>Light</span></div>
@@ -192,19 +192,16 @@
                 <div class="info-row"><span class="info-label">Date Joined</span><span class="info-value" id="dateJoined">—</span></div>
                 <div class="info-row"><span class="info-label">Years of Service</span><span class="info-value" id="yearsOfService">—</span></div>
                 <div class="info-row"><span class="info-label">Post / Role</span><span class="info-value" id="postDetail">—</span></div>
-                <div class="info-row"><span class="info-label">Class Assigned</span><span class="info-value" id="classAssigned">—</span></div>
+                <div class="info-row"><span class="info-label">Class(es) Assigned</span><span class="info-value" id="classAssigned">—</span></div>
                 <div class="info-row"><span class="info-label">Subjects</span><span class="info-value" id="subjects">—</span></div>
                 <div class="info-row"><span class="info-label">Qualifications</span><span class="info-value" id="qualifications">—</span></div>
                 <div class="info-row"><span class="info-label">Schools Attended</span><span class="info-value" id="schoolsAttended">—</span></div>
 
-                <!-- Salary & Points Card (CORRECTED) -->
+                <!-- Points Section -->
                 <div style="margin-top:2rem; padding-top:1rem; border-top:2px solid var(--accent);">
-                    <h3 style="margin-bottom:0.5rem;"><i class="fas fa-coins"></i> Salary &amp; Point Bonus</h3>
-                    <div class="info-row"><span class="info-label">Monthly Salary</span><span class="info-value" id="salaryDisplay" style="font-weight:700; color:var(--accent);">—</span></div>
-                    <div class="info-row"><span class="info-label">Current Points</span><span class="info-value" id="pointsDisplay" style="font-weight:700;">—</span></div>
-                    <div class="info-row"><span class="info-label">Point Bonus</span><span class="info-value" id="pointBonusDisplay" style="font-weight:700; color:var(--success-text);">—</span></div>
-                    <div class="info-row"><span class="info-label">Net Pay</span><span class="info-value" id="netPayDisplay" style="font-weight:700; color:var(--success-text);">—</span></div>
-                    <small style="color:var(--text-secondary);">1 point = ₦<span id="pointValueDisplay"></span> (set by admin)</small>
+                    <h3 style="margin-bottom:0.5rem;"><i class="fas fa-star"></i> Points &amp; Achievements</h3>
+                    <div class="info-row"><span class="info-label">Current Points</span><span class="info-value" id="pointsDisplay" style="font-weight:700; color:var(--accent);">—</span></div>
+                    <div class="info-row"><span class="info-label">Star Rating</span><span class="info-value" id="starRatingValue" style="font-weight:700;">—</span></div>
                 </div>
 
                 <!-- Point History -->
@@ -306,8 +303,13 @@
             const post = userData.post || (userData.coAdminAccess ? 'Co-Admin' : userData.staffAccess ? 'Non-Teaching Staff' : 'Teacher');
             document.getElementById('post').textContent = post;
             document.getElementById('postDetail').textContent = post;
-            document.getElementById('classAssigned').textContent = userData.classTeaching || 'Not assigned';
-            document.getElementById('classTeaching').innerHTML = `Class: ${userData.classTeaching || 'Not assigned'}`;
+
+            // FIXED: Class handling - supports both classesTeaching (array) and classTeaching (single)
+            const classes = userData.classesTeaching || (userData.classTeaching ? [userData.classTeaching] : []);
+            const classDisplay = classes.length ? classes.join(', ') : 'Not assigned';
+            document.getElementById('classAssigned').textContent = classDisplay;
+            document.getElementById('classTeaching').innerHTML = `Class: ${classDisplay}`;
+
             document.getElementById('subjects').textContent = userData.subjects ? userData.subjects.join(', ') : '—';
             document.getElementById('qualifications').textContent = userData.qualifications || '—';
             document.getElementById('schoolsAttended').textContent = userData.schoolsAttended?.length ? userData.schoolsAttended.map(s => s.name).join(', ') : '—';
@@ -339,31 +341,18 @@
             starHTML += ` <span style="font-size:0.9rem; color:var(--text-secondary);">(${stars}/5 stars)</span>`;
             document.getElementById('starRatingDisplay').innerHTML = starHTML;
 
-            // Salary & Points (NOW CORRECTLY AS BONUS)
-            const salary = userData.salary || 0;
-            document.getElementById('salaryDisplay').textContent = `₦${salary.toLocaleString()}`;
-            document.getElementById('pointsDisplay').textContent = points;
-
-            let pointValue = 200; // default
-            try {
-                const settingsDoc = await db.collection('settings').doc('points').get();
-                if (settingsDoc.exists) pointValue = settingsDoc.data().pointValue || 200;
-            } catch (e) {}
-            document.getElementById('pointValueDisplay').textContent = pointValue;
-
-            const bonus = points * pointValue;
-            document.getElementById('pointBonusDisplay').textContent = `+₦${bonus.toLocaleString()}`;
-            const netPay = salary + bonus;
-            document.getElementById('netPayDisplay').textContent = `₦${netPay.toLocaleString()}`;
+            // Points display (no money conversion)
+            document.getElementById('pointsDisplay').textContent = `${points.toLocaleString()} pts`;
+            document.getElementById('starRatingValue').textContent = `${stars}/5 stars (${points} points)`;
 
             // Point history
             const history = userData.pointHistory || [];
             const tbody = document.getElementById('pointHistoryBody');
             if (history.length > 0) {
-                tbody.innerHTML = history.map(h => `
+                tbody.innerHTML = history.slice().reverse().map(h => `
                     <tr>
                         <td>${new Date(h.date).toLocaleString()}</td>
-                        <td class="point-positive">+${h.points}</td>
+                        <td class="${h.points > 0 ? 'point-positive' : 'point-negative'}">${h.points > 0 ? '+' : ''}${h.points}</td>
                         <td>${h.reason}</td>
                         <td>${h.newPoints}</td>
                     </tr>
@@ -407,7 +396,7 @@
     function showToast(title, msg, type='info') {
         const icons = { success:'fa-check-circle', error:'fa-exclamation-circle', warning:'fa-exclamation-triangle', info:'fa-info-circle' };
         const toast = document.createElement('div');
-        toast.style.cssText = 'position:fixed; top:1rem; right:1rem; background:var(--toast-bg); backdrop-filter:blur(16px); border-radius:1rem; padding:0.8rem 1.2rem; min-width:280px; max-width:400px; box-shadow:var(--shadow); display:flex; align-items:flex-start; gap:0.6rem; animation:slideInRight 0.3s; z-index:9999;';
+        toast.style.cssText = 'position:fixed; top:1rem; right:1rem; background:var(--card-bg); backdrop-filter:blur(16px); border-radius:1rem; padding:0.8rem 1.2rem; min-width:280px; max-width:400px; box-shadow:var(--shadow); display:flex; align-items:flex-start; gap:0.6rem; animation:toastIn 0.3s ease-out; z-index:9999;';
         toast.innerHTML = `<i class="fas ${icons[type]}" style="font-size:1.2rem; color:${type==='success'?'var(--success-text)':type==='error'?'var(--danger-text)':'var(--warning-text)'};"></i><div><strong>${title}</strong><br>${msg}</div>`;
         document.body.appendChild(toast);
         setTimeout(() => toast.remove(), 4000);
