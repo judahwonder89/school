@@ -23,6 +23,7 @@
             --accent-light: rgba(10,37,64,0.08); --border: rgba(0,0,0,0.08);
             --card-bg: rgba(255,255,255,0.7); --hover-bg: rgba(255,255,255,0.9);
             --shadow: 0 15px 35px -10px rgba(0,0,0,0.1); --shadow-sm: 0 5px 15px -5px rgba(0,0,0,0.05);
+            --shadow-lg: 0 25px 50px -12px rgba(0,0,0,0.25);
             --success-bg: rgba(34,197,94,0.15); --success-text: #16a34a;
             --warning-bg: rgba(245,158,11,0.15); --warning-text: #b45309;
             --danger-bg: rgba(239,68,68,0.15); --danger-text: #b91c1c;
@@ -31,6 +32,8 @@
             --gradient-start: #0A2540; --gradient-end: #C8963E;
             --assistant-user-bg: #0A2540; --assistant-bot-bg: #ffffff;
             --toast-bg: rgba(15,23,42,0.95); --unsaved-dot: #f59e0b;
+            --border-light: rgba(0,0,0,0.04);
+            --locked-bg: rgba(34,197,94,0.05); --locked-border: #16a34a;
         }
         :root[data-theme="dark"] {
             --bg-primary: #0a0f1e; --bg-surface: rgba(15,23,42,0.8); --text-primary: #f0f4fa;
@@ -38,6 +41,7 @@
             --accent-light: rgba(200,150,62,0.1); --border: rgba(255,255,255,0.06);
             --card-bg: rgba(15,23,42,0.6); --hover-bg: rgba(30,41,59,0.8);
             --shadow: 0 15px 35px -10px rgba(0,0,0,0.5); --shadow-sm: 0 5px 15px -5px rgba(0,0,0,0.3);
+            --shadow-lg: 0 25px 50px -12px rgba(0,0,0,0.5);
             --success-bg: rgba(34,197,94,0.2); --success-text: #4ade80;
             --warning-bg: rgba(245,158,11,0.2); --warning-text: #fbbf24;
             --danger-bg: rgba(239,68,68,0.2); --danger-text: #f87171;
@@ -46,6 +50,8 @@
             --gradient-start: #0A2540; --gradient-end: #C8963E;
             --assistant-user-bg: #0A2540; --assistant-bot-bg: #1e293b;
             --toast-bg: rgba(15,23,42,0.95); --unsaved-dot: #fbbf24;
+            --border-light: rgba(255,255,255,0.04);
+            --locked-bg: rgba(34,197,94,0.05); --locked-border: #16a34a;
         }
         body { font-family: 'Inter', sans-serif; background: var(--bg-primary); color: var(--text-primary); min-height: 100vh; transition: background 0.3s; position: relative; overflow-x: hidden; }
         .bg-logo { position: fixed; top: 50%; left: 50%; transform: translate(-50%, -50%); width: 400px; max-width: 70vw; opacity: 0.03; pointer-events: none; animation: breathe 6s ease-in-out infinite; }
@@ -56,7 +62,7 @@
         @keyframes float { 0% { transform: translate(0,0) scale(1); } 100% { transform: translate(50px,30px) scale(1.15); } }
 
         .top-nav { position: sticky; top: 0; z-index: 100; background: var(--bg-surface); backdrop-filter: blur(20px); border-bottom: 1px solid var(--border); padding: 0.8rem 1rem; display: flex; justify-content: space-between; align-items: center; gap: 0.5rem; flex-wrap: wrap; }
-        .nav-left, .nav-right { display: flex; align-items: center; gap: 0.5rem; flex-wrap: wrap; }
+        .nav-left, .nav-right { display: flex; align-items: center; gap: 0.5rem; flex-wrap: wrap; position: relative; }
         .nav-btn { background: transparent; border: 1px solid var(--border); border-radius: 2rem; padding: 0.5rem 1rem; color: var(--text-primary); font-weight: 500; font-size: 0.85rem; cursor: pointer; transition: 0.2s; text-decoration: none; display: flex; align-items: center; gap: 0.4rem; white-space: nowrap; }
         .nav-btn:hover { background: var(--hover-bg); border-color: var(--accent); color: var(--accent); }
         .profile-dropdown { position: relative; cursor: pointer; }
@@ -70,8 +76,20 @@
         .dropdown-item { padding: 0.7rem 1rem; color: var(--text-primary); border-radius: 0.8rem; display: flex; align-items: center; gap: 0.6rem; transition: 0.2s; cursor: pointer; font-size: 0.9rem; }
         .dropdown-item:hover { background: var(--hover-bg); color: var(--accent); }
         .theme-toggle { display: flex; align-items: center; gap: 0.3rem; background: var(--card-bg); border: 1px solid var(--border); border-radius: 2rem; padding: 0.4rem 0.8rem; cursor: pointer; font-size: 0.8rem; color: var(--text-secondary); }
-        .points-star { display: flex; align-items: center; gap: 0.2rem; font-size: 0.9rem; }
-        .points-star i { color: var(--accent); }
+        
+        /* Points Badge */
+        .points-badge { background: linear-gradient(135deg, var(--gradient-start), var(--gradient-end)); color: white; padding: 0.4rem 1rem; border-radius: 2rem; font-weight: 700; font-size: 0.85rem; display: flex; align-items: center; gap: 0.3rem; }
+        
+        /* Notification Bell */
+        .notif-btn { position: relative; background: transparent; border: 1px solid var(--border); border-radius: 50%; width: 40px; height: 40px; display: flex; align-items: center; justify-content: center; cursor: pointer; color: var(--text-secondary); font-size: 1.1rem; transition: 0.2s; }
+        .notif-btn:hover { color: var(--accent); border-color: var(--accent); }
+        .notif-dot { position: absolute; top: 6px; right: 6px; width: 10px; height: 10px; border-radius: 50%; background: var(--danger-text); display: none; }
+        .notif-dot.show { display: block; }
+        .notif-dropdown { position: absolute; right: 0; top: 50px; background: var(--card-bg); backdrop-filter: blur(16px); border: 1px solid var(--border); border-radius: 1rem; padding: 0.5rem; min-width: 350px; max-height: 400px; overflow-y: auto; display: none; z-index: 1000; box-shadow: var(--shadow-lg); }
+        .notif-dropdown.show { display: block; }
+        .notif-item { padding: 0.8rem; border-radius: 0.8rem; border-bottom: 1px solid var(--border-light); font-size: 0.85rem; cursor: pointer; transition: 0.2s; }
+        .notif-item:hover { background: var(--hover-bg); }
+        
         .auto-save-indicator { font-size: 0.7rem; color: var(--success-text); margin-left: 0.5rem; display: flex; align-items: center; gap: 0.2rem; white-space: nowrap; }
         .auto-save-indicator.unsaved { color: var(--warning-text); }
         .voice-btn { background: var(--accent); color: white; border: none; border-radius: 50%; width: 34px; height: 34px; cursor: pointer; font-size: 0.9rem; margin-left: 0.5rem; }
@@ -139,6 +157,10 @@
         .subject-card:hover { border-color: var(--accent); box-shadow: var(--shadow); }
         .subject-card.active { border: 2px solid var(--accent); box-shadow: 0 0 20px -5px var(--accent); }
         .subject-card h3 { font-size: 1rem; margin-bottom: 0.3rem; padding-right: 2rem; }
+        
+        /* Progress Bar */
+        .progress-mini { height: 6px; background: var(--border); border-radius: 3px; margin-top: 0.5rem; overflow: hidden; }
+        .progress-mini-fill { height: 100%; background: linear-gradient(90deg, var(--gradient-start), var(--gradient-end)); border-radius: 3px; transition: width 0.5s; }
 
         .week-tabs { display: flex; gap: 0.5rem; margin-bottom: 1rem; overflow-x: auto; flex-wrap: wrap; }
         .week-tab { padding: 0.5rem 1.2rem; border-radius: 2rem; font-weight: 500; font-size: 0.85rem; cursor: pointer; background: var(--card-bg); color: var(--text-secondary); border: 1px solid var(--border); white-space: nowrap; transition: 0.2s; }
@@ -149,8 +171,9 @@
         .ql-editor { min-height: 350px; font-size: 14px; line-height: 1.7; color: var(--text-primary); }
         .ql-toolbar { border: none !important; border-bottom: 1px solid var(--border) !important; background: var(--toolbar-bg); }
 
-        .card.locked { opacity: 0.6; pointer-events: none; position: relative; }
-        .card.locked::after { content: "✓ Moved/Published"; position: absolute; top: 8px; right: 12px; background: var(--success-text); color: white; padding: 0.2rem 0.8rem; border-radius: 2rem; font-size: 0.7rem; font-weight: 600; z-index: 10; }
+        /* Locked Card */
+        .card.locked { background: var(--locked-bg); border-color: var(--locked-border); position: relative; opacity: 0.85; pointer-events: none; }
+        .card.locked::after { content: "🔒 Approved & Locked"; position: absolute; top: 10px; right: 15px; background: var(--success-text); color: white; padding: 0.3rem 1rem; border-radius: 2rem; font-size: 0.75rem; font-weight: 600; z-index: 10; }
 
         /* Modals */
         .modal-overlay { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.7); backdrop-filter: blur(6px); z-index: 2000; display: none; align-items: center; justify-content: center; }
@@ -205,10 +228,14 @@
         <div class="nav-left">
             <a href="teacher-dashboard.html" class="nav-btn"><i class="fas fa-arrow-left"></i> Dashboard</a>
             <select id="classSelector" class="nav-btn" style="width:auto; padding:0.5rem 1rem; background:var(--card-bg); color:var(--text-primary); border:1px solid var(--border); border-radius:2rem; font-size:0.85rem;"></select>
-            <div class="points-star" id="pointsDisplay">💰 0 pts</div>
-            <div class="points-star" id="starsDisplay"><i class="fas fa-star"></i><i class="fas fa-star"></i><i class="fas fa-star"></i><i class="fas fa-star"></i><i class="fas fa-star"></i></div>
+            <span class="points-badge" id="pointsDisplay">⭐ 0 pts</span>
         </div>
         <div class="nav-right">
+            <div class="notif-btn" onclick="toggleNotifications()">
+                <i class="fas fa-bell"></i>
+                <span class="notif-dot" id="notifDot"></span>
+            </div>
+            <div class="notif-dropdown" id="notifDropdown"></div>
             <div class="auto-save-indicator" id="autoSaveIndicator"><i class="fas fa-check-circle"></i> Saved</div>
             <button class="nav-btn" onclick="printLessonNote()"><i class="fas fa-print"></i> Print</button>
             <div class="theme-toggle" id="themeToggle"><i class="fas fa-sun"></i><span>Light</span></div>
@@ -243,7 +270,18 @@
         <!-- PANEL 1: TIMETABLE -->
         <div class="workspace-panel active" id="panel-timetable">
             <div class="card">
-                <div class="card-header"><h3><i class="fas fa-calendar-alt"></i> Class Timetable: <span id="ttClassName">Loading...</span></h3><button class="btn btn-primary" id="createNewTimetableBtn">+ New Draft</button></div>
+                <div class="card-header">
+                    <h3><i class="fas fa-calendar-alt"></i> Class Timetable: <span id="ttClassName">Loading...</span></h3>
+                    <div style="display:flex;gap:0.5rem;align-items:center;">
+                        <select id="timetableType" style="width:auto;padding:0.5rem 1rem;border-radius:2rem;background:var(--card-bg);color:var(--text-primary);border:1px solid var(--border);font-size:0.85rem;">
+                            <option value="academic">📚 Academic</option>
+                            <option value="hairstyle">💇 Hairstyle</option>
+                            <option value="test">📝 Test</option>
+                            <option value="exam">🎓 Exam</option>
+                        </select>
+                        <button class="btn btn-primary" id="createNewTimetableBtn">+ New Draft</button>
+                    </div>
+                </div>
                 <div class="sub-tabs" id="tt-tabs">
                     <div class="sub-tab active" data-tt="draft">Draft</div>
                     <div class="sub-tab" data-tt="pending">Pending</div>
@@ -526,31 +564,101 @@ Include Nigerian names, locations, naira (₦), and references to Nigerian textb
         function showLoading() { document.getElementById('loadingOverlay').classList.add('active'); }
         function hideLoading() { document.getElementById('loadingOverlay').classList.remove('active'); }
 
-        // ==================== POINTS ====================
+        // ==================== POINTS SYSTEM ====================
         async function addPoints(amount, reason) {
             if (!currentUser || amount === 0) return;
             const ref = db.collection('users').doc(currentUser.uid);
             const snap = await ref.get();
             const data = snap.data() || {};
             const cur = data.points || 0;
-            const newPoints = cur + amount;
-            await ref.update({ points: newPoints, pointHistory: firebase.firestore.FieldValue.arrayUnion({ points: amount, reason, date: new Date().toISOString(), newPoints }) });
-            userData.points = newPoints;
+            const np = cur + amount;
+            await ref.update({
+                points: np,
+                pointHistory: firebase.firestore.FieldValue.arrayUnion({
+                    points: amount, reason, 
+                    date: new Date().toISOString(), newPoints: np
+                })
+            });
+            userData.points = np;
             updatePointsDisplay();
         }
         function updatePointsDisplay() {
             if (!userData) return;
             const pts = userData.points || 0;
             document.getElementById('statPoints').textContent = pts;
-            document.getElementById('pointsDisplay').innerHTML = `💰 ${pts} pts`;
+            const pointsDisplay = document.getElementById('pointsDisplay');
+            if (pointsDisplay) pointsDisplay.innerHTML = `⭐ ${pts} pts`;
             const stars = Math.min(5, Math.floor(pts / 100));
             document.getElementById('statStars').textContent = stars;
-            const starDiv = document.getElementById('starsDisplay');
-            starDiv.innerHTML = '';
-            for (let i = 0; i < 5; i++) starDiv.innerHTML += i < stars ? '<i class="fas fa-star" style="color:var(--accent);"></i>' : '<i class="far fa-star" style="color:var(--text-secondary);"></i>';
             const pn = document.getElementById('previewName'); if (pn) pn.textContent = `${userData.firstName||''} ${userData.surname||''}`.trim() || 'Teacher';
             const pp = document.getElementById('previewPost'); if (pp) pp.textContent = userData.post || 'Teacher';
         }
+
+        // ==================== AUDIT LOGGING ====================
+        async function logAudit(action, details) {
+            if (!currentUser) return;
+            try {
+                await db.collection('auditLogs').add({
+                    userId: currentUser.uid,
+                    userName: `${userData?.firstName||''} ${userData?.surname||''}`.trim(),
+                    userRole: 'teacher',
+                    action: action,
+                    details: typeof details === 'string' ? details : JSON.stringify(details),
+                    timestamp: firebase.firestore.FieldValue.serverTimestamp()
+                });
+            } catch(e) { console.error('Audit log error:', e); }
+        }
+
+        // ==================== NOTIFICATIONS ====================
+        async function loadNotifications() {
+            if (!currentUser) return;
+            try {
+                const snap = await db.collection('auditLogs')
+                    .where('userId','==',currentUser.uid)
+                    .where('action','in',['SYLLABUS_APPROVED','SYLLABUS_REJECTED','LESSON_NOTE_APPROVED','LESSON_NOTE_REJECTED','TIMETABLE_APPROVED','TIMETABLE_REJECTED'])
+                    .orderBy('timestamp','desc').limit(20).get();
+                const notifications = snap.docs.map(d=>({id:d.id,...d.data()}));
+                const dot = document.getElementById('notifDot');
+                if(notifications.length > 0 && dot) dot.classList.add('show');
+                renderNotificationDropdown(notifications);
+            } catch(e) { console.error('Notification error:', e); }
+        }
+        
+        function renderNotificationDropdown(notifications) {
+            const dd = document.getElementById('notifDropdown');
+            if (!dd) return;
+            if (notifications.length === 0) {
+                dd.innerHTML = '<div class="notif-item" style="text-align:center">No notifications</div>';
+                return;
+            }
+            dd.innerHTML = notifications.map(n => {
+                const icon = n.action.includes('APPROVED') ? '✅' : '❌';
+                const date = n.timestamp?.toDate?.()?.toLocaleDateString() || 'Recently';
+                return `<div class="notif-item">${icon} <strong>${n.action.replace(/_/g,' ')}</strong><br><small>${n.details || ''}</small><br><small style="color:var(--text-secondary)">${date}</small></div>`;
+            }).join('');
+        }
+
+        function toggleNotifications() {
+            const dd = document.getElementById('notifDropdown');
+            if (!dd) return;
+            if (dd.classList.contains('show')) { 
+                dd.classList.remove('show'); 
+                return; 
+            }
+            document.getElementById('notifDot')?.classList.remove('show');
+            dd.innerHTML = '<div class="notif-item" style="text-align:center">Loading...</div>';
+            dd.classList.add('show');
+            loadNotifications();
+        }
+        
+        // Close notification dropdown when clicking outside
+        document.addEventListener('click', (e) => {
+            const notifBtn = document.querySelector('.notif-btn');
+            const notifDropdown = document.getElementById('notifDropdown');
+            if (notifDropdown && notifBtn && !notifBtn.contains(e.target) && !notifDropdown.contains(e.target)) {
+                notifDropdown.classList.remove('show');
+            }
+        });
 
         function populateClassSelector() {
             const sel = document.getElementById('classSelector');
@@ -582,6 +690,7 @@ Include Nigerian names, locations, naira (₦), and references to Nigerian textb
             if (currentClass) await loadAllTimetableData();
             loadMyReports();
             updateWeeklyStats();
+            loadNotifications();
             try {
                 await remoteConfig.fetchAndActivate();
                 const groqKey = remoteConfig.getString('groq_api_key');
@@ -608,21 +717,60 @@ Include Nigerian names, locations, naira (₦), and references to Nigerian textb
         });
 
         // ==================== TIMETABLE ====================
-        function getEmptyPeriod(t) { return t === 'academic' ? { startTime: '08:00', endTime: '08:40', monday: '', tuesday: '', wednesday: '', thursday: '', friday: '' } : { startTime: '', endTime: '', monday: '', tuesday: '', wednesday: '' }; }
-        function getTHeaders(t) { return t === 'academic' ? ['Start', 'End', 'Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', ''] : ['Start', 'End', 'Monday', 'Tuesday', 'Wednesday', '']; }
-        function renderDraftTable() {
-            document.getElementById('draftTypeLabel').textContent = draftType.charAt(0).toUpperCase() + draftType.slice(1);
-            document.getElementById('draftTableHeader').innerHTML = '<tr>' + getTHeaders(draftType).map(h => `<th>${h}</th>`).join('') + '</tr>';
-            let html = ''; draftData.forEach((p, i) => {
-                html += '<tr>';
-                html += `<td><input type="time" value="${escapeAttr(p.startTime)}" data-i="${i}" data-f="startTime"></td><td><input type="time" value="${escapeAttr(p.endTime)}" data-i="${i}" data-f="endTime"></td>`;
-                ['monday', 'tuesday', 'wednesday', 'thursday', 'friday'].forEach(d => { if (draftType === 'academic' || ['monday', 'tuesday', 'wednesday'].includes(d)) html += `<td><input type="text" value="${escapeAttr(p[d] || '')}" data-i="${i}" data-f="${d}"></td>`; });
-                html += '<td class="delete-row" onclick="deleteTTRow(' + i + ')"><i class="fas fa-trash"></i></td></tr>';
-            });
-            document.getElementById('draftBody').innerHTML = html;
-            document.querySelectorAll('#draftBody input').forEach(inp => inp.addEventListener('input', function () { const i = parseInt(this.dataset.i), f = this.dataset.f; if (draftData[i]) draftData[i][f] = this.value; }));
+        function getEmptyPeriod(t) {
+            switch(t) {
+                case 'academic': return {startTime:'08:00',endTime:'08:40',monday:'',tuesday:'',wednesday:'',thursday:'',friday:''};
+                case 'hairstyle': return {startTime:'Week 1',monday:'',tuesday:''};
+                case 'test': case 'exam': return {startTime:'',endTime:'',monday:'',tuesday:'',wednesday:''};
+                default: return {};
+            }
         }
+        
+        function getTHeaders(t) {
+            switch(t) {
+                case 'academic': return ['Start','End','Monday','Tuesday','Wednesday','Thursday','Friday',''];
+                case 'hairstyle': return ['Week','Hairstyle','Description',''];
+                case 'test': case 'exam': return ['Date','Time','Subject','Venue','Duration',''];
+                default: return [];
+            }
+        }
+        
+        function renderDraftTable() {
+            document.getElementById('draftTypeLabel').textContent = draftType.charAt(0).toUpperCase()+draftType.slice(1);
+            document.getElementById('draftTableHeader').innerHTML = '<tr>'+getTHeaders(draftType).map(h=>`<th>${h}</th>`).join('')+'</tr>';
+            let h='';
+            draftData.forEach((p,i)=>{
+                h+='<tr>';
+                if(draftType==='academic'){
+                    h+=`<td><input type="time" value="${escapeAttr(p.startTime||'')}" data-i="${i}" data-f="startTime"></td>`;
+                    h+=`<td><input type="time" value="${escapeAttr(p.endTime||'')}" data-i="${i}" data-f="endTime"></td>`;
+                    h+=`<td><input type="text" value="${escapeAttr(p.monday||'')}" data-i="${i}" data-f="monday"></td>`;
+                    h+=`<td><input type="text" value="${escapeAttr(p.tuesday||'')}" data-i="${i}" data-f="tuesday"></td>`;
+                    h+=`<td><input type="text" value="${escapeAttr(p.wednesday||'')}" data-i="${i}" data-f="wednesday"></td>`;
+                    h+=`<td><input type="text" value="${escapeAttr(p.thursday||'')}" data-i="${i}" data-f="thursday"></td>`;
+                    h+=`<td><input type="text" value="${escapeAttr(p.friday||'')}" data-i="${i}" data-f="friday"></td>`;
+                } else if(draftType==='hairstyle'){
+                    h+=`<td><input type="text" value="${escapeAttr(p.startTime||'')}" data-i="${i}" data-f="startTime"></td>`;
+                    h+=`<td><input type="text" value="${escapeAttr(p.monday||'')}" data-i="${i}" data-f="monday"></td>`;
+                    h+=`<td><input type="text" value="${escapeAttr(p.tuesday||'')}" data-i="${i}" data-f="tuesday"></td>`;
+                } else {
+                    h+=`<td><input type="text" value="${escapeAttr(p.startTime||'')}" data-i="${i}" data-f="startTime"></td>`;
+                    h+=`<td><input type="text" value="${escapeAttr(p.endTime||'')}" data-i="${i}" data-f="endTime"></td>`;
+                    h+=`<td><input type="text" value="${escapeAttr(p.monday||'')}" data-i="${i}" data-f="monday"></td>`;
+                    h+=`<td><input type="text" value="${escapeAttr(p.tuesday||'')}" data-i="${i}" data-f="tuesday"></td>`;
+                    h+=`<td><input type="text" value="${escapeAttr(p.wednesday||'')}" data-i="${i}" data-f="wednesday"></td>`;
+                }
+                h+='<td class="delete-row" onclick="deleteTTRow('+i+')"><i class="fas fa-trash"></i></td></tr>';
+            });
+            document.getElementById('draftBody').innerHTML = h;
+            document.querySelectorAll('#draftBody input').forEach(inp=>inp.addEventListener('input',function(){
+                const i=parseInt(this.dataset.i),f=this.dataset.f;
+                if(draftData[i]) draftData[i][f]=this.value;
+            }));
+        }
+        
         window.deleteTTRow = i => { draftData.splice(i, 1); renderDraftTable(); };
+        
         async function loadAllTimetableData() {
             if (!currentClass) return;
             const ds = await db.collection('timetableProposals').where('classId', '==', currentClass).where('teacherId', '==', currentUser.uid).where('status', '==', 'draft').orderBy('updatedAt', 'desc').limit(1).get();
@@ -633,8 +781,10 @@ Include Nigerian names, locations, naira (₦), and references to Nigerian textb
             const rs = await db.collection('timetableProposals').where('classId', '==', currentClass).where('teacherId', '==', currentUser.uid).where('status', '==', 'rejected').orderBy('submittedAt', 'desc').limit(1).get();
             if (!rs.empty) { const d = rs.docs[0]; rejectedId = d.id; rejectedData = d.data().periods || []; } else { rejectedId = null; rejectedData = []; }
             renderDraftTable(); document.getElementById('deleteDraftBtn').style.display = draftId ? 'inline-block' : 'none';
+            document.getElementById('timetableType').value = draftType;
             loadPublishedTimetables();
         }
+        
         async function loadPublishedTimetables() {
             if (!currentClass) return;
             const snap = await db.collection('timetables').where('classId', '==', currentClass).where('published', '==', true).get();
@@ -642,11 +792,45 @@ Include Nigerian names, locations, naira (₦), and references to Nigerian textb
             if (snap.empty) { list.innerHTML = '<p>No published timetables.</p>'; return; }
             list.innerHTML = snap.docs.map(d => `<div class="card"><p>${d.data().type} timetable</p></div>`).join('');
         }
+        
         document.querySelectorAll('#tt-tabs .sub-tab').forEach(t => t.addEventListener('click', () => { document.querySelectorAll('#tt-tabs .sub-tab').forEach(x => x.classList.remove('active')); t.classList.add('active'); ['draft', 'pending', 'approved', 'published', 'rejected'].forEach(k => document.getElementById('tt-' + k).style.display = k === t.dataset.tt ? 'block' : 'none'); if (currentClass) loadAllTimetableData(); }));
-        document.getElementById('createNewTimetableBtn').addEventListener('click', async () => { draftType = 'academic'; draftData = [getEmptyPeriod('academic')]; const d = { classId: currentClass, teacherId: currentUser.uid, periods: draftData, type: draftType, status: 'draft', updatedAt: firebase.firestore.FieldValue.serverTimestamp() }; const r = await db.collection('timetableProposals').add(d); draftId = r.id; renderDraftTable(); document.getElementById('deleteDraftBtn').style.display = 'inline-block'; showToast('Created', 'New draft created', 'success'); });
+        
+        document.getElementById('timetableType').addEventListener('change', (e) => {
+            draftType = e.target.value;
+            draftData = [getEmptyPeriod(draftType)];
+            renderDraftTable();
+        });
+        
+        document.getElementById('createNewTimetableBtn').addEventListener('click', async () => { 
+            draftType = document.getElementById('timetableType').value || 'academic';
+            draftData = [getEmptyPeriod(draftType)]; 
+            const d = { classId: currentClass, teacherId: currentUser.uid, periods: draftData, type: draftType, status: 'draft', updatedAt: firebase.firestore.FieldValue.serverTimestamp() }; 
+            const r = await db.collection('timetableProposals').add(d); 
+            draftId = r.id; 
+            renderDraftTable(); 
+            document.getElementById('deleteDraftBtn').style.display = 'inline-block'; 
+            showToast('Created', 'New draft created', 'success'); 
+        });
+        
         document.getElementById('addTimetableRowBtn').addEventListener('click', () => { draftData.push(getEmptyPeriod(draftType)); renderDraftTable(); });
-        document.getElementById('saveDraftBtn').addEventListener('click', async () => { const d = { classId: currentClass, teacherId: currentUser.uid, periods: draftData, type: draftType, status: 'draft', updatedAt: firebase.firestore.FieldValue.serverTimestamp() }; if (draftId) await db.collection('timetableProposals').doc(draftId).update(d); else { const r = await db.collection('timetableProposals').add(d); draftId = r.id; } document.getElementById('deleteDraftBtn').style.display = 'inline-block'; showToast('Saved', 'Draft saved', 'success'); });
-        document.getElementById('submitTimetableBtn').addEventListener('click', async () => { const d = { classId: currentClass, teacherId: currentUser.uid, periods: draftData, type: draftType, status: 'pending', submittedAt: firebase.firestore.FieldValue.serverTimestamp() }; if (draftId) await db.collection('timetableProposals').doc(draftId).update(d); else { const r = await db.collection('timetableProposals').add(d); draftId = r.id; } await loadAllTimetableData(); addPoints(1, 'Timetable submitted'); showToast('Submitted', 'Sent for approval', 'success'); });
+        document.getElementById('saveDraftBtn').addEventListener('click', async () => { 
+            const d = { classId: currentClass, teacherId: currentUser.uid, periods: draftData, type: draftType, status: 'draft', updatedAt: firebase.firestore.FieldValue.serverTimestamp() }; 
+            if (draftId) await db.collection('timetableProposals').doc(draftId).update(d); 
+            else { const r = await db.collection('timetableProposals').add(d); draftId = r.id; } 
+            document.getElementById('deleteDraftBtn').style.display = 'inline-block'; 
+            showToast('Saved', 'Draft saved', 'success'); 
+        });
+        
+        document.getElementById('submitTimetableBtn').addEventListener('click', async () => { 
+            const d = { classId: currentClass, teacherId: currentUser.uid, periods: draftData, type: draftType, status: 'pending', submittedAt: firebase.firestore.FieldValue.serverTimestamp() }; 
+            if (draftId) await db.collection('timetableProposals').doc(draftId).update(d); 
+            else { const r = await db.collection('timetableProposals').add(d); draftId = r.id; } 
+            await loadAllTimetableData(); 
+            await addPoints(2, 'Timetable submitted for approval'); 
+            await logAudit('TIMETABLE_SUBMITTED', `${draftType} timetable`); 
+            showToast('Submitted', 'Sent for approval', 'success'); 
+        });
+        
         document.getElementById('deleteDraftBtn').addEventListener('click', () => { openDeleteModal('Delete this draft?', async () => { if (!draftId) return; await db.collection('timetableProposals').doc(draftId).delete(); draftId = null; draftData = [getEmptyPeriod('academic')]; renderDraftTable(); document.getElementById('deleteDraftBtn').style.display = 'none'; closeDeleteModal(); showToast('Deleted', 'Draft deleted', 'success'); }); });
         document.getElementById('editPendingBtn').addEventListener('click', async () => { if (!pendingId) return; await db.collection('timetableProposals').doc(pendingId).update({ status: 'draft' }); await loadAllTimetableData(); showToast('Moved', 'Back to draft', 'info'); });
 
@@ -671,18 +855,22 @@ Include Nigerian names, locations, naira (₦), and references to Nigerian textb
             let html = '';
             periods.forEach((p, i) => {
                 html += '<tr>';
-                html += `<td>${p.startTime}</td><td>${p.endTime}</td>`;
-                ['monday', 'tuesday', 'wednesday', 'thursday', 'friday'].forEach(d => { if (type === 'academic' || ['monday', 'tuesday', 'wednesday'].includes(d)) html += `<td>${p[d] || ''}</td>`; });
+                html += `<td>${p.startTime}</td><td>${p.endTime || ''}</td>`;
+                ['monday', 'tuesday', 'wednesday', 'thursday', 'friday'].forEach(d => { 
+                    if (type === 'academic' || (['hairstyle','test','exam'].includes(type) && ['monday','tuesday','wednesday'].includes(d))) 
+                        html += `<td>${p[d] || ''}</td>`; 
+                });
                 html += '</tr>';
             });
             document.getElementById('approvedBody').innerHTML = html;
-            window._approvedId = entry.id; // set for publish button
+            window._approvedId = entry.id;
         }
         document.getElementById('publishTimetableBtn').addEventListener('click', async () => {
             if (!window._approvedId) return;
             await db.collection('timetables').doc(window._approvedId).update({ published: true });
             await loadAllTimetableData();
-            addPoints(2, 'Timetable published');
+            await addPoints(2, 'Timetable published');
+            await logAudit('TIMETABLE_PUBLISHED', `Timetable published`);
             showToast('Published', 'Published to students', 'success');
         });
         document.getElementById('editApprovedBtn').addEventListener('click', async () => {
@@ -708,8 +896,11 @@ Include Nigerian names, locations, naira (₦), and references to Nigerian textb
             let html = '';
             rejectedData.forEach((p, i) => {
                 html += '<tr>';
-                html += `<td>${p.startTime}</td><td>${p.endTime}</td>`;
-                ['monday', 'tuesday', 'wednesday', 'thursday', 'friday'].forEach(d => { if (draftType === 'academic' || ['monday', 'tuesday', 'wednesday'].includes(d)) html += `<td>${p[d] || ''}</td>`; });
+                html += `<td>${p.startTime}</td><td>${p.endTime || ''}</td>`;
+                ['monday', 'tuesday', 'wednesday', 'thursday', 'friday'].forEach(d => { 
+                    if (draftType === 'academic' || ['monday', 'tuesday', 'wednesday'].includes(d)) 
+                        html += `<td>${p[d] || ''}</td>`; 
+                });
                 html += '</tr>';
             });
             document.getElementById('rejectedBody').innerHTML = html;
@@ -727,18 +918,20 @@ Include Nigerian names, locations, naira (₦), and references to Nigerian textb
             if (!subjects.length) { grid.innerHTML = '<p>No subjects yet.</p>'; return; }
             grid.innerHTML = subjects.map(sub => {
                 const s = syllabusMap[sub] || { weeks: [], status: 'draft' };
-                const btn = s.status === 'approved' ? `<button class="btn btn-primary btn-sm" onclick="event.stopPropagation();createLessonNoteForSyllabus('${sub}')">Create Lesson Note</button>` : '';
-                return `<div class="subject-card" onclick="selectSubject('${escapeAttr(sub)}', this)"><h3>${escapeHtml(sub)}</h3><p>${s.weeks?.length || 0} weeks</p><span class="status-badge status-${s.status || 'draft'}">${s.status || 'draft'}</span>${btn}</div>`;
+                const totalWeeks = s.weeks?.length || 0;
+                const completedWeeks = Object.values(lessonNotesMap).filter(n => n.subject === sub && (n.status === 'approved' || n.teachable)).length;
+                const pct = totalWeeks > 0 ? Math.round((completedWeeks / totalWeeks) * 100) : 0;
+                const btn = s.status === 'approved' ? `<button class="btn btn-primary btn-sm" onclick="event.stopPropagation();createLessonNoteForSyllabus('${escapeAttr(sub)}')">Create Lesson Note</button>` : '';
+                return `<div class="subject-card" onclick="selectSubject('${escapeAttr(sub)}', this)"><h3>${escapeHtml(sub)}</h3><p>${totalWeeks} weeks (${completedWeeks} done)</p><div class="progress-mini"><div class="progress-mini-fill" style="width:${pct}%"></div></div><span class="status-badge status-${s.status || 'draft'}">${s.status || 'draft'}</span>${btn}</div>`;
             }).join('');
         }
         window.createLessonNoteForSyllabus = (sub) => {
             currentSubject = sub;
-            currentSubjectDraft = sub; // set for draft selection
+            currentSubjectDraft = sub;
             const w = syllabusMap[sub]?.weeks;
             if (w?.length) {
-                // switch to drafts tab, select subject and week
                 document.getElementById('ln-subtabs').querySelector('[data-ln="drafts"]').click();
-                selectDraftSubject(null, sub); // we'll modify selectDraftSubject to accept optional event
+                selectDraftSubject(null, sub);
                 selectDraftWeek(null, w[0].week);
             }
         };
@@ -761,14 +954,23 @@ Include Nigerian names, locations, naira (₦), and references to Nigerian textb
         function updateSyllabusStatus(s) { const el = document.getElementById('syllabusStatus'); el.textContent = s; el.className = `status-badge status-${s}`; }
         document.getElementById('addWeekBtn').addEventListener('click', () => { if (!syllabusMap[currentSubject]) syllabusMap[currentSubject] = { weeks: [] }; const last = syllabusMap[currentSubject].weeks.length ? syllabusMap[currentSubject].weeks[syllabusMap[currentSubject].weeks.length - 1].week : 0; syllabusMap[currentSubject].weeks.push({ week: last + 1, topic: '', objectives: '' }); renderSyllabusTable(syllabusMap[currentSubject].weeks); });
         document.getElementById('saveSyllabusBtn').addEventListener('click', async () => { const weeks = syllabusMap[currentSubject]?.weeks; if (!weeks?.length) return showToast('Error', 'Add weeks', 'error'); const d = { teacherId: currentUser.uid, subject: currentSubject, classId: currentClass, weeks, status: 'draft', updatedAt: firebase.firestore.FieldValue.serverTimestamp() }; if (syllabusMap[currentSubject].id) await db.collection('syllabus').doc(syllabusMap[currentSubject].id).update(d); else { const r = await db.collection('syllabus').add(d); syllabusMap[currentSubject].id = r.id; } renderSubjectGrid(); showToast('Saved', 'Syllabus saved', 'success'); });
-        document.getElementById('submitSyllabusBtn').addEventListener('click', async () => { const weeks = syllabusMap[currentSubject]?.weeks; if (!weeks?.length) return showToast('Error', 'Add weeks', 'error'); const d = { teacherId: currentUser.uid, subject: currentSubject, classId: currentClass, weeks, status: 'pending', submittedAt: firebase.firestore.FieldValue.serverTimestamp() }; if (syllabusMap[currentSubject].id) await db.collection('syllabus').doc(syllabusMap[currentSubject].id).update(d); else { const r = await db.collection('syllabus').add(d); syllabusMap[currentSubject].id = r.id; } updateSyllabusStatus('pending'); addPoints(1, 'Syllabus submitted'); showToast('Submitted', 'Syllabus submitted', 'success'); });
+        document.getElementById('submitSyllabusBtn').addEventListener('click', async () => { 
+            const weeks = syllabusMap[currentSubject]?.weeks; 
+            if (!weeks?.length) return showToast('Error', 'Add weeks', 'error'); 
+            const d = { teacherId: currentUser.uid, subject: currentSubject, classId: currentClass, weeks, status: 'pending', submittedAt: firebase.firestore.FieldValue.serverTimestamp() }; 
+            if (syllabusMap[currentSubject].id) await db.collection('syllabus').doc(syllabusMap[currentSubject].id).update(d); 
+            else { const r = await db.collection('syllabus').add(d); syllabusMap[currentSubject].id = r.id; } 
+            updateSyllabusStatus('pending'); 
+            await addPoints(2, 'Syllabus submitted for approval'); 
+            await logAudit('SYLLABUS_SUBMITTED', `${currentSubject} syllabus`); 
+            showToast('Submitted', 'Syllabus submitted', 'success'); 
+        });
 
         // ==================== DRAFTS TAB ====================
         function loadDraftSubjects() {
             const grid = document.getElementById('draftSubjectGrid');
             grid.innerHTML = subjects.map(sub => { const drafts = Object.values(lessonNotesMap).filter(n => n.subject === sub && (!n.status || n.status === 'draft')).length; return `<div class="subject-card" onclick="selectDraftSubject(event, '${escapeAttr(sub)}')"><h3>${escapeHtml(sub)}</h3><p>${drafts} drafts</p></div>`; }).join('');
         }
-        // Fixed: accept event as first argument
         window.selectDraftSubject = (e, subject) => {
             if (e) e.target.closest('.subject-card').classList.add('active');
             currentSubjectDraft = subject;
@@ -777,7 +979,6 @@ Include Nigerian names, locations, naira (₦), and references to Nigerian textb
             const draftWeeks = syllabusWeeks.filter(w => { const note = allNotes.find(n => n.week == w.week); return !note || note.status === 'draft' || !note.status; });
             document.getElementById('draftWeekList').innerHTML = draftWeeks.map(wk => `<div class="week-tab" onclick="selectDraftWeek(event, ${wk.week})">Week ${wk.week}: ${escapeHtml(wk.topic || 'No topic')}</div>`).join('');
             document.getElementById('draftEditorSection').style.display = 'none';
-            // Quill update when shown
         };
         window.selectDraftWeek = (e, week) => {
             if (e) { document.querySelectorAll('#draftWeekList .week-tab').forEach(t => t.classList.remove('active')); e.target.classList.add('active'); }
@@ -797,10 +998,17 @@ Include Nigerian names, locations, naira (₦), and references to Nigerian textb
             videoLinks = note.videoLinks || []; renderVideoList();
             handwritingImages = note.handwritingImages || []; renderHandwritingImages();
             displayAdminFeedback(note);
-            // Update Quill editors after making them visible
             quill.update();
             studentQuill.update();
             teachingProcessQuill.update();
+            
+            // Apply locked class if approved
+            const lessonNoteCard = document.getElementById('lessonNoteCard');
+            if (lessonNoteApproved) {
+                lessonNoteCard.classList.add('locked');
+            } else {
+                lessonNoteCard.classList.remove('locked');
+            }
         };
         function displayAdminFeedback(note) {
             const box = document.getElementById('adminFeedbackBox');
@@ -889,13 +1097,16 @@ Include Nigerian names, locations, naira (₦), and references to Nigerian textb
             const key = `${currentSubjectDraft}_${currentWeekDraft}`; const existing = lessonNotesMap[key] || {};
             const d = { status: 'pending', submittedAt: firebase.firestore.FieldValue.serverTimestamp() };
             if (existing.id) await db.collection('lessonNotes').doc(existing.id).update({ ...d, lessonNote: lnHtml }); else { const r = await db.collection('lessonNotes').add({ ...existing, teacherId: currentUser.uid, subject: currentSubjectDraft, week: currentWeekDraft, classId: currentClass, lessonNote: lnHtml, ...d }); lessonNotesMap[key] = { id: r.id, ...d }; }
-            await addPoints(2, 'Lesson note submitted');
+            await addPoints(2, 'Lesson note submitted for approval');
+            await logAudit('LESSON_NOTE_SUBMITTED', `${currentSubjectDraft} Week ${currentWeekDraft}`);
             document.getElementById('draftEditorSection').style.display = 'none'; loadDraftSubjects(); renderSubmittedTab();
             showToast('Submitted', 'Sent for approval', 'success');
         });
         document.getElementById('pushToTeachBtn').addEventListener('click', async () => {
             const key = `${currentSubjectDraft}_${currentWeekDraft}`; const note = lessonNotesMap[key]; if (!note?.id) return;
-            await db.collection('lessonNotes').doc(note.id).update({ teachable: true }); await addPoints(2, 'Lesson moved to Teach');
+            await db.collection('lessonNotes').doc(note.id).update({ teachable: true }); 
+            await addPoints(2, 'Lesson moved to Teach');
+            await logAudit('LESSON_PUSHED_TO_TEACH', `${currentSubjectDraft} Week ${currentWeekDraft}`);
             document.getElementById('pushToTeachBtn').style.display = 'none'; renderPublishedTab(); showToast('Pushed', 'Moved to Teach', 'success');
         });
 
@@ -906,7 +1117,7 @@ Include Nigerian names, locations, naira (₦), and references to Nigerian textb
             document.getElementById('submittedNotesList').innerHTML = notes.length ? notes.map(n => `<div class="card"><div style="display:flex;justify-content:space-between;"><div><strong>Week ${n.week}: ${n.topic}</strong> <span class="status-badge status-${n.status}">${n.status}</span> ${n.adminRating ? `Rating: ${n.adminRating}/5` : ''}</div><div>${n.status === 'pending' ? `<button class="btn btn-warning btn-sm" onclick="cancelSubmission('${n.id}')">Cancel</button>` : n.status === 'approved' ? `<button class="btn btn-success btn-sm" onclick="pushToTeachFromSubmitted('${n.id}')">Push to Teach</button>` : `<button class="btn btn-warning btn-sm" onclick="editRejectedFromSubmitted('${n.id}')">Edit</button>`}</div></div></div>`).join('') : '<p>No submitted notes.</p>';
         }
         window.cancelSubmission = async id => { await db.collection('lessonNotes').doc(id).update({ status: 'draft' }); await loadAllLessonNotes(); renderSubmittedTab(); loadDraftSubjects(); };
-        window.pushToTeachFromSubmitted = async id => { await db.collection('lessonNotes').doc(id).update({ teachable: true }); await addPoints(2, 'Lesson moved to Teach'); await loadAllLessonNotes(); renderSubmittedTab(); renderPublishedTab(); };
+        window.pushToTeachFromSubmitted = async id => { await db.collection('lessonNotes').doc(id).update({ teachable: true }); await addPoints(2, 'Lesson moved to Teach'); await logAudit('LESSON_PUSHED_TO_TEACH', `Lesson note ${id}`); await loadAllLessonNotes(); renderSubmittedTab(); renderPublishedTab(); };
         function renderPublishedTab() {
             if (!currentSubjectDraft) return;
             const notes = Object.values(lessonNotesMap).filter(n => n.subject === currentSubjectDraft && (n.teachable || n.resourcePublished));
@@ -939,7 +1150,7 @@ Include Nigerian names, locations, naira (₦), and references to Nigerian textb
                 document.getElementById('assistantContext').innerHTML = `Mode: <strong>${mode.toUpperCase()}</strong> | Subject: ${currentSubjectDraft} | Week: ${currentWeekDraft} | Topic: ${escapeHtml(wd?.topic || 'N/A')}`;
             }
             document.getElementById('aiAssistantModal').classList.add('active');
-            loadAIConversations(); // load history on open
+            loadAIConversations();
         };
         window.closeAIAssistant = () => document.getElementById('aiAssistantModal').classList.remove('active');
         window.sendAssistantMessage = async () => {
@@ -982,7 +1193,10 @@ Include Nigerian names, locations, naira (₦), and references to Nigerian textb
                 if (!existing.empty) await db.collection('dailyReports').doc(existing.docs[0].id).update(data);
                 else await db.collection('dailyReports').add(data);
                 loadMyReports(); document.getElementById('openingTime').value = ''; document.getElementById('closingTime').value = ''; document.getElementById('reportContent').value = '';
-                updateWeeklyStats(); await addPoints(1, 'Daily report submitted'); showToast('Submitted', 'Report submitted', 'success');
+                updateWeeklyStats(); 
+                await addPoints(1, 'Daily report submitted');
+                await logAudit('DAILY_REPORT_SUBMITTED', `Report for ${date}`);
+                showToast('Submitted', 'Report submitted', 'success');
             } catch (e) { showToast('Error', e.message, 'error'); } finally { hideLoading(); }
         }
         async function loadMyReports() {
@@ -1032,15 +1246,15 @@ Include Nigerian names, locations, naira (₦), and references to Nigerian textb
             document.getElementById('previewResourceCount').textContent = all.filter(n => n.teachable || n.resourcePublished).length;
         }
 
-        // Quill editors initialization – set container to block but height 0, then later hide via CSS
+        // Quill editors initialization
         const draftEditorSection = document.getElementById('draftEditorSection');
-        draftEditorSection.style.display = 'block'; // temporarily visible for Quill initialization
+        draftEditorSection.style.display = 'block';
         draftEditorSection.style.height = '0';
         draftEditorSection.style.overflow = 'hidden';
         quill = new Quill('#editor', { theme: 'snow', modules: { toolbar: [['bold', 'italic', 'underline'], [{ 'header': [1, 2, 3, false] }], [{ 'list': 'ordered' }, { 'list': 'bullet' }], ['link', 'blockquote'], ['clean']] }, placeholder: 'Write your lesson note here...' });
         studentQuill = new Quill('#studentResourceEditor', { theme: 'snow', modules: { toolbar: [['bold', 'italic'], [{ 'header': [1, 2, false] }], [{ 'list': 'ordered' }, { 'list': 'bullet' }], ['link'], ['clean']] }, placeholder: 'Student resource...' });
         teachingProcessQuill = new Quill('#teachingProcessEditor', { theme: 'snow', modules: { toolbar: [['bold', 'italic'], [{ 'header': [1, 2, false] }], [{ 'list': 'ordered' }, { 'list': 'bullet' }], ['link'], ['clean']] }, placeholder: 'Teaching process...' });
-        draftEditorSection.style.display = 'none'; // re-hide
+        draftEditorSection.style.display = 'none';
         draftEditorSection.style.height = '';
         draftEditorSection.style.overflow = '';
 
@@ -1056,7 +1270,7 @@ Include Nigerian names, locations, naira (₦), and references to Nigerian textb
         }
         window.deleteHandwritingImage = i => { handwritingImages.splice(i, 1); renderHandwritingImages(); };
 
-        // Added missing handlers for post-approval sections
+        // Post-approval section handlers
         document.getElementById('saveTeachingProcessBtn').addEventListener('click', async () => {
             if (!currentSubjectDraft || !currentWeekDraft) return;
             const key = `${currentSubjectDraft}_${currentWeekDraft}`;
@@ -1083,7 +1297,8 @@ Include Nigerian names, locations, naira (₦), and references to Nigerian textb
             const note = lessonNotesMap[key];
             if (!note?.id) return showToast('Error', 'Save first', 'error');
             await db.collection('lessonNotes').doc(note.id).update({ teachable: true });
-            addPoints(2, 'Lesson moved to Teach');
+            await addPoints(2, 'Lesson moved to Teach');
+            await logAudit('LESSON_MOVED_TO_TEACH', `${currentSubjectDraft} Week ${currentWeekDraft}`);
             showToast('Moved', 'Moved to Teach', 'success');
         });
         document.getElementById('aiGenerateTPBtn').addEventListener('click', async () => {
@@ -1146,6 +1361,7 @@ Include Nigerian names, locations, naira (₦), and references to Nigerian textb
                 handwritingImages: handwritingImages,
                 createdAt: firebase.firestore.FieldValue.serverTimestamp()
             });
+            await logAudit('RESOURCE_SHARED_TO_LIBRARY', `${currentSubjectDraft} Week ${currentWeekDraft}`);
             showToast('Shared', 'Added to library', 'success');
         });
 
