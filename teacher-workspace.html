@@ -408,6 +408,46 @@
             .card-header { flex-direction: column; align-items: flex-start; }
             .sub-tabs { justify-content: center; }
         }
+
+        /* Modal Enhancements */
+        .modal-overlay {
+            position: fixed; top: 0; left: 0; width: 100%; height: 100%;
+            background: rgba(0,0,0,0.75); backdrop-filter: blur(6px);
+            -webkit-backdrop-filter: blur(6px);
+            display: none; align-items: center; justify-content: center;
+            z-index: 2000; animation: fadeIn 0.3s;
+        }
+        .modal-overlay.active { display: flex; }
+        .modal-content {
+            background: var(--card-bg); border: 1px solid var(--border);
+            border-radius: 1.5rem; padding: 1.5rem; max-width: 550px;
+            width: 90%; max-height: 85vh; overflow-y: auto;
+            box-shadow: 0 20px 60px rgba(0,0,0,0.5);
+            animation: slideUp 0.3s cubic-bezier(0.4,0,0.2,1);
+        }
+        @keyframes slideUp { from { transform: translateY(30px); opacity: 0; } to { transform: translateY(0); opacity: 1; } }
+        .modal-header {
+            display: flex; justify-content: space-between; align-items: center;
+            margin-bottom: 1rem; padding-bottom: 1rem; border-bottom: 1px solid var(--border);
+        }
+        .modal-header h3 { font-size: 1.2rem; font-weight: 700; }
+        .modal-close {
+            cursor: pointer; font-size: 1.3rem; color: var(--text-secondary);
+            padding: 0.3rem; border-radius: 0.5rem; transition: 0.2s;
+        }
+        .modal-close:hover { color: var(--danger-text); background: var(--danger-bg); }
+        .modal-actions {
+            display: flex; gap: 1rem; justify-content: flex-end;
+            margin-top: 1.5rem; padding-top: 1rem; border-top: 1px solid var(--border);
+        }
+        .form-group { margin-bottom: 1rem; }
+        .form-group label { display: block; margin-bottom: 0.3rem; font-weight: 500; font-size: 0.85rem; color: var(--text-secondary); }
+        .form-control { width: 100%; padding: 0.65rem 0.9rem; border: 1px solid var(--border); border-radius: 0.8rem; background: var(--input-bg); color: var(--text-primary); font-size: 0.85rem; }
+        .badge { padding: 0.25rem 0.7rem; border-radius: 2rem; font-weight: 600; font-size: 0.7rem; }
+        .badge-info { background: var(--info-bg); color: var(--info-text); }
+        .badge-success { background: var(--success-bg); color: var(--success-text); }
+        .badge-warning { background: var(--warning-bg); color: var(--warning-text); }
+        .badge-danger { background: var(--danger-bg); color: var(--danger-text); }
     </style>
 </head>
 <body>
@@ -424,6 +464,12 @@
             <a href="teacher-dashboard.html" class="nav-btn"><i class="fas fa-arrow-left"></i> Dashboard</a>
             <select id="classSelector" class="nav-btn" style="width:auto; padding:0.5rem 1rem; background:var(--card-bg); color:var(--text-primary); border:1px solid var(--border); border-radius:2rem; font-size:0.85rem;"></select>
             <span class="points-badge" id="pointsDisplay">⭐ 0 pts</span>
+            <button class="nav-btn" onclick="openPermissionModal()">
+                <i class="fas fa-envelope-open-text"></i> Permission
+            </button>
+            <button class="nav-btn" onclick="openMyRequestsModal()">
+                <i class="fas fa-list-check"></i> My Requests
+            </button>
         </div>
         <div class="nav-right">
             <!-- Notification Bell -->
@@ -734,6 +780,73 @@
                     </div>
                     <p><strong>Contact:</strong> <span id="previewContact">—</span></p>
                     <p><strong>Published Resources:</strong> <span id="previewResourceCount">0</span></p>
+                </div>
+            </div>
+        </div>
+        
+        <!-- Permission Request Modal -->
+        <div class="modal-overlay" id="permissionModal">
+            <div class="modal-content" style="max-width:550px;">
+                <div class="modal-header">
+                    <h3><i class="fas fa-envelope-open-text"></i> Request Permission</h3>
+                    <i class="fas fa-times modal-close" onclick="closePermissionModal()"></i>
+                </div>
+                <div class="form-group">
+                    <label><i class="fas fa-tag"></i> Request Type *</label>
+                    <select id="permType" class="form-control" required>
+                        <option value="leave_request">🏠 Leave of Absence</option>
+                        <option value="event_request">🎉 School Event / Trip</option>
+                        <option value="resource_request">📦 Classroom Resource</option>
+                        <option value="schedule_change">📅 Schedule Change</option>
+                        <option value="other">📋 Other</option>
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label><i class="fas fa-calendar-alt"></i> Date(s) *</label>
+                    <input type="date" id="permStartDate" class="form-control" required>
+                    <small style="color:var(--text-muted);">For multiple days, mention in description</small>
+                </div>
+                <div class="form-group" id="permEndDateGroup">
+                    <label><i class="fas fa-calendar-check"></i> End Date (if applicable)</label>
+                    <input type="date" id="permEndDate" class="form-control">
+                </div>
+                <div class="form-group">
+                    <label><i class="fas fa-align-left"></i> Reason / Description *</label>
+                    <textarea id="permReason" class="form-control" rows="4" required 
+                              placeholder="Explain your request in detail..."></textarea>
+                </div>
+                <div class="form-group">
+                    <label><i class="fas fa-paperclip"></i> Supporting Document (optional)</label>
+                    <input type="text" id="permDocument" class="form-control" 
+                           placeholder="Link or reference (e.g., doctor's note, event letter)">
+                </div>
+                <div style="background:var(--info-bg);border-left:4px solid var(--accent);padding:0.8rem;border-radius:0.8rem;margin-bottom:1rem;font-size:0.8rem;color:var(--info-text);">
+                    <i class="fas fa-info-circle"></i> 
+                    <strong>Note:</strong> Your request will be sent to the admin for review. 
+                    You'll be notified when it's approved or rejected.
+                </div>
+                <div class="modal-actions">
+                    <button class="btn btn-outline" onclick="closePermissionModal()">
+                        <i class="fas fa-times"></i> Cancel
+                    </button>
+                    <button class="btn btn-primary" id="submitPermBtn">
+                        <i class="fas fa-paper-plane"></i> Submit Request
+                    </button>
+                </div>
+            </div>
+        </div>
+
+        <!-- My Requests Modal -->
+        <div class="modal-overlay" id="myRequestsModal">
+            <div class="modal-content" style="max-width:700px;max-height:80vh;overflow-y:auto;">
+                <div class="modal-header">
+                    <h3><i class="fas fa-list-check"></i> My Permission Requests</h3>
+                    <i class="fas fa-times modal-close" onclick="closeMyRequestsModal()"></i>
+                </div>
+                <div id="myRequestsList">
+                    <div style="text-align:center;padding:2rem;color:var(--text-muted);">
+                        <i class="fas fa-spinner fa-spin"></i> Loading requests...
+                    </div>
                 </div>
             </div>
         </div>
@@ -2674,6 +2787,201 @@ Include Nigerian names, locations, naira (₦), and references to Nigerian textb
         rejectedSubTab.addEventListener('click', () => { 
             renderRejectedTable(); 
         });
+
+        // ============ PERMISSION REQUESTS ============
+
+        // Open permission request modal
+        function openPermissionModal() {
+            document.getElementById('permType').value = 'leave_request';
+            document.getElementById('permStartDate').valueAsDate = new Date();
+            document.getElementById('permEndDate').value = '';
+            document.getElementById('permReason').value = '';
+            document.getElementById('permDocument').value = '';
+            document.getElementById('permissionModal').classList.add('active');
+        }
+        window.openPermissionModal = openPermissionModal;
+
+        // Close permission modal
+        function closePermissionModal() {
+            document.getElementById('permissionModal').classList.remove('active');
+        }
+        window.closePermissionModal = closePermissionModal;
+
+        // Close permission modal on overlay click
+        document.getElementById('permissionModal').addEventListener('click', function(e) {
+            if (e.target === this) closePermissionModal();
+        });
+
+        // Close on Escape
+        document.addEventListener('keydown', function(e) {
+            if (e.key === 'Escape') {
+                closePermissionModal();
+                closeMyRequestsModal();
+            }
+        });
+
+        // Submit permission request
+        document.getElementById('submitPermBtn').addEventListener('click', async () => {
+            const type = document.getElementById('permType').value;
+            const startDate = document.getElementById('permStartDate').value;
+            const endDate = document.getElementById('permEndDate').value;
+            const reason = document.getElementById('permReason').value.trim();
+            const document = document.getElementById('permDocument').value.trim();
+
+            if (!startDate) return showToast('Required', 'Select a date.', 'warning');
+            if (!reason) return showToast('Required', 'Provide a reason.', 'warning');
+
+            const typeLabels = {
+                leave_request: 'Leave of Absence',
+                event_request: 'School Event/Trip',
+                resource_request: 'Classroom Resource',
+                schedule_change: 'Schedule Change',
+                other: 'Other Request'
+            };
+
+            if (!confirm(`Submit "${typeLabels[type]}" request for ${startDate}?`)) return;
+
+            const btn = document.getElementById('submitPermBtn');
+            btn.disabled = true;
+            btn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Submitting...';
+            showLoading();
+
+            try {
+                await db.collection('pendingActions').add({
+                    teacherId: currentUser.uid,
+                    teacherName: `${userData?.firstName || ''} ${userData?.surname || ''}`.trim(),
+                    studentId: null, // This is a teacher request, not student
+                    studentName: null,
+                    actionType: type,
+                    classId: currentClass || '',
+                    details: {
+                        startDate: startDate,
+                        endDate: endDate || null,
+                        reason: reason,
+                        document: document || null
+                    },
+                    status: 'pending',
+                    requestedAt: firebase.firestore.FieldValue.serverTimestamp()
+                });
+
+                await logAudit('PERMISSION_REQUESTED', `${typeLabels[type]}: ${reason.substring(0, 50)}`);
+                await addPoints(1, 'Permission request submitted');
+                
+                closePermissionModal();
+                showToast('Submitted!', 'Your request has been sent for review.', 'success');
+            } catch (e) {
+                showToast('Error', e.message, 'error');
+            } finally {
+                btn.disabled = false;
+                btn.innerHTML = '<i class="fas fa-paper-plane"></i> Submit Request';
+                hideLoading();
+            }
+        });
+
+        // ============ MY REQUESTS MODAL ============
+
+        function openMyRequestsModal() {
+            document.getElementById('myRequestsModal').classList.add('active');
+            loadMyRequests();
+        }
+        window.openMyRequestsModal = openMyRequestsModal;
+
+        function closeMyRequestsModal() {
+            document.getElementById('myRequestsModal').classList.remove('active');
+        }
+        window.closeMyRequestsModal = closeMyRequestsModal;
+
+        document.getElementById('myRequestsModal').addEventListener('click', function(e) {
+            if (e.target === this) closeMyRequestsModal();
+        });
+
+        async function loadMyRequests() {
+            if (!currentUser) return;
+            
+            const container = document.getElementById('myRequestsList');
+            container.innerHTML = '<div style="text-align:center;padding:2rem;"><i class="fas fa-spinner fa-spin"></i> Loading...</div>';
+
+            try {
+                const snap = await db.collection('pendingActions')
+                    .where('teacherId', '==', currentUser.uid)
+                    .orderBy('requestedAt', 'desc')
+                    .get();
+
+                if (snap.empty) {
+                    container.innerHTML = `
+                        <div style="text-align:center;padding:2rem;color:var(--text-muted);">
+                            <i class="fas fa-inbox" style="font-size:2rem;display:block;margin-bottom:0.5rem;opacity:0.3;"></i>
+                            <p>No permission requests submitted yet.</p>
+                        </div>`;
+                    return;
+                }
+
+                const typeLabels = {
+                    leave_request: '🏠 Leave',
+                    event_request: '🎉 Event',
+                    resource_request: '📦 Resource',
+                    schedule_change: '📅 Schedule',
+                    other: '📋 Other',
+                    absence_request: '📝 Absence (Student)',
+                    absence_explanation: '📝 Absence Explanation (Student)',
+                    assign_prefect: '👑 Prefect Assignment',
+                    suspend: '⏸️ Suspend Student',
+                    activate: '▶️ Activate Student',
+                    delete: '🗑️ Delete Student'
+                };
+
+                container.innerHTML = snap.docs.map(doc => {
+                    const req = doc.data();
+                    const statusClass = req.status === 'approved' ? 'badge-success' : 
+                                       req.status === 'rejected' ? 'badge-danger' : 'badge-warning';
+                    const statusIcon = req.status === 'approved' ? 'fa-check-circle' : 
+                                      req.status === 'rejected' ? 'fa-times-circle' : 'fa-clock';
+                    const dateStr = req.requestedAt?.toDate ? 
+                        req.requestedAt.toDate().toLocaleDateString('en-GB', { 
+                            day: 'numeric', month: 'short', year: 'numeric' 
+                        }) : 'Unknown';
+                    const typeLabel = typeLabels[req.actionType] || req.actionType;
+
+                    return `
+                        <div class="card" style="padding:1rem;margin-bottom:0.75rem;">
+                            <div style="display:flex;justify-content:space-between;align-items:flex-start;gap:1rem;flex-wrap:wrap;">
+                                <div style="flex:1;min-width:200px;">
+                                    <div style="display:flex;gap:0.5rem;align-items:center;flex-wrap:wrap;margin-bottom:0.3rem;">
+                                        <span class="badge badge-info">${typeLabel}</span>
+                                        <span class="badge ${statusClass}">
+                                            <i class="fas ${statusIcon}"></i> ${req.status?.toUpperCase() || 'PENDING'}
+                                        </span>
+                                    </div>
+                                    ${req.details?.startDate ? `
+                                        <p style="font-size:0.85rem;margin:0.3rem 0;">
+                                            <strong>Date:</strong> ${escapeHtml(req.details.startDate)}
+                                            ${req.details.endDate ? ` → ${escapeHtml(req.details.endDate)}` : ''}
+                                        </p>
+                                    ` : ''}
+                                    ${req.studentName ? `
+                                        <p style="font-size:0.85rem;margin:0.3rem 0;">
+                                            <strong>Student:</strong> ${escapeHtml(req.studentName)}
+                                        </p>
+                                    ` : ''}
+                                    <p style="font-size:0.85rem;color:var(--text-secondary);margin:0.3rem 0;">
+                                        <strong>Reason:</strong> ${escapeHtml((req.details?.reason || 'No reason').substring(0, 100))}
+                                    </p>
+                                    ${req.adminNote ? `
+                                        <p style="font-size:0.8rem;color:var(--accent);margin-top:0.3rem;">
+                                            <strong>Response:</strong> ${escapeHtml(req.adminNote)}
+                                        </p>
+                                    ` : ''}
+                                </div>
+                                <small style="color:var(--text-muted);">${dateStr}</small>
+                            </div>
+                        </div>
+                    `;
+                }).join('');
+            } catch (e) {
+                container.innerHTML = '<p style="color:var(--danger-text);">Error loading requests.</p>';
+                console.error(e);
+            }
+        }
 
         // Initial data load
         if (currentClass) {
