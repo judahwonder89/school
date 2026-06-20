@@ -2,521 +2,525 @@
 <html lang="en" data-theme="dark">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=yes">
-    <title>Judah Wonders Model School · Approvals</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=yes, viewport-fit=cover">
+    <title>Judah Wonders Model School · Admin Approvals Hub</title>
+    
+    <!-- Fonts & Icons -->
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
-    <link href="https://fonts.googleapis.com/css2?family=Inter:opsz,wght@14..32,400;500;600;700&family=Playfair+Display:wght@600;700&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:opsz,wght@14..32,400;500;600;700;800&family=Playfair+Display:wght@600;700&family=Space+Grotesk:wght@400;500;600;700&display=swap" rel="stylesheet">
+    
+    <!-- Firebase -->
     <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-app-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-auth-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-firestore-compat.js"></script>
+    
+    <!-- Chart.js -->
+    <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
+
     <style>
-        * { margin: 0; padding: 0; box-sizing: border-box; }
-
+        * { margin:0; padding:0; box-sizing:border-box; }
+        
         :root[data-theme="light"] {
-            --bg-primary: #f0f5fa;
-            --bg-sidebar: rgba(255,255,255,0.75);
-            --text-primary: #0b1e33;
-            --text-secondary: #2c3e50;
-            --accent: #0A2540;
-            --accent-glow: #C8963E;
-            --border: rgba(0,0,0,0.08);
-            --card-bg: rgba(255,255,255,0.7);
-            --hover-bg: rgba(255,255,255,0.9);
-            --shadow: 0 8px 20px -5px rgba(0,0,0,0.08);
-            --stat-icon: #0A2540;
-            --success-bg: rgba(34,197,94,0.15);
-            --success-text: #16a34a;
-            --warning-bg: rgba(245,158,11,0.15);
-            --warning-text: #b45309;
-            --danger-bg: rgba(239,68,68,0.15);
-            --danger-text: #b91c1c;
+            --bg-primary:#f0f5fa; --bg-surface:rgba(255,255,255,0.85); --text-primary:#0b1e33;
+            --text-secondary:#2c3e50; --text-muted:#64748b; --accent:#0A2540; --accent-glow:#C8963E;
+            --accent-light:rgba(10,37,64,0.08); --border:rgba(0,0,0,0.08); --border-light:rgba(0,0,0,0.04);
+            --card-bg:rgba(255,255,255,0.75); --hover-bg:rgba(255,255,255,0.95);
+            --shadow:0 4px 20px -5px rgba(0,0,0,0.08); --shadow-lg:0 8px 30px -5px rgba(0,0,0,0.12);
+            --success-bg:rgba(34,197,94,0.12); --success-text:#16a34a; --success-border:rgba(34,197,94,0.3);
+            --warning-bg:rgba(245,158,11,0.12); --warning-text:#b45309; --warning-border:rgba(245,158,11,0.3);
+            --danger-bg:rgba(239,68,68,0.12); --danger-text:#b91c1c; --danger-border:rgba(239,68,68,0.3);
+            --info-bg:rgba(10,37,64,0.08); --info-text:#0A2540; --info-border:rgba(10,37,64,0.2);
+            --gradient-start:#0A2540; --gradient-end:#C8963E; --input-bg:#fff; --toolbar-bg:#f8fafc;
+            --test-bg:rgba(59,130,246,0.12); --test-text:#2563eb;
+            --assignment-bg:rgba(34,197,94,0.12); --assignment-text:#16a34a;
+            --exam-bg:rgba(239,68,68,0.12); --exam-text:#dc2626;
         }
-
         :root[data-theme="dark"] {
-            --bg-primary: #0a0f1e;
-            --bg-sidebar: rgba(15, 23, 42, 0.8);
-            --text-primary: #f0f4fa;
-            --text-secondary: #a0b3d9;
-            --accent: #C8963E;
-            --accent-glow: #D4AF37;
-            --border: rgba(255,255,255,0.06);
-            --card-bg: rgba(15, 23, 42, 0.6);
-            --hover-bg: rgba(30, 41, 59, 0.8);
-            --shadow: 0 8px 20px -5px rgba(0,0,0,0.4);
-            --stat-icon: #C8963E;
-            --success-bg: rgba(34,197,94,0.15);
-            --success-text: #4ade80;
-            --warning-bg: rgba(245,158,11,0.15);
-            --warning-text: #fbbf24;
-            --danger-bg: rgba(239,68,68,0.15);
-            --danger-text: #f87171;
+            --bg-primary:#0a0f1e; --bg-surface:rgba(15,23,42,0.85); --text-primary:#f0f4fa;
+            --text-secondary:#a0b3d9; --text-muted:#64748b; --accent:#C8963E; --accent-glow:#D4AF37;
+            --accent-light:rgba(200,150,62,0.12); --border:rgba(255,255,255,0.06);
+            --border-light:rgba(255,255,255,0.03); --card-bg:rgba(15,23,42,0.75);
+            --hover-bg:rgba(30,41,59,0.8); --shadow:0 4px 20px -5px rgba(0,0,0,0.3);
+            --shadow-lg:0 8px 30px -5px rgba(0,0,0,0.4);
+            --success-bg:rgba(34,197,94,0.15); --success-text:#4ade80; --success-border:rgba(34,197,94,0.3);
+            --warning-bg:rgba(245,158,11,0.15); --warning-text:#fbbf24; --warning-border:rgba(245,158,11,0.3);
+            --danger-bg:rgba(239,68,68,0.15); --danger-text:#f87171; --danger-border:rgba(239,68,68,0.3);
+            --info-bg:rgba(200,150,62,0.12); --info-text:#D4AF37; --info-border:rgba(200,150,62,0.25);
+            --gradient-start:#0A2540; --gradient-end:#C8963E; --input-bg:rgba(30,41,59,0.9); --toolbar-bg:#1e293b;
+            --test-bg:rgba(59,130,246,0.15); --test-text:#60a5fa;
+            --assignment-bg:rgba(34,197,94,0.15); --assignment-text:#4ade80;
+            --exam-bg:rgba(239,68,68,0.15); --exam-text:#f87171;
         }
-
-        body {
-            font-family: 'Inter', sans-serif;
-            background: var(--bg-primary);
-            color: var(--text-primary);
-            min-height: 100vh;
-            display: flex;
-            transition: background 0.3s;
-            position: relative;
-            overflow-x: hidden;
-        }
-
-        /* Breathing background logo */
-        .bg-logo {
-            position: fixed;
-            top: 50%;
-            left: 50%;
-            transform: translate(-50%, -50%);
-            width: 400px;
-            max-width: 70vw;
-            opacity: 0.03;
-            z-index: 0;
-            pointer-events: none;
-            animation: breathe 6s ease-in-out infinite;
-        }
-        @keyframes breathe {
-            0%, 100% { transform: translate(-50%, -50%) scale(1); opacity: 0.03; }
-            50% { transform: translate(-50%, -50%) scale(1.06); opacity: 0.06; }
-        }
-
-        .orb {
-            position: fixed;
-            width: 250px;
-            height: 250px;
-            border-radius: 50%;
-            filter: blur(80px);
-            z-index: 0;
-            animation: float 25s infinite alternate ease-in-out;
-            pointer-events: none;
-        }
-        .orb-1 { top: -100px; left: -100px; background: radial-gradient(circle at 30% 30%, rgba(10,37,64,0.12), transparent 70%); }
-        .orb-2 { bottom: -150px; right: -50px; width: 350px; height: 350px; background: radial-gradient(circle at 70% 70%, rgba(200,150,62,0.12), transparent); animation-duration: 30s; }
-
-        @keyframes float {
-            0% { transform: translate(0,0) scale(1); }
-            100% { transform: translate(40px, 30px) scale(1.15); }
-        }
+        body { font-family:'Inter',sans-serif; background:var(--bg-primary); color:var(--text-primary); min-height:100vh; display:flex; position:relative; overflow-x:hidden; transition:background 0.3s; }
+        .bg-logo { position:fixed; top:50%; left:50%; transform:translate(-50%,-50%); width:400px; max-width:70vw; opacity:0.03; pointer-events:none; z-index:0; animation:breathe 6s ease-in-out infinite; }
+        @keyframes breathe { 0%,100%{transform:translate(-50%,-50%)scale(1);opacity:.03} 50%{transform:translate(-50%,-50%)scale(1.06);opacity:.06} }
+        .orb { position:fixed; border-radius:50%; filter:blur(80px); pointer-events:none; z-index:0; animation:float 25s infinite alternate; }
+        .orb-1 { width:300px; height:300px; top:-100px; left:-100px; background:radial-gradient(circle at 30% 30%,rgba(10,37,64,.12),transparent 70%); }
+        .orb-2 { width:400px; height:400px; bottom:-150px; right:-50px; background:radial-gradient(circle at 70% 70%,rgba(200,150,62,.10),transparent); animation-duration:30s; }
+        @keyframes float { 0%{transform:translate(0,0)scale(1)} 100%{transform:translate(40px,30px)scale(1.15)} }
 
         /* Sidebar */
-        .sidebar {
-            width: 260px;
-            background: var(--bg-sidebar);
-            backdrop-filter: blur(16px);
-            -webkit-backdrop-filter: blur(16px);
-            border-right: 1px solid var(--border);
-            padding: 1.5rem 0.8rem;
-            display: flex;
-            flex-direction: column;
-            transition: width 0.3s cubic-bezier(0.4,0,0.2,1);
-            position: fixed;
-            top: 0;
-            left: 0;
-            height: 100vh;
-            overflow-y: auto;
-            z-index: 100;
-            box-shadow: var(--shadow);
-        }
-        .sidebar.collapsed { width: 85px; }
-
-        .sidebar .logo-area {
-            display: flex;
-            align-items: center;
-            gap: 0.8rem;
-            margin-bottom: 1.8rem;
-            padding: 0 0.3rem;
-            text-decoration: none;
-        }
-        .sidebar .logo-area img {
-            width: 38px;
-            height: 38px;
-            object-fit: contain;
-            animation: logoPulse 3s ease-in-out infinite;
-        }
-        @keyframes logoPulse {
-            0%, 100% { transform: scale(1); }
-            50% { transform: scale(1.05); }
-        }
-        .sidebar .logo-area h2 {
-            font-family: 'Playfair Display', serif;
-            font-size: 1.1rem;
-            font-weight: 700;
-            white-space: nowrap;
-            color: var(--accent);
-            line-height: 1.2;
-        }
-        .sidebar .logo-area h2 span {
-            display: block;
-            font-size: 0.6rem;
-            letter-spacing: 1.5px;
-            color: var(--accent-glow);
-        }
-        .sidebar.collapsed .logo-area h2 { display: none; }
-
-        /* Nav items with label always visible? No, we keep collapsed behavior but labels are present when expanded */
-        .sidebar .nav-item {
-            display: flex;
-            align-items: center;
-            gap: 0.9rem;
-            padding: 0.7rem 1rem;
-            border-radius: 1rem;
-            color: var(--text-secondary);
-            transition: all 0.2s;
-            cursor: pointer;
-            margin-bottom: 0.25rem;
-            text-decoration: none;
-            font-weight: 500;
-            white-space: nowrap;
-            border: 1px solid transparent;
-            font-size: 0.9rem;
-        }
-        .sidebar .nav-item:hover {
-            background: var(--hover-bg);
-            color: var(--accent);
-            border-color: var(--border);
-            transform: translateX(3px);
-        }
-        .sidebar .nav-item.active {
-            background: linear-gradient(135deg, var(--accent), var(--accent-glow));
-            color: white;
-            box-shadow: 0 6px 15px -5px var(--accent);
-        }
-        .sidebar .nav-item i { font-size: 1.2rem; width: 1.6rem; text-align: center; }
-        .sidebar.collapsed .nav-item span { display: none; }
-        .sidebar.collapsed .nav-item { justify-content: center; padding: 0.7rem; }
-
-        .sidebar .toggle-btn {
-            margin-top: auto;
-            display: flex;
-            justify-content: flex-end;
-            padding: 0.8rem 0.5rem;
-            cursor: pointer;
-            color: var(--text-secondary);
-            font-size: 1.1rem;
-        }
-        .sidebar .toggle-btn:hover { color: var(--accent); }
+        .sidebar { width:260px; background:var(--bg-surface); backdrop-filter:blur(20px); -webkit-backdrop-filter:blur(20px); border-right:1px solid var(--border); padding:1.5rem 0.8rem; display:flex; flex-direction:column; transition:all 0.3s cubic-bezier(0.4,0,0.2,1); position:fixed; top:0; left:0; height:100vh; overflow-y:auto; z-index:100; box-shadow:var(--shadow-lg); }
+        .sidebar.collapsed { width:85px; }
+        .sidebar .logo-area { display:flex; align-items:center; gap:0.8rem; margin-bottom:1.8rem; padding:0 0.3rem; text-decoration:none; }
+        .sidebar .logo-area img { width:38px; height:38px; object-fit:contain; animation:logoPulse 3s ease-in-out infinite; flex-shrink:0; }
+        @keyframes logoPulse { 0%,100%{transform:scale(1)} 50%{transform:scale(1.05)} }
+        .sidebar .logo-area h2 { font-family:'Playfair Display',serif; font-size:1.1rem; font-weight:700; white-space:nowrap; color:var(--accent); line-height:1.2; }
+        .sidebar .logo-area h2 span { display:block; font-size:0.6rem; letter-spacing:1.5px; color:var(--accent-glow); }
+        .sidebar.collapsed .logo-area h2 { display:none; }
+        .sidebar .nav-item { display:flex; align-items:center; gap:0.9rem; padding:0.75rem 1rem; border-radius:1rem; color:var(--text-secondary); transition:all 0.2s; cursor:pointer; margin-bottom:0.25rem; text-decoration:none; font-weight:500; white-space:nowrap; border:1px solid transparent; font-size:0.9rem; position:relative; }
+        .sidebar .nav-item:hover { background:var(--hover-bg); color:var(--accent); border-color:var(--border); transform:translateX(3px); }
+        .sidebar .nav-item.active { background:linear-gradient(135deg,var(--gradient-start),var(--gradient-end)); color:white; box-shadow:0 6px 15px -5px rgba(200,150,62,.4); font-weight:600; }
+        .sidebar .nav-item i { font-size:1.2rem; width:1.6rem; text-align:center; flex-shrink:0; }
+        .sidebar.collapsed .nav-item span { display:none; }
+        .sidebar.collapsed .nav-item { justify-content:center; padding:0.75rem; }
+        .badge-notify { position:absolute; top:4px; right:8px; background:var(--danger-text); color:white; border-radius:1rem; font-size:0.6rem; padding:0.12rem 0.4rem; font-weight:700; min-width:18px; text-align:center; }
+        .sidebar .toggle-btn { margin-top:auto; display:flex; justify-content:flex-end; padding:0.8rem 0.5rem; cursor:pointer; color:var(--text-secondary); font-size:1.1rem; transition:all 0.2s; }
+        .sidebar .toggle-btn:hover { color:var(--accent); }
 
         /* Main Content */
-        .main-content {
-            flex: 1;
-            margin-left: 260px;
-            padding: 1.5rem;
-            transition: margin-left 0.3s cubic-bezier(0.4,0,0.2,1);
-            position: relative;
-            z-index: 5;
-            max-width: calc(100vw - 260px);
-        }
-        .main-content.expanded { margin-left: 85px; max-width: calc(100vw - 85px); }
+        .main-content { flex:1; margin-left:260px; padding:1.5rem; transition:margin-left 0.3s cubic-bezier(0.4,0,0.2,1); max-width:calc(100vw - 260px); position:relative; z-index:5; }
+        .main-content.expanded { margin-left:85px; max-width:calc(100vw - 85px); }
 
-        .top-bar {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            margin-bottom: 1.5rem;
-            flex-wrap: wrap;
-            gap: 1rem;
-        }
-        .page-title h1 {
-            font-family: 'Playfair Display', serif;
-            font-size: 1.8rem;
-            font-weight: 700;
-            color: var(--accent);
-            margin-bottom: 0.1rem;
-        }
-        .page-title p { color: var(--text-secondary); font-weight: 400; font-size: 0.85rem; }
-
-        .profile-area { display: flex; align-items: center; gap: 1rem; }
-        .theme-toggle {
-            background: var(--card-bg);
-            backdrop-filter: blur(8px);
-            border: 1px solid var(--border);
-            border-radius: 2rem;
-            padding: 0.4rem 1rem;
-            display: flex;
-            align-items: center;
-            gap: 0.4rem;
-            cursor: pointer;
-            color: var(--text-secondary);
-            font-weight: 500;
-            font-size: 0.8rem;
-            transition: 0.2s;
-        }
-        .theme-toggle:hover { background: var(--hover-bg); color: var(--accent); }
-        .profile-dropdown { position: relative; cursor: pointer; }
-        .profile-trigger {
-            display: flex;
-            align-items: center;
-            gap: 0.6rem;
-            background: var(--card-bg);
-            backdrop-filter: blur(8px);
-            border: 1px solid var(--border);
-            border-radius: 2rem;
-            padding: 0.25rem 0.25rem 0.25rem 0.8rem;
-        }
-        .profile-name { font-weight: 600; color: var(--text-primary); font-size: 0.85rem; }
-        .profile-pic {
-            width: 36px;
-            height: 36px;
-            border-radius: 50%;
-            background: linear-gradient(135deg, var(--accent), var(--accent-glow));
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            color: white;
-            font-weight: 600;
-            font-size: 0.9rem;
-            box-shadow: 0 4px 10px var(--accent);
-            overflow: hidden;
-        }
-        .profile-pic img {
-            width: 100%;
-            height: 100%;
-            object-fit: cover;
-            border-radius: 50%;
-        }
-        .dropdown-menu {
-            position: absolute;
-            right: 0;
-            top: 50px;
-            background: var(--bg-sidebar);
-            backdrop-filter: blur(16px);
-            border: 1px solid var(--border);
-            border-radius: 1rem;
-            padding: 0.4rem;
-            min-width: 160px;
-            display: none;
-            z-index: 1000;
-            box-shadow: var(--shadow);
-        }
-        .profile-dropdown:hover .dropdown-menu { display: block; animation: fadeIn 0.2s; }
-        @keyframes fadeIn {
-            from { opacity: 0; transform: translateY(-10px); }
-            to { opacity: 1; transform: translateY(0); }
-        }
-        .dropdown-item {
-            padding: 0.6rem 1rem;
-            color: var(--text-primary);
-            border-radius: 0.8rem;
-            display: flex;
-            align-items: center;
-            gap: 0.6rem;
-            font-size: 0.85rem;
-            transition: 0.2s;
-        }
-        .dropdown-item:hover { background: var(--hover-bg); color: var(--accent); }
-
-        /* Stats row */
-        .stats-row {
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(130px, 1fr));
-            gap: 0.8rem;
-            margin-bottom: 1.5rem;
-        }
-        .stat-card {
-            background: var(--card-bg);
-            backdrop-filter: blur(6px);
-            border: 1px solid var(--border);
-            border-radius: 1.2rem;
-            padding: 0.9rem;
-            text-align: center;
-            box-shadow: var(--shadow);
-            transition: transform 0.2s, box-shadow 0.2s;
-        }
-        .stat-card:hover { transform: translateY(-3px); box-shadow: 0 10px 25px -8px var(--accent); }
-        .stat-card .stat-icon { font-size: 1.5rem; color: var(--stat-icon); margin-bottom: 0.3rem; }
-        .stat-card .stat-value { font-size: 1.5rem; font-weight: 700; color: var(--accent); }
-        .stat-card .stat-label { color: var(--text-secondary); font-size: 0.7rem; font-weight: 500; }
+        .top-bar { display:flex; justify-content:space-between; align-items:center; margin-bottom:1.5rem; flex-wrap:wrap; gap:1rem; }
+        .page-title h1 { font-family:'Playfair Display',serif; font-size:1.8rem; font-weight:700; color:var(--accent); margin-bottom:0.1rem; }
+        .page-title p { color:var(--text-secondary); font-size:0.85rem; }
+        .profile-area { display:flex; align-items:center; gap:1rem; }
+        .theme-toggle { background:var(--card-bg); backdrop-filter:blur(10px); -webkit-backdrop-filter:blur(10px); border:1px solid var(--border); border-radius:2rem; padding:0.4rem 1rem; display:flex; align-items:center; gap:0.4rem; cursor:pointer; color:var(--text-secondary); font-size:0.8rem; transition:all 0.2s; }
+        .theme-toggle:hover { border-color:var(--accent); color:var(--accent); }
+        .profile-pic { width:38px; height:38px; border-radius:50%; background:linear-gradient(135deg,var(--gradient-start),var(--gradient-end)); display:flex; align-items:center; justify-content:center; color:white; font-weight:600; font-size:0.9rem; box-shadow:0 4px 12px rgba(200,150,62,.3); overflow:hidden; }
+        .profile-pic img { width:100%; height:100%; object-fit:cover; border-radius:50%; }
+        .dropdown-menu { position:absolute; right:0; top:50px; background:var(--card-bg); border:1px solid var(--border); border-radius:1rem; padding:0.4rem; min-width:160px; display:none; z-index:1000; box-shadow:var(--shadow-lg); }
+        .profile-dropdown { position:relative; cursor:pointer; }
+        .profile-dropdown:hover .dropdown-menu { display:block; animation:fadeIn 0.2s; }
+        @keyframes fadeIn { from{opacity:0;transform:translateY(-10px)} to{opacity:1;transform:translateY(0)} }
+        .dropdown-item { padding:0.6rem 1rem; color:var(--text-primary); border-radius:0.8rem; display:flex; align-items:center; gap:0.6rem; font-size:0.85rem; cursor:pointer; transition:all 0.2s; }
+        .dropdown-item:hover { background:var(--hover-bg); color:var(--accent); }
 
         /* Tabs */
-        .tabs {
-            display: flex;
-            gap: 0.4rem;
-            margin-bottom: 1.2rem;
-            background: var(--card-bg);
-            backdrop-filter: blur(6px);
-            border: 1px solid var(--border);
-            border-radius: 2rem;
-            padding: 0.2rem;
-            width: fit-content;
-            flex-wrap: wrap;
-        }
-        .tab {
-            padding: 0.5rem 1.2rem;
-            border-radius: 2rem;
-            font-weight: 500;
-            cursor: pointer;
-            transition: 0.2s;
-            color: var(--text-secondary);
-            font-size: 0.8rem;
-            white-space: nowrap;
-        }
-        .tab.active { background: var(--accent); color: white; }
+        .tab-nav { display:flex; gap:0.4rem; margin-bottom:1.5rem; background:var(--card-bg); backdrop-filter:blur(12px); -webkit-backdrop-filter:blur(12px); border:1px solid var(--border); border-radius:1.5rem; padding:0.4rem; overflow-x:auto; box-shadow:var(--shadow); }
+        .tab-btn { padding:0.7rem 1.4rem; border-radius:1.25rem; border:none; background:transparent; color:var(--text-secondary); cursor:pointer; font-weight:600; font-size:0.85rem; white-space:nowrap; display:flex; align-items:center; gap:0.4rem; font-family:inherit; transition:all 0.3s; }
+        .tab-btn:hover { background:var(--hover-bg); color:var(--accent); }
+        .tab-btn.active { background:linear-gradient(135deg,var(--gradient-start),var(--gradient-end)); color:white; box-shadow:0 4px 12px rgba(200,150,62,.3); }
+        .tab-content { display:none; animation:fadeSlideIn 0.4s ease; }
+        .tab-content.active { display:block; }
+        @keyframes fadeSlideIn { from{opacity:0;transform:translateY(10px)} to{opacity:1;transform:translateY(0)} }
 
-        /* User grid */
-        .user-grid {
-            display: grid;
-            grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
-            gap: 1rem;
-        }
-        .user-card {
-            background: var(--card-bg);
-            backdrop-filter: blur(6px);
-            border: 1px solid var(--border);
-            border-radius: 1.2rem;
-            padding: 1rem;
-            box-shadow: var(--shadow);
-            transition: transform 0.2s, box-shadow 0.2s;
-        }
-        .user-card:hover { transform: translateY(-3px); box-shadow: 0 12px 25px -8px var(--accent); }
-        .user-card-header { display: flex; align-items: center; gap: 0.8rem; margin-bottom: 0.8rem; }
-        .user-avatar {
-            width: 44px;
-            height: 44px;
-            border-radius: 50%;
-            background: linear-gradient(135deg, var(--accent), var(--accent-glow));
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            color: white;
-            font-weight: 600;
-            font-size: 1rem;
-            overflow: hidden;
-            flex-shrink: 0;
-            box-shadow: 0 4px 8px rgba(0,0,0,0.2);
-        }
-        .user-avatar img {
-            width: 100%;
-            height: 100%;
-            object-fit: cover;
-            border-radius: 50%;
-        }
-        .user-info h3 { font-size: 1rem; font-weight: 600; }
-        .user-info p { color: var(--text-secondary); font-size: 0.8rem; }
-        .user-detail { display: flex; align-items: center; gap: 0.4rem; margin: 0.4rem 0; color: var(--text-secondary); font-size: 0.8rem; }
-        .user-detail i { width: 1rem; color: var(--accent); font-size: 0.8rem; }
-        .user-actions { display: flex; gap: 0.5rem; margin-top: 0.8rem; justify-content: flex-end; flex-wrap: wrap; }
-        .btn { padding: 0.35rem 0.9rem; border: none; border-radius: 1.5rem; font-weight: 500; cursor: pointer; transition: 0.2s; font-size: 0.75rem; display: inline-flex; align-items: center; gap: 0.3rem; }
-        .btn-approve { background: var(--success-text); color: white; }
-        .btn-approve:hover { filter: brightness(1.1); transform: scale(1.02); }
-        .btn-reject { background: var(--danger-text); color: white; }
-        .btn-reject:hover { filter: brightness(1.1); transform: scale(1.02); }
-        .btn-outline { background: transparent; border: 1px solid var(--border); color: var(--text-primary); }
-        .btn-outline:hover { background: var(--hover-bg); border-color: var(--accent); }
+        /* Sub Tabs */
+        .sub-tabs { display:flex; gap:0.3rem; margin-bottom:1rem; flex-wrap:wrap; }
+        .sub-tab-btn { padding:0.5rem 1.2rem; border-radius:2rem; font-weight:600; font-size:0.8rem; cursor:pointer; background:var(--card-bg); color:var(--text-secondary); border:1px solid var(--border); white-space:nowrap; transition:0.2s; font-family:inherit; }
+        .sub-tab-btn.active { background:var(--accent); color:white; border-color:var(--accent); }
+        .sub-tab-btn:hover:not(.active) { background:var(--hover-bg); color:var(--accent); }
 
-        .empty-state { text-align: center; padding: 2rem; color: var(--text-secondary); grid-column: 1 / -1; }
-        .empty-state i { font-size: 2.5rem; margin-bottom: 0.8rem; color: var(--accent); }
+        /* Stats */
+        .stats-row { display:grid; grid-template-columns:repeat(auto-fit,minmax(140px,1fr)); gap:0.8rem; margin-bottom:1.5rem; }
+        .stat-card { background:var(--card-bg); backdrop-filter:blur(12px); -webkit-backdrop-filter:blur(12px); border:1px solid var(--border); border-radius:1.2rem; padding:1rem; text-align:center; transition:all 0.3s; position:relative; overflow:hidden; }
+        .stat-card::before { content:''; position:absolute; top:0; left:0; right:0; height:3px; background:linear-gradient(90deg,var(--gradient-start),var(--gradient-end)); }
+        .stat-card:hover { transform:translateY(-2px); box-shadow:var(--shadow-lg); }
+        .stat-card .stat-icon { font-size:1.4rem; color:var(--accent); margin-bottom:0.3rem; }
+        .stat-card .val { font-size:1.7rem; font-weight:800; font-family:'Space Grotesk',monospace; color:var(--accent); }
+        .stat-card .lbl { font-size:0.7rem; color:var(--text-muted); text-transform:uppercase; letter-spacing:0.5px; margin-top:0.2rem; }
 
-        /* Modal */
-        .modal { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.5); backdrop-filter: blur(5px); align-items: center; justify-content: center; z-index: 2000; }
-        .modal.active { display: flex; }
-        .modal-content {
-            background: var(--card-bg); backdrop-filter: blur(16px); border: 1px solid var(--border);
-            border-radius: 1.5rem; padding: 1.5rem; max-width: 450px; width: 90%; max-height: 80vh; overflow-y: auto;
-            box-shadow: var(--shadow);
-        }
-        .modal-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 1rem; }
-        .modal-header h3 { font-size: 1.3rem; font-family: 'Playfair Display', serif; }
-        .modal-header i { cursor: pointer; color: var(--text-secondary); font-size: 1.1rem; }
-        .modal-header i:hover { color: var(--accent); }
-        .detail-row { display: flex; margin-bottom: 0.6rem; border-bottom: 1px dashed var(--border); padding-bottom: 0.4rem; }
-        .detail-label { width: 110px; color: var(--text-secondary); font-weight: 500; font-size: 0.85rem; }
-        .detail-value { flex: 1; font-weight: 400; font-size: 0.85rem; }
-        .modal-actions { display: flex; gap: 0.8rem; margin-top: 1.2rem; justify-content: flex-end; }
+        /* Cards */
+        .card { background:var(--card-bg); backdrop-filter:blur(12px); -webkit-backdrop-filter:blur(12px); border:1px solid var(--border); border-radius:1.5rem; padding:1.5rem; box-shadow:var(--shadow); margin-bottom:1.5rem; }
+        .card-header { display:flex; justify-content:space-between; align-items:center; margin-bottom:1rem; flex-wrap:wrap; gap:0.5rem; padding-bottom:1rem; border-bottom:1px solid var(--border); }
+        .card-header h3 { font-size:1.15rem; font-weight:700; display:flex; align-items:center; gap:0.5rem; color:var(--text-primary); }
 
-        @media (max-width: 768px) {
-            .sidebar { width: 85px; }
-            .sidebar .logo-area h2, .sidebar .nav-item span { display: none; }
-            .main-content { margin-left: 85px; max-width: calc(100vw - 85px); padding: 1rem; }
-            .top-bar { flex-direction: column; align-items: flex-start; }
-            .user-grid { grid-template-columns: 1fr; }
-            .stats-row { grid-template-columns: repeat(2, 1fr); }
+        /* Tables */
+        .table-responsive { overflow-x:auto; border-radius:0.8rem; }
+        table { width:100%; border-collapse:collapse; }
+        th,td { padding:0.6rem 0.7rem; border-bottom:1px solid var(--border); font-size:0.82rem; text-align:left; }
+        th { background:var(--hover-bg); font-weight:700; color:var(--text-muted); text-transform:uppercase; font-size:0.7rem; letter-spacing:0.5px; white-space:nowrap; }
+        tr:hover td { background:var(--hover-bg); }
+
+        /* Badges */
+        .badge { padding:0.2rem 0.7rem; border-radius:2rem; font-size:0.7rem; font-weight:700; display:inline-flex; align-items:center; gap:0.3rem; text-transform:uppercase; letter-spacing:0.3px; }
+        .badge-success { background:var(--success-bg); color:var(--success-text); border:1px solid var(--success-border); }
+        .badge-warning { background:var(--warning-bg); color:var(--warning-text); border:1px solid var(--warning-border); }
+        .badge-danger { background:var(--danger-bg); color:var(--danger-text); border:1px solid var(--danger-border); }
+        .badge-info { background:var(--info-bg); color:var(--info-text); border:1px solid var(--info-border); }
+
+        /* Buttons */
+        .btn { padding:0.45rem 1rem; border:none; border-radius:2rem; font-weight:600; font-size:0.78rem; cursor:pointer; transition:all 0.25s; display:inline-flex; align-items:center; gap:0.3rem; white-space:nowrap; font-family:inherit; letter-spacing:0.3px; }
+        .btn-primary { background:linear-gradient(135deg,var(--gradient-start),var(--gradient-end)); color:white; box-shadow:0 4px 12px rgba(200,150,62,.3); }
+        .btn-primary:hover { box-shadow:0 6px 20px rgba(200,150,62,.5); transform:translateY(-2px); }
+        .btn-success { background:var(--success-text); color:white; }
+        .btn-danger { background:var(--danger-text); color:white; }
+        .btn-warning { background:var(--warning-text); color:white; }
+        .btn-outline { background:transparent; border:2px solid var(--border); color:var(--text-primary); }
+        .btn-outline:hover { background:var(--hover-bg); border-color:var(--accent); }
+        .btn-sm { padding:0.3rem 0.8rem; font-size:0.72rem; border-radius:1.5rem; }
+        .btn:disabled { opacity:0.4; cursor:not-allowed; }
+        .btn-group { display:flex; gap:0.5rem; flex-wrap:wrap; }
+
+        /* Grid & Items */
+        .grid-2cols { display:grid; grid-template-columns:repeat(auto-fill,minmax(300px,1fr)); gap:1rem; }
+        .item-card { background:var(--hover-bg); border:1px solid var(--border); border-radius:1rem; padding:1rem; transition:all 0.2s; }
+        .item-card:hover { border-color:var(--accent); box-shadow:var(--shadow); }
+
+        /* User Cards */
+        .user-grid { display:grid; grid-template-columns:repeat(auto-fill,minmax(280px,1fr)); gap:1rem; }
+        .user-card { background:var(--card-bg); backdrop-filter:blur(12px); -webkit-backdrop-filter:blur(12px); border:1px solid var(--border); border-radius:1.2rem; padding:1rem; box-shadow:var(--shadow); transition:all 0.3s; }
+        .user-card:hover { transform:translateY(-3px); box-shadow:var(--shadow-lg); border-color:var(--accent); }
+        .user-card-header { display:flex; align-items:center; gap:0.8rem; margin-bottom:0.8rem; }
+        .user-avatar { width:44px; height:44px; border-radius:50%; background:linear-gradient(135deg,var(--gradient-start),var(--gradient-end)); display:flex; align-items:center; justify-content:center; color:white; font-weight:600; font-size:1rem; overflow:hidden; flex-shrink:0; box-shadow:0 4px 8px rgba(0,0,0,.2); }
+        .user-avatar img { width:100%; height:100%; object-fit:cover; border-radius:50%; }
+        .user-info h3 { font-size:1rem; font-weight:600; }
+        .user-info p { color:var(--text-secondary); font-size:0.8rem; }
+        .user-detail { display:flex; align-items:center; gap:0.4rem; margin:0.4rem 0; color:var(--text-secondary); font-size:0.8rem; }
+        .user-detail i { width:1rem; color:var(--accent); font-size:0.8rem; }
+        .user-actions { display:flex; gap:0.5rem; margin-top:0.8rem; justify-content:flex-end; flex-wrap:wrap; }
+
+        /* Filter Bar */
+        .filter-bar { display:flex; gap:0.5rem; margin-bottom:1rem; flex-wrap:wrap; align-items:center; }
+        .search-input { padding:0.5rem 1rem; border:2px solid var(--border); border-radius:2rem; background:var(--input-bg); color:var(--text-primary); font-size:0.85rem; flex:1; min-width:200px; font-family:inherit; transition:border-color 0.2s; }
+        .search-input:focus { outline:none; border-color:var(--accent); }
+        .select-filter { padding:0.5rem 1rem; border:2px solid var(--border); border-radius:2rem; background:var(--input-bg); color:var(--text-primary); font-size:0.85rem; font-family:inherit; cursor:pointer; min-width:150px; }
+
+        /* Modals */
+        .modal-overlay { position:fixed; top:0; left:0; width:100%; height:100%; background:rgba(0,0,0,.75); backdrop-filter:blur(6px); -webkit-backdrop-filter:blur(6px); z-index:2000; display:none; align-items:center; justify-content:center; animation:fadeIn 0.3s; }
+        .modal-overlay.active { display:flex; }
+        .modal-content { background:var(--card-bg); border:1px solid var(--border); border-radius:1.5rem; padding:2rem; max-width:700px; width:90%; max-height:85vh; overflow-y:auto; box-shadow:0 20px 60px rgba(0,0,0,.5); animation:slideUp 0.3s cubic-bezier(0.4,0,0.2,1); }
+        @keyframes slideUp { from{transform:translateY(30px);opacity:0} to{transform:translateY(0);opacity:1} }
+        .modal-header { display:flex; justify-content:space-between; align-items:center; margin-bottom:1rem; padding-bottom:1rem; border-bottom:1px solid var(--border); }
+        .modal-header h3 { font-size:1.2rem; font-weight:700; }
+        .modal-close { cursor:pointer; font-size:1.3rem; color:var(--text-secondary); padding:0.3rem; border-radius:0.5rem; transition:0.2s; }
+        .modal-close:hover { color:var(--danger-text); background:var(--danger-bg); }
+        .modal-actions { display:flex; gap:1rem; justify-content:flex-end; margin-top:1.5rem; padding-top:1rem; border-top:1px solid var(--border); }
+        .star-rating { display:flex; gap:0.3rem; font-size:1.5rem; color:var(--accent); cursor:pointer; margin-top:1rem; }
+        .star-rating .far { color:var(--text-muted); }
+        .form-group { margin-bottom:1rem; }
+        .form-group label { display:block; margin-bottom:0.3rem; color:var(--text-secondary); font-weight:600; font-size:0.85rem; }
+        .form-control { width:100%; padding:0.6rem 1rem; background:var(--input-bg); border:2px solid var(--border); border-radius:1rem; color:var(--text-primary); font-family:inherit; font-size:0.9rem; transition:border-color 0.2s; }
+        .form-control:focus { outline:none; border-color:var(--accent); }
+        textarea.form-control { min-height:80px; resize:vertical; }
+        .detail-row { display:flex; margin-bottom:0.6rem; border-bottom:1px dashed var(--border); padding-bottom:0.4rem; }
+        .detail-label { width:120px; color:var(--text-secondary); font-weight:500; font-size:0.85rem; flex-shrink:0; }
+        .detail-value { flex:1; font-weight:400; font-size:0.85rem; }
+
+        /* Toast */
+        .toast-container { position:fixed; top:1rem; right:1rem; z-index:5000; display:flex; flex-direction:column; gap:0.5rem; pointer-events:none; }
+        .toast { background:var(--card-bg); backdrop-filter:blur(16px); -webkit-backdrop-filter:blur(16px); border:1px solid var(--border); border-radius:1rem; padding:0.9rem 1.2rem; min-width:300px; max-width:420px; box-shadow:var(--shadow-lg); display:flex; align-items:flex-start; gap:0.7rem; animation:slideInRight 0.3s; pointer-events:auto; font-size:0.85rem; }
+        .toast.removing { animation:slideOutRight 0.3s ease-in forwards; }
+        @keyframes slideInRight { from{transform:translateX(120%);opacity:0} to{transform:translateX(0);opacity:1} }
+        @keyframes slideOutRight { from{transform:translateX(0);opacity:1} to{transform:translateX(120%);opacity:0} }
+
+        /* Empty State */
+        .empty-state { text-align:center; padding:2rem; color:var(--text-muted); grid-column:1/-1; }
+        .empty-state i { font-size:2.5rem; margin-bottom:0.8rem; opacity:0.4; display:block; }
+
+        /* Mobile */
+        @media(max-width:768px) {
+            .sidebar { width:85px; }
+            .sidebar .logo-area h2,.sidebar .nav-item span { display:none; }
+            .sidebar .nav-item { justify-content:center; padding:0.7rem; }
+            .main-content { margin-left:85px; max-width:calc(100vw - 85px); padding:1rem; }
+            .user-grid,.grid-2cols { grid-template-columns:1fr; }
+            .stats-row { grid-template-columns:repeat(2,1fr); }
+            .page-title h1 { font-size:1.4rem; }
+            .tab-btn { padding:0.5rem 1rem; font-size:0.75rem; }
         }
     </style>
 </head>
 <body>
     <img src="https://res.cloudinary.com/dda7kpir8/image/upload/q_auto/f_auto/v1781038310/ChatGPT_Image_Jun_9_2026_09_25_06_AM_elnine.png" alt="" class="bg-logo" aria-hidden="true">
-    <div class="orb orb-1"></div>
-    <div class="orb orb-2"></div>
+    <div class="orb orb-1"></div><div class="orb orb-2"></div>
+    <div class="toast-container" id="toastContainer"></div>
 
-    <!-- Sidebar -->
+    <!-- SIDEBAR -->
     <div class="sidebar" id="sidebar">
         <a href="index.html" class="logo-area">
             <img src="https://res.cloudinary.com/dda7kpir8/image/upload/q_auto/f_auto/v1781038310/ChatGPT_Image_Jun_9_2026_09_25_06_AM_elnine.png" alt="JWMS Logo">
             <h2>Judah Wonders<span>Model School</span></h2>
         </a>
         <a href="admin-dashboard.html" class="nav-item"><i class="fas fa-chart-pie"></i><span>Dashboard</span></a>
-        <a href="admin-users.html" class="nav-item"><i class="fas fa-users"></i><span>Users</span></a>
-        <a href="admin-approvals.html" class="nav-item active"><i class="fas fa-user-check"></i><span>Approvals</span></a>
-        <a href="admin-lesson-notes.html" class="nav-item"><i class="fas fa-book-open"></i><span>Lesson Notes</span></a>
-        <a href="admin-timetable.html" class="nav-item"><i class="fas fa-calendar-alt"></i><span>Timetable</span></a>
-        <a href="admin-attendance.html" class="nav-item"><i class="fas fa-fingerprint"></i><span>Attendance</span></a>
-        <a href="admin-payments.html" class="nav-item"><i class="fas fa-credit-card"></i><span>Payments</span></a>
-        <a href="admin-announcements.html" class="nav-item"><i class="fas fa-bullhorn"></i><span>Announcements</span></a>
-        <a href="admin-calendar.html" class="nav-item"><i class="fas fa-calendar-check"></i><span>Calendar</span></a>
+        <a href="approval.html" class="nav-item active" id="approvalsNav">
+            <i class="fas fa-user-check"></i><span>Approvals Hub</span>
+            <span class="badge-notify" id="totalPendingBadge" style="display:none;">0</span>
+        </a>
         <a href="admin-audit.html" class="nav-item"><i class="fas fa-history"></i><span>Audit Logs</span></a>
         <a href="admin-settings.html" class="nav-item"><i class="fas fa-cog"></i><span>Settings</span></a>
         <div class="toggle-btn" id="sidebarToggle"><i class="fas fa-chevron-left"></i></div>
     </div>
 
-    <!-- Main Content -->
+    <!-- MAIN CONTENT -->
     <div class="main-content" id="mainContent">
         <div class="top-bar">
             <div class="page-title">
-                <h1>Approvals</h1>
-                <p>Review and manage pending registrations</p>
+                <h1>Approvals Hub</h1>
+                <p>Review & manage all pending submissions</p>
             </div>
             <div class="profile-area">
-                <div class="theme-toggle" id="themeToggle">
-                    <i class="fas fa-sun"></i><span>Light</span><i class="fas fa-moon"></i>
-                </div>
+                <div class="theme-toggle" id="themeToggle"><i class="fas fa-sun"></i><span>Light</span></div>
                 <div class="profile-dropdown">
-                    <div class="profile-trigger">
-                        <span class="profile-name" id="profileName">Admin</span>
-                        <div class="profile-pic" id="profilePic">MA</div>
-                    </div>
+                    <div class="profile-pic" id="profilePic">MA</div>
                     <div class="dropdown-menu">
-                        <div class="dropdown-item" id="profileLink"><i class="fas fa-user"></i> Profile</div>
                         <div class="dropdown-item" id="logoutBtn"><i class="fas fa-sign-out-alt"></i> Logout</div>
                     </div>
                 </div>
             </div>
         </div>
 
-        <!-- Stats -->
-        <div class="stats-row">
-            <div class="stat-card"><i class="fas fa-hourglass-half stat-icon"></i><div class="stat-value" id="totalPending">0</div><div class="stat-label">Total Pending</div></div>
-            <div class="stat-card"><i class="fas fa-chalkboard-teacher stat-icon"></i><div class="stat-value" id="pendingTeachers">0</div><div class="stat-label">Teachers</div></div>
-            <div class="stat-card"><i class="fas fa-user-graduate stat-icon"></i><div class="stat-value" id="pendingStudents">0</div><div class="stat-label">Students</div></div>
-            <div class="stat-card"><i class="fas fa-users-cog stat-icon"></i><div class="stat-value" id="pendingStaff">0</div><div class="stat-label">Staff</div></div>
+        <!-- STATS ROW -->
+        <div class="stats-row" id="statsRow">
+            <div class="stat-card"><div class="stat-icon"><i class="fas fa-users"></i></div><div class="val" id="statTotalPending">0</div><div class="lbl">Total Pending</div></div>
+            <div class="stat-card"><div class="stat-icon"><i class="fas fa-user-graduate"></i></div><div class="val" id="statPendingStudents">0</div><div class="lbl">Students</div></div>
+            <div class="stat-card"><div class="stat-icon"><i class="fas fa-chalkboard-teacher"></i></div><div class="val" id="statPendingTeachers">0</div><div class="lbl">Teachers</div></div>
+            <div class="stat-card"><div class="stat-icon"><i class="fas fa-book-open"></i></div><div class="val" id="statPendingNotes">0</div><div class="lbl">Lesson Notes</div></div>
+            <div class="stat-card"><div class="stat-icon"><i class="fas fa-calendar-alt"></i></div><div class="val" id="statPendingTimetables">0</div><div class="lbl">Timetables</div></div>
+            <div class="stat-card"><div class="stat-icon"><i class="fas fa-journal-whills"></i></div><div class="val" id="statPendingReports">0</div><div class="lbl">Daily Reports</div></div>
         </div>
 
-        <!-- Tabs -->
-        <div class="tabs" id="roleTabs">
-            <div class="tab active" data-role="all">All</div>
-            <div class="tab" data-role="teacher">Teachers</div>
-            <div class="tab" data-role="student">Students</div>
-            <div class="tab" data-role="nonTeachingStaff">Staff</div>
+        <!-- TAB NAVIGATION -->
+        <div class="tab-nav" id="tabNav">
+            <button class="tab-btn active" data-tab="users"><i class="fas fa-users"></i> Users</button>
+            <button class="tab-btn" data-tab="lessonnotes"><i class="fas fa-book-open"></i> Lesson Notes & Syllabi</button>
+            <button class="tab-btn" data-tab="dailyreports"><i class="fas fa-journal-whills"></i> Daily Reports</button>
+            <button class="tab-btn" data-tab="timetables"><i class="fas fa-calendar-alt"></i> Timetables</button>
+            <button class="tab-btn" data-tab="pendingactions"><i class="fas fa-clock"></i> Action Requests</button>
         </div>
 
-        <!-- User Cards -->
-        <div id="usersContainer" class="user-grid"></div>
+        <!-- TAB 1: USERS -->
+        <div class="tab-content active" id="tab-users">
+            <div class="card">
+                <div class="card-header">
+                    <h3><i class="fas fa-user-clock"></i> User Registrations</h3>
+                    <div class="btn-group">
+                        <button class="btn btn-outline btn-sm" onclick="exportRegCSV()"><i class="fas fa-download"></i> Export CSV</button>
+                        <button class="btn btn-outline btn-sm" onclick="openPostCategories()"><i class="fas fa-tags"></i> Post Categories</button>
+                        <button class="btn btn-outline btn-sm" onclick="openSettings()"><i class="fas fa-cog"></i> Point Settings</button>
+                    </div>
+                </div>
+                <div class="filter-bar">
+                    <input type="text" class="search-input" id="regSearch" placeholder="🔍 Search name or email..." oninput="renderRegistrations()">
+                    <select class="select-filter" id="regStatusFilter" onchange="renderRegistrations()">
+                        <option value="pending">Pending</option>
+                        <option value="approved">Approved</option>
+                        <option value="all">All</option>
+                    </select>
+                    <select class="select-filter" id="regRoleFilter" onchange="renderRegistrations()">
+                        <option value="">All Roles</option>
+                        <option value="teacher">Teacher</option>
+                        <option value="student">Student</option>
+                        <option value="nonTeachingStaff">Staff</option>
+                        <option value="admin">Admin</option>
+                    </select>
+                </div>
+                <div class="table-responsive">
+                    <table>
+                        <thead><tr>
+                            <th><input type="checkbox" id="regSelectAll" onchange="toggleAllRegChecks()"></th>
+                            <th>User</th><th>Role</th><th>Post</th><th>Class</th><th>Salary (₦)</th><th>Points</th><th>Status</th><th>Actions</th>
+                        </tr></thead>
+                        <tbody id="regBody"><tr><td colspan="9"><div class="empty-state"><i class="fas fa-spinner fa-spin"></i><p>Loading...</p></div></td></tr></tbody>
+                    </table>
+                </div>
+                <div class="bulk-actions" id="regBulkActions" style="display:none;margin-top:1rem;">
+                    <button class="btn btn-success btn-sm" onclick="bulkApproveUsers()">✅ Approve Selected</button>
+                    <button class="btn btn-danger btn-sm" onclick="bulkRejectUsers()">❌ Reject Selected</button>
+                </div>
+            </div>
+        </div>
+
+        <!-- TAB 2: LESSON NOTES & SYLLABI -->
+        <div class="tab-content" id="tab-lessonnotes">
+            <div class="sub-tabs" id="lnSubTabs">
+                <button class="sub-tab-btn active" data-sub="pending">⏳ Pending</button>
+                <button class="sub-tab-btn" data-sub="history">📚 History</button>
+            </div>
+            <div id="lnPending">
+                <div class="card">
+                    <div class="card-header"><h3><i class="fas fa-book-open"></i> Pending Syllabi & Lesson Notes</h3></div>
+                    <div class="filter-bar">
+                        <input type="text" class="search-input" id="lnSearch" placeholder="🔍 Search subject, topic, teacher..." oninput="renderLessonNotesPending()">
+                        <select class="select-filter" id="lnTypeFilter" onchange="renderLessonNotesPending()">
+                            <option value="">All Types</option>
+                            <option value="syllabus">Syllabi</option>
+                            <option value="lessonNote">Lesson Notes</option>
+                        </select>
+                    </div>
+                    <h4 style="margin:1rem 0 0.5rem;">📚 Syllabi</h4>
+                    <div id="syllabusPendingGrid" class="grid-2cols"></div>
+                    <hr style="border-color:var(--border);margin:1.5rem 0;">
+                    <h4 style="margin:0 0 0.5rem;">📝 Lesson Notes</h4>
+                    <div id="notesPendingGrid" class="grid-2cols"></div>
+                </div>
+            </div>
+            <div id="lnHistory" style="display:none;">
+                <div class="card">
+                    <div class="card-header"><h3><i class="fas fa-history"></i> Approval History</h3></div>
+                    <div class="filter-bar">
+                        <input type="text" class="search-input" id="lnHistSearch" placeholder="🔍 Search..." oninput="renderLessonNotesHistory()">
+                        <select class="select-filter" id="lnHistStatus" onchange="renderLessonNotesHistory()">
+                            <option value="approved">Approved</option>
+                            <option value="rejected">Rejected</option>
+                        </select>
+                    </div>
+                    <div id="historyLessonNotesGrid" class="grid-2cols"></div>
+                </div>
+            </div>
+        </div>
+
+        <!-- TAB 3: DAILY REPORTS -->
+        <div class="tab-content" id="tab-dailyreports">
+            <div class="sub-tabs" id="drSubTabs">
+                <button class="sub-tab-btn active" data-sub="pending">⏳ Pending</button>
+                <button class="sub-tab-btn" data-sub="history">📚 History</button>
+            </div>
+            <div id="drPending">
+                <div class="card">
+                    <div class="card-header"><h3><i class="fas fa-journal-whills"></i> Pending Daily Reports</h3></div>
+                    <div class="filter-bar">
+                        <input type="text" class="search-input" id="drSearch" placeholder="🔍 Search teacher..." oninput="renderDailyReportsPending()">
+                    </div>
+                    <div id="dailyReportsPendingList" class="grid-2cols"></div>
+                </div>
+            </div>
+            <div id="drHistory" style="display:none;">
+                <div class="card">
+                    <div class="card-header"><h3>Acknowledged Reports</h3></div>
+                    <div id="dailyReportsHistoryList" class="grid-2cols"></div>
+                </div>
+            </div>
+        </div>
+
+        <!-- TAB 4: TIMETABLES -->
+        <div class="tab-content" id="tab-timetables">
+            <div class="sub-tabs" id="ttSubTabs">
+                <button class="sub-tab-btn active" data-sub="pending">⏳ Pending</button>
+                <button class="sub-tab-btn" data-sub="history">📚 History</button>
+            </div>
+            <div id="ttPending">
+                <div class="card">
+                    <div class="card-header"><h3><i class="fas fa-calendar-alt"></i> Pending Timetable Proposals</h3></div>
+                    <div class="filter-bar">
+                        <input type="text" class="search-input" id="ttSearch" placeholder="🔍 Search class or teacher..." oninput="renderTimetablesPending()">
+                    </div>
+                    <div id="timetablePendingList" class="grid-2cols"></div>
+                </div>
+            </div>
+            <div id="ttHistory" style="display:none;">
+                <div class="card">
+                    <div class="card-header"><h3>Timetable History</h3></div>
+                    <div id="timetableHistoryList" class="grid-2cols"></div>
+                </div>
+            </div>
+        </div>
+
+        <!-- TAB 5: PENDING ACTIONS (from Class Hub) -->
+        <div class="tab-content" id="tab-pendingactions">
+            <div class="card">
+                <div class="card-header"><h3><i class="fas fa-clock"></i> Action Requests from Teachers</h3></div>
+                <div class="filter-bar">
+                    <input type="text" class="search-input" id="paSearch" placeholder="🔍 Search student or action..." oninput="renderPendingActions()">
+                    <select class="select-filter" id="paStatusFilter" onchange="renderPendingActions()">
+                        <option value="pending">Pending</option>
+                        <option value="approved">Approved</option>
+                        <option value="rejected">Rejected</option>
+                        <option value="all">All</option>
+                    </select>
+                </div>
+                <div id="pendingActionsList" class="grid-2cols"></div>
+            </div>
+        </div>
     </div>
 
-    <!-- Detail Modal -->
-    <div class="modal" id="detailModal">
+    <!-- DETAIL/REVIEW MODAL -->
+    <div class="modal-overlay" id="detailModal">
         <div class="modal-content">
-            <div class="modal-header"><h3>User Details</h3><i class="fas fa-times" onclick="closeDetailModal()"></i></div>
-            <div id="detailContent"></div>
+            <div class="modal-header">
+                <h3 id="detailTitle">Review</h3>
+                <i class="fas fa-times modal-close" onclick="closeDetailModal()"></i>
+            </div>
+            <div id="detailBody"></div>
+            <div class="star-rating" id="adminRatingStars">
+                <i class="far fa-star" data-star="1"></i><i class="far fa-star" data-star="2"></i>
+                <i class="far fa-star" data-star="3"></i><i class="far fa-star" data-star="4"></i>
+                <i class="far fa-star" data-star="5"></i>
+            </div>
+            <div class="form-group" style="margin-top:1rem;">
+                <label>Feedback (optional)</label>
+                <textarea class="form-control" id="adminFeedback" placeholder="Write feedback for the teacher..."></textarea>
+            </div>
             <div class="modal-actions">
-                <button class="btn btn-approve" onclick="approveFromDetail()">Approve</button>
-                <button class="btn btn-reject" onclick="rejectFromDetail()">Reject</button>
                 <button class="btn btn-outline" onclick="closeDetailModal()">Cancel</button>
+                <button class="btn btn-success" id="detailApproveBtn">✅ Approve with Rating</button>
+                <button class="btn btn-danger" id="detailRejectBtn">❌ Reject</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- TIMETABLE PREVIEW MODAL -->
+    <div class="modal-overlay" id="ttPreviewModal">
+        <div class="modal-content">
+            <div class="modal-header"><h3>Timetable Preview</h3><i class="fas fa-times modal-close" onclick="closeTtPreview()"></i></div>
+            <div id="ttPreviewContent"></div>
+        </div>
+    </div>
+
+    <!-- EDIT USER MODAL -->
+    <div class="modal-overlay" id="editUserModal">
+        <div class="modal-content">
+            <div class="modal-header"><h3>Edit User</h3><i class="fas fa-times modal-close" onclick="closeEditModal()"></i></div>
+            <div id="editUserContent"></div>
+            <div class="modal-actions">
+                <button class="btn btn-outline" onclick="closeEditModal()">Cancel</button>
+                <button class="btn btn-primary" onclick="saveUserChanges()">Save Changes</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- POINT HISTORY MODAL -->
+    <div class="modal-overlay" id="pointHistoryModal">
+        <div class="modal-content">
+            <div class="modal-header"><h3>Point History</h3><i class="fas fa-times modal-close" onclick="closePointHistory()"></i></div>
+            <div id="pointHistoryContent"></div>
+        </div>
+    </div>
+
+    <!-- POST CATEGORIES MODAL -->
+    <div class="modal-overlay" id="postCategoriesModal">
+        <div class="modal-content">
+            <div class="modal-header"><h3>Post Categories</h3><i class="fas fa-times modal-close" onclick="closePostCategories()"></i></div>
+            <div id="postCategoriesContent"></div>
+            <div class="filter-bar" style="margin-top:1rem;">
+                <input type="text" id="newPostName" class="search-input" placeholder="New category name">
+                <button class="btn btn-success btn-sm" onclick="addPostCategory()"><i class="fas fa-plus"></i> Add</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- SETTINGS MODAL -->
+    <div class="modal-overlay" id="settingsModal">
+        <div class="modal-content">
+            <div class="modal-header"><h3>Point Settings</h3><i class="fas fa-times modal-close" onclick="closeSettings()"></i></div>
+            <div class="form-group">
+                <label>Point Value (₦ per point)</label>
+                <input type="number" id="pointValueInput" class="form-control">
+            </div>
+            <div class="modal-actions">
+                <button class="btn btn-outline" onclick="closeSettings()">Cancel</button>
+                <button class="btn btn-primary" onclick="saveSettings()">Save</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- CONFIRMATION MODAL -->
+    <div class="modal-overlay" id="confirmModal">
+        <div class="modal-content">
+            <h3 id="confirmTitle">Confirm</h3>
+            <p id="confirmMessage"></p>
+            <div class="modal-actions">
+                <button class="btn btn-outline" onclick="closeConfirmModal()">Cancel</button>
+                <button class="btn btn-success" id="confirmActionBtn">Confirm</button>
             </div>
         </div>
     </div>
 
     <script>
+        // ============================================
+        // FIREBASE CONFIG
+        // ============================================
         const firebaseConfig = {
             apiKey: "AIzaSyADXHEiaSQ146QsGsaOCElARtpwrLE8svs",
             authDomain: "judah-c737e.firebaseapp.com",
@@ -530,230 +534,651 @@
         const auth = firebase.auth();
         const db = firebase.firestore();
 
-        // Sidebar toggle
-        const sidebar = document.getElementById('sidebar');
-        const mainContent = document.getElementById('mainContent');
+        // ============================================
+        // GLOBAL STATE
+        // ============================================
+        let currentUserData = null, allUsers = [], postCategories = [], settings = { pointValue: 200 };
+        let selectedUserId = null, detailCurrentDoc = null, detailType = '', detailRating = 0;
+        let confirmCallback = null;
+        let pendingSyllabi = [], pendingNotes = [], allSyllabi = [], allLessonNotes = [];
+        let pendingDailyReports = [], allDailyReports = [];
+        let pendingTimetableProposals = [], allTimetableProposals = [];
+        let allPendingActions = [];
+        let unsubscribers = {};
+
+        // ============================================
+        // HELPERS
+        // ============================================
+        function escapeHtml(t) { const d = document.createElement('div'); d.textContent = t || ''; return d.innerHTML; }
+        function showToast(title, msg, type = 'info', undo = null) {
+            const icons = { success: 'fa-check-circle', error: 'fa-exclamation-circle', warning: 'fa-exclamation-triangle', info: 'fa-info-circle' };
+            const toast = document.createElement('div'); toast.className = 'toast';
+            toast.innerHTML = `<i class="fas ${icons[type]}" style="color:var(--${type==='success'?'success':type==='error'?'danger':type==='warning'?'warning':'info'}-text);font-size:1.1rem;"></i><div><strong>${title}</strong><br><span style="font-size:0.8rem;color:var(--text-secondary);">${msg}</span></div>`;
+            document.getElementById('toastContainer').appendChild(toast);
+            setTimeout(() => { toast.classList.add('removing'); setTimeout(() => toast.remove(), 300); }, undo ? 7000 : 4000);
+        }
+
+        // Sidebar
+        const sidebar = document.getElementById('sidebar'), mainContent = document.getElementById('mainContent');
         document.getElementById('sidebarToggle').addEventListener('click', () => {
-            sidebar.classList.toggle('collapsed');
-            mainContent.classList.toggle('expanded');
+            sidebar.classList.toggle('collapsed'); mainContent.classList.toggle('expanded');
             const icon = document.getElementById('sidebarToggle').querySelector('i');
-            icon.classList.toggle('fa-chevron-left');
-            icon.classList.toggle('fa-chevron-right');
+            icon.classList.toggle('fa-chevron-left'); icon.classList.toggle('fa-chevron-right');
         });
 
         // Theme
-        const html = document.documentElement;
-        const themeToggle = document.getElementById('themeToggle');
-        const themeIcon = themeToggle.querySelector('i:first-child');
-        const themeText = themeToggle.querySelector('span');
-        function updateThemeUI(theme) {
-            themeIcon.className = theme === 'dark' ? 'fas fa-moon' : 'fas fa-sun';
-            themeText.textContent = theme === 'dark' ? 'Dark' : 'Light';
-        }
+        const html = document.documentElement, themeToggle = document.getElementById('themeToggle');
         const savedTheme = localStorage.getItem('judah-theme') || 'dark';
         html.setAttribute('data-theme', savedTheme);
-        updateThemeUI(savedTheme);
+        themeToggle.querySelector('span').textContent = savedTheme === 'dark' ? 'Light' : 'Dark';
         themeToggle.addEventListener('click', () => {
             const next = html.getAttribute('data-theme') === 'dark' ? 'light' : 'dark';
-            html.setAttribute('data-theme', next);
-            localStorage.setItem('judah-theme', next);
-            updateThemeUI(next);
+            html.setAttribute('data-theme', next); localStorage.setItem('judah-theme', next);
+            themeToggle.querySelector('span').textContent = next === 'dark' ? 'Light' : 'Dark';
         });
 
-        let currentUserData = null;
-        auth.onAuthStateChanged(async (user) => {
-            if (!user) { window.location.href = 'admin-login.html'; return; }
-            const userDoc = await db.collection('users').doc(user.uid).get();
-            if (!userDoc.exists || !['master-admin', 'admin'].includes(userDoc.data().role)) {
-                auth.signOut(); window.location.href = 'index.html'; return;
+        // Confirm modal
+        function showConfirm(title, msg, cb) {
+            document.getElementById('confirmTitle').textContent = title;
+            document.getElementById('confirmMessage').innerHTML = msg;
+            document.getElementById('confirmModal').classList.add('active');
+            confirmCallback = cb;
+        }
+        document.getElementById('confirmActionBtn').addEventListener('click', () => {
+            if (confirmCallback) confirmCallback();
+            document.getElementById('confirmModal').classList.remove('active');
+        });
+        window.closeConfirmModal = () => document.getElementById('confirmModal').classList.remove('active');
+
+        // Detail modal
+        window.closeDetailModal = () => { document.getElementById('detailModal').classList.remove('active'); detailCurrentDoc = null; };
+        document.getElementById('adminRatingStars').addEventListener('click', e => {
+            const star = e.target.closest('i'); if (!star) return;
+            detailRating = parseInt(star.dataset.star);
+            document.querySelectorAll('#adminRatingStars i').forEach(s => s.className = (parseInt(s.dataset.star) <= detailRating) ? 'fas fa-star' : 'far fa-star');
+        });
+        document.getElementById('detailApproveBtn').addEventListener('click', async () => {
+            if (!detailCurrentDoc) return;
+            const feedback = document.getElementById('adminFeedback').value;
+            const coll = detailType === 'syllabus' ? 'syllabus' : (detailType === 'dailyReport' ? 'dailyReports' : 'lessonNotes');
+            const update = { status: 'approved', adminFeedback: feedback, reviewedAt: firebase.firestore.FieldValue.serverTimestamp() };
+            if (detailRating > 0) update.adminRating = detailRating;
+            await db.collection(coll).doc(detailCurrentDoc.id).update(update);
+            // Award points to teacher
+            if ((detailType === 'lessonNote' || detailType === 'syllabus') && detailCurrentDoc.data().teacherId && detailRating >= 1) {
+                const pts = detailRating * 10;
+                const ref = db.collection('users').doc(detailCurrentDoc.data().teacherId);
+                const doc = await ref.get();
+                if (doc.exists) {
+                    const cur = doc.data().points || 0;
+                    await ref.update({ points: cur + pts, pointHistory: firebase.firestore.FieldValue.arrayUnion({ points: pts, reason: `${detailType==='lessonNote'?'Lesson note':'Syllabus'} rated ${detailRating}/5`, date: new Date().toISOString(), newPoints: cur + pts }) });
+                }
             }
-            currentUserData = userDoc.data();
-            // Set admin avatar
-            const picEl = document.getElementById('profilePic');
-            if (currentUserData.photoURL) {
-                picEl.innerHTML = `<img src="${currentUserData.photoURL}" alt="Admin">`;
+            showToast('Approved', `${detailType==='syllabus'?'Syllabus':(detailType==='dailyReport'?'Report':'Note')} approved`, 'success');
+            closeDetailModal();
+        });
+        document.getElementById('detailRejectBtn').addEventListener('click', async () => {
+            if (!detailCurrentDoc) return;
+            const feedback = document.getElementById('adminFeedback').value;
+            const coll = detailType === 'syllabus' ? 'syllabus' : (detailType === 'dailyReport' ? 'dailyReports' : 'lessonNotes');
+            await db.collection(coll).doc(detailCurrentDoc.id).update({ status: 'rejected', adminFeedback: feedback });
+            showToast('Rejected', 'Item rejected', 'warning');
+            closeDetailModal();
+        });
+
+        // Timetable preview
+        window.closeTtPreview = () => document.getElementById('ttPreviewModal').classList.remove('active');
+        window.viewTimetablePreview = async (id) => {
+            const doc = await db.collection('timetableProposals').doc(id).get();
+            if (!doc.exists) return;
+            const t = doc.data(), periods = t.periods || [];
+            let html = `<p><strong>Class:</strong> ${escapeHtml(t.classId)} | <strong>Type:</strong> ${t.type} | <strong>Teacher:</strong> ${escapeHtml(t.teacherName||'')}</p><table style="width:100%;border-collapse:collapse;"><thead><tr>`;
+            const days = t.type === 'academic' ? ['Mon','Tue','Wed','Thu','Fri'] : (t.type === 'hairstyle' ? ['Hairstyle','Description'] : ['Mon','Tue','Wed']);
+            if (t.type !== 'hairstyle') html += '<th>Start</th><th>End</th>';
+            days.forEach(d => html += `<th>${d}</th>`);
+            html += '</tr></thead><tbody>';
+            periods.forEach(p => {
+                html += '<tr>';
+                if (t.type !== 'hairstyle') html += `<td>${p.startTime||''}</td><td>${p.endTime||''}</td>`;
+                if (t.type === 'hairstyle') html += `<td>${p.startTime||''}</td><td>${p.monday||''}</td><td>${p.tuesday||''}</td>`;
+                else days.forEach(d => html += `<td>${p[d.toLowerCase()]||''}</td>`);
+                html += '</tr>';
+            });
+            html += '</tbody></table>';
+            document.getElementById('ttPreviewContent').innerHTML = html;
+            document.getElementById('ttPreviewModal').classList.add('active');
+        };
+
+        // Update badge
+        function updateAllBadges() {
+            let total = allUsers.filter(u => !u.approved).length;
+            total += pendingSyllabi.length + pendingNotes.length;
+            total += pendingDailyReports.filter(r => r.status !== 'acknowledged').length;
+            total += pendingTimetableProposals.filter(t => t.status === 'pending').length;
+            total += allPendingActions.filter(a => a.status === 'pending').length;
+            const badge = document.getElementById('totalPendingBadge');
+            badge.textContent = total;
+            badge.style.display = total > 0 ? 'inline-block' : 'none';
+        }
+        function updateStats() {
+            document.getElementById('statTotalPending').textContent = 
+                allUsers.filter(u => !u.approved).length + pendingSyllabi.length + pendingNotes.length + 
+                pendingDailyReports.filter(r => r.status !== 'acknowledged').length + 
+                pendingTimetableProposals.filter(t => t.status === 'pending').length +
+                allPendingActions.filter(a => a.status === 'pending').length;
+            document.getElementById('statPendingStudents').textContent = allUsers.filter(u => !u.approved && u.role === 'student').length;
+            document.getElementById('statPendingTeachers').textContent = allUsers.filter(u => !u.approved && u.role === 'teacher').length;
+            document.getElementById('statPendingNotes').textContent = pendingSyllabi.length + pendingNotes.length;
+            document.getElementById('statPendingTimetables').textContent = pendingTimetableProposals.filter(t => t.status === 'pending').length;
+            document.getElementById('statPendingReports').textContent = pendingDailyReports.filter(r => r.status !== 'acknowledged').length;
+        }
+
+        // ============================================
+        // SETTINGS & POST CATEGORIES
+        // ============================================
+        async function loadSettings() {
+            try { const doc = await db.collection('settings').doc('points').get(); if (doc.exists) settings = doc.data(); }
+            catch (e) {}
+            document.getElementById('pointValueInput').value = settings.pointValue || 200;
+        }
+        async function saveSettings() {
+            const val = Number(document.getElementById('pointValueInput').value) || 200;
+            await db.collection('settings').doc('points').set({ pointValue: val }, { merge: true });
+            settings.pointValue = val;
+            showToast('Saved', 'Point value updated', 'success');
+            closeSettings();
+        }
+        async function loadPostCategories() {
+            try { const snap = await db.collection('postCategories').get(); postCategories = []; snap.forEach(d => postCategories.push({ id: d.id, ...d.data() })); }
+            catch (e) {}
+        }
+        function renderPostCategories() {
+            document.getElementById('postCategoriesContent').innerHTML = postCategories.map(c => `
+                <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:0.5rem;padding-bottom:0.3rem;border-bottom:1px solid var(--border);">
+                    <span>${escapeHtml(c.name)}</span>
+                    <button class="btn btn-danger btn-sm" onclick="deletePostCategory('${c.id}')"><i class="fas fa-trash"></i></button>
+                </div>`).join('');
+            document.getElementById('postCategoriesModal').classList.add('active');
+        }
+        window.addPostCategory = async () => {
+            const name = document.getElementById('newPostName').value.trim(); if (!name) return;
+            await db.collection('postCategories').add({ name });
+            document.getElementById('newPostName').value = '';
+            await loadPostCategories(); renderPostCategories();
+        };
+        window.deletePostCategory = async (id) => { if (!confirm('Delete?')) return; await db.collection('postCategories').doc(id).delete(); await loadPostCategories(); renderPostCategories(); };
+        window.openPostCategories = () => renderPostCategories();
+        window.closePostCategories = () => document.getElementById('postCategoriesModal').classList.remove('active');
+        window.openSettings = () => document.getElementById('settingsModal').classList.add('active');
+        window.closeSettings = () => document.getElementById('settingsModal').classList.remove('active');
+
+        // ============================================
+        // USERS TAB
+        // ============================================
+        function loadUsers() {
+            if (unsubscribers['users']) unsubscribers['users']();
+            unsubscribers['users'] = db.collection('users').onSnapshot(snap => {
+                allUsers = []; snap.forEach(d => allUsers.push({ id: d.id, ...d.data() }));
+                renderRegistrations(); updateAllBadges(); updateStats();
+            }, err => showToast('Error', err.message, 'error'));
+        }
+        function renderRegistrations() {
+            const search = document.getElementById('regSearch').value.toLowerCase();
+            const status = document.getElementById('regStatusFilter').value;
+            const role = document.getElementById('regRoleFilter').value;
+            const filtered = allUsers.filter(u => {
+                const name = `${u.firstName||''} ${u.surname||''}`.toLowerCase();
+                const email = (u.email||'').toLowerCase();
+                return (name.includes(search) || email.includes(search))
+                    && (status === 'all' || (status === 'approved' ? u.approved === true : u.approved === false))
+                    && (!role || u.role === role);
+            });
+            const tbody = document.getElementById('regBody');
+            if (!filtered.length) { tbody.innerHTML = '<tr><td colspan="9"><div class="empty-state"><i class="fas fa-check-circle"></i><p>No users found.</p></div></td></tr>'; return; }
+            tbody.innerHTML = filtered.map(u => {
+                const name = `${u.firstName||''} ${u.surname||''}`.trim() || 'Unknown';
+                const post = u.post || '—', cls = u.classTeaching || u.class || '—';
+                const salary = u.salary ? `₦${u.salary.toLocaleString()}` : '—';
+                const points = u.points || 0;
+                const deduction = (points * (settings.pointValue || 200)).toLocaleString();
+                const statusBadge = u.suspended ? '<span class="badge badge-danger">Suspended</span>' :
+                    u.approved ? '<span class="badge badge-success">Active</span>' : '<span class="badge badge-warning">Pending</span>';
+                return `<tr>
+                    <td><input type="checkbox" class="reg-check" data-id="${u.id}"></td>
+                    <td><strong>${escapeHtml(name)}</strong><br><small>${escapeHtml(u.email||'')}</small></td>
+                    <td>${u.role}</td><td>${post}</td><td>${cls}</td><td>${salary}</td>
+                    <td>${points} pts (₦${deduction})</td>
+                    <td>${statusBadge}</td>
+                    <td style="white-space:nowrap;">
+                        ${!u.approved ? `<button class="btn btn-success btn-sm" onclick="approveUser('${u.id}')">Approve</button>
+                        <button class="btn btn-danger btn-sm" onclick="rejectUser('${u.id}')">Reject</button>` :
+                        `<button class="btn btn-warning btn-sm" onclick="toggleApproval('${u.id}',false)">Revoke</button>`}
+                        <button class="btn btn-outline btn-sm" onclick="editUser('${u.id}')"><i class="fas fa-edit"></i></button>
+                        <button class="btn ${u.suspended?'btn-success':'btn-danger'} btn-sm" onclick="toggleSuspend('${u.id}')"><i class="fas ${u.suspended?'fa-play':'fa-pause'}"></i></button>
+                        <button class="btn btn-outline btn-sm" onclick="viewPoints('${u.id}')"><i class="fas fa-coins"></i></button>
+                    </td>
+                </tr>`;
+            }).join('');
+        }
+        window.toggleAllRegChecks = () => {
+            const checked = document.getElementById('regSelectAll').checked;
+            document.querySelectorAll('.reg-check').forEach(cb => cb.checked = checked);
+        };
+        window.bulkApproveUsers = () => {
+            const ids = [...document.querySelectorAll('.reg-check:checked')].map(cb => cb.dataset.id);
+            if (!ids.length) return showToast('Info', 'No users selected', 'info');
+            showConfirm('Approve', `Approve ${ids.length} users?`, async () => {
+                const batch = db.batch(); ids.forEach(id => batch.update(db.collection('users').doc(id), { approved: true }));
+                await batch.commit(); showToast('Approved', `${ids.length} users`, 'success');
+            });
+        };
+        window.bulkRejectUsers = () => {
+            const ids = [...document.querySelectorAll('.reg-check:checked')].map(cb => cb.dataset.id);
+            if (!ids.length) return;
+            showConfirm('Delete', `Delete ${ids.length} users?`, async () => {
+                for (const id of ids) await db.collection('users').doc(id).delete();
+                showToast('Deleted', `${ids.length} users removed`, 'warning');
+            });
+        };
+        window.approveUser = async (uid) => {
+            const user = allUsers.find(u => u.id === uid); if (!user) return;
+            if (!user.userId) {
+                const firstName = user.firstName || 'STU';
+                const year = user.admissionYear || new Date().getFullYear();
+                const prefix = firstName.substring(0, 3).toUpperCase();
+                const counterRef = db.collection('counters').doc(`userId_${year}_${prefix}`);
+                const newNum = await db.runTransaction(async (tx) => {
+                    const d = await tx.get(counterRef); let n = 1;
+                    if (d.exists) n = (d.data().value || 0) + 1;
+                    tx.set(counterRef, { value: n }, { merge: true }); return n;
+                });
+                const genId = `JWS${prefix}${year}${String(newNum).padStart(4, '0')}`;
+                await db.collection('users').doc(uid).update({ approved: true, userId: genId });
+                showToast('Approved', `ID: ${genId}`, 'success');
             } else {
-                picEl.textContent = (currentUserData.firstName?.[0]||'A')+(currentUserData.surname?.[0]||'A');
+                await db.collection('users').doc(uid).update({ approved: true });
+                showToast('Approved', 'User approved', 'success');
             }
-            document.getElementById('profileName').textContent = currentUserData.firstName || 'Admin';
-            document.querySelector('.page-title p').textContent = `Welcome back, ${currentUserData.firstName || 'Admin'}`;
-            setupUsersListener();
-        });
+        };
+        window.rejectUser = async (uid) => {
+            showConfirm('Reject', 'Delete this user?', async () => {
+                await db.collection('users').doc(uid).delete();
+                showToast('Rejected', 'User deleted', 'warning');
+            });
+        };
+        window.toggleApproval = (id, approve) => {
+            showConfirm(approve ? 'Approve' : 'Revoke', 'Change status?', async () => {
+                await db.collection('users').doc(id).update({ approved: approve });
+                showToast('Updated', 'Status changed', 'success');
+            });
+        };
+        window.toggleSuspend = async (uid) => {
+            const u = allUsers.find(x => x.id === uid); if (!u) return;
+            await db.collection('users').doc(uid).update({ suspended: !u.suspended });
+        };
+        window.editUser = (uid) => {
+            const u = allUsers.find(x => x.id === uid); if (!u) return;
+            selectedUserId = uid;
+            document.getElementById('editUserContent').innerHTML = `
+                <div class="form-group"><label>Post</label><select id="editPost" class="form-control"><option value="">None</option>${postCategories.map(c => `<option value="${c.name}" ${u.post===c.name?'selected':''}>${c.name}</option>`).join('')}</select></div>
+                <div class="form-group"><label>Salary (₦)</label><input type="number" id="editSalary" class="form-control" value="${u.salary||''}"></div>
+                <div class="form-group"><label>Permissions</label><div style="display:flex;gap:1rem;"><label><input type="checkbox" id="editCoAdmin" ${u.coAdminAccess?'checked':''}> Co-Admin</label><label><input type="checkbox" id="editStaffAccess" ${u.staffAccess?'checked':''}> Staff Access</label></div></div>`;
+            document.getElementById('editUserModal').classList.add('active');
+        };
+        window.saveUserChanges = async () => {
+            if (!selectedUserId) return;
+            await db.collection('users').doc(selectedUserId).update({
+                post: document.getElementById('editPost').value || null,
+                salary: Number(document.getElementById('editSalary').value) || 0,
+                coAdminAccess: document.getElementById('editCoAdmin').checked,
+                staffAccess: document.getElementById('editStaffAccess').checked,
+                updatedAt: firebase.firestore.FieldValue.serverTimestamp()
+            });
+            showToast('Saved', 'User updated', 'success'); closeEditModal();
+        };
+        window.viewPoints = (uid) => {
+            const u = allUsers.find(x => x.id === uid); if (!u) return;
+            const history = u.pointHistory || [];
+            document.getElementById('pointHistoryContent').innerHTML = history.length ? history.map(h => `
+                <div style="margin-bottom:0.8rem;padding-bottom:0.5rem;border-bottom:1px solid var(--border);">
+                    <strong>${h.points>0?'+':''}${h.points} pts</strong> — ${escapeHtml(h.reason)}<br>
+                    <small>${new Date(h.date).toLocaleString()} | Total: ${h.newPoints} pts</small>
+                </div>`).join('') : '<p>No point history.</p>';
+            document.getElementById('pointHistoryModal').classList.add('active');
+        };
+        window.exportRegCSV = () => {
+            const rows = [['Name','Role','Email','Post','Class','Salary','Points','Status']];
+            const search = document.getElementById('regSearch').value.toLowerCase();
+            const status = document.getElementById('regStatusFilter').value;
+            const role = document.getElementById('regRoleFilter').value;
+            allUsers.filter(u => {
+                const name = `${u.firstName||''} ${u.surname||''}`.toLowerCase();
+                const email = (u.email||'').toLowerCase();
+                return (name.includes(search) || email.includes(search))
+                    && (status === 'all' || (status === 'approved' ? u.approved === true : u.approved === false))
+                    && (!role || u.role === role);
+            }).forEach(u => rows.push([`${u.firstName||''} ${u.surname||''}`, u.role, u.email||'', u.post||'', u.classTeaching||u.class||'', u.salary||'', u.points||0, u.approved?'Approved':'Pending']));
+            const csv = rows.map(r => r.map(c => `"${c}"`).join(',')).join('\n');
+            const blob = new Blob([csv], { type: 'text/csv' });
+            const a = document.createElement('a'); a.href = URL.createObjectURL(blob); a.download = 'users.csv'; a.click();
+        };
+        window.closeEditModal = () => { document.getElementById('editUserModal').classList.remove('active'); selectedUserId = null; };
+        window.closePointHistory = () => document.getElementById('pointHistoryModal').classList.remove('active');
 
-        document.getElementById('logoutBtn').addEventListener('click', () => auth.signOut().then(() => window.location.href = 'index.html'));
-        document.getElementById('profileLink').addEventListener('click', () => window.location.href = 'admin-profile.html');
-
-        let unsubscribeUsers = null, allUsers = [], pendingUsers = [];
-        function setupUsersListener() {
-            if (unsubscribeUsers) unsubscribeUsers();
-            unsubscribeUsers = db.collection('users').onSnapshot(snap => {
-                allUsers = []; snap.forEach(d => allUsers.push({id: d.id, ...d.data()}));
-                pendingUsers = allUsers.filter(u => u.approved !== true);
-                updateStats(); filterByTab(currentTab);
+        // ============================================
+        // LESSON NOTES & SYLLABI TAB
+        // ============================================
+        function loadLessonNotesData() {
+            if (unsubscribers['syllabi']) unsubscribers['syllabi']();
+            if (unsubscribers['lessonNotes']) unsubscribers['lessonNotes']();
+            unsubscribers['syllabi'] = db.collection('syllabus').onSnapshot(snap => {
+                allSyllabi = []; snap.forEach(d => allSyllabi.push({ id: d.id, ...d.data() }));
+                pendingSyllabi = allSyllabi.filter(s => s.status === 'pending');
+                renderLessonNotesPending(); renderLessonNotesHistory(); updateAllBadges(); updateStats();
+            });
+            unsubscribers['lessonNotes'] = db.collection('lessonNotes').onSnapshot(snap => {
+                allLessonNotes = []; snap.forEach(d => allLessonNotes.push({ id: d.id, ...d.data() }));
+                pendingNotes = allLessonNotes.filter(n => n.status === 'pending');
+                renderLessonNotesPending(); renderLessonNotesHistory(); updateAllBadges(); updateStats();
             });
         }
-
-        function updateStats() {
-            document.getElementById('totalPending').textContent = pendingUsers.length;
-            document.getElementById('pendingTeachers').textContent = pendingUsers.filter(u => u.role === 'teacher').length;
-            document.getElementById('pendingStudents').textContent = pendingUsers.filter(u => u.role === 'student').length;
-            document.getElementById('pendingStaff').textContent = pendingUsers.filter(u => u.role === 'nonTeachingStaff').length;
-        }
-
-        let currentTab = 'all';
-        document.querySelectorAll('.tab').forEach(t => t.addEventListener('click', function() {
-            document.querySelectorAll('.tab').forEach(tab => tab.classList.remove('active'));
-            this.classList.add('active');
-            currentTab = this.dataset.role;
-            filterByTab(currentTab);
-        }));
-
-        function filterByTab(role) {
-            let filtered = role === 'all' ? pendingUsers : pendingUsers.filter(u => u.role === role);
-            renderCards(filtered);
-        }
-
-        function renderCards(users) {
-            const container = document.getElementById('usersContainer');
-            if (!users.length) {
-                container.innerHTML = `<div class="empty-state"><i class="fas fa-check-circle"></i><h3>All clear!</h3><p>No pending approvals in this category.</p></div>`;
-                return;
+        function renderLessonNotesPending() {
+            const search = document.getElementById('lnSearch').value.toLowerCase();
+            const type = document.getElementById('lnTypeFilter').value;
+            let s = pendingSyllabi, n = pendingNotes;
+            if (type === 'syllabus') n = []; if (type === 'lessonNote') s = [];
+            if (search) {
+                s = s.filter(si => (si.subject||'').toLowerCase().includes(search));
+                n = n.filter(ni => (ni.subject||'').toLowerCase().includes(search) || (ni.topic||'').toLowerCase().includes(search));
             }
-            container.innerHTML = users.map(user => {
-                const name = `${user.firstName||''} ${user.surname||''}`.trim() || 'Unnamed';
-                const initials = (user.firstName?.[0]||'') + (user.surname?.[0]||'') || '?';
-                const roleDisplay = user.role === 'teacher' ? 'Teacher' : user.role === 'student' ? 'Student' : user.role === 'nonTeachingStaff' ? 'Staff' : user.role;
-                let extra = '';
-                if (user.role === 'teacher') extra = `📚 ${user.classTeaching || 'No class'}`;
-                else if (user.role === 'student') extra = `🎓 ${user.class || 'No class'}`;
-                else if (user.role === 'nonTeachingStaff') extra = `🛠️ ${user.department || 'No dept'}`;
-
-                // Avatar: photoURL or initials
-                const avatarHtml = user.photoURL 
-                    ? `<img src="${user.photoURL}" alt="${name}">` 
-                    : initials;
-
-                return `<div class="user-card" data-id="${user.id}">
-                    <div class="user-card-header">
-                        <div class="user-avatar">${avatarHtml}</div>
-                        <div class="user-info">
-                            <h3>${name}</h3>
-                            <p>${roleDisplay}</p>
-                        </div>
+            document.getElementById('syllabusPendingGrid').innerHTML = s.length ? s.map(si => `
+                <div class="item-card">
+                    <strong>${escapeHtml(si.subject)}</strong> (${escapeHtml(si.classId)})<br>
+                    Weeks: ${si.weeks?.length||0} | Teacher: ${escapeHtml(si.teacherName||si.teacherId)}<br>
+                    <div class="btn-group" style="margin-top:0.5rem;">
+                        <button class="btn btn-outline btn-sm" onclick="viewSyllabusDetail('${si.id}')">Review</button>
+                        <button class="btn btn-success btn-sm" onclick="quickApprove('syllabus','${si.id}')">Approve</button>
+                        <button class="btn btn-danger btn-sm" onclick="quickReject('syllabus','${si.id}')">Reject</button>
                     </div>
-                    <div class="user-detail"><i class="fas fa-envelope"></i> ${user.email||'—'}</div>
-                    <div class="user-detail"><i class="fas fa-phone"></i> ${user.phone||'—'}</div>
-                    ${extra ? `<div class="user-detail"><i class="fas fa-info-circle"></i> ${extra}</div>` : ''}
-                    <div class="user-actions">
-                        <button class="btn btn-outline" onclick="viewDetails('${user.id}')"><i class="fas fa-eye"></i> Details</button>
-                        <button class="btn btn-approve" onclick="approveUser('${user.id}')"><i class="fas fa-check"></i> Approve</button>
-                        <button class="btn btn-reject" onclick="rejectUser('${user.id}')"><i class="fas fa-times"></i> Reject</button>
+                </div>`).join('') : '<p>No pending syllabi.</p>';
+            document.getElementById('notesPendingGrid').innerHTML = n.length ? n.map(ni => `
+                <div class="item-card">
+                    <strong>${escapeHtml(ni.subject)}</strong> Week ${ni.week}: ${escapeHtml(ni.topic)}<br>
+                    Teacher: ${escapeHtml(ni.teacherName||ni.teacherId)}<br>
+                    <div class="btn-group" style="margin-top:0.5rem;">
+                        <button class="btn btn-outline btn-sm" onclick="viewNoteDetail('${ni.id}')">Review</button>
+                        <button class="btn btn-success btn-sm" onclick="quickApprove('lessonNotes','${ni.id}')">Approve</button>
+                        <button class="btn btn-danger btn-sm" onclick="quickReject('lessonNotes','${ni.id}')">Reject</button>
                     </div>
+                </div>`).join('') : '<p>No pending lesson notes.</p>';
+        }
+        function renderLessonNotesHistory() {
+            const search = document.getElementById('lnHistSearch')?.value?.toLowerCase() || '';
+            const status = document.getElementById('lnHistStatus')?.value || 'approved';
+            const combined = [...allSyllabi.filter(s => s.status === status), ...allLessonNotes.filter(n => n.status === status)];
+            const filtered = combined.filter(item => (item.subject||'').toLowerCase().includes(search) || (item.topic||'').toLowerCase().includes(search));
+            const c = document.getElementById('historyLessonNotesGrid');
+            if (!filtered.length) { c.innerHTML = '<p>No history.</p>'; return; }
+            c.innerHTML = filtered.map(item => `
+                <div class="item-card">
+                    <strong>${escapeHtml(item.subject)}</strong> ${item.weeks?'Syllabus':`Week ${item.week}: ${escapeHtml(item.topic)}`}
+                    <span class="badge badge-${item.status==='approved'?'success':'danger'}">${item.status}</span><br>
+                    ${item.adminRating?`<div>Rating: ${'★'.repeat(item.adminRating)}${'☆'.repeat(5-item.adminRating)}</div>`:''}
+                    ${item.adminFeedback?`<div><em>Feedback:</em> ${escapeHtml(item.adminFeedback)}</div>`:''}
+                </div>`).join('');
+        }
+        window.viewSyllabusDetail = async (id) => {
+            const doc = await db.collection('syllabus').doc(id).get(); if (!doc.exists) return;
+            detailCurrentDoc = { id: doc.id, data: () => doc.data() }; detailType = 'syllabus';
+            const s = doc.data();
+            document.getElementById('detailTitle').textContent = `Syllabus: ${s.subject}`;
+            document.getElementById('detailBody').innerHTML = `<p><strong>Class:</strong> ${escapeHtml(s.classId)}</p><p><strong>Weeks:</strong> ${s.weeks?.length}</p><ul>${s.weeks?.map(w => `<li>Week ${w.week}: ${escapeHtml(w.topic)}</li>`).join('')||''}</ul>`;
+            detailRating = 0; document.querySelectorAll('#adminRatingStars i').forEach(s => s.className = 'far fa-star');
+            document.getElementById('adminFeedback').value = ''; document.getElementById('detailModal').classList.add('active');
+        };
+        window.viewNoteDetail = async (id) => {
+            const doc = await db.collection('lessonNotes').doc(id).get(); if (!doc.exists) return;
+            detailCurrentDoc = { id: doc.id, data: () => doc.data() }; detailType = 'lessonNote';
+            const n = doc.data();
+            document.getElementById('detailTitle').textContent = `Lesson Note: ${n.subject} Week ${n.week}`;
+            document.getElementById('detailBody').innerHTML = `<p><strong>Topic:</strong> ${escapeHtml(n.topic)}</p><p><strong>Content:</strong><br>${escapeHtml((n.lessonNote||'').substring(0,500))}...</p>`;
+            detailRating = 0; document.querySelectorAll('#adminRatingStars i').forEach(s => s.className = 'far fa-star');
+            document.getElementById('adminFeedback').value = ''; document.getElementById('detailModal').classList.add('active');
+        };
+        window.quickApprove = async (coll, id) => { await db.collection(coll).doc(id).update({ status: 'approved', reviewedAt: firebase.firestore.FieldValue.serverTimestamp() }); showToast('Approved', 'Done', 'success'); };
+        window.quickReject = async (coll, id) => { await db.collection(coll).doc(id).update({ status: 'rejected', reviewedAt: firebase.firestore.FieldValue.serverTimestamp() }); showToast('Rejected', 'Done', 'warning'); };
+
+        // ============================================
+        // DAILY REPORTS TAB
+        // ============================================
+        function loadDailyReportsData() {
+            if (unsubscribers['dailyreports']) unsubscribers['dailyreports']();
+            unsubscribers['dailyreports'] = db.collection('dailyReports').orderBy('date', 'desc').limit(50).onSnapshot(snap => {
+                allDailyReports = []; snap.forEach(d => allDailyReports.push({ id: d.id, ...d.data() }));
+                pendingDailyReports = allDailyReports.filter(r => r.status !== 'acknowledged');
+                renderDailyReportsPending(); renderDailyReportsHistory(); updateAllBadges(); updateStats();
+            });
+        }
+        function renderDailyReportsPending() {
+            const search = document.getElementById('drSearch').value.toLowerCase();
+            const filtered = pendingDailyReports.filter(r => (r.teacherName||'').toLowerCase().includes(search));
+            const c = document.getElementById('dailyReportsPendingList');
+            if (!filtered.length) { c.innerHTML = '<p>No pending reports.</p>'; return; }
+            c.innerHTML = filtered.map(r => `
+                <div class="item-card">
+                    <strong>${escapeHtml(r.teacherName)}</strong> — ${r.date} <span class="badge badge-warning">${r.status}</span>
+                    <div style="white-space:pre-wrap;margin:0.5rem 0;">${escapeHtml((r.content||'').substring(0,200))}...</div>
+                    <div class="btn-group">
+                        <button class="btn btn-outline btn-sm" onclick="viewDailyReport('${r.id}')">View</button>
+                        <button class="btn btn-success btn-sm" onclick="ackDailyReport('${r.id}')">Acknowledge</button>
+                    </div>
+                </div>`).join('');
+        }
+        function renderDailyReportsHistory() {
+            const filtered = allDailyReports.filter(r => r.status === 'acknowledged');
+            const c = document.getElementById('dailyReportsHistoryList');
+            c.innerHTML = filtered.length ? filtered.map(r => `
+                <div class="item-card">
+                    <strong>${escapeHtml(r.teacherName)}</strong> — ${r.date} <span class="badge badge-success">Acknowledged</span>
+                    <div style="white-space:pre-wrap;">${escapeHtml((r.content||'').substring(0,150))}...</div>
+                </div>`).join('') : '<p>No acknowledged reports.</p>';
+        }
+        window.viewDailyReport = async (id) => {
+            const doc = await db.collection('dailyReports').doc(id).get(); if (!doc.exists) return;
+            detailCurrentDoc = { id: doc.id, data: () => doc.data() }; detailType = 'dailyReport';
+            const r = doc.data();
+            document.getElementById('detailTitle').textContent = `Report: ${r.teacherName} - ${r.date}`;
+            document.getElementById('detailBody').innerHTML = `<p><strong>Class:</strong> ${escapeHtml(r.teacherClass)}</p><p><strong>Time:</strong> ${r.openingTime||'?'}-${r.closingTime||'?'}</p><div style="white-space:pre-wrap;margin-top:1rem;">${escapeHtml(r.content)}</div>`;
+            document.getElementById('detailModal').classList.add('active');
+        };
+        window.ackDailyReport = async (id) => {
+            await db.collection('dailyReports').doc(id).update({ status: 'acknowledged', acknowledgedAt: firebase.firestore.FieldValue.serverTimestamp() });
+            showToast('Acknowledged', 'Report acknowledged', 'success');
+        };
+
+        // ============================================
+        // TIMETABLES TAB
+        // ============================================
+        function loadTimetableData() {
+            if (unsubscribers['timetables']) unsubscribers['timetables']();
+            unsubscribers['timetables'] = db.collection('timetableProposals').orderBy('submittedAt', 'desc').limit(30).onSnapshot(snap => {
+                allTimetableProposals = []; snap.forEach(d => allTimetableProposals.push({ id: d.id, ...d.data() }));
+                pendingTimetableProposals = allTimetableProposals.filter(t => t.status === 'pending');
+                renderTimetablesPending(); renderTimetablesHistory(); updateAllBadges(); updateStats();
+            });
+        }
+        function renderTimetablesPending() {
+            const search = document.getElementById('ttSearch').value.toLowerCase();
+            const filtered = pendingTimetableProposals.filter(t => (t.classId||'').toLowerCase().includes(search) || (t.teacherName||'').toLowerCase().includes(search));
+            const c = document.getElementById('timetablePendingList');
+            if (!filtered.length) { c.innerHTML = '<p>No pending timetables.</p>'; return; }
+            c.innerHTML = filtered.map(t => `
+                <div class="item-card">
+                    <strong>${escapeHtml(t.classId)}</strong> by ${escapeHtml(t.teacherName)} (${t.type})
+                    <div class="btn-group" style="margin-top:0.5rem;">
+                        <button class="btn btn-outline btn-sm" onclick="viewTimetablePreview('${t.id}')">Preview</button>
+                        <button class="btn btn-success btn-sm" onclick="approveTimetable('${t.id}')">Approve</button>
+                        <button class="btn btn-danger btn-sm" onclick="rejectTimetable('${t.id}')">Reject</button>
+                    </div>
+                </div>`).join('');
+        }
+        function renderTimetablesHistory() {
+            const filtered = allTimetableProposals.filter(t => t.status === 'approved' || t.status === 'rejected');
+            const c = document.getElementById('timetableHistoryList');
+            c.innerHTML = filtered.length ? filtered.map(t => `
+                <div class="item-card">
+                    <strong>${escapeHtml(t.classId)}</strong> (${t.type})
+                    <span class="badge badge-${t.status==='approved'?'success':'danger'}">${t.status}</span>
+                </div>`).join('') : '<p>No history.</p>';
+        }
+        window.approveTimetable = async (id) => {
+            showConfirm('Approve', 'Approve this timetable?', async () => {
+                await db.collection('timetableProposals').doc(id).update({ status: 'approved', reviewedAt: firebase.firestore.FieldValue.serverTimestamp() });
+                showToast('Approved', 'Timetable approved', 'success');
+            });
+        };
+        window.rejectTimetable = async (id) => {
+            showConfirm('Reject', 'Reject this timetable?', async () => {
+                await db.collection('timetableProposals').doc(id).update({ status: 'rejected', reviewedAt: firebase.firestore.FieldValue.serverTimestamp() });
+                showToast('Rejected', 'Timetable rejected', 'warning');
+            });
+        };
+
+        // ============================================
+        // PENDING ACTIONS TAB
+        // ============================================
+        function loadPendingActions() {
+            if (unsubscribers['pendingActions']) unsubscribers['pendingActions']();
+            unsubscribers['pendingActions'] = db.collection('pendingActions').orderBy('requestedAt', 'desc').limit(50).onSnapshot(snap => {
+                allPendingActions = []; snap.forEach(d => allPendingActions.push({ id: d.id, ...d.data() }));
+                renderPendingActions(); updateAllBadges(); updateStats();
+            });
+        }
+        function renderPendingActions() {
+            const search = document.getElementById('paSearch').value.toLowerCase();
+            const status = document.getElementById('paStatusFilter').value;
+            const filtered = allPendingActions.filter(a => {
+                const match = (a.studentName||'').toLowerCase().includes(search) || (a.actionType||'').toLowerCase().includes(search);
+                return match && (status === 'all' || a.status === status);
+            });
+            const c = document.getElementById('pendingActionsList');
+            if (!filtered.length) { c.innerHTML = '<p>No action requests.</p>'; return; }
+            c.innerHTML = filtered.map(a => {
+                const statusClass = a.status === 'approved' ? 'badge-success' : a.status === 'rejected' ? 'badge-danger' : 'badge-warning';
+                return `<div class="item-card">
+                    <strong>${escapeHtml((a.actionType||'').replace(/_/g,' ').toUpperCase())}</strong> — ${escapeHtml(a.studentName)}
+                    <span class="badge ${statusClass}">${a.status}</span><br>
+                    ${a.details?.prefectRole?`Role: ${escapeHtml(a.details.prefectRole)}<br>`:''}
+                    ${a.details?.reason?`Reason: ${escapeHtml(a.details.reason)}<br>`:''}
+                    <small>${a.requestedAt?.toDate?.()?.toLocaleDateString()||''}</small>
+                    ${a.status==='pending'?`<div class="btn-group" style="margin-top:0.5rem;">
+                        <button class="btn btn-success btn-sm" onclick="approveAction('${a.id}')">Approve</button>
+                        <button class="btn btn-danger btn-sm" onclick="rejectAction('${a.id}')">Reject</button>
+                    </div>`:''}
                 </div>`;
             }).join('');
         }
-
-        let currentDetailUserId = null;
-        window.viewDetails = (userId) => {
-            const user = allUsers.find(u => u.id === userId);
-            if (!user) return;
-            currentDetailUserId = userId;
-            const name = `${user.firstName||''} ${user.surname||''}`.trim() || 'Unnamed';
-            const roleDisplay = user.role === 'teacher' ? 'Teacher' : user.role === 'student' ? 'Student' : user.role === 'nonTeachingStaff' ? 'Staff' : user.role;
-            let extraRows = '';
-            if (user.role === 'teacher') {
-                extraRows += `<div class="detail-row"><span class="detail-label">Class Teaching</span><span class="detail-value">${user.classTeaching||'—'}</span></div>`;
-                extraRows += `<div class="detail-row"><span class="detail-label">Qualifications</span><span class="detail-value">${user.qualifications||'—'}</span></div>`;
-            } else if (user.role === 'student') {
-                extraRows += `<div class="detail-row"><span class="detail-label">Class</span><span class="detail-value">${user.class||'—'}</span></div>`;
-            } else if (user.role === 'nonTeachingStaff') {
-                extraRows += `<div class="detail-row"><span class="detail-label">Department</span><span class="detail-value">${user.department||'—'}</span></div>`;
-            }
-
-            // Show photo in modal if available
-            const photoSection = user.photoURL 
-                ? `<div style="text-align:center;margin-bottom:1rem;"><img src="${user.photoURL}" alt="${name}" style="width:80px;height:80px;border-radius:50%;object-fit:cover;border:3px solid var(--accent);"></div>`
-                : '';
-
-            document.getElementById('detailContent').innerHTML = `
-                ${photoSection}
-                <div class="detail-row"><span class="detail-label">Name</span><span class="detail-value">${name}</span></div>
-                <div class="detail-row"><span class="detail-label">Email</span><span class="detail-value">${user.email||'—'}</span></div>
-                <div class="detail-row"><span class="detail-label">Phone</span><span class="detail-value">${user.phone||'—'}</span></div>
-                <div class="detail-row"><span class="detail-label">Role</span><span class="detail-value">${roleDisplay}</span></div>
-                ${extraRows}
-                <div class="detail-row"><span class="detail-label">Created</span><span class="detail-value">${user.createdAt ? new Date(user.createdAt.seconds*1000).toLocaleString() : '—'}</span></div>
-            `;
-            document.getElementById('detailModal').classList.add('active');
-        };
-        window.closeDetailModal = () => { document.getElementById('detailModal').classList.remove('active'); currentDetailUserId = null; };
-        window.approveFromDetail = () => { if (currentDetailUserId) approveUser(currentDetailUserId); };
-        window.rejectFromDetail = () => { if (currentDetailUserId) rejectUser(currentDetailUserId); };
-
-        // ID generation: JWS + first 3 letters of FIRST NAME + year + index
-        async function generateUserId(firstName, year) {
-            const prefix = firstName.substring(0, 3).toUpperCase();
-            const counterRef = db.collection('counters').doc(`userId_${year}_${prefix}`);
-            const newNum = await db.runTransaction(async (transaction) => {
-                const doc = await transaction.get(counterRef);
-                let next = 1;
-                if (doc.exists) {
-                    next = (doc.data().value || 0) + 1;
+        window.approveAction = async (id) => {
+            const action = allPendingActions.find(a => a.id === id); if (!action) return;
+            showConfirm('Approve', `Approve ${action.actionType} for ${action.studentName}?`, async () => {
+                await db.collection('pendingActions').doc(id).update({ status: 'approved', adminNote: 'Approved', reviewedAt: firebase.firestore.FieldValue.serverTimestamp() });
+                // Execute the action
+                if (action.actionType === 'assign_prefect' && action.studentId && action.details?.prefectRole) {
+                    await db.collection('users').doc(action.studentId).update({ prefect: action.details.prefectRole });
+                } else if (action.actionType === 'suspend' && action.studentId) {
+                    await db.collection('users').doc(action.studentId).update({ suspended: true });
+                } else if (action.actionType === 'activate' && action.studentId) {
+                    await db.collection('users').doc(action.studentId).update({ suspended: false });
+                } else if (action.actionType === 'delete' && action.studentId) {
+                    await db.collection('users').doc(action.studentId).delete();
+                } else if ((action.actionType === 'absence_request' || action.actionType === 'absence_explanation') && action.studentId) {
+                    // Log absence approval
+                    await db.collection('auditLogs').add({
+                        userId: action.studentId, userName: action.studentName, action: 'ABSENCE_APPROVED',
+                        details: JSON.stringify(action.details), timestamp: firebase.firestore.FieldValue.serverTimestamp()
+                    });
                 }
-                transaction.set(counterRef, { value: next }, { merge: true });
-                return next;
+                showToast('Approved', 'Action approved and executed', 'success');
             });
-            const paddedNum = String(newNum).padStart(4, '0');
-            return `JWS${prefix}${year}${paddedNum}`;
-        }
-
-        window.approveUser = async (userId) => {
-            if (!confirm('Approve this user? A unique ID will be generated.')) return;
-            try {
-                const userRef = db.collection('users').doc(userId);
-                const userSnap = await userRef.get();
-                const userData = userSnap.data();
-                if (!userData.userId) {
-                    const firstName = userData.firstName || 'STU';
-                    const year = userData.admissionYear || new Date().getFullYear();
-                    const generatedId = await generateUserId(firstName, year);
-                    await userRef.update({ approved: true, userId: generatedId });
-                    alert(`User approved! ID: ${generatedId}`);
-                } else {
-                    await userRef.update({ approved: true });
-                }
-                await logAudit(`Approved user ${userId} (ID: ${userData.userId || 'assigned'})`);
-                closeDetailModal();
-            } catch (error) {
-                console.error('Approve error:', error);
-                alert('Error approving user. Check console for details.');
-            }
+        };
+        window.rejectAction = async (id) => {
+            showConfirm('Reject', 'Reject this action?', async () => {
+                await db.collection('pendingActions').doc(id).update({ status: 'rejected', adminNote: 'Rejected', reviewedAt: firebase.firestore.FieldValue.serverTimestamp() });
+                showToast('Rejected', 'Action rejected', 'warning');
+            });
         };
 
-        window.rejectUser = async (userId) => {
-            if (!confirm('Reject this user? This will delete their data.')) return;
-            try {
-                await db.collection('users').doc(userId).delete();
-                await logAudit(`Rejected user ${userId}`);
-                closeDetailModal();
-            } catch (error) {
-                console.error('Reject error:', error);
-                alert('Error rejecting user.');
-            }
-        };
-
-        async function logAudit(action) {
-            if (!currentUserData) return;
-            await db.collection('auditLogs').add({
-                userId: auth.currentUser.uid,
-                userName: currentUserData.firstName + ' ' + currentUserData.surname,
-                userEmail: currentUserData.email || auth.currentUser.email,
-                action,
-                timestamp: firebase.firestore.FieldValue.serverTimestamp()
+        // ============================================
+        // SUB-TAB SWITCHING
+        // ============================================
+        document.querySelectorAll('.sub-tabs').forEach(group => {
+            group.addEventListener('click', (e) => {
+                const btn = e.target.closest('.sub-tab-btn'); if (!btn) return;
+                group.querySelectorAll('.sub-tab-btn').forEach(b => b.classList.remove('active'));
+                btn.classList.add('active');
+                const parent = group.parentElement;
+                parent.querySelectorAll('[id$="Pending"],[id$="pending"]').forEach(el => el.style.display = btn.dataset.sub === 'pending' ? 'block' : 'none');
+                parent.querySelectorAll('[id$="History"],[id$="history"]').forEach(el => el.style.display = btn.dataset.sub === 'history' ? 'block' : 'none');
             });
-        }
+        });
 
-        window.addEventListener('beforeunload', () => { if (unsubscribeUsers) unsubscribeUsers(); });
+        // ============================================
+        // TAB SWITCHING
+        // ============================================
+        function activateTab(name) {
+            document.querySelectorAll('#tabNav .tab-btn').forEach(b => b.classList.remove('active'));
+            document.querySelector(`.tab-btn[data-tab="${name}"]`)?.classList.add('active');
+            document.querySelectorAll('.tab-content').forEach(t => t.classList.remove('active'));
+            document.getElementById('tab-' + name)?.classList.add('active');
+            window.location.hash = name;
+            if (name === 'users' && !unsubscribers['users']) loadUsers();
+            if (name === 'lessonnotes' && !unsubscribers['syllabi']) loadLessonNotesData();
+            if (name === 'dailyreports' && !unsubscribers['dailyreports']) loadDailyReportsData();
+            if (name === 'timetables' && !unsubscribers['timetables']) loadTimetableData();
+            if (name === 'pendingactions' && !unsubscribers['pendingActions']) loadPendingActions();
+        }
+        document.getElementById('tabNav').addEventListener('click', e => {
+            const btn = e.target.closest('.tab-btn'); if (!btn) return;
+            activateTab(btn.dataset.tab);
+        });
+
+        // Keyboard shortcuts: Ctrl+1-5 for tabs
+        document.addEventListener('keydown', e => {
+            if ((e.ctrlKey || e.metaKey) && e.key >= '1' && e.key <= '5') {
+                e.preventDefault();
+                const tabs = ['users', 'lessonnotes', 'dailyreports', 'timetables', 'pendingactions'];
+                activateTab(tabs[parseInt(e.key) - 1]);
+            }
+        });
+
+        // ============================================
+        // AUTH
+        // ============================================
+        auth.onAuthStateChanged(async user => {
+            if (!user) { window.location.href = 'admin-login.html'; return; }
+            const doc = await db.collection('users').doc(user.uid).get();
+            if (!doc.exists || !['admin', 'master-admin'].includes(doc.data().role)) {
+                auth.signOut(); window.location.href = 'index.html'; return;
+            }
+            currentUserData = doc.data();
+            const pic = document.getElementById('profilePic');
+            if (currentUserData.photoURL) {
+                pic.innerHTML = `<img src="${currentUserData.photoURL}" alt="Admin">`;
+            } else {
+                pic.textContent = (currentUserData.firstName?.[0] || 'A') + (currentUserData.surname?.[0] || 'A');
+            }
+            await loadSettings();
+            await loadPostCategories();
+            // Load initial tab
+            const hash = window.location.hash.replace('#', '');
+            if (hash && document.getElementById('tab-' + hash)) activateTab(hash);
+            else activateTab('users');
+        });
+
+        document.getElementById('logoutBtn').addEventListener('click', () => auth.signOut().then(() => window.location.href = 'index.html'));
+
+        // Cleanup on page leave
+        window.addEventListener('beforeunload', () => Object.values(unsubscribers).forEach(u => u()));
     </script>
 </body>
 </html>
