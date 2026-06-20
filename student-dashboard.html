@@ -136,7 +136,7 @@
 
         /* Sidebar */
         .sidebar {
-            width: 280px;
+            width: 260px;
             background: var(--bg-sidebar);
             backdrop-filter: blur(20px);
             -webkit-backdrop-filter: blur(20px);
@@ -234,10 +234,10 @@
         /* Main Content */
         .main-content {
             flex: 1;
-            margin-left: 280px;
+            margin-left: 260px;
             padding: 1.5rem;
             transition: margin-left 0.3s cubic-bezier(0.4, 0, 0.2, 1);
-            max-width: calc(100vw - 280px);
+            max-width: calc(100vw - 260px);
             position: relative;
             z-index: 5;
         }
@@ -394,7 +394,7 @@
         /* Quick Links */
         .quick-links {
             display: grid;
-            grid-template-columns: repeat(auto-fill, minmax(110px, 1fr));
+            grid-template-columns: repeat(auto-fill, minmax(130px, 1fr));
             gap: 0.8rem;
             margin-bottom: 1.5rem;
         }
@@ -417,7 +417,7 @@
             box-shadow: var(--shadow);
         }
         .quick-link-card i { font-size: 1.4rem; color: var(--accent); margin-bottom: 0.4rem; display: block; }
-        .quick-link-card span { font-size: 0.7rem; font-weight: 600; }
+        .quick-link-card span { font-size: 0.72rem; font-weight: 600; }
 
         /* Section Card */
         .section-card {
@@ -563,6 +563,14 @@
         .grade-D { color: #f97316; font-weight: 800; }
         .grade-F { color: var(--danger-text); font-weight: 800; }
 
+        /* Announcement mini cards */
+        .ann-mini {
+            padding: 0.5rem 0;
+            border-bottom: 1px solid var(--border-light);
+            font-size: 0.8rem;
+        }
+        .ann-mini:last-child { border-bottom: none; }
+
         /* Mobile */
         @media (max-width: 768px) {
             .sidebar { width: 85px; }
@@ -591,6 +599,7 @@
             <img src="https://res.cloudinary.com/dda7kpir8/image/upload/q_auto/f_auto/v1781038310/ChatGPT_Image_Jun_9_2026_09_25_06_AM_elnine.png" alt="JWMS Logo">
             <h2>Judah Wonders<span>Model School</span></h2>
         </a>
+
         <a href="student-dashboard.html" class="nav-item active">
             <i class="fas fa-chart-pie"></i><span>Dashboard</span>
         </a>
@@ -600,21 +609,16 @@
         <a href="my-analysis.html" class="nav-item">
             <i class="fas fa-chart-simple"></i><span>My Analysis</span>
         </a>
-        <a href="school-noticeboard.html" class="nav-item">
-            <i class="fas fa-bullhorn"></i><span>Noticeboard</span>
-        </a>
         <a href="my-student-class.html" class="nav-item">
             <i class="fas fa-chalkboard"></i><span>My Class</span>
         </a>
         <a href="student-report-card.html" class="nav-item">
             <i class="fas fa-graduation-cap"></i><span>Report Card</span>
         </a>
-        <a href="student-attendance.html" class="nav-item">
-            <i class="fas fa-fingerprint"></i><span>Attendance</span>
-        </a>
         <a href="student-profile.html" class="nav-item">
             <i class="fas fa-user-edit"></i><span>Profile</span>
         </a>
+
         <div class="toggle-btn" id="sidebarToggle">
             <i class="fas fa-chevron-left"></i>
         </div>
@@ -652,7 +656,7 @@
         <div class="welcome-banner">
             <div>
                 <h2><i class="fas fa-graduation-cap"></i> Stay on Track!</h2>
-                <p>You have <strong id="pendingTasks">0</strong> pending task(s)</p>
+                <p>You have <strong id="pendingTasks">0</strong> pending assessment(s)</p>
             </div>
             <div>
                 <span id="currentDate" style="font-size:0.85rem;opacity:0.9;"></span>
@@ -697,23 +701,14 @@
 
         <!-- Quick Links -->
         <div class="quick-links">
-            <a href="my-assessments.html?type=assignment" class="quick-link-card">
-                <i class="fas fa-tasks"></i><span>Assignments</span>
+            <a href="my-assessments.html" class="quick-link-card">
+                <i class="fas fa-tasks"></i><span>My Assessments</span>
             </a>
-            <a href="my-assessments.html?type=test" class="quick-link-card">
-                <i class="fas fa-laptop"></i><span>Tests</span>
-            </a>
-            <a href="my-assessments.html?type=exam" class="quick-link-card">
-                <i class="fas fa-pen-fancy"></i><span>Exams</span>
+            <a href="my-analysis.html" class="quick-link-card">
+                <i class="fas fa-chart-simple"></i><span>My Analysis</span>
             </a>
             <a href="my-student-class.html" class="quick-link-card">
                 <i class="fas fa-chalkboard"></i><span>My Class</span>
-            </a>
-            <a href="my-analysis.html" class="quick-link-card">
-                <i class="fas fa-chart-simple"></i><span>Analysis</span>
-            </a>
-            <a href="my-student-class.html#tab-attendance" class="quick-link-card">
-                <i class="fas fa-fingerprint"></i><span>Attendance</span>
             </a>
             <a href="student-report-card.html" class="quick-link-card">
                 <i class="fas fa-graduation-cap"></i><span>Report Card</span>
@@ -1045,10 +1040,6 @@
                 let pendingCount = 0, completedCount = 0, awaitingGradeCount = 0;
                 const allScores = [];
                 const upcomingList = [], resultsList = [], activityList = [];
-                const submittedAssessmentIds = new Set();
-
-                // Track submitted assessment IDs
-                Object.keys(submissionsMap).forEach(id => submittedAssessmentIds.add(id));
 
                 for (const assessment of assessments) {
                     const sub = submissionsMap[assessment.id];
@@ -1118,12 +1109,12 @@
                 // Render upcoming assessments
                 document.getElementById('upcomingAssessmentsBody').innerHTML = upcomingList.length
                     ? upcomingList.join('')
-                    : '<tr><td colspan="5" style="text-align:center;color:var(--text-muted);">No upcoming assessments 🎉</td></tr>';
+                    : '<tr><td colspan="5" style="text-align:center;color:var(--text-muted);padding:1rem;">No upcoming assessments 🎉</td></tr>';
 
                 // Render results
                 document.getElementById('recentResultsBody').innerHTML = resultsList.length
                     ? resultsList.join('')
-                    : '<tr><td colspan="5" style="text-align:center;color:var(--text-muted);">No graded results yet</td></tr>';
+                    : '<tr><td colspan="5" style="text-align:center;color:var(--text-muted);padding:1rem;">No graded results yet</td></tr>';
 
                 // Attendance
                 let presentCount = 0;
@@ -1155,10 +1146,12 @@
                         const a = doc.data();
                         const dateStr = a.createdAt?.toDate ? a.createdAt.toDate().toLocaleDateString('en-GB', { day: 'numeric', month: 'short' }) : '';
                         return `
-                            <div style="padding:0.5rem 0;border-bottom:1px solid var(--border-light);font-size:0.8rem;">
-                                <strong>${escapeHtml(a.title || 'Untitled')}</strong>
-                                <span style="color:var(--text-muted);font-size:0.7rem;float:right;">${dateStr}</span>
-                                <p style="color:var(--text-secondary);margin-top:0.2rem;font-size:0.75rem;">${escapeHtml((a.content || '').substring(0, 100))}...</p>
+                            <div class="ann-mini">
+                                <div style="display:flex;justify-content:space-between;align-items:center;">
+                                    <strong>${escapeHtml(a.title || 'Untitled')}</strong>
+                                    <span style="color:var(--text-muted);font-size:0.7rem;">${dateStr}</span>
+                                </div>
+                                <p style="color:var(--text-secondary);margin-top:0.2rem;font-size:0.75rem;">${escapeHtml((a.content || '').substring(0, 100))}${(a.content || '').length > 100 ? '...' : ''}</p>
                             </div>
                         `;
                     }).join('');
