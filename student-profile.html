@@ -1,0 +1,838 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="dark">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=5.0, user-scalable=yes, viewport-fit=cover">
+    <meta name="theme-color" content="#0a0f1e">
+    <meta name="description" content="Judah Wonders Model School · Student Profile">
+    <title>Judah Wonders · My Profile</title>
+    
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link rel="preconnect" href="https://www.gstatic.com">
+    
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:opsz,wght@14..32,400;14..32,500;14..32,600;14..32,700;14..32,800&family=Playfair+Display:wght@600;700&family=Space+Grotesk:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-auth-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-firestore-compat.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
+
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        
+        :root[data-theme="light"] {
+            --bg-primary: #f0f5fa; --bg-surface: rgba(255,255,255,0.85); --text-primary: #0b1e33;
+            --text-secondary: #2c3e50; --text-muted: #64748b; --accent: #0A2540; --accent-glow: #C8963E;
+            --accent-light: rgba(10,37,64,0.08); --border: rgba(0,0,0,0.08); --border-light: rgba(0,0,0,0.04);
+            --card-bg: rgba(255,255,255,0.75); --hover-bg: rgba(255,255,255,0.95);
+            --shadow: 0 4px 20px -5px rgba(0,0,0,0.08); --shadow-lg: 0 8px 30px -5px rgba(0,0,0,0.12);
+            --shadow-xl: 0 20px 50px -10px rgba(0,0,0,0.2);
+            --success-bg: rgba(34,197,94,0.12); --success-text: #16a34a; --success-border: rgba(34,197,94,0.3);
+            --warning-bg: rgba(245,158,11,0.12); --warning-text: #b45309; --warning-border: rgba(245,158,11,0.3);
+            --danger-bg: rgba(239,68,68,0.12); --danger-text: #b91c1c; --danger-border: rgba(239,68,68,0.3);
+            --info-bg: rgba(10,37,64,0.08); --info-text: #0A2540; --info-border: rgba(10,37,64,0.2);
+            --gradient-start: #0A2540; --gradient-end: #C8963E; --input-bg: #fff;
+            --progress-bg: #e2e8f0;
+        }
+        :root[data-theme="dark"] {
+            --bg-primary: #0a0f1e; --bg-surface: rgba(15,23,42,0.85); --text-primary: #f0f4fa;
+            --text-secondary: #a0b3d9; --text-muted: #64748b; --accent: #C8963E; --accent-glow: #D4AF37;
+            --accent-light: rgba(200,150,62,0.12); --border: rgba(255,255,255,0.06);
+            --border-light: rgba(255,255,255,0.03); --card-bg: rgba(15,23,42,0.75);
+            --hover-bg: rgba(30,41,59,0.8); --shadow: 0 4px 20px -5px rgba(0,0,0,0.3);
+            --shadow-lg: 0 8px 30px -5px rgba(0,0,0,0.4);
+            --shadow-xl: 0 20px 50px -10px rgba(0,0,0,0.6);
+            --success-bg: rgba(34,197,94,0.15); --success-text: #4ade80; --success-border: rgba(34,197,94,0.3);
+            --warning-bg: rgba(245,158,11,0.15); --warning-text: #fbbf24; --warning-border: rgba(245,158,11,0.3);
+            --danger-bg: rgba(239,68,68,0.15); --danger-text: #f87171; --danger-border: rgba(239,68,68,0.3);
+            --info-bg: rgba(200,150,62,0.12); --info-text: #D4AF37; --info-border: rgba(200,150,62,0.25);
+            --gradient-start: #0A2540; --gradient-end: #C8963E; --input-bg: rgba(30,41,59,0.9);
+            --progress-bg: #1e293b;
+        }
+
+        body { font-family: 'Inter', sans-serif; background: var(--bg-primary); color: var(--text-primary); min-height: 100vh; transition: background 0.3s, color 0.3s; position: relative; overflow-x: hidden; display: flex; }
+        .bg-logo { position: fixed; top: 50%; left: 50%; transform: translate(-50%, -50%); width: 400px; max-width: 70vw; opacity: 0.03; pointer-events: none; z-index: 0; animation: breathe 6s ease-in-out infinite; }
+        @keyframes breathe { 0%,100%{transform:translate(-50%,-50%)scale(1);opacity:.03} 50%{transform:translate(-50%,-50%)scale(1.06);opacity:.06} }
+        .orb { position: fixed; border-radius: 50%; filter: blur(100px); z-index: 0; pointer-events: none; animation: float 25s infinite alternate ease-in-out; }
+        .orb-1 { width: 350px; height: 350px; top: -120px; right: -120px; background: radial-gradient(circle at 30% 30%, rgba(10,37,64,0.12), transparent 70%); }
+        .orb-2 { width: 450px; height: 450px; bottom: -180px; left: -150px; background: radial-gradient(circle at 70% 70%, rgba(200,150,62,0.10), transparent 70%); animation-duration: 30s; }
+        @keyframes float { 0% { transform: translate(0,0) scale(1); } 100% { transform: translate(50px,30px) scale(1.15); } }
+
+        /* Sidebar */
+        .sidebar { width: 260px; background: var(--bg-surface); backdrop-filter: blur(20px); -webkit-backdrop-filter: blur(20px); border-right: 1px solid var(--border); padding: 1.5rem 0.8rem; display: flex; flex-direction: column; transition: all 0.3s; position: fixed; top: 0; left: 0; height: 100vh; overflow-y: auto; z-index: 100; box-shadow: var(--shadow-lg); }
+        .sidebar .logo-area { display: flex; align-items: center; gap: 0.8rem; margin-bottom: 1.8rem; padding: 0 0.3rem; text-decoration: none; }
+        .sidebar .logo-area img { width: 38px; height: 38px; object-fit: contain; animation: logoPulse 3s ease-in-out infinite; flex-shrink: 0; }
+        @keyframes logoPulse { 0%,100%{transform:scale(1)} 50%{transform:scale(1.05)} }
+        .sidebar .logo-area h2 { font-family: 'Playfair Display', serif; font-size: 1.1rem; font-weight: 700; white-space: nowrap; color: var(--accent); line-height: 1.2; }
+        .sidebar .logo-area h2 span { display: block; font-size: 0.6rem; letter-spacing: 1.5px; color: var(--accent-glow); }
+        .sidebar .nav-item { display: flex; align-items: center; gap: 0.9rem; padding: 0.75rem 1rem; border-radius: 1rem; color: var(--text-secondary); transition: all 0.2s; cursor: pointer; margin-bottom: 0.25rem; text-decoration: none; font-weight: 500; white-space: nowrap; border: 1px solid transparent; font-size: 0.9rem; }
+        .sidebar .nav-item:hover { background: var(--hover-bg); color: var(--accent); border-color: var(--border); transform: translateX(3px); }
+        .sidebar .nav-item.active { background: linear-gradient(135deg, var(--gradient-start), var(--gradient-end)); color: white; box-shadow: 0 6px 15px -5px rgba(200,150,62,.4); font-weight: 600; }
+        .sidebar .nav-item i { font-size: 1.2rem; width: 1.6rem; text-align: center; flex-shrink: 0; }
+        .sidebar .toggle-btn { margin-top: auto; display: flex; justify-content: flex-end; padding: 0.8rem 0.5rem; cursor: pointer; color: var(--text-secondary); font-size: 1.1rem; transition: all 0.2s; }
+        .sidebar .toggle-btn:hover { color: var(--accent); }
+
+        .main-content { flex: 1; margin-left: 260px; padding: 1.5rem; transition: margin-left 0.3s; max-width: calc(100vw - 260px); position: relative; z-index: 5; }
+
+        .top-bar { display: flex; justify-content: space-between; align-items: center; margin-bottom: 1.5rem; flex-wrap: wrap; gap: 1rem; }
+        .page-title h1 { font-family: 'Playfair Display', serif; font-size: 1.8rem; font-weight: 700; color: var(--accent); margin-bottom: 0.1rem; }
+        .page-title p { color: var(--text-secondary); font-size: 0.85rem; }
+        .profile-area { display: flex; align-items: center; gap: 1rem; }
+        .theme-toggle { background: var(--card-bg); backdrop-filter: blur(10px); -webkit-backdrop-filter: blur(10px); border: 1px solid var(--border); border-radius: 2rem; padding: 0.4rem 1rem; display: flex; align-items: center; gap: 0.4rem; cursor: pointer; color: var(--text-secondary); font-size: 0.8rem; transition: all 0.2s; }
+        .theme-toggle:hover { border-color: var(--accent); color: var(--accent); }
+        .profile-pic { width: 38px; height: 38px; border-radius: 50%; background: linear-gradient(135deg, var(--gradient-start), var(--gradient-end)); display: flex; align-items: center; justify-content: center; color: white; font-weight: 600; font-size: 0.9rem; box-shadow: 0 4px 12px rgba(200,150,62,.3); overflow: hidden; }
+        .profile-pic img { width: 100%; height: 100%; object-fit: cover; border-radius: 50%; }
+        .dropdown-menu { position: absolute; right: 0; top: 50px; background: var(--card-bg); border: 1px solid var(--border); border-radius: 1rem; padding: 0.4rem; min-width: 160px; display: none; z-index: 1000; box-shadow: var(--shadow-lg); }
+        .profile-dropdown { position: relative; cursor: pointer; }
+        .profile-dropdown:hover .dropdown-menu { display: block; animation: fadeIn 0.2s; }
+        @keyframes fadeIn { from{opacity:0;transform:translateY(-10px)} to{opacity:1;transform:translateY(0)} }
+        .dropdown-item { padding: 0.6rem 1rem; color: var(--text-primary); border-radius: 0.8rem; display: flex; align-items: center; gap: 0.6rem; font-size: 0.85rem; cursor: pointer; transition: all 0.2s; }
+        .dropdown-item:hover { background: var(--hover-bg); color: var(--accent); }
+
+        /* Cards */
+        .card { background: var(--card-bg); backdrop-filter: blur(12px); -webkit-backdrop-filter: blur(12px); border: 1px solid var(--border); border-radius: 1.5rem; padding: 1.5rem; box-shadow: var(--shadow); margin-bottom: 1.5rem; transition: 0.3s; }
+        .card:hover { box-shadow: var(--shadow-lg); }
+        .card-header { display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 1.2rem; flex-wrap: wrap; gap: 1rem; padding-bottom: 0.8rem; border-bottom: 1px solid var(--border); }
+        .card-header h3 { font-size: 1.15rem; font-weight: 700; display: flex; align-items: center; gap: 0.5rem; }
+
+        /* Profile Header */
+        .profile-header { display: flex; align-items: center; gap: 2rem; margin-bottom: 2rem; flex-wrap: wrap; }
+        .avatar-circle { width: 120px; height: 120px; border-radius: 50%; background: linear-gradient(135deg, var(--gradient-start), var(--gradient-end)); display: flex; align-items: center; justify-content: center; color: white; font-size: 3rem; font-weight: 700; cursor: pointer; overflow: hidden; position: relative; border: 3px solid var(--accent); flex-shrink: 0; text-transform: uppercase; }
+        .avatar-circle img { width: 100%; height: 100%; object-fit: cover; position: absolute; top: 0; left: 0; }
+        .avatar-circle .upload-overlay { position: absolute; bottom: 0; left: 0; right: 0; background: rgba(0,0,0,0.6); color: white; text-align: center; padding: 0.3rem; font-size: 0.8rem; opacity: 0; transition: opacity 0.2s; z-index: 2; }
+        .avatar-circle:hover .upload-overlay { opacity: 1; }
+        .profile-info h2 { font-size: 2rem; margin-bottom: 0.3rem; }
+        .profile-info .student-id { color: var(--accent); font-weight: 500; font-family: 'Space Grotesk', monospace; }
+
+        /* Grid Layout */
+        .grid-2 { display: grid; grid-template-columns: repeat(auto-fit, minmax(340px, 1fr)); gap: 1.5rem; }
+
+        /* Info Rows */
+        .info-row { display: flex; padding: 0.7rem 0; border-bottom: 1px solid var(--border); }
+        .info-label { width: 140px; color: var(--text-secondary); font-weight: 500; font-size: 0.85rem; flex-shrink: 0; }
+        .info-value { flex: 1; font-weight: 500; font-size: 0.9rem; }
+
+        /* Progress Bar */
+        .progress-bar { height: 10px; background: var(--progress-bg); border-radius: 5px; margin-top: 0.5rem; overflow: hidden; }
+        .progress-fill { height: 100%; background: linear-gradient(90deg, var(--gradient-start), var(--gradient-end)); border-radius: 5px; transition: width 0.5s ease; }
+
+        /* Subject Progress */
+        .subject-progress-item { margin-bottom: 0.8rem; }
+        .subject-progress-header { display: flex; justify-content: space-between; margin-bottom: 0.2rem; font-size: 0.85rem; }
+        .subject-progress-bar { height: 6px; background: var(--progress-bg); border-radius: 3px; overflow: hidden; }
+        .subject-progress-fill { height: 100%; border-radius: 3px; transition: width 0.5s ease; }
+
+        /* Score Table */
+        .score-table { width: 100%; border-collapse: collapse; }
+        .score-table th, .score-table td { padding: 0.5rem 0.6rem; border-bottom: 1px solid var(--border); font-size: 0.82rem; text-align: left; }
+        .score-table th { color: var(--text-muted); font-weight: 600; font-size: 0.75rem; text-transform: uppercase; }
+        .score-high { color: var(--success-text); font-weight: 700; }
+        .score-mid { color: var(--warning-text); font-weight: 700; }
+        .score-low { color: var(--danger-text); font-weight: 700; }
+
+        /* Badges */
+        .badge { padding: 0.2rem 0.7rem; border-radius: 2rem; font-size: 0.7rem; font-weight: 700; display: inline-flex; align-items: center; gap: 0.3rem; }
+        .badge-success { background: var(--success-bg); color: var(--success-text); border: 1px solid var(--success-border); }
+        .badge-warning { background: var(--warning-bg); color: var(--warning-text); border: 1px solid var(--warning-border); }
+        .badge-danger { background: var(--danger-bg); color: var(--danger-text); border: 1px solid var(--danger-border); }
+        .badge-info { background: var(--info-bg); color: var(--info-text); border: 1px solid var(--info-border); }
+
+        /* Forms */
+        .form-group { margin-bottom: 1rem; }
+        .form-group label { display: block; margin-bottom: 0.3rem; color: var(--text-secondary); font-weight: 600; font-size: 0.85rem; }
+        .form-control { width: 100%; padding: 0.6rem 1rem; background: var(--input-bg); border: 2px solid var(--border); border-radius: 1rem; color: var(--text-primary); font-family: inherit; font-size: 0.9rem; transition: border-color 0.2s; }
+        .form-control:focus { outline: none; border-color: var(--accent); }
+        .form-control:read-only { background: var(--hover-bg); cursor: not-allowed; opacity: 0.7; }
+
+        /* Buttons */
+        .btn { padding: 0.5rem 1.2rem; border: none; border-radius: 2rem; font-weight: 600; font-size: 0.85rem; cursor: pointer; transition: all 0.2s; display: inline-flex; align-items: center; gap: 0.4rem; font-family: inherit; }
+        .btn-primary { background: linear-gradient(135deg, var(--gradient-start), var(--gradient-end)); color: white; box-shadow: 0 4px 12px rgba(200,150,62,.3); }
+        .btn-primary:hover { box-shadow: 0 6px 20px rgba(200,150,62,.5); transform: translateY(-2px); }
+        .btn-outline { background: transparent; border: 1px solid var(--border); color: var(--text-primary); }
+        .btn-outline:hover { border-color: var(--accent); background: var(--hover-bg); }
+        .btn-sm { padding: 0.3rem 0.8rem; font-size: 0.78rem; border-radius: 1.5rem; }
+        .btn:disabled { opacity: 0.5; cursor: not-allowed; }
+
+        /* Toast */
+        .toast-container { position: fixed; top: 1rem; right: 1rem; z-index: 5000; display: flex; flex-direction: column; gap: 0.5rem; pointer-events: none; }
+        .toast { background: var(--card-bg); backdrop-filter: blur(16px); -webkit-backdrop-filter: blur(16px); border: 1px solid var(--border); border-radius: 1rem; padding: 0.9rem 1.3rem; min-width: 300px; box-shadow: var(--shadow-xl); display: flex; align-items: flex-start; gap: 0.7rem; animation: slideIn 0.3s; pointer-events: auto; font-size: 0.85rem; }
+        .toast.removing { animation: slideOut 0.3s ease-in forwards; }
+        @keyframes slideIn { from{transform:translateX(120%);opacity:0} to{transform:translateX(0);opacity:1} }
+        @keyframes slideOut { from{transform:translateX(0);opacity:1} to{transform:translateX(120%);opacity:0} }
+
+        /* Section Tabs */
+        .section-tabs { display: flex; gap: 0.3rem; margin-bottom: 1.5rem; background: var(--card-bg); backdrop-filter: blur(8px); -webkit-backdrop-filter: blur(8px); border: 1px solid var(--border); border-radius: 2.5rem; padding: 0.25rem; width: fit-content; }
+        .section-tab { padding: 0.55rem 1.4rem; border-radius: 2.5rem; font-weight: 500; font-size: 0.85rem; cursor: pointer; transition: 0.2s; color: var(--text-secondary); white-space: nowrap; }
+        .section-tab.active { background: linear-gradient(135deg, var(--gradient-start), var(--gradient-end)); color: white; font-weight: 600; }
+        .section-tab:hover:not(.active) { color: var(--accent); }
+
+        .section-content { display: none; }
+        .section-content.active { display: block; animation: fadeIn 0.3s ease-out; }
+
+        @media (max-width: 768px) {
+            .sidebar { width: 85px; }
+            .sidebar .logo-area h2, .sidebar .nav-item span { display: none; }
+            .sidebar .nav-item { justify-content: center; padding: 0.7rem; }
+            .main-content { margin-left: 85px; max-width: calc(100vw - 85px); padding: 1rem; }
+            .grid-2 { grid-template-columns: 1fr; }
+            .profile-header { flex-direction: column; text-align: center; }
+        }
+    </style>
+</head>
+<body>
+    <img src="https://res.cloudinary.com/dda7kpir8/image/upload/q_auto/f_auto/v1781038310/ChatGPT_Image_Jun_9_2026_09_25_06_AM_elnine.png" alt="" class="bg-logo" aria-hidden="true">
+    <div class="orb orb-1"></div><div class="orb orb-2"></div>
+    <div class="toast-container" id="toastContainer"></div>
+
+    <!-- Sidebar -->
+    <div class="sidebar" id="sidebar">
+        <a href="index.html" class="logo-area">
+            <img src="https://res.cloudinary.com/dda7kpir8/image/upload/q_auto/f_auto/v1781038310/ChatGPT_Image_Jun_9_2026_09_25_06_AM_elnine.png" alt="JWMS Logo">
+            <h2>Judah Wonders<span>Model School</span></h2>
+        </a>
+        <a href="student-dashboard.html" class="nav-item"><i class="fas fa-chart-pie"></i><span>Dashboard</span></a>
+        <a href="student-classroom.html" class="nav-item"><i class="fas fa-chalkboard"></i><span>Classroom</span></a>
+        <a href="student-assignments.html" class="nav-item"><i class="fas fa-tasks"></i><span>Assignments</span></a>
+        <a href="student-evaluation.html" class="nav-item"><i class="fas fa-chart-bar"></i><span>Evaluation</span></a>
+        <a href="student-profile.html" class="nav-item active"><i class="fas fa-user"></i><span>Profile</span></a>
+        <div class="toggle-btn" id="sidebarToggle"><i class="fas fa-chevron-left"></i></div>
+    </div>
+
+    <!-- Main Content -->
+    <div class="main-content" id="mainContent">
+        <div class="top-bar">
+            <div class="page-title">
+                <h1>My Profile</h1>
+                <p>View your academic profile, progress & achievements</p>
+            </div>
+            <div class="profile-area">
+                <div class="theme-toggle" id="themeToggle"><i class="fas fa-sun"></i><span>Light</span></div>
+                <div class="profile-dropdown">
+                    <div class="profile-pic" id="profilePicSmall">S</div>
+                    <div class="dropdown-menu">
+                        <div class="dropdown-item" id="logoutBtn"><i class="fas fa-sign-out-alt"></i> Logout</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Profile Header -->
+        <div class="card">
+            <div class="profile-header">
+                <div style="text-align:center;">
+                    <div class="avatar-circle" id="avatarCircle">
+                        <span id="avatarInitial">S</span>
+                        <img id="profileImage" src="" alt="Profile" style="display:none;">
+                        <div class="upload-overlay"><i class="fas fa-camera"></i> Change</div>
+                        <input type="file" id="profileUpload" accept="image/*" style="display:none;">
+                    </div>
+                    <div id="uploadStatus" style="font-size:0.8rem;min-height:1.2rem;margin-top:0.3rem;"></div>
+                </div>
+                <div class="profile-info">
+                    <h2 id="fullName">Loading...</h2>
+                    <div class="student-id" id="studentIdDisplay">ID: —</div>
+                    <div style="margin-top:0.5rem;">
+                        <span class="badge badge-info" id="classBadge">Class: —</span>
+                        <span class="badge badge-success" id="statusBadge">Active</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Section Tabs -->
+        <div class="section-tabs" id="sectionTabs">
+            <div class="section-tab active" data-section="overview">📋 Overview</div>
+            <div class="section-tab" data-section="personal">👤 Personal Info</div>
+            <div class="section-tab" data-section="progress">📈 Progress</div>
+            <div class="section-tab" data-section="scores">📝 Scores</div>
+            <div class="section-tab" data-section="settings">⚙️ Settings</div>
+        </div>
+
+        <!-- OVERVIEW SECTION -->
+        <div class="section-content active" id="section-overview">
+            <div class="grid-2">
+                <!-- Academic Identity -->
+                <div class="card">
+                    <div class="card-header"><h3><i class="fas fa-graduation-cap"></i> Academic Identity</h3></div>
+                    <div class="info-row"><span class="info-label">Student ID</span><span class="info-value" id="ovStudentId">—</span></div>
+                    <div class="info-row"><span class="info-label">Date Enrolled</span><span class="info-value" id="ovDateEnrolled">—</span></div>
+                    <div class="info-row"><span class="info-label">Class</span><span class="info-value" id="ovClass">—</span></div>
+                    <div class="info-row"><span class="info-label">Subjects</span><span class="info-value" id="ovSubjects">—</span></div>
+                    <div class="info-row"><span class="info-label">Prefect Role</span><span class="info-value" id="ovPrefect">—</span></div>
+                    <div class="info-row"><span class="info-label">Account Status</span><span class="info-value" id="ovStatus">—</span></div>
+                </div>
+
+                <!-- Quick Stats -->
+                <div class="card">
+                    <div class="card-header"><h3><i class="fas fa-chart-simple"></i> Quick Stats</h3></div>
+                    <div class="info-row"><span class="info-label">Overall Progress</span><span class="info-value"><span id="ovProgress">0%</span><div class="progress-bar" style="margin-top:0.3rem;"><div class="progress-fill" id="ovProgressBar" style="width:0%;"></div></div></span></div>
+                    <div class="info-row"><span class="info-label">Weeks Completed</span><span class="info-value" id="ovWeeksDone">0</span></div>
+                    <div class="info-row"><span class="info-label">Total Scores</span><span class="info-value" id="ovTotalScores">0</span></div>
+                    <div class="info-row"><span class="info-label">Average Score</span><span class="info-value" id="ovAvgScore">—</span></div>
+                    <div class="info-row"><span class="info-label">Attendance Rate</span><span class="info-value" id="ovAttendance">—</span></div>
+                </div>
+
+                <!-- Parent/Guardian -->
+                <div class="card">
+                    <div class="card-header"><h3><i class="fas fa-users"></i> Parent / Guardian</h3></div>
+                    <div class="info-row"><span class="info-label">Name</span><span class="info-value" id="ovParentName">—</span></div>
+                    <div class="info-row"><span class="info-label">Relationship</span><span class="info-value" id="ovParentRel">—</span></div>
+                    <div class="info-row"><span class="info-label">Phone</span><span class="info-value" id="ovParentPhone">—</span></div>
+                    <div class="info-row"><span class="info-label">Email</span><span class="info-value" id="ovParentEmail">—</span></div>
+                </div>
+
+                <!-- Recent Activity -->
+                <div class="card">
+                    <div class="card-header"><h3><i class="fas fa-bell"></i> Recent Activity</h3></div>
+                    <div id="ovActivity" style="max-height:200px;overflow-y:auto;">
+                        <p style="color:var(--text-muted);">Loading activity...</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- PERSONAL INFO SECTION -->
+        <div class="section-content" id="section-personal">
+            <div class="grid-2">
+                <div class="card">
+                    <div class="card-header"><h3><i class="fas fa-user-edit"></i> Personal Information</h3></div>
+                    <form id="personalForm">
+                        <div class="form-group"><label>First Name</label><input type="text" id="firstName" class="form-control"></div>
+                        <div class="form-group"><label>Surname</label><input type="text" id="surname" class="form-control"></div>
+                        <div class="form-group"><label>Email</label><input type="email" id="email" class="form-control" readonly></div>
+                        <div class="form-group"><label>Phone</label><input type="tel" id="phone" class="form-control"></div>
+                        <div class="form-group"><label>Date of Birth</label><input type="date" id="dob" class="form-control"></div>
+                        <div class="form-group"><label>Address</label><input type="text" id="address" class="form-control"></div>
+                        <button type="submit" class="btn btn-primary"><i class="fas fa-save"></i> Update Personal Info</button>
+                    </form>
+                </div>
+                <div class="card">
+                    <div class="card-header"><h3><i class="fas fa-shield-alt"></i> Account Security</h3></div>
+                    <form id="passwordForm">
+                        <div class="form-group"><label>Current Password</label><input type="password" id="currentPassword" class="form-control"></div>
+                        <div class="form-group"><label>New Password</label><input type="password" id="newPassword" class="form-control" minlength="6"></div>
+                        <div class="form-group"><label>Confirm New Password</label><input type="password" id="confirmPassword" class="form-control" minlength="6"></div>
+                        <button type="submit" class="btn btn-primary"><i class="fas fa-key"></i> Change Password</button>
+                    </form>
+                </div>
+            </div>
+        </div>
+
+        <!-- PROGRESS SECTION -->
+        <div class="section-content" id="section-progress">
+            <div class="card">
+                <div class="card-header"><h3><i class="fas fa-chart-line"></i> Subject Progress</h3></div>
+                <div id="subjectProgressList">
+                    <p style="color:var(--text-muted);">Loading progress data...</p>
+                </div>
+            </div>
+            <div class="card">
+                <div class="card-header"><h3><i class="fas fa-calendar-check"></i> Attendance Summary</h3></div>
+                <div class="grid-2">
+                    <div>
+                        <div class="info-row"><span class="info-label">Present</span><span class="info-value" id="attPresent" style="color:var(--success-text);">—</span></div>
+                        <div class="info-row"><span class="info-label">Absent</span><span class="info-value" id="attAbsent" style="color:var(--danger-text);">—</span></div>
+                        <div class="info-row"><span class="info-label">Late</span><span class="info-value" id="attLate" style="color:var(--warning-text);">—</span></div>
+                        <div class="info-row"><span class="info-label">Rate</span><span class="info-value" id="attRate">—</span></div>
+                    </div>
+                    <div>
+                        <canvas id="attendanceChart" style="max-height:180px;"></canvas>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- SCORES SECTION -->
+        <div class="section-content" id="section-scores">
+            <div class="card">
+                <div class="card-header">
+                    <h3><i class="fas fa-clipboard-list"></i> Recent Scores</h3>
+                    <select id="scoreCategoryFilter" class="form-control" style="width:auto;" onchange="renderScores()">
+                        <option value="">All Categories</option>
+                        <option value="classwork">Classwork</option>
+                        <option value="homework">Homework</option>
+                        <option value="test">Test</option>
+                        <option value="exam">Exam</option>
+                    </select>
+                </div>
+                <div class="table-responsive" style="overflow-x:auto;">
+                    <table class="score-table">
+                        <thead><tr><th>Subject</th><th>Category</th><th>Score</th><th>Date</th></tr></thead>
+                        <tbody id="scoresBody"><tr><td colspan="4" style="text-align:center;color:var(--text-muted);">Loading scores...</td></tr></tbody>
+                    </table>
+                </div>
+            </div>
+            <div class="card">
+                <div class="card-header"><h3><i class="fas fa-chart-bar"></i> Performance Trend</h3></div>
+                <canvas id="performanceChart" style="max-height:250px;"></canvas>
+            </div>
+        </div>
+
+        <!-- SETTINGS SECTION -->
+        <div class="section-content" id="section-settings">
+            <div class="card">
+                <div class="card-header"><h3><i class="fas fa-cog"></i> Preferences</h3></div>
+                <div class="form-group">
+                    <label>Theme</label>
+                    <select id="themeSelect" class="form-control" style="width:auto;" onchange="updateThemeFromSelect()">
+                        <option value="dark">Dark Mode</option>
+                        <option value="light">Light Mode</option>
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label>Notifications</label>
+                    <div style="display:flex;flex-direction:column;gap:0.5rem;">
+                        <label style="display:flex;align-items:center;gap:0.5rem;cursor:pointer;">
+                            <input type="checkbox" id="notifNewResources" checked> New resources published
+                        </label>
+                        <label style="display:flex;align-items:center;gap:0.5rem;cursor:pointer;">
+                            <input type="checkbox" id="notifScores" checked> Scores added
+                        </label>
+                        <label style="display:flex;align-items:center;gap:0.5rem;cursor:pointer;">
+                            <input type="checkbox" id="notifMeetings" checked> Virtual class reminders
+                        </label>
+                    </div>
+                </div>
+                <button class="btn btn-primary" onclick="savePreferences()"><i class="fas fa-save"></i> Save Preferences</button>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // ==================== FIREBASE CONFIG - JUDAH WONDERS ====================
+        const firebaseConfig = {
+            apiKey: "AIzaSyADXHEiaSQ146QsGsaOCElARtpwrLE8svs",
+            authDomain: "judah-c737e.firebaseapp.com",
+            projectId: "judah-c737e",
+            storageBucket: "judah-c737e.firebasestorage.app",
+            messagingSenderId: "739196063078",
+            appId: "1:739196063078:web:c0ee1c1da2cc3794ca8ca7",
+            measurementId: "G-YEM22F1C39"
+        };
+        firebase.initializeApp(firebaseConfig);
+        const auth = firebase.auth();
+        const db = firebase.firestore();
+
+        const CLOUDINARY_CLOUD_NAME = "dda7kpir8";
+        const CLOUDINARY_UPLOAD_PRESET = "Judahschool";
+
+        // ==================== THEME ====================
+        const html = document.documentElement;
+        const themeToggle = document.getElementById('themeToggle');
+        function updateThemeUI(theme) {
+            const icon = themeToggle.querySelector('i');
+            icon.className = theme === 'dark' ? 'fas fa-moon' : 'fas fa-sun';
+            themeToggle.querySelector('span').textContent = theme === 'dark' ? 'Dark' : 'Light';
+            document.getElementById('themeSelect').value = theme;
+        }
+        const savedTheme = localStorage.getItem('judah-theme') || 'dark';
+        html.setAttribute('data-theme', savedTheme);
+        updateThemeUI(savedTheme);
+        themeToggle.addEventListener('click', () => {
+            const next = html.getAttribute('data-theme') === 'dark' ? 'light' : 'dark';
+            html.setAttribute('data-theme', next);
+            localStorage.setItem('judah-theme', next);
+            updateThemeUI(next);
+        });
+        window.updateThemeFromSelect = () => {
+            const theme = document.getElementById('themeSelect').value;
+            html.setAttribute('data-theme', theme);
+            localStorage.setItem('judah-theme', theme);
+            updateThemeUI(theme);
+        };
+
+        // ==================== SIDEBAR ====================
+        document.getElementById('sidebarToggle').addEventListener('click', () => {
+            document.getElementById('sidebar').classList.toggle('collapsed');
+            const icon = document.getElementById('sidebarToggle').querySelector('i');
+            icon.classList.toggle('fa-chevron-left');
+            icon.classList.toggle('fa-chevron-right');
+        });
+
+        // ==================== SECTION TABS ====================
+        document.querySelectorAll('.section-tab').forEach(tab => {
+            tab.addEventListener('click', () => {
+                document.querySelectorAll('.section-tab').forEach(t => t.classList.remove('active'));
+                tab.classList.add('active');
+                document.querySelectorAll('.section-content').forEach(s => s.classList.remove('active'));
+                document.getElementById('section-' + tab.dataset.section).classList.add('active');
+                if (tab.dataset.section === 'scores') renderScores();
+                if (tab.dataset.section === 'progress') renderProgress();
+            });
+        });
+
+        // ==================== TOAST ====================
+        function showToast(title, msg, type = 'info') {
+            const icons = { success: 'fa-check-circle', error: 'fa-exclamation-circle', warning: 'fa-exclamation-triangle', info: 'fa-info-circle' };
+            const toast = document.createElement('div');
+            toast.className = 'toast';
+            toast.innerHTML = `<i class="fas ${icons[type]}" style="color:var(--${type==='success'?'success':type==='error'?'danger':type==='warning'?'warning':'info'}-text);font-size:1.1rem;"></i><div><strong>${title}</strong><br><span style="font-size:0.8rem;color:var(--text-secondary);">${msg}</span></div>`;
+            document.getElementById('toastContainer').appendChild(toast);
+            setTimeout(() => { toast.classList.add('removing'); setTimeout(() => toast.remove(), 300); }, 4000);
+        }
+
+        // ==================== HELPERS ====================
+        function escapeHtml(str) { const d = document.createElement('div'); d.textContent = str || ''; return d.innerHTML; }
+        function getScoreClass(score) { if (score >= 80) return 'score-high'; if (score >= 50) return 'score-mid'; return 'score-low'; }
+
+        // ==================== STATE ====================
+        let currentUser = null, userData = null;
+        let allScores = [], attendanceData = [], attendanceChart = null, performanceChart = null;
+
+        // ==================== AUTH ====================
+        auth.onAuthStateChanged(async user => {
+            if (!user) { window.location.href = 'student-login.html'; return; }
+            try {
+                const userDoc = await db.collection('users').doc(user.uid).get();
+                if (!userDoc.exists || userDoc.data().role !== 'student') {
+                    await auth.signOut();
+                    window.location.href = 'index.html';
+                    return;
+                }
+                userData = userDoc.data();
+                const isApproved = userData.approved === true || userData.status === 'approved';
+                if (!isApproved) {
+                    alert('Your account is pending approval.');
+                    await auth.signOut();
+                    window.location.href = 'student-login.html';
+                    return;
+                }
+                currentUser = user;
+                
+                const initials = (userData.firstName?.[0] || 'S') + (userData.surname?.[0] || 'S');
+                const pic = document.getElementById('profilePicSmall');
+                if (userData.photoURL) {
+                    pic.innerHTML = `<img src="${userData.photoURL}" alt="Profile" style="width:100%;height:100%;object-fit:cover;border-radius:50%;">`;
+                } else {
+                    pic.textContent = initials;
+                }
+
+                await loadAllData();
+                populateAllSections();
+            } catch (e) {
+                console.error('Auth error:', e);
+                showToast('Error', 'Failed to load profile', 'error');
+            }
+        });
+
+        document.getElementById('logoutBtn').addEventListener('click', () => auth.signOut().then(() => window.location.href = 'index.html'));
+
+        // ==================== LOAD DATA ====================
+        async function loadAllData() {
+            // Scores
+            try {
+                const scoresSnap = await db.collection('scores')
+                    .where('studentId', '==', currentUser.uid)
+                    .orderBy('date', 'desc').limit(50).get();
+                allScores = scoresSnap.docs.map(d => ({ id: d.id, ...d.data() }));
+            } catch (e) { allScores = []; }
+
+            // Attendance
+            try {
+                const attSnap = await db.collection('attendance')
+                    .where('studentId', '==', currentUser.uid)
+                    .orderBy('date', 'desc').limit(100).get();
+                attendanceData = attSnap.docs.map(d => ({ id: d.id, ...d.data() }));
+            } catch (e) { attendanceData = []; }
+
+            // Activity (audit logs)
+            try {
+                const logSnap = await db.collection('auditLogs')
+                    .where('userId', '==', currentUser.uid)
+                    .orderBy('timestamp', 'desc').limit(10).get();
+                const logs = logSnap.docs.map(d => d.data());
+                const activityHtml = logs.length ? logs.map(l => {
+                    const date = l.timestamp?.toDate?.()?.toLocaleDateString() || 'Recently';
+                    return `<div style="padding:0.4rem 0;border-bottom:1px solid var(--border);font-size:0.82rem;">
+                        <strong>${date}</strong>: ${escapeHtml(l.action || 'Activity')}
+                        <div style="color:var(--text-muted);font-size:0.75rem;">${escapeHtml((l.details || '').substring(0, 80))}</div>
+                    </div>`;
+                }).join('') : '<p style="color:var(--text-muted);">No recent activity.</p>';
+                document.getElementById('ovActivity').innerHTML = activityHtml;
+            } catch (e) {
+                document.getElementById('ovActivity').innerHTML = '<p style="color:var(--text-muted);">No recent activity.</p>';
+            }
+        }
+
+        // ==================== POPULATE ALL SECTIONS ====================
+        function populateAllSections() {
+            // Profile header
+            document.getElementById('fullName').textContent = `${userData.firstName || ''} ${userData.surname || ''}`.trim() || 'Student';
+            document.getElementById('studentIdDisplay').textContent = `ID: ${userData.userId || '—'}`;
+            document.getElementById('classBadge').textContent = `Class: ${userData.class || userData.classEnrolled || '—'}`;
+            const suspended = userData.suspended === true;
+            const statusBadge = document.getElementById('statusBadge');
+            statusBadge.textContent = suspended ? 'Suspended' : 'Active';
+            statusBadge.className = suspended ? 'badge badge-danger' : 'badge badge-success';
+
+            // Avatar
+            const profileImg = document.getElementById('profileImage');
+            const avatarInitial = document.getElementById('avatarInitial');
+            const initials = ((userData.firstName?.[0] || '') + (userData.surname?.[0] || '')).toUpperCase() || 'S';
+            if (userData.photoURL) {
+                profileImg.src = userData.photoURL;
+                profileImg.style.display = 'block';
+                avatarInitial.style.display = 'none';
+            } else {
+                profileImg.style.display = 'none';
+                avatarInitial.style.display = 'block';
+                avatarInitial.textContent = initials.charAt(0);
+            }
+
+            // Personal form
+            document.getElementById('firstName').value = userData.firstName || '';
+            document.getElementById('surname').value = userData.surname || '';
+            document.getElementById('email').value = userData.email || '';
+            document.getElementById('phone').value = userData.phone || '';
+            document.getElementById('dob').value = userData.dob || '';
+            document.getElementById('address').value = userData.address || '';
+
+            // Overview
+            document.getElementById('ovStudentId').textContent = userData.userId || '—';
+            document.getElementById('ovDateEnrolled').textContent = userData.createdAt?.toDate?.()?.toLocaleDateString() || '—';
+            document.getElementById('ovClass').textContent = userData.class || userData.classEnrolled || '—';
+            document.getElementById('ovSubjects').textContent = userData.subjects?.length ? userData.subjects.join(', ') : '—';
+            document.getElementById('ovPrefect').textContent = userData.prefect || 'None';
+            document.getElementById('ovStatus').innerHTML = suspended ? '<span style="color:var(--danger-text);">Suspended</span>' : '<span style="color:var(--success-text);">Active</span>';
+
+            // Parent info
+            document.getElementById('ovParentName').textContent = userData.parentName || '—';
+            document.getElementById('ovParentRel').textContent = userData.parentRelationship || '—';
+            document.getElementById('ovParentPhone').textContent = userData.parentPhone || '—';
+            document.getElementById('ovParentEmail').textContent = userData.parentEmail || '—';
+
+            // Quick stats
+            const completedWeeks = userData.completedWeeks || [];
+            const totalWeeks = userData.totalWeeks || (userData.subjects?.length ? userData.subjects.length * 6 : 36);
+            const progressPct = totalWeeks > 0 ? Math.round((completedWeeks.length / totalWeeks) * 100) : 0;
+            document.getElementById('ovProgress').textContent = progressPct + '%';
+            document.getElementById('ovProgressBar').style.width = progressPct + '%';
+            document.getElementById('ovWeeksDone').textContent = `${completedWeeks.length} / ${totalWeeks}`;
+            document.getElementById('ovTotalScores').textContent = allScores.length;
+            const avgScore = allScores.length > 0 ? Math.round(allScores.reduce((s, sc) => s + (sc.score || 0), 0) / allScores.length) : '—';
+            document.getElementById('ovAvgScore').textContent = avgScore !== '—' ? avgScore + '%' : '—';
+
+            // Attendance
+            const present = attendanceData.filter(a => a.status === 'present').length;
+            const absent = attendanceData.filter(a => a.status === 'absent').length;
+            const late = attendanceData.filter(a => a.status === 'late').length;
+            const total = attendanceData.length || 1;
+            const attRate = Math.round((present / total) * 100);
+            document.getElementById('ovAttendance').textContent = attRate + '%';
+            document.getElementById('attPresent').textContent = present;
+            document.getElementById('attAbsent').textContent = absent;
+            document.getElementById('attLate').textContent = late;
+            document.getElementById('attRate').textContent = attRate + '%';
+        }
+
+        // ==================== PROGRESS SECTION ====================
+        function renderProgress() {
+            const completedWeeks = userData.completedWeeks || [];
+            const subjects = userData.subjects || [];
+            
+            if (!subjects.length) {
+                document.getElementById('subjectProgressList').innerHTML = '<p style="color:var(--text-muted);">No subjects assigned.</p>';
+                return;
+            }
+
+            const colors = ['#C8963E', '#3b82f6', '#22c55e', '#8b5cf6', '#f59e0b', '#ef4444', '#06b6d4', '#ec4899'];
+            let html = '';
+            subjects.forEach((sub, i) => {
+                const subjectWeeks = completedWeeks.filter(w => w.startsWith(sub + '_')).length;
+                const totalSubjectWeeks = 12; // default
+                const pct = Math.round((subjectWeeks / totalSubjectWeeks) * 100);
+                html += `<div class="subject-progress-item">
+                    <div class="subject-progress-header">
+                        <span>${escapeHtml(sub)}</span>
+                        <span style="color:var(--text-muted);">${subjectWeeks}/${totalSubjectWeeks} weeks</span>
+                    </div>
+                    <div class="subject-progress-bar">
+                        <div class="subject-progress-fill" style="width:${pct}%;background:${colors[i % colors.length]};"></div>
+                    </div>
+                </div>`;
+            });
+            document.getElementById('subjectProgressList').innerHTML = html;
+
+            // Attendance chart
+            const ctx = document.getElementById('attendanceChart').getContext('2d');
+            if (attendanceChart) attendanceChart.destroy();
+            attendanceChart = new Chart(ctx, {
+                type: 'doughnut',
+                data: {
+                    labels: ['Present', 'Absent', 'Late'],
+                    datasets: [{
+                        data: [present, absent, late],
+                        backgroundColor: ['#22c55e', '#ef4444', '#f59e0b'],
+                        borderColor: 'transparent'
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    plugins: { legend: { position: 'bottom', labels: { color: getComputedStyle(document.documentElement).getPropertyValue('--text-secondary') } } }
+                }
+            });
+        }
+
+        // ==================== SCORES SECTION ====================
+        function renderScores() {
+            const category = document.getElementById('scoreCategoryFilter').value;
+            const filtered = category ? allScores.filter(s => s.category === category) : allScores;
+            
+            const tbody = document.getElementById('scoresBody');
+            if (!filtered.length) {
+                tbody.innerHTML = '<tr><td colspan="4" style="text-align:center;color:var(--text-muted);">No scores found.</td></tr>';
+            } else {
+                tbody.innerHTML = filtered.slice(0, 20).map(s => {
+                    const scoreClass = getScoreClass(s.score || 0);
+                    return `<tr>
+                        <td>${escapeHtml(s.subject || '—')}</td>
+                        <td><span class="badge badge-info">${escapeHtml(s.category || '—')}</span></td>
+                        <td class="${scoreClass}">${s.score || 0}%</td>
+                        <td>${s.date || '—'}</td>
+                    </tr>`;
+                }).join('');
+            }
+
+            // Performance chart
+            const ctx = document.getElementById('performanceChart').getContext('2d');
+            if (performanceChart) performanceChart.destroy();
+            const labels = [...new Set(allScores.map(s => s.subject))];
+            const datasets = labels.map((sub, i) => {
+                const subjectScores = allScores.filter(s => s.subject === sub).slice(0, 10).reverse();
+                return {
+                    label: sub,
+                    data: subjectScores.map(s => s.score),
+                    borderColor: ['#C8963E', '#3b82f6', '#22c55e', '#8b5cf6', '#f59e0b'][i % 5],
+                    tension: 0.3,
+                    fill: false
+                };
+            });
+            performanceChart = new Chart(ctx, {
+                type: 'line',
+                data: { labels: [...new Set(allScores.slice(0, 10).map(s => s.date).reverse())], datasets },
+                options: {
+                    responsive: true,
+                    plugins: { legend: { labels: { color: getComputedStyle(document.documentElement).getPropertyValue('--text-secondary') } } },
+                    scales: { y: { beginAtZero: true, max: 100, ticks: { color: getComputedStyle(document.documentElement).getPropertyValue('--text-secondary') } }, x: { ticks: { color: getComputedStyle(document.documentElement).getPropertyValue('--text-secondary') } } }
+                }
+            });
+        }
+
+        // ==================== UPDATE PERSONAL INFO ====================
+        document.getElementById('personalForm').addEventListener('submit', async e => {
+            e.preventDefault();
+            const btn = e.target.querySelector('.btn-primary');
+            btn.disabled = true;
+            btn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Saving...';
+            try {
+                await db.collection('users').doc(currentUser.uid).update({
+                    firstName: document.getElementById('firstName').value,
+                    surname: document.getElementById('surname').value,
+                    phone: document.getElementById('phone').value,
+                    dob: document.getElementById('dob').value,
+                    address: document.getElementById('address').value,
+                    updatedAt: firebase.firestore.FieldValue.serverTimestamp()
+                });
+                const doc = await db.collection('users').doc(currentUser.uid).get();
+                userData = doc.data();
+                populateAllSections();
+                showToast('Updated', 'Profile saved successfully', 'success');
+            } catch (e) {
+                showToast('Error', e.message, 'error');
+            } finally {
+                btn.disabled = false;
+                btn.innerHTML = '<i class="fas fa-save"></i> Update Personal Info';
+            }
+        });
+
+        // ==================== CHANGE PASSWORD ====================
+        document.getElementById('passwordForm').addEventListener('submit', async e => {
+            e.preventDefault();
+            const current = document.getElementById('currentPassword').value;
+            const newPw = document.getElementById('newPassword').value;
+            const confirm = document.getElementById('confirmPassword').value;
+            
+            if (!current || !newPw || !confirm) return showToast('Error', 'Fill all password fields', 'warning');
+            if (newPw !== confirm) return showToast('Error', 'Passwords do not match', 'warning');
+            if (newPw.length < 6) return showToast('Error', 'Password must be at least 6 characters', 'warning');
+
+            const btn = e.target.querySelector('.btn-primary');
+            btn.disabled = true;
+            btn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Changing...';
+            try {
+                const credential = firebase.auth.EmailAuthProvider.credential(currentUser.email, current);
+                await currentUser.reauthenticateWithCredential(credential);
+                await currentUser.updatePassword(newPw);
+                showToast('Success', 'Password changed successfully', 'success');
+                document.getElementById('passwordForm').reset();
+            } catch (e) {
+                showToast('Error', e.code === 'auth/wrong-password' ? 'Current password is incorrect' : e.message, 'error');
+            } finally {
+                btn.disabled = false;
+                btn.innerHTML = '<i class="fas fa-key"></i> Change Password';
+            }
+        });
+
+        // ==================== SAVE PREFERENCES ====================
+        window.savePreferences = () => {
+            const prefs = {
+                notifNewResources: document.getElementById('notifNewResources').checked,
+                notifScores: document.getElementById('notifScores').checked,
+                notifMeetings: document.getElementById('notifMeetings').checked
+            };
+            localStorage.setItem('judah-student-prefs', JSON.stringify(prefs));
+            showToast('Saved', 'Preferences saved', 'success');
+        };
+
+        // Load preferences
+        try {
+            const savedPrefs = JSON.parse(localStorage.getItem('judah-student-prefs') || '{}');
+            if (savedPrefs.notifNewResources !== undefined) document.getElementById('notifNewResources').checked = savedPrefs.notifNewResources;
+            if (savedPrefs.notifScores !== undefined) document.getElementById('notifScores').checked = savedPrefs.notifScores;
+            if (savedPrefs.notifMeetings !== undefined) document.getElementById('notifMeetings').checked = savedPrefs.notifMeetings;
+        } catch (e) {}
+
+        // ==================== PROFILE PICTURE UPLOAD ====================
+        const avatarCircle = document.getElementById('avatarCircle');
+        const fileInput = document.getElementById('profileUpload');
+        const uploadStatus = document.getElementById('uploadStatus');
+        avatarCircle.addEventListener('click', () => fileInput.click());
+        fileInput.addEventListener('change', async e => {
+            const file = e.target.files[0];
+            if (!file) return;
+            
+            const reader = new FileReader();
+            reader.onload = ev => {
+                document.getElementById('profileImage').src = ev.target.result;
+                document.getElementById('profileImage').style.display = 'block';
+                document.getElementById('avatarInitial').style.display = 'none';
+                document.getElementById('profilePicSmall').innerHTML = `<img src="${ev.target.result}" alt="Profile" style="width:100%;height:100%;object-fit:cover;border-radius:50%;">`;
+            };
+            reader.readAsDataURL(file);
+            
+            uploadStatus.textContent = 'Uploading...';
+            const formData = new FormData();
+            formData.append('file', file);
+            formData.append('upload_preset', CLOUDINARY_UPLOAD_PRESET);
+            formData.append('folder', 'judah-wonders/student-photos');
+            
+            try {
+                const res = await fetch(`https://api.cloudinary.com/v1_1/${CLOUDINARY_CLOUD_NAME}/image/upload`, { method: 'POST', body: formData });
+                const data = await res.json();
+                if (data.secure_url) {
+                    await db.collection('users').doc(currentUser.uid).update({ photoURL: data.secure_url });
+                    userData.photoURL = data.secure_url;
+                    uploadStatus.textContent = 'Uploaded!';
+                    uploadStatus.style.color = 'var(--success-text)';
+                } else {
+                    throw new Error(data.error?.message || 'Upload failed');
+                }
+            } catch (err) {
+                uploadStatus.textContent = 'Error: ' + err.message;
+                uploadStatus.style.color = 'var(--danger-text)';
+            }
+        });
+    </script>
+</body>
+</html>
