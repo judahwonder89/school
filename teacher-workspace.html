@@ -670,6 +670,7 @@
                                 <button class="btn btn-outline" id="useAIAssistantLessonNoteBtn" title="AI Assistant"><i class="fas fa-robot"></i> AI Assistant</button>
                                 <button class="btn btn-primary" id="saveEditorBtn"><i class="fas fa-save"></i> Save Draft</button>
                                 <button class="btn btn-success" id="submitEditorBtn" style="display:none;"><i class="fas fa-paper-plane"></i> Submit</button>
+                                <button class="btn btn-danger btn-sm" id="deleteLessonNoteBtn" style="display:none;" title="Delete this lesson note"><i class="fas fa-trash"></i></button>
                                 <button class="voice-btn" id="voiceBtn" title="Voice Input"><i class="fas fa-microphone"></i></button>
                                 <button class="ai-format-btn" id="aiFormatBtn" title="AI Format"><i class="fas fa-magic"></i></button>
                                 <button class="file-upload-btn" id="fileUploadBtn" title="Upload File"><i class="fas fa-paperclip"></i></button>
@@ -2446,24 +2447,29 @@ Include Nigerian names, locations, naira (₦), and references to Nigerian textb
             document.getElementById('draftDebug').textContent = `Subject: ${subject} | Week: not set`;
             document.getElementById('draftDebug').style.background = 'var(--warning-bg)';
             document.getElementById('draftDebug').style.color = 'var(--warning-text)';
+
             const allNotes = Object.values(lessonNotesMap).filter(n => n.subject === subject);
             const syllabusWeeks = syllabusMap[subject]?.weeks || [];
-            const draftWeeks = syllabusWeeks.filter(w => { 
-                const note = allNotes.find(n => n.week == w.week); 
-                return !note || note.status === 'draft' || !note.status; 
+            const draftWeeks = syllabusWeeks.filter(w => {
+                // only weeks that actually have a number
+                if (!w.week && w.week !== 0) return false;
+                const note = allNotes.find(n => n.week == w.week);
+                return !note || note.status === 'draft' || !note.status;
             });
-            
-            document.getElementById('draftWeekList').innerHTML = draftWeeks.map(wk => {
-                const note = allNotes.find(n => n.week == wk.week);
-                let statusClass = '';
-                if (note?.status === 'approved') statusClass = 'completed';
-                else if (note?.status === 'pending') statusClass = 'pending-approval';
-                
-                return `<div class="week-tab ${statusClass}" onclick="selectDraftWeek(event, ${wk.week})">
-                    Week ${wk.week}: ${escapeHtml(wk.topic || 'No topic')}
-                </div>`;
-            }).join('');
-            
+
+            if (!draftWeeks.length) {
+                document.getElementById('draftWeekList').innerHTML = '<p style="color:var(--danger-text);">No weeks found. Please add weeks in the Syllabus tab.</p>';
+            } else {
+                document.getElementById('draftWeekList').innerHTML = draftWeeks.map(wk => {
+                    const note = allNotes.find(n => n.week == wk.week);
+                    let statusClass = '';
+                    if (note?.status === 'approved') statusClass = 'completed';
+                    else if (note?.status === 'pending') statusClass = 'pending-approval';
+                    return `<div class="week-tab ${statusClass}" onclick="selectDraftWeek(event, ${wk.week})">
+                        Week ${wk.week}: ${escapeHtml(wk.topic || 'No topic')}
+                    </div>`;
+                }).join('');
+            }
             document.getElementById('draftEditorSection').style.display = 'none';
         };
         
@@ -2472,10 +2478,17 @@ Include Nigerian names, locations, naira (₦), and references to Nigerian textb
                 document.querySelectorAll('#draftWeekList .week-tab').forEach(t => t.classList.remove('active')); 
                 e.target.classList.add('active'); 
             }
-            currentWeekDraft = week;
-            document.getElementById('draftDebug').textContent = `Subject: ${currentSubjectDraft} | Week: ${week}`;
-            document.getElementById('draftDebug').style.background = 'var(--success-bg)';
-            document.getElementById('draftDebug').style.color = 'var(--success-text)';
+            // safety fallback
+            const safeWeek = (week !== undefined && week !== null) ? week : '?';
+            currentWeekDraft = safeWeek === '?' ? null : week;
+            document.getElementById('draftDebug').textContent = `Subject: ${currentSubjectDraft} | Week: ${safeWeek}`;
+            document.getElementById('draftDebug').style.background = safeWeek === '?' ? 'var(--danger-bg)' : 'var(--success-bg)';
+            document.getElementById('draftDebug').style.color = safeWeek === '?' ? 'var(--danger-text)' : 'var(--success-text)';
+
+            if (!currentSubjectDraft || safeWeek === '?') {
+                return showToast('Error', 'Cannot load – subject or week missing.', 'error');
+            }
+
             const key = `${currentSubjectDraft}_${week}`; 
             const note = lessonNotesMap[key] || {};
             
@@ -2521,6 +2534,9 @@ Include Nigerian names, locations, naira (₦), and references to Nigerian textb
             } else {
                 lessonNoteCard.classList.remove('locked');
             }
+
+            // Show delete button only if the note exists
+            document.getElementById('deleteLessonNoteBtn').style.display = note.id ? 'inline-flex' : 'none';
         };
         
         function displayAdminFeedback(note) {
@@ -2824,6 +2840,21 @@ Include Nigerian names, locations, naira (₦), and references to Nigerian textb
                 btn.disabled = false;
                 btn.innerHTML = origHTML;
             }
+        });
+
+        // DELETE LESSON NOTE BUTTON
+        document.getElementById('deleteLessonNoteBtn').addEventListener('click', async () => {
+            if (!currentSubjectDraft || !currentWeekDraft) return;
+            const key = `${currentSubjectDraft}_${currentWeekDraft}`;
+            const existing = lessonNotesMap[key];
+            if (!existing?.id) return showToast('Error', 'Nothing to delete', 'error');
+            if (!confirm(`Delete the lesson note for ${currentSubjectDraft} Week ${currentWeekDraft}?`)) return;
+            await db.collection('lessonNotes').doc(existing.id).delete();
+            delete lessonNotesMap[key];
+            quill.setText('');
+            document.getElementById('draftEditorSection').style.display = 'none';
+            loadDraftSubjects();
+            showToast('Deleted', 'Lesson note removed', 'success');
         });
 
         // Save as Template button (UPDATE 8)
