@@ -2775,13 +2775,22 @@ Include Nigerian names, locations, naira (₦), and references to Nigerian textb
             }
         }
         
-        // Updated save editor button (UPDATE 4)
+        // Updated save editor button (UPDATE 4) with DEBUG LOGGING
         document.getElementById('saveEditorBtn').addEventListener('click', async (e) => {
+            console.log('🟢 Save Draft button clicked');
             e.preventDefault();
-            if (!currentSubjectDraft || !currentWeekDraft) return;
+            console.log('🔍 State check:', { currentSubjectDraft, currentWeekDraft });
+
+            if (!currentSubjectDraft || !currentWeekDraft) {
+                console.warn('⛔ Save blocked - missing subject or week', { currentSubjectDraft, currentWeekDraft });
+                return showToast('Error', 'Please select a subject and week first', 'warning');
+            }
             const lnHtml = quill.root.innerHTML;
             const lnText = quill.getText();
-            if (!lnText.trim()) return showToast('Empty', 'Write something first', 'warning');
+            if (!lnText.trim()) {
+                console.warn('⛔ Save blocked - empty editor');
+                return showToast('Empty', 'Write something first', 'warning');
+            }
 
             setAutoSaveStatus('saving');
             const btn = document.getElementById('saveEditorBtn');
@@ -2806,14 +2815,16 @@ Include Nigerian names, locations, naira (₦), and references to Nigerian textb
             };
 
             try {
+                console.log('💾 Saving lesson note...', d);
                 if (existing.id) await db.collection('lessonNotes').doc(existing.id).update(d);
                 else { const r = await db.collection('lessonNotes').add(d); lessonNotesMap[key] = { id: r.id, ...d }; }
                 setAutoSaveStatus('saved');
                 showToast('Saved', 'Draft saved successfully', 'success');
                 loadDraftSubjects();
             } catch(err) {
+                console.error('❌ Save error:', err);
                 setAutoSaveStatus('error');
-                showToast('Error', 'Failed to save draft', 'error');
+                showToast('Error', 'Failed to save draft: ' + (err.message || 'Permission denied'), 'error');
             } finally {
                 btn.disabled = false;
                 btn.innerHTML = origHTML;
@@ -2853,17 +2864,28 @@ Include Nigerian names, locations, naira (₦), and references to Nigerian textb
             }
         });
         
-        // Updated submit editor button (UPDATE 3)
+        // Updated submit editor button (UPDATE 3) with DEBUG LOGGING
         document.getElementById('submitEditorBtn').addEventListener('click', async (e) => {
+            console.log('🟢 Submit button clicked');
             e.preventDefault();
-            if (!currentSubjectDraft || !currentWeekDraft) return;
+            console.log('🔍 State check:', { currentSubjectDraft, currentWeekDraft });
+
+            if (!currentSubjectDraft || !currentWeekDraft) {
+                console.warn('⛔ Submit blocked - missing subject or week');
+                return showToast('Error', 'Please select a subject and week first', 'warning');
+            }
             const lnHtml = quill.root.innerHTML;
             const lnText = quill.getText();
             const wc = lnText.trim() ? lnText.trim().split(/\s+/).length : 0;
 
-            if (wc < 200) return showToast('Incomplete', `Only ${wc} words. Minimum 200 required for submission.`, 'warning');
-            if (!lnText.includes('Objectives') || !lnText.includes('Evaluation'))
+            if (wc < 200) {
+                console.warn('⛔ Submit blocked - word count:', wc);
+                return showToast('Incomplete', `Only ${wc} words. Minimum 200 required for submission.`, 'warning');
+            }
+            if (!lnText.includes('Objectives') || !lnText.includes('Evaluation')) {
+                console.warn('⛔ Submit blocked - missing sections');
                 return showToast('Missing Sections', 'Include "Objectives" and "Evaluation" sections.', 'warning');
+            }
 
             if (await checkDuplicate(currentSubjectDraft, currentWeekDraft) &&
                 !confirm('A lesson note for this week has already been submitted. Submit another version?')) return;
@@ -2879,6 +2901,7 @@ Include Nigerian names, locations, naira (₦), and references to Nigerian textb
             showLoading();
 
             try {
+                console.log('📨 Submitting lesson note...');
                 const d = {
                     teacherId: currentUser.uid,
                     teacherName: `${userData?.firstName||''} ${userData?.surname||''}`.trim(),
@@ -2906,7 +2929,7 @@ Include Nigerian names, locations, naira (₦), and references to Nigerian textb
                 setAutoSaveStatus('saved');
                 showToast('Submitted', 'Lesson note sent for approval', 'success');
             } catch (err) {
-                console.error('Lesson note submit error:', err);
+                console.error('❌ Submit error:', err);
                 showToast('Error', err.message || 'Failed to submit lesson note', 'error');
             } finally {
                 btn.disabled = false;
