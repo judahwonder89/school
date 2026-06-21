@@ -685,40 +685,67 @@
                     
                     <!-- Post-Approval Sections -->
                     <div id="postApprovalSections" style="display:none;">
-                        <div class="card">
-                            <button class="btn btn-success" id="pushToTeachBtn" style="display:none;">Push to Teach</button>
+                        <!-- "Create Additional Resources" button (only visible after admin approval) -->
+                        <div id="createOthersBtnContainer" style="margin-bottom:1rem; display:none;">
+                            <button class="btn btn-outline" id="createOthersBtn">
+                                <i class="fas fa-plus-circle"></i> Create Additional Resources
+                            </button>
                         </div>
-                        <div class="card" id="teachingProcessCard">
-                            <div class="card-header"><h3>Teaching Process</h3></div>
-                            <button class="btn btn-primary btn-sm" id="aiGenerateTPBtn"><i class="fas fa-robot"></i> Auto-Generate</button>
-                            <button class="btn btn-outline btn-sm" id="autoFormatTPBtn"><i class="fas fa-magic"></i> Auto-Format</button>
-                            <div class="editor-container"><div id="teachingProcessEditor"></div></div>
-                            <button class="btn btn-primary" id="saveTeachingProcessBtn">Save</button>
-                            <button class="btn btn-success" id="moveToTeachBtn">Move to Teach</button>
-                        </div>
-                        <div class="card" id="studentResourceSection">
-                            <div class="card-header"><h3>Student Resources</h3></div>
-                            <button class="btn btn-primary btn-sm" id="aiGenerateResourceBtn"><i class="fas fa-robot"></i> Auto-Generate</button>
-                            <button class="btn btn-outline btn-sm" id="autoFormatResourceBtn"><i class="fas fa-magic"></i> Auto-Format</button>
-                            <div class="editor-container"><div id="studentResourceEditor"></div></div>
-                            <button class="btn btn-primary" id="saveStudentResourceBtn">Save</button>
-                        </div>
-                        <div class="card" id="handwritingSection">
-                            <div class="card-header"><h3>Handwriting & Visual Notes</h3></div>
-                            <div id="handwritingImages"></div>
-                            <input type="text" id="handwritingPrompt" placeholder="Describe what to generate...">
-                            <button class="btn btn-primary" id="generateHandwritingBtn">Generate</button>
-                        </div>
-                        <div class="card" id="videoSection">
-                            <div class="card-header"><h3>Video Links</h3></div>
-                            <button class="btn btn-sm btn-outline" id="addVideoLinkBtn">+ Add Link</button>
-                            <div id="videoInputArea" style="display:none;margin-top:0.5rem;">
-                                <input type="url" id="videoLinkInput" placeholder="https://...">
-                                <button class="btn btn-sm btn-primary" id="previewVideoBtn">Preview</button>
+
+                        <!-- All extra resources – hidden until the button above is clicked -->
+                        <div id="additionalResources" style="display:none;">
+
+                            <!-- existing Push to Teach card -->
+                            <div class="card">
+                                <button class="btn btn-success" id="pushToTeachBtn" style="display:none;">Push to Teach</button>
                             </div>
-                            <div id="videoList"></div>
-                        </div>
-                        <button class="btn btn-outline" id="shareToLibraryBtn"><i class="fas fa-share"></i> Share to Library</button>
+
+                            <!-- Teaching Process -->
+                            <div class="card" id="teachingProcessCard">
+                                <div class="card-header"><h3>Teaching Process</h3></div>
+                                <button class="btn btn-primary btn-sm" id="aiGenerateTPBtn"><i class="fas fa-robot"></i> Auto-Generate</button>
+                                <button class="btn btn-outline btn-sm" id="autoFormatTPBtn"><i class="fas fa-magic"></i> Auto-Format</button>
+                                <div class="editor-container"><div id="teachingProcessEditor"></div></div>
+                                <button class="btn btn-primary" id="saveTeachingProcessBtn">Save</button>
+                                <button class="btn btn-success" id="moveToTeachBtn">Move to Teach</button>
+                            </div>
+
+                            <!-- Student Resources -->
+                            <div class="card" id="studentResourceSection">
+                                <div class="card-header"><h3>Student Resources</h3></div>
+                                <button class="btn btn-primary btn-sm" id="aiGenerateResourceBtn"><i class="fas fa-robot"></i> Auto-Generate</button>
+                                <button class="btn btn-outline btn-sm" id="autoFormatResourceBtn"><i class="fas fa-magic"></i> Auto-Format</button>
+                                <div class="editor-container"><div id="studentResourceEditor"></div></div>
+                                <button class="btn btn-primary" id="saveStudentResourceBtn">Save</button>
+                            </div>
+
+                            <!-- Handwriting & Visual Notes -->
+                            <div class="card" id="handwritingSection">
+                                <div class="card-header"><h3>Handwriting & Visual Notes</h3></div>
+                                <div id="handwritingImages"></div>
+                                <input type="text" id="handwritingPrompt" placeholder="Describe the image you want to generate...">
+                                <div style="display:flex; gap:0.5rem; margin-top:0.5rem;">
+                                    <button class="btn btn-primary" id="generateHandwritingBtn">
+                                        <i class="fas fa-paint-brush"></i> Generate Image
+                                    </button>
+                                </div>
+                            </div>
+
+                            <!-- Video Links -->
+                            <div class="card" id="videoSection">
+                                <div class="card-header"><h3>Video Links</h3></div>
+                                <button class="btn btn-sm btn-outline" id="addVideoLinkBtn">+ Add Link</button>
+                                <div id="videoInputArea" style="display:none; margin-top:0.5rem;">
+                                    <input type="url" id="videoLinkInput" placeholder="https://...">
+                                    <button class="btn btn-sm btn-primary" id="previewVideoBtn">Preview</button>
+                                </div>
+                                <div id="videoList"></div>
+                            </div>
+
+                            <!-- Share to Library -->
+                            <button class="btn btn-outline" id="shareToLibraryBtn"><i class="fas fa-share"></i> Share to Library</button>
+
+                        </div><!-- end additionalResources -->
                     </div>
                 </div>
             </div>
@@ -2474,69 +2501,81 @@ Include Nigerian names, locations, naira (₦), and references to Nigerian textb
         };
         
         window.selectDraftWeek = (e, week) => {
-            if (e) { 
-                document.querySelectorAll('#draftWeekList .week-tab').forEach(t => t.classList.remove('active')); 
-                e.target.classList.add('active'); 
+            if (e) {
+                document.querySelectorAll('#draftWeekList .week-tab').forEach(t => t.classList.remove('active'));
+                e.target.classList.add('active');
             }
-            // safety fallback
-            const safeWeek = (week !== undefined && week !== null) ? week : '?';
-            currentWeekDraft = safeWeek === '?' ? null : week;
-            document.getElementById('draftDebug').textContent = `Subject: ${currentSubjectDraft} | Week: ${safeWeek}`;
-            document.getElementById('draftDebug').style.background = safeWeek === '?' ? 'var(--danger-bg)' : 'var(--success-bg)';
-            document.getElementById('draftDebug').style.color = safeWeek === '?' ? 'var(--danger-text)' : 'var(--success-text)';
+            const safeWeek = (week !== undefined && week !== null) ? week : null;
+            currentWeekDraft = safeWeek;
 
-            if (!currentSubjectDraft || safeWeek === '?') {
-                return showToast('Error', 'Cannot load – subject or week missing.', 'error');
+            const badge = document.getElementById('draftDebug');
+            badge.textContent = `Subject: ${currentSubjectDraft} | Week: ${safeWeek !== null ? safeWeek : '???'}`;
+            badge.style.background = safeWeek !== null ? 'var(--success-bg)' : 'var(--danger-bg)';
+            badge.style.color = safeWeek !== null ? 'var(--success-text)' : 'var(--danger-text)';
+
+            if (!currentSubjectDraft || safeWeek === null) {
+                return showToast('Error', 'Cannot open editor – subject or week missing.', 'error');
             }
 
-            const key = `${currentSubjectDraft}_${week}`; 
+            const key = `${currentSubjectDraft}_${safeWeek}`;
             const note = lessonNotesMap[key] || {};
-            
-            if (note.status && note.status !== 'draft' && note.status !== 'approved') { 
-                showToast('Info', 'This week is not available for editing.', 'warning'); 
-                document.getElementById('draftEditorSection').style.display = 'none'; 
-                return; 
+
+            if (note.status && note.status !== 'draft' && note.status !== 'approved') {
+                showToast('Info', 'This week is not available for editing.', 'warning');
+                document.getElementById('draftEditorSection').style.display = 'none';
+                return;
             }
-            
+
             document.getElementById('draftEditorSection').style.display = 'block';
-            document.getElementById('editorTitle').textContent = `Week ${week} – ${currentSubjectDraft}`;
+            document.getElementById('editorTitle').textContent = `Week ${safeWeek} – ${currentSubjectDraft}`;
             quill.root.innerHTML = note.lessonNote || '';
-            
+
             lessonNoteApproved = note.status === 'approved';
-            document.getElementById('postApprovalSections').style.display = lessonNoteApproved ? 'block' : 'none';
+
+            // Hide all extra resources initially
+            document.getElementById('postApprovalSections').style.display = 'none';
+            document.getElementById('additionalResources').style.display = 'none';
+
+            // Show the "Create Additional Resources" button ONLY if approved
+            const createBtn = document.getElementById('createOthersBtn');
+            const createContainer = document.getElementById('createOthersBtnContainer');
+            if (lessonNoteApproved) {
+                createContainer.style.display = 'block';
+                createBtn.style.display = 'inline-flex';
+            } else {
+                createContainer.style.display = 'none';
+                createBtn.style.display = 'none';
+            }
+
             document.getElementById('pushToTeachBtn').style.display = lessonNoteApproved && !note.teachable ? 'inline-block' : 'none';
             contentMerged = !!(note.lessonNote);
             document.getElementById('submitEditorBtn').style.display = (!lessonNoteApproved) ? 'inline-block' : 'none';
-            
+            document.getElementById('deleteLessonNoteBtn').style.display = note.id ? 'inline-flex' : 'none';
+
             studentQuill.root.innerHTML = note.studentResource || '';
             teachingProcessQuill.root.innerHTML = note.teachingProcess || '';
-            videoLinks = note.videoLinks || []; 
+            videoLinks = note.videoLinks || [];
             renderVideoList();
-            handwritingImages = note.handwritingImages || []; 
+            handwritingImages = note.handwritingImages || [];
             renderHandwritingImages();
             displayAdminFeedback(note);
-            
+
             quill.update();
             studentQuill.update();
             teachingProcessQuill.update();
-            
-            // Refresh Quill dimensions after making visible
+
             setTimeout(() => {
                 if (quill) quill.update();
                 if (studentQuill) studentQuill.update();
                 if (teachingProcessQuill) teachingProcessQuill.update();
             }, 50);
-            
-            // Apply locked class if approved
+
             const lessonNoteCard = document.getElementById('lessonNoteCard');
             if (lessonNoteApproved) {
                 lessonNoteCard.classList.add('locked');
             } else {
                 lessonNoteCard.classList.remove('locked');
             }
-
-            // Show delete button only if the note exists
-            document.getElementById('deleteLessonNoteBtn').style.display = note.id ? 'inline-flex' : 'none';
         };
         
         function displayAdminFeedback(note) {
@@ -2843,7 +2882,7 @@ Include Nigerian names, locations, naira (₦), and references to Nigerian textb
         });
 
         // DELETE LESSON NOTE BUTTON
-        document.getElementById('deleteLessonNoteBtn').addEventListener('click', async () => {
+         document.getElementById('deleteLessonNoteBtn').addEventListener('click', async () => {
             if (!currentSubjectDraft || !currentWeekDraft) return;
             const key = `${currentSubjectDraft}_${currentWeekDraft}`;
             const existing = lessonNotesMap[key];
@@ -3454,6 +3493,13 @@ Include Nigerian names, locations, naira (₦), and references to Nigerian textb
             }
         });
 
+        // Create Additional Resources button listener
+        document.getElementById('createOthersBtn').addEventListener('click', () => {
+            document.getElementById('additionalResources').style.display = 'block';
+            document.getElementById('createOthersBtnContainer').style.display = 'none';
+            showToast('Opened', 'You can now create additional resources.', 'info');
+        });
+
         // AI Generate for Teaching Process and Resources
         // AI Generate TP (UPDATE 11)
         document.getElementById('aiGenerateTPBtn').addEventListener('click', async (e) => {
@@ -3681,9 +3727,100 @@ Include Nigerian names, locations, naira (₦), and references to Nigerian textb
             }
         });
 
-        // Handwriting generation placeholder
+        // Handwriting image generation (Replicate + Cloudinary)
         document.getElementById('generateHandwritingBtn').addEventListener('click', async () => {
-            showToast('Coming Soon', 'Handwriting generation will be available in a future update', 'info');
+            const prompt = document.getElementById('handwritingPrompt').value.trim();
+            if (!prompt) return showToast('Error', 'Write a prompt first', 'warning');
+            if (!currentSubjectDraft || !currentWeekDraft) return showToast('Error', 'Select a subject and week first', 'error');
+
+            // Get Replicate API key from Remote Config (param name = Judahimage)
+            let replicateKey = null;
+            try {
+                replicateKey = remoteConfig.getString('Judahimage');
+            } catch (e) { /* will fallback */ }
+            if (!replicateKey || replicateKey.length < 5) {
+                return showToast('Error', 'Replicate API key not configured in Remote Config.', 'error');
+            }
+
+            showLoading();
+            try {
+                // 1. Generate image with Replicate (Stable Diffusion SDXL)
+                const replicateRes = await fetch('https://api.replicate.com/v1/predictions', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'Authorization': `Token ${replicateKey}`
+                    },
+                    body: JSON.stringify({
+                        version: 'be04660a5b93ef2aff61e3668dedb4cbeb14941e62a3fd5998364a0b7e3a0d00',
+                        input: {
+                            prompt: prompt,
+                            negative_prompt: 'blurry, messy, low quality, text errors, distorted faces',
+                            width: 768,
+                            height: 768,
+                            num_outputs: 1,
+                            scheduler: 'K_EULER',
+                            num_inference_steps: 30
+                        }
+                    })
+                });
+                if (!replicateRes.ok) {
+                    const err = await replicateRes.json();
+                    throw new Error(err.detail || 'Replicate request failed');
+                }
+                const prediction = await replicateRes.json();
+                const predictionId = prediction.id;
+
+                // 2. Poll for the result (max 60 seconds)
+                let imageUrl = null;
+                let attempts = 0;
+                while (!imageUrl && attempts < 30) {
+                    await new Promise(r => setTimeout(r, 2000));
+                    const pollRes = await fetch(`https://api.replicate.com/v1/predictions/${predictionId}`, {
+                        headers: { 'Authorization': `Token ${replicateKey}` }
+                    });
+                    const pollData = await pollRes.json();
+                    if (pollData.status === 'succeeded') {
+                        imageUrl = pollData.output[0];
+                    } else if (pollData.status === 'failed') {
+                        throw new Error('Image generation failed');
+                    }
+                    attempts++;
+                }
+                if (!imageUrl) throw new Error('Image generation timed out');
+
+                // 3. Upload to YOUR Cloudinary
+                const cloudName = 'dda7kpir8';
+                const uploadPreset = 'Judahschool';
+                const formData = new FormData();
+                formData.append('file', imageUrl);
+                formData.append('upload_preset', uploadPreset);
+                formData.append('folder', 'handwriting_notes');
+
+                const cloudRes = await fetch(`https://api.cloudinary.com/v1_1/${cloudName}/image/upload`, {
+                    method: 'POST',
+                    body: formData
+                });
+                const cloudData = await cloudRes.json();
+                if (!cloudRes.ok) throw new Error(cloudData.error?.message || 'Cloudinary upload failed');
+
+                const finalUrl = cloudData.secure_url;
+
+                // 4. Save to Firestore
+                handwritingImages.push({ url: finalUrl, prompt: prompt, createdAt: new Date().toISOString() });
+                renderHandwritingImages();
+
+                const key = `${currentSubjectDraft}_${currentWeekDraft}`;
+                const existing = lessonNotesMap[key] || {};
+                const d = { handwritingImages: handwritingImages, updatedAt: firebase.firestore.FieldValue.serverTimestamp() };
+                if (existing.id) await db.collection('lessonNotes').doc(existing.id).update(d);
+
+                showToast('Generated', 'Handwriting image saved!', 'success');
+            } catch (err) {
+                showToast('Error', err.message, 'error');
+            } finally {
+                hideLoading();
+            }
         });
 
         // Render rejected table when rejected tab is clicked
