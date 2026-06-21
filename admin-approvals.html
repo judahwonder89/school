@@ -28,6 +28,8 @@
             --danger-bg:rgba(239,68,68,0.12); --danger-text:#b91c1c; --danger-border:rgba(239,68,68,0.3);
             --info-bg:rgba(10,37,64,0.08); --info-text:#0A2540; --info-border:rgba(10,37,64,0.2);
             --gradient-start:#0A2540; --gradient-end:#C8963E; --input-bg:#fff; --toolbar-bg:#f8fafc;
+            --ct-bg:rgba(59,130,246,0.1); --ct-text:#2563eb; --st-bg:rgba(139,92,246,0.1); --st-text:#7c3aed;
+            --both-bg:rgba(200,150,62,0.15); --both-text:#b8860b;
         }
         :root[data-theme="dark"] {
             --bg-primary:#0a0f1e; --bg-surface:rgba(15,23,42,0.85); --text-primary:#f0f4fa;
@@ -41,6 +43,8 @@
             --danger-bg:rgba(239,68,68,0.15); --danger-text:#f87171; --danger-border:rgba(239,68,68,0.3);
             --info-bg:rgba(200,150,62,0.12); --info-text:#D4AF37; --info-border:rgba(200,150,62,0.25);
             --gradient-start:#0A2540; --gradient-end:#C8963E; --input-bg:rgba(30,41,59,0.9); --toolbar-bg:#1e293b;
+            --ct-bg:rgba(59,130,246,0.15); --ct-text:#60a5fa; --st-bg:rgba(139,92,246,0.15); --st-text:#a78bfa;
+            --both-bg:rgba(200,150,62,0.2); --both-text:#D4AF37;
         }
         body { font-family:'Inter',sans-serif; background:var(--bg-primary); color:var(--text-primary); min-height:100vh; display:flex; position:relative; overflow-x:hidden; transition:background 0.3s; }
         .bg-logo { position:fixed; top:50%; left:50%; transform:translate(-50%,-50%); width:400px; max-width:70vw; opacity:0.03; pointer-events:none; z-index:0; animation:breathe 6s ease-in-out infinite; }
@@ -87,6 +91,7 @@
         @keyframes fadeIn { from{opacity:0;transform:translateY(-10px)} to{opacity:1;transform:translateY(0)} }
         .dropdown-item { padding:0.6rem 1rem; color:var(--text-primary); border-radius:0.8rem; display:flex; align-items:center; gap:0.6rem; font-size:0.85rem; cursor:pointer; transition:all 0.2s; }
         .dropdown-item:hover { background:var(--hover-bg); color:var(--accent); }
+        .dropdown-item.danger:hover { background:var(--danger-bg); color:var(--danger-text); }
 
         /* Tabs */
         .tab-nav { display:flex; gap:0.4rem; margin-bottom:1.5rem; background:var(--card-bg); backdrop-filter:blur(12px); -webkit-backdrop-filter:blur(12px); border:1px solid var(--border); border-radius:1.5rem; padding:0.4rem; overflow-x:auto; box-shadow:var(--shadow); }
@@ -130,6 +135,9 @@
         .badge-warning { background:var(--warning-bg); color:var(--warning-text); border:1px solid var(--warning-border); }
         .badge-danger { background:var(--danger-bg); color:var(--danger-text); border:1px solid var(--danger-border); }
         .badge-info { background:var(--info-bg); color:var(--info-text); border:1px solid var(--info-border); }
+        .badge-ct { background:var(--ct-bg); color:var(--ct-text); border:1px solid rgba(59,130,246,0.3); }
+        .badge-st { background:var(--st-bg); color:var(--st-text); border:1px solid rgba(139,92,246,0.3); }
+        .badge-both { background:var(--both-bg); color:var(--both-text); border:1px solid rgba(200,150,62,0.3); }
 
         /* Buttons */
         .btn { padding:0.45rem 1rem; border:none; border-radius:2rem; font-weight:600; font-size:0.78rem; cursor:pointer; transition:all 0.25s; display:inline-flex; align-items:center; gap:0.3rem; white-space:nowrap; font-family:inherit; letter-spacing:0.3px; }
@@ -176,13 +184,19 @@
         .detail-label { width:120px; color:var(--text-secondary); font-weight:500; font-size:0.85rem; flex-shrink:0; }
         .detail-value { flex:1; font-weight:400; font-size:0.85rem; }
 
-        /* Checkbox Grid for Classes */
+        /* Checkbox Grid for Classes/Subjects */
         .checkbox-grid { display:flex; flex-wrap:wrap; gap:0.6rem; margin-top:0.3rem; }
         .checkbox-item { display:flex; align-items:center; gap:0.4rem; cursor:pointer; padding:0.5rem 0.9rem; border:1px solid var(--border); border-radius:2rem; font-size:0.85rem; transition:all 0.2s; background:var(--input-bg); user-select:none; }
         .checkbox-item:hover { border-color:var(--accent); background:var(--hover-bg); }
         .checkbox-item input[type="checkbox"] { display:none; }
         .checkbox-item.checked { background:var(--success-bg); border-color:var(--success-border); color:var(--success-text); font-weight:600; }
         .checkbox-item.checked::before { content:'✓ '; font-weight:700; }
+
+        /* Section Divider */
+        .section-divider { border:none; border-top:2px dashed var(--border); margin:1.5rem 0; }
+
+        /* Teacher Type Badge in Table */
+        .teacher-type-badge { font-size:0.7rem; padding:0.15rem 0.6rem; border-radius:1rem; font-weight:600; display:inline-block; }
 
         /* Toast */
         .toast-container { position:fixed; top:1rem; right:1rem; z-index:5000; display:flex; flex-direction:column; gap:0.5rem; pointer-events:none; }
@@ -194,6 +208,10 @@
         /* Empty State */
         .empty-state { text-align:center; padding:2rem; color:var(--text-muted); grid-column:1/-1; }
         .empty-state i { font-size:2.5rem; margin-bottom:0.8rem; opacity:0.4; display:block; }
+
+        /* Subject per class container */
+        .subject-class-block { background:var(--card-bg); border:1px solid var(--border); border-radius:1rem; padding:1rem; margin-bottom:0.8rem; }
+        .subject-class-block h4 { font-size:0.9rem; margin-bottom:0.6rem; color:var(--accent); }
 
         /* Mobile */
         @media(max-width:768px) {
@@ -241,7 +259,8 @@
                 <div class="profile-dropdown">
                     <div class="profile-pic" id="profilePic">MA</div>
                     <div class="dropdown-menu">
-                        <div class="dropdown-item" id="logoutBtn"><i class="fas fa-sign-out-alt"></i> Logout</div>
+                        <div class="dropdown-item" id="profileLink"><i class="fas fa-user"></i> Profile</div>
+                        <div class="dropdown-item danger" id="logoutBtn"><i class="fas fa-sign-out-alt"></i> Logout</div>
                     </div>
                 </div>
             </div>
@@ -291,14 +310,20 @@
                         <option value="nonTeachingStaff">Staff</option>
                         <option value="admin">Admin</option>
                     </select>
+                    <select class="select-filter" id="regTeacherTypeFilter" onchange="renderRegistrations()">
+                        <option value="">All Teacher Types</option>
+                        <option value="subjectTeacher">Subject Teacher</option>
+                        <option value="classTeacher">Class Teacher</option>
+                        <option value="both">Both</option>
+                    </select>
                 </div>
                 <div class="table-responsive">
                     <table>
                         <thead><tr>
                             <th><input type="checkbox" id="regSelectAll" onchange="toggleAllRegChecks()"></th>
-                            <th>User</th><th>Role</th><th>Post</th><th>Class(es)</th><th>Salary (₦)</th><th>Points</th><th>Status</th><th>Actions</th>
+                            <th>User</th><th>Role</th><th>Teacher Type</th><th>Post</th><th>Class(es)</th><th>Salary (₦)</th><th>Points</th><th>Status</th><th>Actions</th>
                         </tr></thead>
-                        <tbody id="regBody"><tr><td colspan="9"><div class="empty-state"><i class="fas fa-spinner fa-spin"></i><p>Loading...</p></div></td></tr></tbody>
+                        <tbody id="regBody"><tr><td colspan="10"><div class="empty-state"><i class="fas fa-spinner fa-spin"></i><p>Loading...</p></div></td></tr></tbody>
                     </table>
                 </div>
                 <div class="bulk-actions" id="regBulkActions" style="display:none;margin-top:1rem;">
@@ -327,7 +352,7 @@
                     </div>
                     <h4 style="margin:1rem 0 0.5rem;">📚 Syllabi</h4>
                     <div id="syllabusPendingGrid" class="grid-2cols"></div>
-                    <hr style="border-color:var(--border);margin:1.5rem 0;">
+                    <hr class="section-divider">
                     <h4 style="margin:0 0 0.5rem;">📝 Lesson Notes</h4>
                     <div id="notesPendingGrid" class="grid-2cols"></div>
                 </div>
@@ -444,9 +469,9 @@
         </div>
     </div>
 
-    <!-- EDIT USER MODAL -->
+    <!-- EDIT USER MODAL - UPDATED WITH TEACHER TYPE & MULTI-CLASS SUPPORT -->
     <div class="modal-overlay" id="editUserModal">
-        <div class="modal-content" style="max-width:600px;">
+        <div class="modal-content" style="max-width:650px;">
             <div class="modal-header"><h3>Edit User</h3><i class="fas fa-times modal-close" onclick="closeEditModal()"></i></div>
             <div id="editUserContent"></div>
             <div class="modal-actions">
@@ -532,12 +557,26 @@
         let allPendingActions = [];
         let unsubscribers = {};
 
-        // Available classes for assignment (customize as needed)
+        // Available classes for assignment
         const AVAILABLE_CLASSES = [
             'Creche', 'Pre-Nursery', 'Nursery 1', 'Nursery 2',
             'Primary 1', 'Primary 2', 'Primary 3', 'Primary 4', 'Primary 5', 'Primary 6',
             'JSS 1', 'JSS 2', 'JSS 3',
             'SS 1', 'SS 2', 'SS 3'
+        ];
+
+        // Common Nigerian subjects
+        const COMMON_SUBJECTS = [
+            'Mathematics', 'English Language', 'Basic Science', 'Basic Technology',
+            'Social Studies', 'Civic Education', 'Christian Religious Studies',
+            'Islamic Religious Studies', 'French', 'Yoruba', 'Hausa', 'Igbo',
+            'Business Studies', 'Home Economics', 'Agricultural Science',
+            'Physical and Health Education', 'Computer Studies', 'Creative Arts',
+            'Music', 'Literature in English', 'Government', 'Economics',
+            'Geography', 'Biology', 'Chemistry', 'Physics', 'Further Mathematics',
+            'Technical Drawing', 'Food and Nutrition', 'Commerce', 'Accounting',
+            'History', 'Security Education', 'Handwriting', 'Phonics', 'Spelling',
+            'Quantitative Reasoning', 'Verbal Reasoning', 'Moral Instruction'
         ];
 
         // ============================================
@@ -552,7 +591,7 @@
             setTimeout(() => { toast.classList.add('removing'); setTimeout(() => toast.remove(), 300); }, 4000);
         }
 
-        // Sidebar
+        // Sidebar toggle
         const sidebar = document.getElementById('sidebar'), mainContent = document.getElementById('mainContent');
         document.getElementById('sidebarToggle').addEventListener('click', () => {
             sidebar.classList.toggle('collapsed'); mainContent.classList.toggle('expanded');
@@ -560,7 +599,7 @@
             icon.classList.toggle('fa-chevron-left'); icon.classList.toggle('fa-chevron-right');
         });
 
-        // Theme
+        // Theme toggle
         const html = document.documentElement, themeToggle = document.getElementById('themeToggle');
         const savedTheme = localStorage.getItem('judah-theme') || 'dark';
         html.setAttribute('data-theme', savedTheme);
@@ -642,7 +681,7 @@
             document.getElementById('ttPreviewModal').classList.add('active');
         };
 
-        // Update badge
+        // Update badge & stats
         function updateAllBadges() {
             let total = allUsers.filter(u => !u.approved).length;
             total += pendingSyllabi.length + pendingNotes.length;
@@ -674,13 +713,13 @@
             catch (e) {}
             document.getElementById('pointValueInput').value = settings.pointValue || 200;
         }
-        async function saveSettings() {
+        window.saveSettings = async () => {
             const val = Number(document.getElementById('pointValueInput').value) || 200;
             await db.collection('settings').doc('points').set({ pointValue: val }, { merge: true });
             settings.pointValue = val;
             showToast('Saved', 'Point value updated', 'success');
             closeSettings();
-        }
+        };
         async function loadPostCategories() {
             try { const snap = await db.collection('postCategories').get(); postCategories = []; snap.forEach(d => postCategories.push({ id: d.id, ...d.data() })); }
             catch (e) {}
@@ -719,19 +758,35 @@
             const classes = u.classesTeaching || (u.classTeaching ? [u.classTeaching] : []);
             return classes.length ? classes.join(', ') : (u.class || '—');
         }
+        function getTeacherTypeBadge(u) {
+            if (u.role !== 'teacher') return '—';
+            const type = u.teacherType || (u.classTeacherFor?.length ? 'classTeacher' : 'subjectTeacher');
+            switch (type) {
+                case 'classTeacher': return '<span class="badge badge-ct">👨‍🏫 Class Teacher</span>';
+                case 'both': return '<span class="badge badge-both">👑 Both</span>';
+                default: return '<span class="badge badge-st">📚 Subject Teacher</span>';
+            }
+        }
         function renderRegistrations() {
             const search = document.getElementById('regSearch').value.toLowerCase();
             const status = document.getElementById('regStatusFilter').value;
             const role = document.getElementById('regRoleFilter').value;
+            const teacherTypeFilter = document.getElementById('regTeacherTypeFilter').value;
             const filtered = allUsers.filter(u => {
                 const name = `${u.firstName||''} ${u.surname||''}`.toLowerCase();
                 const email = (u.email||'').toLowerCase();
-                return (name.includes(search) || email.includes(search))
-                    && (status === 'all' || (status === 'approved' ? u.approved === true : u.approved === false))
-                    && (!role || u.role === role);
+                const matchesSearch = name.includes(search) || email.includes(search);
+                const matchesStatus = status === 'all' || (status === 'approved' ? u.approved === true : u.approved === false);
+                const matchesRole = !role || u.role === role;
+                let matchesTeacherType = true;
+                if (teacherTypeFilter && u.role === 'teacher') {
+                    const uType = u.teacherType || (u.classTeacherFor?.length ? 'classTeacher' : 'subjectTeacher');
+                    matchesTeacherType = uType === teacherTypeFilter;
+                }
+                return matchesSearch && matchesStatus && matchesRole && matchesTeacherType;
             });
             const tbody = document.getElementById('regBody');
-            if (!filtered.length) { tbody.innerHTML = '<tr><td colspan="9"><div class="empty-state"><i class="fas fa-check-circle"></i><p>No users found.</p></div></td></tr>'; return; }
+            if (!filtered.length) { tbody.innerHTML = '<tr><td colspan="10"><div class="empty-state"><i class="fas fa-check-circle"></i><p>No users found.</p></div></td></tr>'; return; }
             tbody.innerHTML = filtered.map(u => {
                 const name = `${u.firstName||''} ${u.surname||''}`.trim() || 'Unknown';
                 const post = u.post || '—';
@@ -740,10 +795,13 @@
                 const points = u.points || 0;
                 const statusBadge = u.suspended ? '<span class="badge badge-danger">Suspended</span>' :
                     u.approved ? '<span class="badge badge-success">Active</span>' : '<span class="badge badge-warning">Pending</span>';
+                const teacherTypeBadge = getTeacherTypeBadge(u);
                 return `<tr>
                     <td><input type="checkbox" class="reg-check" data-id="${u.id}"></td>
                     <td><strong>${escapeHtml(name)}</strong><br><small>${escapeHtml(u.email||'')}</small></td>
-                    <td>${u.role}</td><td>${post}</td><td>${cls}</td><td>${salary}</td>
+                    <td>${u.role}</td>
+                    <td>${teacherTypeBadge}</td>
+                    <td>${post}</td><td>${cls}</td><td>${salary}</td>
                     <td>${points} pts</td>
                     <td>${statusBadge}</td>
                     <td style="white-space:nowrap;">
@@ -815,16 +873,19 @@
         };
 
         // ============================================
-        // EDIT USER MODAL - UPDATED WITH MULTI-CLASS SUPPORT
+        // EDIT USER MODAL - CLASS TEACHER / SUBJECT TEACHER SUPPORT
         // ============================================
         window.editUser = (uid) => {
             const u = allUsers.find(x => x.id === uid); if (!u) return;
             selectedUserId = uid;
 
-            // Get currently assigned classes
             const assignedClasses = u.classesTeaching || (u.classTeaching ? [u.classTeaching] : []);
+            const classTeacherFor = u.classTeacherFor || [];
+            const teacherType = u.teacherType || (u.classTeacherFor?.length ? 'classTeacher' : 'subjectTeacher');
+            const subjectClassMap = u.subjectClassMap || {};
+            const userSubjects = u.subjects || [];
 
-            // Build class checkboxes
+            // Build class checkboxes for subject teaching
             const classCheckboxesHTML = AVAILABLE_CLASSES.map(cls => {
                 const isChecked = assignedClasses.includes(cls);
                 return `<label class="checkbox-item ${isChecked ? 'checked' : ''}" onclick="toggleClassCheckbox(this)">
@@ -832,6 +893,43 @@
                     ${escapeHtml(cls)}
                 </label>`;
             }).join('');
+
+            // Build class teacher checkboxes
+            const ctCheckboxesHTML = AVAILABLE_CLASSES.map(cls => {
+                const isChecked = classTeacherFor.includes(cls);
+                return `<label class="checkbox-item ${isChecked ? 'checked' : ''}" onclick="toggleClassCheckbox(this)">
+                    <input type="checkbox" value="${escapeHtml(cls)}" ${isChecked ? 'checked' : ''}>
+                    ${escapeHtml(cls)}
+                </label>`;
+            }).join('');
+
+            // Build subject per class assignment
+            let subjectPerClassHTML = '';
+            const allKnownSubjects = [...new Set([...COMMON_SUBJECTS, ...userSubjects, ...Object.values(subjectClassMap).flat()])];
+            assignedClasses.forEach(cls => {
+                const classSubjects = subjectClassMap[cls] || [];
+                subjectPerClassHTML += `
+                    <div class="subject-class-block">
+                        <h4><i class="fas fa-graduation-cap"></i> ${escapeHtml(cls)}</h4>
+                        <div style="display:flex;flex-wrap:wrap;gap:0.4rem;" class="subject-cb-group" data-class="${escapeHtml(cls)}">
+                            ${allKnownSubjects.map(sub => {
+                                const checked = classSubjects.includes(sub);
+                                return `<label class="checkbox-item ${checked ? 'checked' : ''}" onclick="toggleClassCheckbox(this)" style="font-size:0.75rem;padding:0.3rem 0.7rem;">
+                                    <input type="checkbox" value="${escapeHtml(sub)}" ${checked ? 'checked' : ''}>
+                                    ${escapeHtml(sub)}
+                                </label>`;
+                            }).join('')}
+                        </div>
+                        <div style="margin-top:0.4rem;">
+                            <input type="text" class="search-input" placeholder="+ Add custom subject for ${escapeHtml(cls)}..." 
+                                   onkeypress="if(event.key==='Enter'){addCustomSubject(this,'${escapeHtml(cls)}')}" 
+                                   style="font-size:0.75rem;padding:0.3rem 0.7rem;">
+                        </div>
+                    </div>`;
+            });
+            if (!assignedClasses.length) {
+                subjectPerClassHTML = '<p style="color:var(--text-muted);font-size:0.85rem;">Select classes above to assign subjects.</p>';
+            }
 
             document.getElementById('editUserContent').innerHTML = `
                 <div class="form-group">
@@ -843,25 +941,64 @@
                 </div>
                 <div class="form-group">
                     <label>Salary (₦)</label>
-                    <input type="number" id="editSalary" class="form-control" value="${u.salary||''}">
+                    <input type="number" id="editSalary" class="form-control" value="${u.salary||''}" placeholder="50000">
                 </div>
+                <hr class="section-divider">
                 <div class="form-group">
-                    <label>Classes Teaching <span style="font-weight:400;color:var(--text-muted);">(select all that apply)</span></label>
-                    <div class="checkbox-grid" id="editClassesGrid">
-                        ${classCheckboxesHTML}
-                    </div>
+                    <label><i class="fas fa-user-tag"></i> Teacher Type</label>
+                    <select id="editTeacherType" class="form-control" onchange="toggleTeacherTypeFields()">
+                        <option value="subjectTeacher" ${teacherType === 'subjectTeacher' ? 'selected' : ''}>📚 Subject Teacher Only</option>
+                        <option value="classTeacher" ${teacherType === 'classTeacher' ? 'selected' : ''}>👨‍🏫 Class Teacher (also teaches subjects)</option>
+                        <option value="both" ${teacherType === 'both' ? 'selected' : ''}>👑 Both (Class Teacher + Subject Teacher)</option>
+                    </select>
                     <small style="color:var(--text-muted);margin-top:0.3rem;display:block;">
-                        <i class="fas fa-info-circle"></i> Teacher can be assigned to multiple classes. First selected class will be the primary.
+                        <strong>Subject Teacher</strong> = Creates lesson notes, assignments, question banks.<br>
+                        <strong>Class Teacher</strong> = Marks attendance, compiles report cards, handles student requests.<br>
+                        <strong>Both</strong> = All permissions.
                     </small>
                 </div>
+                <div id="classTeacherFields" style="display:${teacherType === 'subjectTeacher' ? 'none' : 'block'};">
+                    <hr class="section-divider">
+                    <div class="form-group">
+                        <label><i class="fas fa-users-class"></i> Class Teacher For <span style="font-weight:400;color:var(--text-muted);">(select all that apply)</span></label>
+                        <div class="checkbox-grid" id="editClassTeacherGrid">
+                            ${ctCheckboxesHTML}
+                        </div>
+                        <small style="color:var(--text-muted);margin-top:0.3rem;display:block;">
+                            <i class="fas fa-info-circle"></i> This teacher will mark attendance, compile report cards, and handle student requests for these classes.
+                        </small>
+                    </div>
+                </div>
+                <div id="subjectTeacherFields" style="display:${teacherType === 'classTeacher' ? 'none' : 'block'};">
+                    <hr class="section-divider">
+                    <div class="form-group">
+                        <label><i class="fas fa-school"></i> Classes Teaching <span style="font-weight:400;color:var(--text-muted);">(select all where they teach subjects)</span></label>
+                        <div class="checkbox-grid" id="editClassesGrid">
+                            ${classCheckboxesHTML}
+                        </div>
+                        <small style="color:var(--text-muted);margin-top:0.3rem;display:block;">
+                            <i class="fas fa-info-circle"></i> First selected class becomes the primary class.
+                        </small>
+                    </div>
+                    <div class="form-group">
+                        <label><i class="fas fa-book"></i> Subjects per Class</label>
+                        <div id="subjectPerClassContainer">${subjectPerClassHTML}</div>
+                        <small style="color:var(--text-muted);margin-top:0.3rem;display:block;">
+                            <i class="fas fa-info-circle"></i> Select which subjects this teacher teaches in each class. Only these subjects will appear in their workspace.
+                        </small>
+                    </div>
+                </div>
+                <hr class="section-divider">
                 <div class="form-group">
-                    <label>Permissions</label>
-                    <div style="display:flex;gap:1rem;flex-wrap:wrap;">
-                        <label style="display:flex;align-items:center;gap:0.3rem;cursor:pointer;">
-                            <input type="checkbox" id="editCoAdmin" ${u.coAdminAccess?'checked':''}> Co-Admin
+                    <label><i class="fas fa-shield-alt"></i> Permissions</label>
+                    <div style="display:flex;gap:1.5rem;flex-wrap:wrap;">
+                        <label style="display:flex;align-items:center;gap:0.4rem;cursor:pointer;">
+                            <input type="checkbox" id="editCoAdmin" ${u.coAdminAccess?'checked':''}> 
+                            <span>Co-Admin Access</span>
                         </label>
-                        <label style="display:flex;align-items:center;gap:0.3rem;cursor:pointer;">
-                            <input type="checkbox" id="editStaffAccess" ${u.staffAccess?'checked':''}> Staff Access
+                        <label style="display:flex;align-items:center;gap:0.4rem;cursor:pointer;">
+                            <input type="checkbox" id="editStaffAccess" ${u.staffAccess?'checked':''}> 
+                            <span>Staff Access</span>
                         </label>
                     </div>
                 </div>`;
@@ -877,36 +1014,82 @@
             } else {
                 label.classList.remove('checked');
             }
+            // If this is a class checkbox, update subject per class container
+            if (label.closest('#editClassesGrid') || label.closest('#editClassTeacherGrid')) {
+                // Trigger refresh of subject fields (optional — we rebuild on save)
+            }
+        };
+
+        // Add custom subject
+        window.addCustomSubject = (input, cls) => {
+            const sub = input.value.trim();
+            if (!sub) return;
+            const group = input.closest('.subject-class-block').querySelector('.subject-cb-group');
+            const exists = group.querySelector(`input[value="${escapeHtml(sub)}"]`);
+            if (exists) { showToast('Exists', 'Subject already added', 'warning'); input.value = ''; return; }
+            const label = document.createElement('label');
+            label.className = 'checkbox-item checked';
+            label.style.cssText = 'font-size:0.75rem;padding:0.3rem 0.7rem;';
+            label.onclick = function() { toggleClassCheckbox(this); };
+            label.innerHTML = `<input type="checkbox" value="${escapeHtml(sub)}" checked> ${escapeHtml(sub)}`;
+            group.appendChild(label);
+            input.value = '';
+        };
+
+        // Toggle visibility of class teacher / subject teacher fields
+        window.toggleTeacherTypeFields = () => {
+            const type = document.getElementById('editTeacherType').value;
+            document.getElementById('classTeacherFields').style.display = (type === 'classTeacher' || type === 'both') ? 'block' : 'none';
+            document.getElementById('subjectTeacherFields').style.display = (type === 'subjectTeacher' || type === 'both') ? 'block' : 'none';
         };
 
         window.saveUserChanges = async () => {
             if (!selectedUserId) return;
 
-            // Collect selected classes
+            const teacherType = document.getElementById('editTeacherType').value;
+
+            // Collect class teacher assignments
+            const classTeacherFor = [];
+            document.querySelectorAll('#editClassTeacherGrid input[type="checkbox"]:checked').forEach(cb => {
+                classTeacherFor.push(cb.value);
+            });
+
+            // Collect subject teaching classes
             const selectedClasses = [];
             document.querySelectorAll('#editClassesGrid input[type="checkbox"]:checked').forEach(cb => {
                 selectedClasses.push(cb.value);
             });
 
+            // Collect subjects per class
+            const subjectClassMap = {};
+            document.querySelectorAll('.subject-cb-group').forEach(group => {
+                const cls = group.dataset.class;
+                const subjects = [];
+                group.querySelectorAll('input[type="checkbox"]:checked').forEach(cb => {
+                    subjects.push(cb.value);
+                });
+                if (subjects.length) subjectClassMap[cls] = subjects;
+            });
+
+            // Collect all unique subjects across all classes
+            const allSubjects = [...new Set(Object.values(subjectClassMap).flat())];
+
             const updateData = {
                 post: document.getElementById('editPost').value || null,
                 salary: Number(document.getElementById('editSalary').value) || 0,
+                teacherType: teacherType,
+                classTeacherFor: classTeacherFor,
+                classesTeaching: selectedClasses,
+                classTeaching: selectedClasses[0] || classTeacherFor[0] || '',
+                subjects: allSubjects,
+                subjectClassMap: subjectClassMap,
                 coAdminAccess: document.getElementById('editCoAdmin').checked,
                 staffAccess: document.getElementById('editStaffAccess').checked,
                 updatedAt: firebase.firestore.FieldValue.serverTimestamp()
             };
 
-            // Handle class assignment
-            if (selectedClasses.length > 0) {
-                updateData.classesTeaching = selectedClasses;           // Array for workspace
-                updateData.classTeaching = selectedClasses[0];          // Primary class for backward compat
-            } else {
-                updateData.classesTeaching = firebase.firestore.FieldValue.delete();
-                updateData.classTeaching = firebase.firestore.FieldValue.delete();
-            }
-
             await db.collection('users').doc(selectedUserId).update(updateData);
-            showToast('Saved', `User updated with ${selectedClasses.length} class(es)`, 'success');
+            showToast('Saved', `Teacher updated: ${teacherType.replace(/([A-Z])/g,' $1').trim()} with ${selectedClasses.length} class(es), ${allSubjects.length} subject(s)`, 'success');
             closeEditModal();
         };
 
@@ -921,7 +1104,7 @@
             document.getElementById('pointHistoryModal').classList.add('active');
         };
         window.exportRegCSV = () => {
-            const rows = [['Name','Role','Email','Post','Classes','Salary','Points','Status']];
+            const rows = [['Name','Role','Teacher Type','Email','Post','Classes','Salary','Points','Status']];
             const search = document.getElementById('regSearch').value.toLowerCase();
             const status = document.getElementById('regStatusFilter').value;
             const role = document.getElementById('regRoleFilter').value;
@@ -932,7 +1115,9 @@
                     && (status === 'all' || (status === 'approved' ? u.approved === true : u.approved === false))
                     && (!role || u.role === role);
             }).forEach(u => rows.push([
-                `${u.firstName||''} ${u.surname||''}`, u.role, u.email||'', u.post||'',
+                `${u.firstName||''} ${u.surname||''}`, u.role, 
+                u.role==='teacher'?(u.teacherType||'subjectTeacher'):'—',
+                u.email||'', u.post||'',
                 getClassDisplay(u), u.salary||'', u.points||0, u.approved?'Approved':'Pending'
             ]));
             const csv = rows.map(r => r.map(c => `"${c}"`).join(',')).join('\n');
@@ -1172,7 +1357,6 @@
                 } else if (action.actionType === 'delete' && action.studentId) {
                     await db.collection('users').doc(action.studentId).delete();
                 }
-                // For teacher permission requests, just approve — no additional action needed
                 showToast('Approved', 'Action approved and executed', 'success');
             });
         };
@@ -1192,8 +1376,10 @@
                 group.querySelectorAll('.sub-tab-btn').forEach(b => b.classList.remove('active'));
                 btn.classList.add('active');
                 const parent = group.parentElement;
-                parent.querySelectorAll('[id$="Pending"],[id$="pending"]').forEach(el => el.style.display = btn.dataset.sub === 'pending' ? 'block' : 'none');
-                parent.querySelectorAll('[id$="History"],[id$="history"]').forEach(el => el.style.display = btn.dataset.sub === 'history' ? 'block' : 'none');
+                const pendingIds = parent.querySelectorAll('[id$="Pending"],[id$="pending"]');
+                const historyIds = parent.querySelectorAll('[id$="History"],[id$="history"]');
+                pendingIds.forEach(el => el.style.display = btn.dataset.sub === 'pending' ? 'block' : 'none');
+                historyIds.forEach(el => el.style.display = btn.dataset.sub === 'history' ? 'block' : 'none');
             });
         });
 
@@ -1249,6 +1435,7 @@
         });
 
         document.getElementById('logoutBtn').addEventListener('click', () => auth.signOut().then(() => window.location.href = 'index.html'));
+        document.getElementById('profileLink').addEventListener('click', () => window.location.href = 'admin-profile.html');
         window.addEventListener('beforeunload', () => Object.values(unsubscribers).forEach(u => u()));
     </script>
 </body>
