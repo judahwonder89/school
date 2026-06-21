@@ -525,11 +525,7 @@
 
         <!-- Workspace Tab Navigation -->
         <div class="workspace-tabs" id="workspaceTabs">
-            <div class="workspace-tab active" data-panel="timetable"><i class="fas fa-calendar-alt"></i> Timetable</div>
-            <div class="workspace-tab" data-panel="lessonNotes"><i class="fas fa-book-open"></i> Lesson Notes</div>
-            <div class="workspace-tab" data-panel="dailyReport"><i class="fas fa-journal-whills"></i> Daily Report</div>
-            <div class="workspace-tab" data-panel="publishedContent"><i class="fas fa-check-double"></i> Published</div>
-            <div class="workspace-tab" data-panel="insights"><i class="fas fa-chart-line"></i> Insights</div>
+            <!-- Dynamically rendered -->
         </div>
 
         <!-- PANEL 1: TIMETABLE -->
@@ -661,7 +657,11 @@
                     <!-- Lesson Note Card -->
                     <div class="card" id="lessonNoteCard">
                         <div class="card-header">
-                            <h3><i class="fas fa-book-open"></i> <span id="editorTitle">Lesson Note</span></h3>
+                            <h3>
+                              <i class="fas fa-book-open"></i> 
+                              <span id="editorTitle">Lesson Note</span> 
+                              <span id="draftDebug" style="margin-left:1rem;font-size:0.8rem;background:var(--warning-bg);color:var(--warning-text);padding:0.2rem 0.8rem;border-radius:1rem;"></span>
+                            </h3>
                             <div class="actions" style="display:flex;gap:0.3rem;flex-wrap:wrap;">
                                 <button class="btn btn-outline btn-sm" id="useAIContentBtn" title="AI Generate"><i class="fas fa-robot"></i> AI Generate</button>
                                 <button class="btn btn-outline btn-sm" id="useTemplateBtn" title="Use Template"><i class="fas fa-file-alt"></i> Template</button>
@@ -1542,51 +1542,30 @@ Include Nigerian names, locations, naira (₦), and references to Nigerian textb
         function renderWorkspaceTabs(isCT, isST) {
             const tabsContainer = document.getElementById('workspaceTabs');
             let tabsHTML = '';
-            
-            // Everyone gets these
             tabsHTML += `<div class="workspace-tab active" data-panel="timetable"><i class="fas fa-calendar-alt"></i> Timetable</div>`;
             tabsHTML += `<div class="workspace-tab" data-panel="lessonNotes"><i class="fas fa-book-open"></i> Lesson Notes</div>`;
             tabsHTML += `<div class="workspace-tab" data-panel="dailyReport"><i class="fas fa-journal-whills"></i> Daily Report</div>`;
-            
-            // Class Teacher only tabs
             if (isCT) {
                 tabsHTML += `<div class="workspace-tab" data-panel="attendance"><i class="fas fa-clipboard-check"></i> Attendance</div>`;
                 tabsHTML += `<div class="workspace-tab" data-panel="reportCards"><i class="fas fa-file-alt"></i> Report Cards</div>`;
-                tabsHTML += `<div class="workspace-tab" data-panel="studentRequests"><i class="fas fa-envelope"></i> Student Requests</div>`;
             }
-            
-            // Subject Teacher only tabs
-            if (isST) {
-                tabsHTML += `<div class="workspace-tab" data-panel="assignments"><i class="fas fa-tasks"></i> Assignments</div>`;
-                tabsHTML += `<div class="workspace-tab" data-panel="questionBank"><i class="fas fa-database"></i> Question Bank</div>`;
-            }
-            
-            // Everyone gets these
             tabsHTML += `<div class="workspace-tab" data-panel="publishedContent"><i class="fas fa-check-double"></i> Published</div>`;
             tabsHTML += `<div class="workspace-tab" data-panel="insights"><i class="fas fa-chart-line"></i> Insights</div>`;
-            
             tabsContainer.innerHTML = tabsHTML;
-            
-            // Re-attach event listeners
             document.querySelectorAll('#workspaceTabs .workspace-tab').forEach(tab => {
                 tab.addEventListener('click', () => {
                     document.querySelectorAll('#workspaceTabs .workspace-tab').forEach(t => t.classList.remove('active'));
                     tab.classList.add('active');
                     const panel = tab.dataset.panel;
                     document.querySelectorAll('.workspace-panel').forEach(p => p.classList.remove('active'));
-                    
                     const panelEl = document.getElementById('panel-' + panel);
                     if (panelEl) panelEl.classList.add('active');
-                    
                     if (panel === 'timetable') loadAllTimetableData();
                     else if (panel === 'dailyReport') loadMyReports();
                     else if (panel === 'publishedContent') renderPublishedContent();
                     else if (panel === 'insights') renderInsights();
                     else if (panel === 'attendance') loadAttendance();
                     else if (panel === 'reportCards') generateReportCards();
-                    else if (panel === 'studentRequests') loadStudentRequests();
-                    else if (panel === 'assignments') loadAssignments();
-                    else if (panel === 'questionBank') loadQuestionBank();
                 });
             });
         }
@@ -2464,6 +2443,9 @@ Include Nigerian names, locations, naira (₦), and references to Nigerian textb
         window.selectDraftSubject = (e, subject) => {
             if (e) e.target.closest('.subject-card').classList.add('active');
             currentSubjectDraft = subject;
+            document.getElementById('draftDebug').textContent = `Subject: ${subject} | Week: not set`;
+            document.getElementById('draftDebug').style.background = 'var(--warning-bg)';
+            document.getElementById('draftDebug').style.color = 'var(--warning-text)';
             const allNotes = Object.values(lessonNotesMap).filter(n => n.subject === subject);
             const syllabusWeeks = syllabusMap[subject]?.weeks || [];
             const draftWeeks = syllabusWeeks.filter(w => { 
@@ -2491,6 +2473,9 @@ Include Nigerian names, locations, naira (₦), and references to Nigerian textb
                 e.target.classList.add('active'); 
             }
             currentWeekDraft = week;
+            document.getElementById('draftDebug').textContent = `Subject: ${currentSubjectDraft} | Week: ${week}`;
+            document.getElementById('draftDebug').style.background = 'var(--success-bg)';
+            document.getElementById('draftDebug').style.color = 'var(--success-text)';
             const key = `${currentSubjectDraft}_${week}`; 
             const note = lessonNotesMap[key] || {};
             
@@ -2576,6 +2561,15 @@ Include Nigerian names, locations, naira (₦), and references to Nigerian textb
           if (!window.groq) return showToast('Error', 'AI service not available', 'error');
           document.getElementById('aiAssistantModal').classList.add('active');
           document.getElementById('aiChatInput').focus();
+
+          const subject = currentSubjectDraft || currentSubject || 'Not selected';
+          const week = currentWeekDraft || 'Not selected';
+          const topic = (syllabusMap[currentSubjectDraft]?.weeks || []).find(w => w.week == currentWeekDraft)?.topic || 'Not specified';
+
+          if (!aiConversation.length) {
+            addChatMessage('assistant', `👋 I see you are working on <strong>${escapeHtml(subject)}</strong>, Week ${week}, Topic: <strong>${escapeHtml(topic)}</strong>.<br>I'm here to help you refine your lesson note. Ask me anything about it!`);
+            aiConversation.push({ role: 'assistant', content: `I see you are working on ${subject}, Week ${week}, Topic: ${topic}. I'm here to help you refine your lesson note.` });
+          }
         }
         function closeAIAssistant() {
           document.getElementById('aiAssistantModal').classList.remove('active');
@@ -2616,7 +2610,7 @@ Include Nigerian names, locations, naira (₦), and references to Nigerian textb
         <h3>Assignment:</h3><ol>...</ol>
         Use Nigerian names, naira (₦), and real Nigerian textbooks where possible.
         If the teacher asks you to "think", first explain your reasoning inside a <div class="thinking"> block, then give the final answer.`;
-
+ 
             const messages = [
               { role: 'system', content: systemPrompt },
               ...aiConversation
@@ -2734,7 +2728,7 @@ Include Nigerian names, locations, naira (₦), and references to Nigerian textb
                 hideLoading(); 
             }
         }
-        
+         
         document.getElementById('aiFormatBtn').addEventListener('click', () => aiFormatEditor(quill));
         document.getElementById('autoFormatLessonNoteBtn').addEventListener('click', () => aiFormatEditor(quill));
         document.getElementById('autoFormatTPBtn').addEventListener('click', () => aiFormatEditor(teachingProcessQuill));
@@ -2782,7 +2776,8 @@ Include Nigerian names, locations, naira (₦), and references to Nigerian textb
             console.log('🔍 State check:', { currentSubjectDraft, currentWeekDraft });
 
             if (!currentSubjectDraft || !currentWeekDraft) {
-                console.warn('⛔ Save blocked - missing subject or week', { currentSubjectDraft, currentWeekDraft });
+                document.getElementById('draftDebug').style.background = 'var(--danger-bg)';
+                document.getElementById('draftDebug').style.color = 'var(--danger-text)';
                 return showToast('Error', 'Please select a subject and week first', 'warning');
             }
             const lnHtml = quill.root.innerHTML;
@@ -2871,7 +2866,8 @@ Include Nigerian names, locations, naira (₦), and references to Nigerian textb
             console.log('🔍 State check:', { currentSubjectDraft, currentWeekDraft });
 
             if (!currentSubjectDraft || !currentWeekDraft) {
-                console.warn('⛔ Submit blocked - missing subject or week');
+                document.getElementById('draftDebug').style.background = 'var(--danger-bg)';
+                document.getElementById('draftDebug').style.color = 'var(--danger-text)';
                 return showToast('Error', 'Please select a subject and week first', 'warning');
             }
             const lnHtml = quill.root.innerHTML;
