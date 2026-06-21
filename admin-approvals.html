@@ -13,9 +13,6 @@
     <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-app-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-auth-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-firestore-compat.js"></script>
-    
-    <!-- Chart.js -->
-    <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
 
     <style>
         * { margin:0; padding:0; box-sizing:border-box; }
@@ -31,9 +28,6 @@
             --danger-bg:rgba(239,68,68,0.12); --danger-text:#b91c1c; --danger-border:rgba(239,68,68,0.3);
             --info-bg:rgba(10,37,64,0.08); --info-text:#0A2540; --info-border:rgba(10,37,64,0.2);
             --gradient-start:#0A2540; --gradient-end:#C8963E; --input-bg:#fff; --toolbar-bg:#f8fafc;
-            --test-bg:rgba(59,130,246,0.12); --test-text:#2563eb;
-            --assignment-bg:rgba(34,197,94,0.12); --assignment-text:#16a34a;
-            --exam-bg:rgba(239,68,68,0.12); --exam-text:#dc2626;
         }
         :root[data-theme="dark"] {
             --bg-primary:#0a0f1e; --bg-surface:rgba(15,23,42,0.85); --text-primary:#f0f4fa;
@@ -47,9 +41,6 @@
             --danger-bg:rgba(239,68,68,0.15); --danger-text:#f87171; --danger-border:rgba(239,68,68,0.3);
             --info-bg:rgba(200,150,62,0.12); --info-text:#D4AF37; --info-border:rgba(200,150,62,0.25);
             --gradient-start:#0A2540; --gradient-end:#C8963E; --input-bg:rgba(30,41,59,0.9); --toolbar-bg:#1e293b;
-            --test-bg:rgba(59,130,246,0.15); --test-text:#60a5fa;
-            --assignment-bg:rgba(34,197,94,0.15); --assignment-text:#4ade80;
-            --exam-bg:rgba(239,68,68,0.15); --exam-text:#f87171;
         }
         body { font-family:'Inter',sans-serif; background:var(--bg-primary); color:var(--text-primary); min-height:100vh; display:flex; position:relative; overflow-x:hidden; transition:background 0.3s; }
         .bg-logo { position:fixed; top:50%; left:50%; transform:translate(-50%,-50%); width:400px; max-width:70vw; opacity:0.03; pointer-events:none; z-index:0; animation:breathe 6s ease-in-out infinite; }
@@ -158,19 +149,6 @@
         .item-card { background:var(--hover-bg); border:1px solid var(--border); border-radius:1rem; padding:1rem; transition:all 0.2s; }
         .item-card:hover { border-color:var(--accent); box-shadow:var(--shadow); }
 
-        /* User Cards */
-        .user-grid { display:grid; grid-template-columns:repeat(auto-fill,minmax(280px,1fr)); gap:1rem; }
-        .user-card { background:var(--card-bg); backdrop-filter:blur(12px); -webkit-backdrop-filter:blur(12px); border:1px solid var(--border); border-radius:1.2rem; padding:1rem; box-shadow:var(--shadow); transition:all 0.3s; }
-        .user-card:hover { transform:translateY(-3px); box-shadow:var(--shadow-lg); border-color:var(--accent); }
-        .user-card-header { display:flex; align-items:center; gap:0.8rem; margin-bottom:0.8rem; }
-        .user-avatar { width:44px; height:44px; border-radius:50%; background:linear-gradient(135deg,var(--gradient-start),var(--gradient-end)); display:flex; align-items:center; justify-content:center; color:white; font-weight:600; font-size:1rem; overflow:hidden; flex-shrink:0; box-shadow:0 4px 8px rgba(0,0,0,.2); }
-        .user-avatar img { width:100%; height:100%; object-fit:cover; border-radius:50%; }
-        .user-info h3 { font-size:1rem; font-weight:600; }
-        .user-info p { color:var(--text-secondary); font-size:0.8rem; }
-        .user-detail { display:flex; align-items:center; gap:0.4rem; margin:0.4rem 0; color:var(--text-secondary); font-size:0.8rem; }
-        .user-detail i { width:1rem; color:var(--accent); font-size:0.8rem; }
-        .user-actions { display:flex; gap:0.5rem; margin-top:0.8rem; justify-content:flex-end; flex-wrap:wrap; }
-
         /* Filter Bar */
         .filter-bar { display:flex; gap:0.5rem; margin-bottom:1rem; flex-wrap:wrap; align-items:center; }
         .search-input { padding:0.5rem 1rem; border:2px solid var(--border); border-radius:2rem; background:var(--input-bg); color:var(--text-primary); font-size:0.85rem; flex:1; min-width:200px; font-family:inherit; transition:border-color 0.2s; }
@@ -198,6 +176,14 @@
         .detail-label { width:120px; color:var(--text-secondary); font-weight:500; font-size:0.85rem; flex-shrink:0; }
         .detail-value { flex:1; font-weight:400; font-size:0.85rem; }
 
+        /* Checkbox Grid for Classes */
+        .checkbox-grid { display:flex; flex-wrap:wrap; gap:0.6rem; margin-top:0.3rem; }
+        .checkbox-item { display:flex; align-items:center; gap:0.4rem; cursor:pointer; padding:0.5rem 0.9rem; border:1px solid var(--border); border-radius:2rem; font-size:0.85rem; transition:all 0.2s; background:var(--input-bg); user-select:none; }
+        .checkbox-item:hover { border-color:var(--accent); background:var(--hover-bg); }
+        .checkbox-item input[type="checkbox"] { display:none; }
+        .checkbox-item.checked { background:var(--success-bg); border-color:var(--success-border); color:var(--success-text); font-weight:600; }
+        .checkbox-item.checked::before { content:'✓ '; font-weight:700; }
+
         /* Toast */
         .toast-container { position:fixed; top:1rem; right:1rem; z-index:5000; display:flex; flex-direction:column; gap:0.5rem; pointer-events:none; }
         .toast { background:var(--card-bg); backdrop-filter:blur(16px); -webkit-backdrop-filter:blur(16px); border:1px solid var(--border); border-radius:1rem; padding:0.9rem 1.2rem; min-width:300px; max-width:420px; box-shadow:var(--shadow-lg); display:flex; align-items:flex-start; gap:0.7rem; animation:slideInRight 0.3s; pointer-events:auto; font-size:0.85rem; }
@@ -215,7 +201,7 @@
             .sidebar .logo-area h2,.sidebar .nav-item span { display:none; }
             .sidebar .nav-item { justify-content:center; padding:0.7rem; }
             .main-content { margin-left:85px; max-width:calc(100vw - 85px); padding:1rem; }
-            .user-grid,.grid-2cols { grid-template-columns:1fr; }
+            .grid-2cols { grid-template-columns:1fr; }
             .stats-row { grid-template-columns:repeat(2,1fr); }
             .page-title h1 { font-size:1.4rem; }
             .tab-btn { padding:0.5rem 1rem; font-size:0.75rem; }
@@ -310,7 +296,7 @@
                     <table>
                         <thead><tr>
                             <th><input type="checkbox" id="regSelectAll" onchange="toggleAllRegChecks()"></th>
-                            <th>User</th><th>Role</th><th>Post</th><th>Class</th><th>Salary (₦)</th><th>Points</th><th>Status</th><th>Actions</th>
+                            <th>User</th><th>Role</th><th>Post</th><th>Class(es)</th><th>Salary (₦)</th><th>Points</th><th>Status</th><th>Actions</th>
                         </tr></thead>
                         <tbody id="regBody"><tr><td colspan="9"><div class="empty-state"><i class="fas fa-spinner fa-spin"></i><p>Loading...</p></div></td></tr></tbody>
                     </table>
@@ -407,7 +393,7 @@
             </div>
         </div>
 
-        <!-- TAB 5: PENDING ACTIONS (from Class Hub) -->
+        <!-- TAB 5: PENDING ACTIONS -->
         <div class="tab-content" id="tab-pendingactions">
             <div class="card">
                 <div class="card-header"><h3><i class="fas fa-clock"></i> Action Requests from Teachers</h3></div>
@@ -460,7 +446,7 @@
 
     <!-- EDIT USER MODAL -->
     <div class="modal-overlay" id="editUserModal">
-        <div class="modal-content">
+        <div class="modal-content" style="max-width:600px;">
             <div class="modal-header"><h3>Edit User</h3><i class="fas fa-times modal-close" onclick="closeEditModal()"></i></div>
             <div id="editUserContent"></div>
             <div class="modal-actions">
@@ -546,16 +532,24 @@
         let allPendingActions = [];
         let unsubscribers = {};
 
+        // Available classes for assignment (customize as needed)
+        const AVAILABLE_CLASSES = [
+            'Creche', 'Pre-Nursery', 'Nursery 1', 'Nursery 2',
+            'Primary 1', 'Primary 2', 'Primary 3', 'Primary 4', 'Primary 5', 'Primary 6',
+            'JSS 1', 'JSS 2', 'JSS 3',
+            'SS 1', 'SS 2', 'SS 3'
+        ];
+
         // ============================================
         // HELPERS
         // ============================================
         function escapeHtml(t) { const d = document.createElement('div'); d.textContent = t || ''; return d.innerHTML; }
-        function showToast(title, msg, type = 'info', undo = null) {
+        function showToast(title, msg, type = 'info') {
             const icons = { success: 'fa-check-circle', error: 'fa-exclamation-circle', warning: 'fa-exclamation-triangle', info: 'fa-info-circle' };
             const toast = document.createElement('div'); toast.className = 'toast';
             toast.innerHTML = `<i class="fas ${icons[type]}" style="color:var(--${type==='success'?'success':type==='error'?'danger':type==='warning'?'warning':'info'}-text);font-size:1.1rem;"></i><div><strong>${title}</strong><br><span style="font-size:0.8rem;color:var(--text-secondary);">${msg}</span></div>`;
             document.getElementById('toastContainer').appendChild(toast);
-            setTimeout(() => { toast.classList.add('removing'); setTimeout(() => toast.remove(), 300); }, undo ? 7000 : 4000);
+            setTimeout(() => { toast.classList.add('removing'); setTimeout(() => toast.remove(), 300); }, 4000);
         }
 
         // Sidebar
@@ -604,7 +598,6 @@
             const update = { status: 'approved', adminFeedback: feedback, reviewedAt: firebase.firestore.FieldValue.serverTimestamp() };
             if (detailRating > 0) update.adminRating = detailRating;
             await db.collection(coll).doc(detailCurrentDoc.id).update(update);
-            // Award points to teacher
             if ((detailType === 'lessonNote' || detailType === 'syllabus') && detailCurrentDoc.data().teacherId && detailRating >= 1) {
                 const pts = detailRating * 10;
                 const ref = db.collection('users').doc(detailCurrentDoc.data().teacherId);
@@ -722,6 +715,10 @@
                 renderRegistrations(); updateAllBadges(); updateStats();
             }, err => showToast('Error', err.message, 'error'));
         }
+        function getClassDisplay(u) {
+            const classes = u.classesTeaching || (u.classTeaching ? [u.classTeaching] : []);
+            return classes.length ? classes.join(', ') : (u.class || '—');
+        }
         function renderRegistrations() {
             const search = document.getElementById('regSearch').value.toLowerCase();
             const status = document.getElementById('regStatusFilter').value;
@@ -737,17 +734,17 @@
             if (!filtered.length) { tbody.innerHTML = '<tr><td colspan="9"><div class="empty-state"><i class="fas fa-check-circle"></i><p>No users found.</p></div></td></tr>'; return; }
             tbody.innerHTML = filtered.map(u => {
                 const name = `${u.firstName||''} ${u.surname||''}`.trim() || 'Unknown';
-                const post = u.post || '—', cls = u.classTeaching || u.class || '—';
+                const post = u.post || '—';
+                const cls = getClassDisplay(u);
                 const salary = u.salary ? `₦${u.salary.toLocaleString()}` : '—';
                 const points = u.points || 0;
-                const deduction = (points * (settings.pointValue || 200)).toLocaleString();
                 const statusBadge = u.suspended ? '<span class="badge badge-danger">Suspended</span>' :
                     u.approved ? '<span class="badge badge-success">Active</span>' : '<span class="badge badge-warning">Pending</span>';
                 return `<tr>
                     <td><input type="checkbox" class="reg-check" data-id="${u.id}"></td>
                     <td><strong>${escapeHtml(name)}</strong><br><small>${escapeHtml(u.email||'')}</small></td>
                     <td>${u.role}</td><td>${post}</td><td>${cls}</td><td>${salary}</td>
-                    <td>${points} pts (₦${deduction})</td>
+                    <td>${points} pts</td>
                     <td>${statusBadge}</td>
                     <td style="white-space:nowrap;">
                         ${!u.approved ? `<button class="btn btn-success btn-sm" onclick="approveUser('${u.id}')">Approve</button>
@@ -816,38 +813,115 @@
             const u = allUsers.find(x => x.id === uid); if (!u) return;
             await db.collection('users').doc(uid).update({ suspended: !u.suspended });
         };
+
+        // ============================================
+        // EDIT USER MODAL - UPDATED WITH MULTI-CLASS SUPPORT
+        // ============================================
         window.editUser = (uid) => {
             const u = allUsers.find(x => x.id === uid); if (!u) return;
             selectedUserId = uid;
+
+            // Get currently assigned classes
+            const assignedClasses = u.classesTeaching || (u.classTeaching ? [u.classTeaching] : []);
+
+            // Build class checkboxes
+            const classCheckboxesHTML = AVAILABLE_CLASSES.map(cls => {
+                const isChecked = assignedClasses.includes(cls);
+                return `<label class="checkbox-item ${isChecked ? 'checked' : ''}" onclick="toggleClassCheckbox(this)">
+                    <input type="checkbox" value="${escapeHtml(cls)}" ${isChecked ? 'checked' : ''}>
+                    ${escapeHtml(cls)}
+                </label>`;
+            }).join('');
+
             document.getElementById('editUserContent').innerHTML = `
-                <div class="form-group"><label>Post</label><select id="editPost" class="form-control"><option value="">None</option>${postCategories.map(c => `<option value="${c.name}" ${u.post===c.name?'selected':''}>${c.name}</option>`).join('')}</select></div>
-                <div class="form-group"><label>Salary (₦)</label><input type="number" id="editSalary" class="form-control" value="${u.salary||''}"></div>
-                <div class="form-group"><label>Permissions</label><div style="display:flex;gap:1rem;"><label><input type="checkbox" id="editCoAdmin" ${u.coAdminAccess?'checked':''}> Co-Admin</label><label><input type="checkbox" id="editStaffAccess" ${u.staffAccess?'checked':''}> Staff Access</label></div></div>`;
+                <div class="form-group">
+                    <label>Post</label>
+                    <select id="editPost" class="form-control">
+                        <option value="">None</option>
+                        ${postCategories.map(c => `<option value="${escapeHtml(c.name)}" ${u.post===c.name?'selected':''}>${escapeHtml(c.name)}</option>`).join('')}
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label>Salary (₦)</label>
+                    <input type="number" id="editSalary" class="form-control" value="${u.salary||''}">
+                </div>
+                <div class="form-group">
+                    <label>Classes Teaching <span style="font-weight:400;color:var(--text-muted);">(select all that apply)</span></label>
+                    <div class="checkbox-grid" id="editClassesGrid">
+                        ${classCheckboxesHTML}
+                    </div>
+                    <small style="color:var(--text-muted);margin-top:0.3rem;display:block;">
+                        <i class="fas fa-info-circle"></i> Teacher can be assigned to multiple classes. First selected class will be the primary.
+                    </small>
+                </div>
+                <div class="form-group">
+                    <label>Permissions</label>
+                    <div style="display:flex;gap:1rem;flex-wrap:wrap;">
+                        <label style="display:flex;align-items:center;gap:0.3rem;cursor:pointer;">
+                            <input type="checkbox" id="editCoAdmin" ${u.coAdminAccess?'checked':''}> Co-Admin
+                        </label>
+                        <label style="display:flex;align-items:center;gap:0.3rem;cursor:pointer;">
+                            <input type="checkbox" id="editStaffAccess" ${u.staffAccess?'checked':''}> Staff Access
+                        </label>
+                    </div>
+                </div>`;
             document.getElementById('editUserModal').classList.add('active');
         };
+
+        // Toggle class checkbox visual state
+        window.toggleClassCheckbox = (label) => {
+            const checkbox = label.querySelector('input[type="checkbox"]');
+            checkbox.checked = !checkbox.checked;
+            if (checkbox.checked) {
+                label.classList.add('checked');
+            } else {
+                label.classList.remove('checked');
+            }
+        };
+
         window.saveUserChanges = async () => {
             if (!selectedUserId) return;
-            await db.collection('users').doc(selectedUserId).update({
+
+            // Collect selected classes
+            const selectedClasses = [];
+            document.querySelectorAll('#editClassesGrid input[type="checkbox"]:checked').forEach(cb => {
+                selectedClasses.push(cb.value);
+            });
+
+            const updateData = {
                 post: document.getElementById('editPost').value || null,
                 salary: Number(document.getElementById('editSalary').value) || 0,
                 coAdminAccess: document.getElementById('editCoAdmin').checked,
                 staffAccess: document.getElementById('editStaffAccess').checked,
                 updatedAt: firebase.firestore.FieldValue.serverTimestamp()
-            });
-            showToast('Saved', 'User updated', 'success'); closeEditModal();
+            };
+
+            // Handle class assignment
+            if (selectedClasses.length > 0) {
+                updateData.classesTeaching = selectedClasses;           // Array for workspace
+                updateData.classTeaching = selectedClasses[0];          // Primary class for backward compat
+            } else {
+                updateData.classesTeaching = firebase.firestore.FieldValue.delete();
+                updateData.classTeaching = firebase.firestore.FieldValue.delete();
+            }
+
+            await db.collection('users').doc(selectedUserId).update(updateData);
+            showToast('Saved', `User updated with ${selectedClasses.length} class(es)`, 'success');
+            closeEditModal();
         };
+
         window.viewPoints = (uid) => {
             const u = allUsers.find(x => x.id === uid); if (!u) return;
             const history = u.pointHistory || [];
-            document.getElementById('pointHistoryContent').innerHTML = history.length ? history.map(h => `
+            document.getElementById('pointHistoryContent').innerHTML = history.length ? history.slice().reverse().map(h => `
                 <div style="margin-bottom:0.8rem;padding-bottom:0.5rem;border-bottom:1px solid var(--border);">
                     <strong>${h.points>0?'+':''}${h.points} pts</strong> — ${escapeHtml(h.reason)}<br>
-                    <small>${new Date(h.date).toLocaleString()} | Total: ${h.newPoints} pts</small>
+                    <small>${new Date(h.date).toLocaleString()} | Balance: ${h.newPoints} pts</small>
                 </div>`).join('') : '<p>No point history.</p>';
             document.getElementById('pointHistoryModal').classList.add('active');
         };
         window.exportRegCSV = () => {
-            const rows = [['Name','Role','Email','Post','Class','Salary','Points','Status']];
+            const rows = [['Name','Role','Email','Post','Classes','Salary','Points','Status']];
             const search = document.getElementById('regSearch').value.toLowerCase();
             const status = document.getElementById('regStatusFilter').value;
             const role = document.getElementById('regRoleFilter').value;
@@ -857,7 +931,10 @@
                 return (name.includes(search) || email.includes(search))
                     && (status === 'all' || (status === 'approved' ? u.approved === true : u.approved === false))
                     && (!role || u.role === role);
-            }).forEach(u => rows.push([`${u.firstName||''} ${u.surname||''}`, u.role, u.email||'', u.post||'', u.classTeaching||u.class||'', u.salary||'', u.points||0, u.approved?'Approved':'Pending']));
+            }).forEach(u => rows.push([
+                `${u.firstName||''} ${u.surname||''}`, u.role, u.email||'', u.post||'',
+                getClassDisplay(u), u.salary||'', u.points||0, u.approved?'Approved':'Pending'
+            ]));
             const csv = rows.map(r => r.map(c => `"${c}"`).join(',')).join('\n');
             const blob = new Blob([csv], { type: 'text/csv' });
             const a = document.createElement('a'); a.href = URL.createObjectURL(blob); a.download = 'users.csv'; a.click();
@@ -1058,18 +1135,21 @@
             const search = document.getElementById('paSearch').value.toLowerCase();
             const status = document.getElementById('paStatusFilter').value;
             const filtered = allPendingActions.filter(a => {
-                const match = (a.studentName||'').toLowerCase().includes(search) || (a.actionType||'').toLowerCase().includes(search);
+                const match = (a.studentName||'').toLowerCase().includes(search) || (a.actionType||'').toLowerCase().includes(search) || (a.teacherName||'').toLowerCase().includes(search);
                 return match && (status === 'all' || a.status === status);
             });
             const c = document.getElementById('pendingActionsList');
             if (!filtered.length) { c.innerHTML = '<p>No action requests.</p>'; return; }
             c.innerHTML = filtered.map(a => {
                 const statusClass = a.status === 'approved' ? 'badge-success' : a.status === 'rejected' ? 'badge-danger' : 'badge-warning';
+                const isTeacherRequest = !a.studentId && a.teacherId;
                 return `<div class="item-card">
-                    <strong>${escapeHtml((a.actionType||'').replace(/_/g,' ').toUpperCase())}</strong> — ${escapeHtml(a.studentName)}
+                    <strong>${escapeHtml((a.actionType||'').replace(/_/g,' ').toUpperCase())}</strong>
+                    ${isTeacherRequest ? `<br>Teacher: ${escapeHtml(a.teacherName||'')}` : ` — ${escapeHtml(a.studentName||'')}`}
                     <span class="badge ${statusClass}">${a.status}</span><br>
                     ${a.details?.prefectRole?`Role: ${escapeHtml(a.details.prefectRole)}<br>`:''}
-                    ${a.details?.reason?`Reason: ${escapeHtml(a.details.reason)}<br>`:''}
+                    ${a.details?.reason?`Reason: ${escapeHtml((a.details.reason||'').substring(0,100))}<br>`:''}
+                    ${a.details?.startDate?`Date: ${a.details.startDate}${a.details.endDate?` → ${a.details.endDate}`:''}<br>`:''}
                     <small>${a.requestedAt?.toDate?.()?.toLocaleDateString()||''}</small>
                     ${a.status==='pending'?`<div class="btn-group" style="margin-top:0.5rem;">
                         <button class="btn btn-success btn-sm" onclick="approveAction('${a.id}')">Approve</button>
@@ -1080,9 +1160,9 @@
         }
         window.approveAction = async (id) => {
             const action = allPendingActions.find(a => a.id === id); if (!action) return;
-            showConfirm('Approve', `Approve ${action.actionType} for ${action.studentName}?`, async () => {
+            const label = action.studentName || action.teacherName || 'this request';
+            showConfirm('Approve', `Approve ${action.actionType} for ${label}?`, async () => {
                 await db.collection('pendingActions').doc(id).update({ status: 'approved', adminNote: 'Approved', reviewedAt: firebase.firestore.FieldValue.serverTimestamp() });
-                // Execute the action
                 if (action.actionType === 'assign_prefect' && action.studentId && action.details?.prefectRole) {
                     await db.collection('users').doc(action.studentId).update({ prefect: action.details.prefectRole });
                 } else if (action.actionType === 'suspend' && action.studentId) {
@@ -1091,13 +1171,8 @@
                     await db.collection('users').doc(action.studentId).update({ suspended: false });
                 } else if (action.actionType === 'delete' && action.studentId) {
                     await db.collection('users').doc(action.studentId).delete();
-                } else if ((action.actionType === 'absence_request' || action.actionType === 'absence_explanation') && action.studentId) {
-                    // Log absence approval
-                    await db.collection('auditLogs').add({
-                        userId: action.studentId, userName: action.studentName, action: 'ABSENCE_APPROVED',
-                        details: JSON.stringify(action.details), timestamp: firebase.firestore.FieldValue.serverTimestamp()
-                    });
                 }
+                // For teacher permission requests, just approve — no additional action needed
                 showToast('Approved', 'Action approved and executed', 'success');
             });
         };
@@ -1142,7 +1217,6 @@
             activateTab(btn.dataset.tab);
         });
 
-        // Keyboard shortcuts: Ctrl+1-5 for tabs
         document.addEventListener('keydown', e => {
             if ((e.ctrlKey || e.metaKey) && e.key >= '1' && e.key <= '5') {
                 e.preventDefault();
@@ -1169,15 +1243,12 @@
             }
             await loadSettings();
             await loadPostCategories();
-            // Load initial tab
             const hash = window.location.hash.replace('#', '');
             if (hash && document.getElementById('tab-' + hash)) activateTab(hash);
             else activateTab('users');
         });
 
         document.getElementById('logoutBtn').addEventListener('click', () => auth.signOut().then(() => window.location.href = 'index.html'));
-
-        // Cleanup on page leave
         window.addEventListener('beforeunload', () => Object.values(unsubscribers).forEach(u => u()));
     </script>
 </body>
