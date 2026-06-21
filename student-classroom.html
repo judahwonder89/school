@@ -1,0 +1,742 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="dark">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=5.0, user-scalable=yes, viewport-fit=cover">
+    <meta name="theme-color" content="#0a0f1e">
+    <meta name="description" content="Judah Wonders Model School · Student Classroom">
+    <title>Judah Wonders · My Classroom</title>
+    
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link rel="preconnect" href="https://www.gstatic.com">
+    <link rel="preconnect" href="https://img.youtube.com">
+    
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:opsz,wght@14..32,400;14..32,500;14..32,600;14..32,700;14..32,800&family=Playfair+Display:wght@600;700&family=Space+Grotesk:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-auth-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-firestore-compat.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
+
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        
+        :root[data-theme="light"] {
+            --bg-primary: #f0f5fa; --bg-surface: rgba(255,255,255,0.85); --text-primary: #0b1e33;
+            --text-secondary: #2c3e50; --text-muted: #64748b; --accent: #0A2540; --accent-glow: #C8963E;
+            --accent-light: rgba(10,37,64,0.08); --border: rgba(0,0,0,0.08); --border-light: rgba(0,0,0,0.04);
+            --card-bg: rgba(255,255,255,0.75); --hover-bg: rgba(255,255,255,0.95);
+            --shadow: 0 4px 20px -5px rgba(0,0,0,0.08); --shadow-lg: 0 8px 30px -5px rgba(0,0,0,0.12);
+            --shadow-xl: 0 20px 50px -10px rgba(0,0,0,0.2);
+            --success-bg: rgba(34,197,94,0.12); --success-text: #16a34a; --success-border: rgba(34,197,94,0.3);
+            --warning-bg: rgba(245,158,11,0.12); --warning-text: #b45309; --warning-border: rgba(245,158,11,0.3);
+            --danger-bg: rgba(239,68,68,0.12); --danger-text: #b91c1c; --danger-border: rgba(239,68,68,0.3);
+            --info-bg: rgba(10,37,64,0.08); --info-text: #0A2540; --info-border: rgba(10,37,64,0.2);
+            --gradient-start: #0A2540; --gradient-end: #C8963E; --input-bg: #fff;
+            --resource-bg: #fefce8; --key-point-bg: #eff6ff;
+            --meeting-live-bg: rgba(34,197,94,0.06); --meeting-soon-bg: rgba(245,158,11,0.06);
+            --progress-bg: #e2e8f0;
+        }
+        :root[data-theme="dark"] {
+            --bg-primary: #0a0f1e; --bg-surface: rgba(15,23,42,0.85); --text-primary: #f0f4fa;
+            --text-secondary: #a0b3d9; --text-muted: #64748b; --accent: #C8963E; --accent-glow: #D4AF37;
+            --accent-light: rgba(200,150,62,0.12); --border: rgba(255,255,255,0.06);
+            --border-light: rgba(255,255,255,0.03); --card-bg: rgba(15,23,42,0.75);
+            --hover-bg: rgba(30,41,59,0.8); --shadow: 0 4px 20px -5px rgba(0,0,0,0.3);
+            --shadow-lg: 0 8px 30px -5px rgba(0,0,0,0.4);
+            --shadow-xl: 0 20px 50px -10px rgba(0,0,0,0.6);
+            --success-bg: rgba(34,197,94,0.15); --success-text: #4ade80; --success-border: rgba(34,197,94,0.3);
+            --warning-bg: rgba(245,158,11,0.15); --warning-text: #fbbf24; --warning-border: rgba(245,158,11,0.3);
+            --danger-bg: rgba(239,68,68,0.15); --danger-text: #f87171; --danger-border: rgba(239,68,68,0.3);
+            --info-bg: rgba(200,150,62,0.12); --info-text: #D4AF37; --info-border: rgba(200,150,62,0.25);
+            --gradient-start: #0A2540; --gradient-end: #C8963E; --input-bg: rgba(30,41,59,0.9);
+            --resource-bg: #1a1f2e; --key-point-bg: #1e293b;
+            --meeting-live-bg: rgba(34,197,94,0.06); --meeting-soon-bg: rgba(245,158,11,0.06);
+            --progress-bg: #1e293b;
+        }
+
+        body { font-family: 'Inter', sans-serif; background: var(--bg-primary); color: var(--text-primary); min-height: 100vh; transition: background 0.3s, color 0.3s; position: relative; overflow-x: hidden; display: flex; }
+        .bg-logo { position: fixed; top: 50%; left: 50%; transform: translate(-50%, -50%); width: 400px; max-width: 70vw; opacity: 0.03; pointer-events: none; z-index: 0; animation: breathe 6s ease-in-out infinite; }
+        @keyframes breathe { 0%,100%{transform:translate(-50%,-50%)scale(1);opacity:.03} 50%{transform:translate(-50%,-50%)scale(1.06);opacity:.06} }
+        .orb { position: fixed; border-radius: 50%; filter: blur(100px); z-index: 0; pointer-events: none; animation: float 25s infinite alternate ease-in-out; }
+        .orb-1 { width: 350px; height: 350px; top: -120px; right: -120px; background: radial-gradient(circle at 30% 30%, rgba(10,37,64,0.12), transparent 70%); }
+        .orb-2 { width: 450px; height: 450px; bottom: -180px; left: -150px; background: radial-gradient(circle at 70% 70%, rgba(200,150,62,0.10), transparent 70%); animation-duration: 30s; }
+        @keyframes float { 0% { transform: translate(0,0) scale(1); } 100% { transform: translate(50px,30px) scale(1.15); } }
+
+        /* Sidebar */
+        .sidebar { width: 260px; background: var(--bg-surface); backdrop-filter: blur(20px); -webkit-backdrop-filter: blur(20px); border-right: 1px solid var(--border); padding: 1.5rem 0.8rem; display: flex; flex-direction: column; transition: all 0.3s; position: fixed; top: 0; left: 0; height: 100vh; overflow-y: auto; z-index: 100; box-shadow: var(--shadow-lg); }
+        .sidebar .logo-area { display: flex; align-items: center; gap: 0.8rem; margin-bottom: 1.8rem; padding: 0 0.3rem; text-decoration: none; }
+        .sidebar .logo-area img { width: 38px; height: 38px; object-fit: contain; animation: logoPulse 3s ease-in-out infinite; flex-shrink: 0; }
+        @keyframes logoPulse { 0%,100%{transform:scale(1)} 50%{transform:scale(1.05)} }
+        .sidebar .logo-area h2 { font-family: 'Playfair Display', serif; font-size: 1.1rem; font-weight: 700; white-space: nowrap; color: var(--accent); line-height: 1.2; }
+        .sidebar .logo-area h2 span { display: block; font-size: 0.6rem; letter-spacing: 1.5px; color: var(--accent-glow); }
+        .sidebar .nav-item { display: flex; align-items: center; gap: 0.9rem; padding: 0.75rem 1rem; border-radius: 1rem; color: var(--text-secondary); transition: all 0.2s; cursor: pointer; margin-bottom: 0.25rem; text-decoration: none; font-weight: 500; white-space: nowrap; border: 1px solid transparent; font-size: 0.9rem; }
+        .sidebar .nav-item:hover { background: var(--hover-bg); color: var(--accent); border-color: var(--border); transform: translateX(3px); }
+        .sidebar .nav-item.active { background: linear-gradient(135deg, var(--gradient-start), var(--gradient-end)); color: white; box-shadow: 0 6px 15px -5px rgba(200,150,62,.4); font-weight: 600; }
+        .sidebar .nav-item i { font-size: 1.2rem; width: 1.6rem; text-align: center; flex-shrink: 0; }
+        .sidebar .toggle-btn { margin-top: auto; display: flex; justify-content: flex-end; padding: 0.8rem 0.5rem; cursor: pointer; color: var(--text-secondary); font-size: 1.1rem; transition: all 0.2s; }
+        .sidebar .toggle-btn:hover { color: var(--accent); }
+
+        .main-content { flex: 1; margin-left: 260px; padding: 1.5rem; transition: margin-left 0.3s; max-width: calc(100vw - 260px); position: relative; z-index: 5; }
+
+        .top-bar { display: flex; justify-content: space-between; align-items: center; margin-bottom: 1.5rem; flex-wrap: wrap; gap: 1rem; }
+        .page-title h1 { font-family: 'Playfair Display', serif; font-size: 1.8rem; font-weight: 700; color: var(--accent); margin-bottom: 0.1rem; }
+        .page-title p { color: var(--text-secondary); font-size: 0.85rem; }
+        .profile-area { display: flex; align-items: center; gap: 1rem; }
+        .theme-toggle { background: var(--card-bg); backdrop-filter: blur(10px); -webkit-backdrop-filter: blur(10px); border: 1px solid var(--border); border-radius: 2rem; padding: 0.4rem 1rem; display: flex; align-items: center; gap: 0.4rem; cursor: pointer; color: var(--text-secondary); font-size: 0.8rem; transition: all 0.2s; }
+        .theme-toggle:hover { border-color: var(--accent); color: var(--accent); }
+        .profile-pic { width: 38px; height: 38px; border-radius: 50%; background: linear-gradient(135deg, var(--gradient-start), var(--gradient-end)); display: flex; align-items: center; justify-content: center; color: white; font-weight: 600; font-size: 0.9rem; box-shadow: 0 4px 12px rgba(200,150,62,.3); overflow: hidden; }
+        .profile-pic img { width: 100%; height: 100%; object-fit: cover; border-radius: 50%; }
+        .dropdown-menu { position: absolute; right: 0; top: 50px; background: var(--card-bg); border: 1px solid var(--border); border-radius: 1rem; padding: 0.4rem; min-width: 160px; display: none; z-index: 1000; box-shadow: var(--shadow-lg); }
+        .profile-dropdown { position: relative; cursor: pointer; }
+        .profile-dropdown:hover .dropdown-menu { display: block; animation: fadeIn 0.2s; }
+        @keyframes fadeIn { from{opacity:0;transform:translateY(-10px)} to{opacity:1;transform:translateY(0)} }
+        .dropdown-item { padding: 0.6rem 1rem; color: var(--text-primary); border-radius: 0.8rem; display: flex; align-items: center; gap: 0.6rem; font-size: 0.85rem; cursor: pointer; transition: all 0.2s; }
+        .dropdown-item:hover { background: var(--hover-bg); color: var(--accent); }
+
+        /* Stats */
+        .stats-row { display: grid; grid-template-columns: repeat(auto-fit, minmax(140px, 1fr)); gap: 0.8rem; margin-bottom: 1.5rem; }
+        .stat-card { background: var(--card-bg); backdrop-filter: blur(12px); -webkit-backdrop-filter: blur(12px); border: 1px solid var(--border); border-radius: 1.2rem; padding: 1rem; text-align: center; transition: all 0.3s; }
+        .stat-card:hover { transform: translateY(-2px); box-shadow: var(--shadow-lg); }
+        .stat-card .stat-icon { font-size: 1.4rem; color: var(--accent); margin-bottom: 0.3rem; }
+        .stat-card .val { font-size: 1.7rem; font-weight: 800; font-family: 'Space Grotesk', monospace; color: var(--accent); }
+        .stat-card .lbl { font-size: 0.7rem; color: var(--text-muted); text-transform: uppercase; letter-spacing: 0.5px; margin-top: 0.2rem; }
+
+        /* Tabs */
+        .subject-tabs, .week-tabs { display: flex; gap: 0.3rem; margin-bottom: 1rem; background: var(--card-bg); backdrop-filter: blur(8px); -webkit-backdrop-filter: blur(8px); border: 1px solid var(--border); border-radius: 2.5rem; padding: 0.25rem; flex-wrap: wrap; width: fit-content; max-width: 100%; overflow-x: auto; }
+        .tab { padding: 0.55rem 1.4rem; border-radius: 2.5rem; font-weight: 500; font-size: 0.85rem; cursor: pointer; transition: 0.2s; color: var(--text-secondary); white-space: nowrap; display: inline-flex; align-items: center; gap: 0.4rem; user-select: none; -webkit-tap-highlight-color: transparent; }
+        .tab.active { background: linear-gradient(135deg, var(--gradient-start), var(--gradient-end)); color: white; box-shadow: 0 5px 20px -5px rgba(200,150,62,.4); font-weight: 600; }
+        .tab:hover:not(.active) { color: var(--accent); background: var(--hover-bg); }
+
+        /* Cards */
+        .card { background: var(--card-bg); backdrop-filter: blur(12px); -webkit-backdrop-filter: blur(12px); border: 1px solid var(--border); border-radius: 1.5rem; padding: 1.5rem; box-shadow: var(--shadow); margin-bottom: 1.5rem; transition: 0.3s; }
+        .card:hover { box-shadow: var(--shadow-lg); }
+        .card-header { display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 1.2rem; flex-wrap: wrap; gap: 1rem; padding-bottom: 0.8rem; border-bottom: 1px solid var(--border); }
+        .card-header h3 { font-size: 1.15rem; font-weight: 700; display: flex; align-items: center; gap: 0.5rem; }
+
+        .section-label { font-size: 0.78rem; font-weight: 600; text-transform: uppercase; letter-spacing: 0.06em; color: var(--text-muted); margin-bottom: 0.8rem; margin-top: 1.5rem; display: flex; align-items: center; gap: 0.5rem; }
+        .section-label:first-child { margin-top: 0; }
+
+        /* Resource Content */
+        .textbook-content { background: var(--resource-bg); border: 1px solid var(--border); border-radius: 1.2rem; padding: 2rem; font-size: 1rem; line-height: 1.8; }
+        .textbook-content h2, .textbook-content h3 { color: var(--accent); margin: 1.2rem 0 0.5rem; }
+        .textbook-content .key-point { background: var(--key-point-bg); border-left: 4px solid var(--accent); padding: 0.8rem 1.2rem; margin: 1rem 0; border-radius: 0.5rem; }
+
+        /* Progress */
+        .progress-bar { height: 8px; background: var(--progress-bg); border-radius: 4px; margin-top: 0.5rem; overflow: hidden; }
+        .progress-fill { height: 100%; background: linear-gradient(90deg, var(--gradient-start), var(--gradient-end)); border-radius: 4px; transition: width 0.5s ease; }
+
+        /* Handwriting Grid */
+        .handwriting-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(260px, 1fr)); gap: 1rem; }
+        .handwriting-card { background: var(--card-bg); border: 1px solid var(--border); border-radius: 1rem; overflow: hidden; cursor: pointer; transition: 0.2s; }
+        .handwriting-card:hover { border-color: var(--accent); transform: translateY(-2px); box-shadow: var(--shadow-lg); }
+        .handwriting-card img { width: 100%; display: block; min-height: 180px; object-fit: cover; background: var(--hover-bg); }
+
+        /* Video Grid */
+        .video-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(420px, 1fr)); gap: 1.5rem; }
+        .video-card { background: var(--card-bg); border: 1px solid var(--border); border-radius: 1.2rem; overflow: hidden; transition: 0.2s; }
+        .video-card:hover { border-color: var(--accent); box-shadow: var(--shadow-lg); }
+        .video-embed { position: relative; width: 100%; padding-bottom: 56.25%; background: #000; }
+        .video-embed iframe { position: absolute; top: 0; left: 0; width: 100%; height: 100%; border: none; }
+        .video-info { padding: 1rem; }
+
+        /* Meetings */
+        .meetings-list { display: flex; flex-direction: column; gap: 1rem; }
+        .meeting-card { background: var(--card-bg); border: 1px solid var(--border); border-radius: 1.2rem; padding: 1.2rem; display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 1rem; transition: 0.2s; }
+        .meeting-card.live { border: 2px solid var(--success-text); background: var(--meeting-live-bg); }
+        .meeting-card.soon { border: 2px solid var(--warning-text); background: var(--meeting-soon-bg); }
+        .meeting-status { padding: 0.2rem 0.8rem; border-radius: 2rem; font-size: 0.7rem; font-weight: 600; }
+        .meeting-status.live { background: var(--success-bg); color: var(--success-text); animation: pulse 2s infinite; }
+        .meeting-status.soon { background: var(--warning-bg); color: var(--warning-text); }
+        @keyframes pulse { 0%,100%{opacity:1} 50%{opacity:.5} }
+        .join-btn { background: var(--success-text); color: white; padding: 0.55rem 1.3rem; border-radius: 2rem; font-weight: 600; text-decoration: none; font-size: 0.82rem; transition: 0.2s; }
+        .join-btn:hover { opacity: 0.9; transform: scale(1.03); }
+        .join-btn.disabled { opacity: 0.35; pointer-events: none; background: var(--text-muted); }
+
+        /* Lightbox */
+        .lightbox-overlay { position: fixed; inset: 0; background: rgba(0,0,0,0.93); backdrop-filter: blur(10px); -webkit-backdrop-filter: blur(10px); display: none; justify-content: center; align-items: center; z-index: 3000; cursor: pointer; }
+        .lightbox-overlay.active { display: flex; }
+        .lightbox-overlay img { max-width: 90%; max-height: 90vh; border-radius: 1rem; box-shadow: 0 30px 60px rgba(0,0,0,0.6); }
+        .lightbox-close { position: absolute; top: 2rem; right: 2rem; color: white; font-size: 2rem; cursor: pointer; z-index: 3001; width: 44px; height: 44px; display: flex; align-items: center; justify-content: center; border-radius: 50%; background: rgba(255,255,255,0.1); transition: 0.2s; }
+        .lightbox-close:hover { background: rgba(255,255,255,0.2); transform: scale(1.1); }
+        .lightbox-nav { position: absolute; top: 50%; transform: translateY(-50%); color: white; font-size: 2rem; cursor: pointer; z-index: 3001; background: rgba(0,0,0,0.5); width: 46px; height: 46px; border-radius: 50%; display: flex; align-items: center; justify-content: center; transition: 0.2s; }
+        .lightbox-nav:hover { background: rgba(0,0,0,0.8); }
+        .lightbox-nav.prev { left: 2rem; } .lightbox-nav.next { right: 2rem; }
+        .lightbox-counter { position: absolute; bottom: 2rem; left: 50%; transform: translateX(-50%); color: white; font-size: 0.85rem; background: rgba(0,0,0,0.6); padding: 0.5rem 1.2rem; border-radius: 2rem; }
+
+        /* Badges & Buttons */
+        .badge { padding: 0.2rem 0.7rem; border-radius: 2rem; font-size: 0.7rem; font-weight: 700; display: inline-flex; align-items: center; gap: 0.3rem; }
+        .badge-success { background: var(--success-bg); color: var(--success-text); border: 1px solid var(--success-border); }
+        .badge-info { background: var(--info-bg); color: var(--info-text); border: 1px solid var(--info-border); }
+        .btn { padding: 0.5rem 1.2rem; border: none; border-radius: 2rem; font-weight: 600; font-size: 0.85rem; cursor: pointer; transition: all 0.2s; display: inline-flex; align-items: center; gap: 0.4rem; font-family: inherit; }
+        .btn-primary { background: linear-gradient(135deg, var(--gradient-start), var(--gradient-end)); color: white; box-shadow: 0 4px 12px rgba(200,150,62,.3); }
+        .btn-primary:hover { box-shadow: 0 6px 20px rgba(200,150,62,.5); transform: translateY(-2px); }
+        .btn-outline { background: transparent; border: 1px solid var(--border); color: var(--text-primary); }
+        .btn-outline:hover { border-color: var(--accent); background: var(--hover-bg); }
+        .btn-sm { padding: 0.3rem 0.8rem; font-size: 0.78rem; border-radius: 1.5rem; }
+
+        /* Empty State */
+        .empty-state { text-align: center; padding: 2.5rem; color: var(--text-secondary); }
+        .empty-state i { font-size: 3rem; margin-bottom: 0.6rem; opacity: 0.2; display: block; }
+        .empty-state h3 { font-size: 1rem; margin-bottom: 0.3rem; color: var(--text-primary); }
+
+        /* Toast */
+        .toast-container { position: fixed; top: 1rem; right: 1rem; z-index: 5000; display: flex; flex-direction: column; gap: 0.5rem; pointer-events: none; }
+        .toast { background: var(--card-bg); backdrop-filter: blur(16px); -webkit-backdrop-filter: blur(16px); border: 1px solid var(--border); border-radius: 1rem; padding: 0.9rem 1.3rem; min-width: 300px; box-shadow: var(--shadow-xl); display: flex; align-items: flex-start; gap: 0.7rem; animation: slideIn 0.3s; pointer-events: auto; font-size: 0.85rem; }
+        .toast.removing { animation: slideOut 0.3s ease-in forwards; }
+        @keyframes slideIn { from{transform:translateX(120%);opacity:0} to{transform:translateX(0);opacity:1} }
+        @keyframes slideOut { from{transform:translateX(0);opacity:1} to{transform:translateX(120%);opacity:0} }
+
+        @media (max-width: 768px) {
+            .sidebar { width: 85px; }
+            .sidebar .logo-area h2, .sidebar .nav-item span { display: none; }
+            .sidebar .nav-item { justify-content: center; padding: 0.7rem; }
+            .main-content { margin-left: 85px; max-width: calc(100vw - 85px); padding: 1rem; }
+            .video-grid { grid-template-columns: 1fr; }
+            .handwriting-grid { grid-template-columns: repeat(auto-fill, minmax(160px, 1fr)); }
+            .meeting-card { flex-direction: column; align-items: flex-start; }
+            .stats-row { grid-template-columns: repeat(2, 1fr); }
+        }
+    </style>
+</head>
+<body>
+    <img src="https://res.cloudinary.com/dda7kpir8/image/upload/q_auto/f_auto/v1781038310/ChatGPT_Image_Jun_9_2026_09_25_06_AM_elnine.png" alt="" class="bg-logo" aria-hidden="true">
+    <div class="orb orb-1"></div><div class="orb orb-2"></div>
+    <div class="toast-container" id="toastContainer"></div>
+
+    <!-- Lightbox -->
+    <div class="lightbox-overlay" id="lightbox">
+        <button class="lightbox-close" onclick="closeLightbox()" aria-label="Close preview"><i class="fas fa-times"></i></button>
+        <div class="lightbox-nav prev" onclick="navLightbox(-1)" aria-label="Previous image"><i class="fas fa-chevron-left"></i></div>
+        <img id="lightboxImg" src="" alt="Visual note" onclick="event.stopPropagation()">
+        <div class="lightbox-nav next" onclick="navLightbox(1)" aria-label="Next image"><i class="fas fa-chevron-right"></i></div>
+        <div class="lightbox-counter" id="lightboxCounter">1 / 1</div>
+    </div>
+
+    <!-- Sidebar -->
+    <div class="sidebar" id="sidebar">
+        <a href="index.html" class="logo-area">
+            <img src="https://res.cloudinary.com/dda7kpir8/image/upload/q_auto/f_auto/v1781038310/ChatGPT_Image_Jun_9_2026_09_25_06_AM_elnine.png" alt="JWMS Logo">
+            <h2>Judah Wonders<span>Model School</span></h2>
+        </a>
+        <a href="student-dashboard.html" class="nav-item"><i class="fas fa-chart-pie"></i><span>Dashboard</span></a>
+        <a href="student-classroom.html" class="nav-item active"><i class="fas fa-chalkboard"></i><span>Classroom</span></a>
+        <a href="student-assignments.html" class="nav-item"><i class="fas fa-tasks"></i><span>Assignments</span></a>
+        <a href="student-evaluation.html" class="nav-item"><i class="fas fa-chart-bar"></i><span>Evaluation</span></a>
+        <a href="student-profile.html" class="nav-item"><i class="fas fa-user"></i><span>Profile</span></a>
+        <div class="toggle-btn" id="sidebarToggle"><i class="fas fa-chevron-left"></i></div>
+    </div>
+
+    <!-- Main Content -->
+    <div class="main-content" id="mainContent">
+        <div class="top-bar">
+            <div class="page-title">
+                <h1>My Classroom</h1>
+                <p>Your learning materials, videos & virtual classes</p>
+            </div>
+            <div class="profile-area">
+                <div class="theme-toggle" id="themeToggle"><i class="fas fa-sun"></i><span>Light</span></div>
+                <div class="profile-dropdown">
+                    <div class="profile-pic" id="profilePic">S</div>
+                    <div class="dropdown-menu">
+                        <a href="student-profile.html" class="dropdown-item"><i class="fas fa-user"></i> Profile</a>
+                        <div class="dropdown-item" id="logoutBtn"><i class="fas fa-sign-out-alt"></i> Logout</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Stats Row -->
+        <div class="stats-row" id="statsRow">
+            <div class="stat-card"><div class="stat-icon"><i class="fas fa-book"></i></div><div class="val" id="statResources">0</div><div class="lbl">Resources</div></div>
+            <div class="stat-card"><div class="stat-icon"><i class="fas fa-play-circle"></i></div><div class="val" id="statVideos">0</div><div class="lbl">Videos</div></div>
+            <div class="stat-card"><div class="stat-icon"><i class="fas fa-images"></i></div><div class="val" id="statImages">0</div><div class="lbl">Visual Notes</div></div>
+            <div class="stat-card"><div class="stat-icon"><i class="fas fa-video"></i></div><div class="val" id="statMeetings">0</div><div class="lbl">Meetings</div></div>
+            <div class="stat-card"><div class="stat-icon"><i class="fas fa-check-circle"></i></div><div class="val" id="statCompleted">0%</div><div class="lbl">Completed</div></div>
+        </div>
+
+        <!-- Subject Tabs -->
+        <div class="subject-tabs" id="subjectTabs"><span class="tab" style="opacity:0.5;">Loading subjects...</span></div>
+
+        <!-- Week Tabs -->
+        <div class="week-tabs" id="weekTabs"></div>
+
+        <!-- Content Sections -->
+        <div id="resourcesSection"></div>
+        <div id="videosSection"></div>
+        <div id="imagesSection"></div>
+        <div id="meetingsSection"></div>
+    </div>
+
+    <script>
+        // ==================== FIREBASE CONFIG - JUDAH WONDERS ====================
+        const firebaseConfig = {
+            apiKey: "AIzaSyADXHEiaSQ146QsGsaOCElARtpwrLE8svs",
+            authDomain: "judah-c737e.firebaseapp.com",
+            projectId: "judah-c737e",
+            storageBucket: "judah-c737e.firebasestorage.app",
+            messagingSenderId: "739196063078",
+            appId: "1:739196063078:web:c0ee1c1da2cc3794ca8ca7",
+            measurementId: "G-YEM22F1C39"
+        };
+        firebase.initializeApp(firebaseConfig);
+        const auth = firebase.auth();
+        const db = firebase.firestore();
+
+        // ==================== THEME ====================
+        const html = document.documentElement;
+        const themeToggle = document.getElementById('themeToggle');
+        function updateThemeUI(theme) {
+            const icon = themeToggle.querySelector('i');
+            icon.className = theme === 'dark' ? 'fas fa-moon' : 'fas fa-sun';
+            themeToggle.querySelector('span').textContent = theme === 'dark' ? 'Dark' : 'Light';
+        }
+        const savedTheme = localStorage.getItem('judah-theme') || 'dark';
+        html.setAttribute('data-theme', savedTheme);
+        updateThemeUI(savedTheme);
+        themeToggle.addEventListener('click', () => {
+            const next = html.getAttribute('data-theme') === 'dark' ? 'light' : 'dark';
+            html.setAttribute('data-theme', next);
+            localStorage.setItem('judah-theme', next);
+            updateThemeUI(next);
+        });
+
+        // ==================== SIDEBAR ====================
+        const sidebar = document.getElementById('sidebar');
+        const mainContent = document.getElementById('mainContent');
+        document.getElementById('sidebarToggle').addEventListener('click', () => {
+            sidebar.classList.toggle('collapsed');
+            const icon = document.getElementById('sidebarToggle').querySelector('i');
+            icon.classList.toggle('fa-chevron-left');
+            icon.classList.toggle('fa-chevron-right');
+        });
+
+        // ==================== TOAST ====================
+        function showToast(title, msg, type = 'info') {
+            const icons = { success: 'fa-check-circle', error: 'fa-exclamation-circle', warning: 'fa-exclamation-triangle', info: 'fa-info-circle' };
+            const toast = document.createElement('div');
+            toast.className = 'toast';
+            toast.innerHTML = `<i class="fas ${icons[type]}" style="color:var(--${type==='success'?'success':type==='error'?'danger':type==='warning'?'warning':'info'}-text);font-size:1.1rem;"></i><div><strong>${title}</strong><br><span style="font-size:0.8rem;color:var(--text-secondary);">${msg}</span></div>`;
+            document.getElementById('toastContainer').appendChild(toast);
+            setTimeout(() => { toast.classList.add('removing'); setTimeout(() => toast.remove(), 300); }, 4000);
+        }
+
+        // ==================== HELPERS ====================
+        function escapeHtml(str) { const d = document.createElement('div'); d.textContent = str || ''; return d.innerHTML; }
+        function getYouTubeId(url) { const m = url?.match(/(?:youtube\.com\/watch\?v=|youtu\.be\/|youtube\.com\/embed\/|youtube\.com\/shorts\/)([a-zA-Z0-9_-]{11})/); return m ? m[1] : null; }
+        function getVimeoId(url) { const m = url?.match(/vimeo\.com\/(\d+)/); return m ? m[1] : null; }
+        function getVideoPlatform(url) { if (!url) return 'other'; if (url.includes('youtube.com') || url.includes('youtu.be')) return 'youtube'; if (url.includes('vimeo.com')) return 'vimeo'; return 'other'; }
+
+        // ==================== STATE ====================
+        let currentUser = null, userData = null, studentClass = null;
+        let allSubjects = [], currentSubject = null, currentWeek = null;
+        let allNotesMap = {}, meetings = [], completedWeeks = new Set();
+        let lightboxImages = [], lightboxIndex = 0;
+
+        // ==================== AUTH ====================
+        auth.onAuthStateChanged(async user => {
+            if (!user) { window.location.href = 'student-login.html'; return; }
+            try {
+                const userDoc = await db.collection('users').doc(user.uid).get();
+                if (!userDoc.exists || userDoc.data().role !== 'student') {
+                    await auth.signOut();
+                    window.location.href = 'index.html';
+                    return;
+                }
+                userData = userDoc.data();
+                const isApproved = userData.approved === true || userData.status === 'approved';
+                if (!isApproved) {
+                    alert('Your account is pending approval. Please contact the school administrator.');
+                    await auth.signOut();
+                    window.location.href = 'student-login.html';
+                    return;
+                }
+
+                currentUser = user;
+                studentClass = userData.class || userData.classEnrolled || userData.classId || null;
+                completedWeeks = new Set(userData.completedWeeks || []);
+
+                const initials = (userData.firstName?.[0] || 'S') + (userData.surname?.[0] || 'S');
+                const pic = document.getElementById('profilePic');
+                if (userData.photoURL) {
+                    pic.innerHTML = `<img src="${userData.photoURL}" alt="Profile" style="width:100%;height:100%;object-fit:cover;border-radius:50%;">`;
+                } else {
+                    pic.textContent = initials;
+                }
+
+                await discoverSubjects();
+                await loadAllPublishedNotes();
+                await loadMeetings();
+                renderSubjectTabs();
+                renderAll();
+
+                const params = new URLSearchParams(window.location.search);
+                const subj = params.get('subject');
+                const wk = params.get('week');
+                if (subj && allSubjects.includes(subj)) {
+                    switchSubject(subj);
+                    if (wk) selectWeek(parseInt(wk));
+                } else if (allSubjects.length > 0) {
+                    switchSubject(allSubjects[0]);
+                }
+            } catch (e) {
+                console.error('Auth error:', e);
+                showToast('Error', 'Failed to load. Please refresh.', 'error');
+            }
+        });
+
+        document.getElementById('logoutBtn').addEventListener('click', () => auth.signOut().then(() => window.location.href = 'index.html'));
+
+        // ==================== DISCOVER SUBJECTS ====================
+        async function discoverSubjects() {
+            const subjectSet = new Set();
+            if (userData.subjects?.length) userData.subjects.forEach(s => subjectSet.add(s));
+            try {
+                const snap = await db.collection('lessonNotes').where('classId', '==', studentClass).get();
+                snap.forEach(doc => { const d = doc.data(); if (d.subject) subjectSet.add(d.subject); });
+                const sylSnap = await db.collection('syllabus').where('classId', '==', studentClass).get();
+                sylSnap.forEach(doc => { const d = doc.data(); if (d.subject) subjectSet.add(d.subject); });
+            } catch (e) { console.error('Discover error:', e); }
+            allSubjects = [...subjectSet].sort();
+        }
+
+        // ==================== LOAD PUBLISHED NOTES ====================
+        async function loadAllPublishedNotes() {
+            allNotesMap = {};
+            try {
+                const snap = await db.collection('lessonNotes').where('classId', '==', studentClass).get();
+                snap.forEach(doc => {
+                    const d = doc.data();
+                    if (!d.subject || d.week === undefined) return;
+                    const key = `${d.subject}_${d.week}`;
+                    if (!allNotesMap[key]) allNotesMap[key] = { id: doc.id, ...d };
+                    else allNotesMap[key] = { ...allNotesMap[key], ...d, id: doc.id };
+                });
+            } catch (e) { console.error('Load notes error:', e); }
+        }
+
+        // ==================== LOAD MEETINGS ====================
+        async function loadMeetings() {
+            meetings = [];
+            try {
+                const snap = await db.collection('virtualClasses')
+                    .where('classId', '==', studentClass)
+                    .where('date', '>=', new Date().toISOString().split('T')[0])
+                    .orderBy('date', 'asc').orderBy('time', 'asc').get();
+                meetings = snap.docs.map(d => ({ id: d.id, ...d.data() }));
+            } catch (e) {
+                try {
+                    const snap = await db.collection('virtualClasses').where('classId', '==', studentClass).get();
+                    meetings = snap.docs.map(d => ({ id: d.id, ...d.data() }))
+                        .filter(m => m.date >= new Date().toISOString().split('T')[0]);
+                } catch (e2) { console.error('Meetings error:', e2); }
+            }
+        }
+
+        // ==================== SUBJECT TABS ====================
+        function renderSubjectTabs() {
+            const c = document.getElementById('subjectTabs');
+            if (!allSubjects.length) {
+                c.innerHTML = '<span class="tab" style="opacity:0.6;"><i class="fas fa-info-circle"></i> No subjects — ask your teacher to publish resources</span>';
+                return;
+            }
+            c.innerHTML = allSubjects.map(s => `<span class="tab${s === currentSubject ? ' active' : ''}" onclick="switchSubject('${s.replace(/'/g, "\\'")}')">${s}</span>`).join('');
+        }
+        window.switchSubject = subject => {
+            currentSubject = subject;
+            currentWeek = null;
+            document.querySelectorAll('.subject-tabs .tab').forEach(t => t.classList.remove('active'));
+            document.querySelectorAll('.subject-tabs .tab').forEach(t => { if (t.textContent === subject) t.classList.add('active'); });
+            renderAll();
+        };
+
+        // ==================== WEEK TABS ====================
+        function getWeeksForSubject() {
+            if (!currentSubject) return [];
+            const weeks = new Set();
+            Object.keys(allNotesMap).forEach(key => {
+                const [s, w] = key.split('_');
+                if (s === currentSubject) weeks.add(parseInt(w));
+            });
+            return [...weeks].sort((a, b) => a - b);
+        }
+        function renderWeekTabs() {
+            const weeks = getWeeksForSubject();
+            const c = document.getElementById('weekTabs');
+            if (!weeks.length) { c.innerHTML = ''; return; }
+            c.innerHTML = weeks.map(w => {
+                const note = allNotesMap[`${currentSubject}_${w}`] || {};
+                const icons = [];
+                if (note.resourcePublished && note.studentResource) icons.push('<i class="fas fa-book" title="Study Resource"></i>');
+                if (note.videosPublished && note.videoLinks?.length) icons.push('<i class="fas fa-play" title="Videos"></i>');
+                if (note.handwritingImagesPublished && note.handwritingImages?.length) icons.push('<i class="fas fa-image" title="Visual Notes"></i>');
+                const isCompleted = completedWeeks.has(`${currentSubject}_${w}`);
+                const isActive = w === currentWeek ? ' active' : '';
+                return `<span class="tab${isActive}" onclick="selectWeek(${w})">Week ${w} ${icons.join(' ')}${isCompleted ? ' ✅' : ''}</span>`;
+            }).join('');
+        }
+        window.selectWeek = week => {
+            currentWeek = week;
+            document.querySelectorAll('.week-tabs .tab').forEach(t => t.classList.remove('active'));
+            document.querySelectorAll('.week-tabs .tab').forEach(t => { if (t.textContent.includes(`Week ${week}`)) t.classList.add('active'); });
+            renderAll();
+        };
+
+        // ==================== MARK WEEK COMPLETE ====================
+        window.markWeekComplete = async () => {
+            if (!currentSubject || !currentWeek) return;
+            const key = `${currentSubject}_${currentWeek}`;
+            if (completedWeeks.has(key)) {
+                completedWeeks.delete(key);
+                showToast('Undone', 'Week marked as incomplete', 'info');
+            } else {
+                completedWeeks.add(key);
+                showToast('Completed! 🎉', `Week ${currentWeek} marked as complete`, 'success');
+            }
+            await db.collection('users').doc(currentUser.uid).update({
+                completedWeeks: [...completedWeeks],
+                updatedAt: firebase.firestore.FieldValue.serverTimestamp()
+            });
+            renderWeekTabs();
+            updateStats();
+        };
+
+        // ==================== DOWNLOAD RESOURCE ====================
+        window.downloadResource = (content, filename) => {
+            try {
+                const blob = new Blob([content], { type: 'text/plain;charset=utf-8' });
+                const url = URL.createObjectURL(blob);
+                const a = document.createElement('a');
+                a.href = url; a.download = filename;
+                document.body.appendChild(a); a.click();
+                document.body.removeChild(a);
+                URL.revokeObjectURL(url);
+                showToast('Downloaded', filename, 'success');
+            } catch (e) {
+                showToast('Error', 'Download failed', 'error');
+            }
+        };
+
+        // ==================== UPDATE STATS ====================
+        function updateStats() {
+            const weeks = getWeeksForSubject();
+            const note = currentWeek ? (allNotesMap[`${currentSubject}_${currentWeek}`] || {}) : {};
+            let totalResources = 0, totalVideos = 0, totalImages = 0;
+
+            weeks.forEach(w => {
+                const n = allNotesMap[`${currentSubject}_${w}`] || {};
+                if (n.resourcePublished && n.studentResource) totalResources++;
+                if (n.videosPublished && n.videoLinks?.length) totalVideos += n.videoLinks.length;
+                if (n.handwritingImagesPublished && n.handwritingImages?.length) totalImages += n.handwritingImages.length;
+            });
+
+            document.getElementById('statResources').textContent = totalResources;
+            document.getElementById('statVideos').textContent = totalVideos;
+            document.getElementById('statImages').textContent = totalImages;
+            document.getElementById('statMeetings').textContent = meetings.length;
+
+            const completedInSubject = weeks.filter(w => completedWeeks.has(`${currentSubject}_${w}`)).length;
+            const pct = weeks.length > 0 ? Math.round((completedInSubject / weeks.length) * 100) : 0;
+            document.getElementById('statCompleted').textContent = pct + '%';
+        }
+
+        // ==================== RENDER ALL ====================
+        function renderAll() {
+            renderWeekTabs();
+            updateStats();
+
+            if (!currentSubject || !currentWeek) {
+                document.getElementById('resourcesSection').innerHTML = `
+                    <div class="card"><div class="empty-state"><i class="fas fa-arrow-up"></i><h3>Select a week</h3><p>Click a week tab above to view materials for ${currentSubject || 'your subject'}.</p></div></div>`;
+                document.getElementById('videosSection').innerHTML = '';
+                document.getElementById('imagesSection').innerHTML = '';
+                renderMeetingsSection();
+                return;
+            }
+
+            const note = allNotesMap[`${currentSubject}_${currentWeek}`] || {};
+            lightboxImages = [];
+
+            const hasResource = !!(note.resourcePublished && note.studentResource);
+            const hasVideos = !!(note.videosPublished && note.videoLinks?.length);
+            const hasImages = !!(note.handwritingImagesPublished && note.handwritingImages?.length);
+            const isCompleted = completedWeeks.has(`${currentSubject}_${currentWeek}`);
+
+            // -------- RESOURCES --------
+            if (hasResource) {
+                const escapedContent = note.studentResource.replace(/\\/g, '\\\\').replace(/`/g, '\\`').replace(/\$/g, '\\$');
+                const filename = `${currentSubject}_Week${currentWeek}_Resource.txt`;
+                document.getElementById('resourcesSection').innerHTML = `
+                    <div class="section-label"><i class="fas fa-book-reader"></i> Study Resources · Week ${currentWeek}</div>
+                    <div class="card">
+                        <div class="card-header">
+                            <div>
+                                <h3><i class="fas fa-book-reader"></i> ${escapeHtml(note.topic || 'Study Notes')}</h3>
+                                ${isCompleted ? '<span class="badge badge-success"><i class="fas fa-check"></i> Completed</span>' : ''}
+                            </div>
+                            <div style="display:flex;gap:0.5rem;">
+                                <button class="btn btn-outline btn-sm" onclick="markWeekComplete()">
+                                    <i class="fas ${isCompleted ? 'fa-undo' : 'fa-check'}"></i> ${isCompleted ? 'Undo Complete' : 'Mark Complete'}
+                                </button>
+                                <button class="btn btn-primary btn-sm" onclick="downloadResource(\`${escapedContent}\`, '${filename}')">
+                                    <i class="fas fa-download"></i> Download
+                                </button>
+                            </div>
+                        </div>
+                        <div class="textbook-content">${note.studentResource.replace(/\n/g, '<br>')}</div>
+                    </div>`;
+            } else {
+                document.getElementById('resourcesSection').innerHTML = `
+                    <div class="section-label"><i class="fas fa-book-reader"></i> Study Resources</div>
+                    <div class="card"><div class="empty-state"><i class="fas fa-book-reader"></i><h3>No study resources</h3><p>No notes published for Week ${currentWeek} yet.</p></div></div>`;
+            }
+
+            // -------- VIDEOS --------
+            if (hasVideos) {
+                const videoCards = note.videoLinks.map((link, i) => {
+                    const platform = getVideoPlatform(link);
+                    let embed = '';
+                    if (platform === 'youtube') {
+                        const yt = getYouTubeId(link);
+                        if (yt) embed = `<div class="video-embed"><iframe src="https://www.youtube.com/embed/${yt}?rel=0&modestbranding=1" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen loading="lazy" title="Video ${i+1}"></iframe></div>`;
+                    } else if (platform === 'vimeo') {
+                        const v = getVimeoId(link);
+                        if (v) embed = `<div class="video-embed"><iframe src="https://player.vimeo.com/video/${v}" allow="autoplay; fullscreen" allowfullscreen loading="lazy" title="Video ${i+1}"></iframe></div>`;
+                    }
+                    return `<div class="video-card">
+                        ${embed || `<div class="video-embed" style="display:flex;align-items:center;justify-content:center;background:var(--hover-bg);"><a href="${link}" target="_blank" rel="noopener" class="btn btn-primary"><i class="fas fa-external-link-alt"></i> Open Video ${i+1}</a></div>`}
+                        <div class="video-info"><h4>🎬 Video ${i+1}</h4><p>Week ${currentWeek} · ${escapeHtml(note.topic || 'Resource')}</p></div>
+                    </div>`;
+                }).join('');
+
+                document.getElementById('videosSection').innerHTML = `
+                    <div class="section-label"><i class="fas fa-play-circle"></i> Video Resources · Week ${currentWeek}</div>
+                    <div class="card">
+                        <div class="card-header"><h3><i class="fas fa-play-circle"></i> ${note.videoLinks.length} Video${note.videoLinks.length > 1 ? 's' : ''}</h3></div>
+                        <div class="video-grid">${videoCards}</div>
+                    </div>`;
+            } else {
+                document.getElementById('videosSection').innerHTML = `
+                    <div class="section-label"><i class="fas fa-play-circle"></i> Video Resources</div>
+                    <div class="card"><div class="empty-state"><i class="fas fa-play-circle"></i><h3>No videos</h3><p>No videos published for Week ${currentWeek} yet.</p></div></div>`;
+            }
+
+            // -------- IMAGES --------
+            if (hasImages) {
+                lightboxImages = (note.handwritingImages || []).filter(img => img && img.url);
+                if (lightboxImages.length > 0) {
+                    const imageCards = lightboxImages.map((img, i) => `
+                        <div class="handwriting-card" onclick="openLightbox(${i})" tabindex="0" onkeydown="if(event.key==='Enter')openLightbox(${i})">
+                            <img src="${img.url}" alt="Visual Note ${i+1}" loading="lazy" onerror="this.style.minHeight='200px';this.style.background='var(--hover-bg)';">
+                            <div style="padding:0.6rem 0.8rem;font-size:0.8rem;color:var(--text-secondary);"><i class="fas fa-search-plus"></i> Click to enlarge</div>
+                        </div>`).join('');
+
+                    document.getElementById('imagesSection').innerHTML = `
+                        <div class="section-label"><i class="fas fa-images"></i> Visual Notes · Week ${currentWeek}</div>
+                        <div class="card">
+                            <div class="card-header">
+                                <h3><i class="fas fa-images"></i> ${lightboxImages.length} Visual Note${lightboxImages.length > 1 ? 's' : ''}</h3>
+                                <span style="font-size:0.8rem;color:var(--text-secondary);">Click to enlarge · ← → keys to navigate</span>
+                            </div>
+                            <div class="handwriting-grid">${imageCards}</div>
+                        </div>`;
+                } else {
+                    document.getElementById('imagesSection').innerHTML = `
+                        <div class="section-label"><i class="fas fa-images"></i> Visual Notes</div>
+                        <div class="card"><div class="empty-state"><i class="fas fa-images"></i><h3>Images need re-publishing</h3><p>Please ask your teacher to re-publish the visual notes.</p></div></div>`;
+                }
+            } else {
+                document.getElementById('imagesSection').innerHTML = `
+                    <div class="section-label"><i class="fas fa-images"></i> Visual Notes</div>
+                    <div class="card"><div class="empty-state"><i class="fas fa-images"></i><h3>No visual notes</h3><p>No images published for Week ${currentWeek} yet.</p></div></div>`;
+            }
+
+            renderMeetingsSection();
+        }
+
+        // ==================== MEETINGS ====================
+        function renderMeetingsSection() {
+            const section = document.getElementById('meetingsSection');
+            const relevant = meetings.filter(m => !m.subject || !currentSubject || m.subject === currentSubject);
+
+            if (!relevant.length) {
+                section.innerHTML = `<div class="section-label"><i class="fas fa-video"></i> Scheduled Meetings</div>
+                    <div class="card"><div class="empty-state"><i class="fas fa-video"></i><h3>No meetings</h3><p>No upcoming virtual classes${currentSubject ? ' for ' + currentSubject : ''}.</p></div></div>`;
+                return;
+            }
+
+            const now = new Date();
+            const cards = relevant.map(m => {
+                const mt = new Date(`${m.date}T${m.time}`);
+                const diff = Math.floor((mt - now) / 60000);
+                let status = 'upcoming', label = 'Upcoming', cls = '', disabled = false;
+                if (diff <= 0 && diff > -120) { status = 'live'; label = '● Live Now'; cls = 'live'; }
+                else if (diff <= 15 && diff > 0) { status = 'soon'; label = '● Starting Soon'; cls = 'soon'; }
+                else if (diff < -120) { status = 'past'; label = 'Ended'; disabled = true; }
+                return `<div class="meeting-card ${cls}">
+                    <div class="meeting-info">
+                        <h4><i class="fas fa-video" style="color:${status==='live'?'var(--success-text)':status==='soon'?'var(--warning-text)':'var(--accent)'};"></i> ${escapeHtml(m.subject || 'Virtual Class')} · Week ${m.week||'?'}</h4>
+                        <p>${escapeHtml(m.platform||'Online')} · ${m.duration||'?'} min</p>
+                        <div style="display:flex;gap:0.8rem;flex-wrap:wrap;margin-top:0.3rem;">
+                            <span style="font-size:0.8rem;color:var(--text-secondary);"><i class="fas fa-calendar"></i> ${m.date||'?'}</span>
+                            <span style="font-size:0.8rem;color:var(--text-secondary);"><i class="fas fa-clock"></i> ${m.time||'?'}</span>
+                            <span class="meeting-status ${status}">${label}</span>
+                        </div>
+                    </div>
+                    <a href="${m.link||'#'}" target="_blank" rel="noopener" class="join-btn ${disabled?'disabled':''}" ${disabled?'onclick="return false;"':''}>
+                        <i class="fas fa-sign-in-alt"></i> ${status==='live'?'Join Now':status==='past'?'Ended':'Join'}
+                    </a>
+                </div>`;
+            }).join('');
+
+            section.innerHTML = `<div class="section-label"><i class="fas fa-video"></i> Scheduled Meetings</div>
+                <div class="card">
+                    <div class="card-header">
+                        <h3><i class="fas fa-video"></i> Virtual Classes${currentSubject ? ' · ' + currentSubject : ''}</h3>
+                        <span style="font-size:0.8rem;color:var(--text-secondary);">${relevant.length} session${relevant.length>1?'s':''}</span>
+                    </div>
+                    <div class="meetings-list">${cards}</div>
+                </div>`;
+        }
+
+        // ==================== LIGHTBOX ====================
+        window.openLightbox = i => {
+            if (!lightboxImages.length) return;
+            lightboxIndex = i;
+            const img = lightboxImages[i];
+            if (!img || !img.url) { showToast('Error', 'Image not available', 'error'); return; }
+            document.getElementById('lightboxImg').src = img.url;
+            document.getElementById('lightboxCounter').textContent = `${i+1} / ${lightboxImages.length}`;
+            document.getElementById('lightbox').classList.add('active');
+            document.body.style.overflow = 'hidden';
+        };
+        window.closeLightbox = () => {
+            document.getElementById('lightbox').classList.remove('active');
+            document.body.style.overflow = '';
+        };
+        window.navLightbox = d => {
+            if (!lightboxImages.length) return;
+            lightboxIndex = (lightboxIndex + d + lightboxImages.length) % lightboxImages.length;
+            const img = lightboxImages[lightboxIndex];
+            if (img && img.url) {
+                document.getElementById('lightboxImg').src = img.url;
+                document.getElementById('lightboxCounter').textContent = `${lightboxIndex+1} / ${lightboxImages.length}`;
+            }
+        };
+        document.addEventListener('keydown', e => {
+            if (document.getElementById('lightbox').classList.contains('active')) {
+                if (e.key === 'ArrowLeft') navLightbox(-1);
+                if (e.key === 'ArrowRight') navLightbox(1);
+                if (e.key === 'Escape') closeLightbox();
+            }
+        });
+        document.getElementById('lightbox').addEventListener('click', e => {
+            if (e.target === document.getElementById('lightbox')) closeLightbox();
+        });
+
+        // ==================== PERIODIC REFRESH ====================
+        setInterval(async () => { await loadMeetings(); renderMeetingsSection(); }, 60000);
+    </script>
+</body>
+</html>
