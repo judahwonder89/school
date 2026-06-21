@@ -2049,9 +2049,14 @@ Include Nigerian names, locations, naira (₦), and references to Nigerian textb
             renderDraftTable(); 
         });
         
-        // Save draft
-        document.getElementById('saveDraftBtn').addEventListener('click', async () => { 
+        // Save draft (timetable) - spinner added
+        document.getElementById('saveDraftBtn').addEventListener('click', async () => {
             setAutoSaveStatus('saving');
+            const btn = document.getElementById('saveDraftBtn');
+            const origHTML = btn.innerHTML;
+            btn.disabled = true;
+            btn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Saving...';
+            
             const d = { 
                 classId: currentClass, 
                 teacherId: currentUser.uid,
@@ -2070,11 +2075,20 @@ Include Nigerian names, locations, naira (₦), and references to Nigerian textb
             } catch(e) {
                 setAutoSaveStatus('error');
                 showToast('Error', 'Failed to save draft', 'error');
+            } finally {
+                btn.disabled = false;
+                btn.innerHTML = origHTML;
             }
         });
         
-        // Submit for approval
-        document.getElementById('submitTimetableBtn').addEventListener('click', async () => { 
+        // Submit for approval (timetable) - spinner added
+        document.getElementById('submitTimetableBtn').addEventListener('click', async () => {
+            const btn = document.getElementById('submitTimetableBtn');
+            const origHTML = btn.innerHTML;
+            btn.disabled = true;
+            btn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Submitting...';
+            showLoading();
+            
             const d = { 
                 classId: currentClass, 
                 teacherId: currentUser.uid,
@@ -2084,13 +2098,21 @@ Include Nigerian names, locations, naira (₦), and references to Nigerian textb
                 status: 'pending', 
                 submittedAt: firebase.firestore.FieldValue.serverTimestamp() 
             }; 
-            if (draftId) await db.collection('timetableProposals').doc(draftId).update(d); 
-            else { const r = await db.collection('timetableProposals').add(d); draftId = r.id; } 
-            await loadAllTimetableData(); 
-            await addPoints(2, 'Timetable submitted for approval'); 
-            await logAudit('TIMETABLE_SUBMITTED', `${draftType} timetable for ${currentClass}`);
-            setAutoSaveStatus('saved');
-            showToast('Submitted', 'Timetable sent for approval', 'success'); 
+            try {
+                if (draftId) await db.collection('timetableProposals').doc(draftId).update(d); 
+                else { const r = await db.collection('timetableProposals').add(d); draftId = r.id; } 
+                await loadAllTimetableData(); 
+                await addPoints(2, 'Timetable submitted for approval'); 
+                await logAudit('TIMETABLE_SUBMITTED', `${draftType} timetable for ${currentClass}`);
+                setAutoSaveStatus('saved');
+                showToast('Submitted', 'Timetable sent for approval', 'success'); 
+            } catch(e) {
+                showToast('Error', 'Failed to submit timetable', 'error');
+            } finally {
+                btn.disabled = false;
+                btn.innerHTML = origHTML;
+                hideLoading();
+            }
         });
         
         // Delete draft
@@ -2246,6 +2268,7 @@ Include Nigerian names, locations, naira (₦), and references to Nigerian textb
                             <div class="progress-mini-fill" style="width:${pct}%"></div>
                         </div>
                         <span class="status-badge status-${s.status || 'draft'}">${s.status || 'draft'}</span>
+                        <button class="btn btn-danger btn-sm delete-subject-btn" data-subject="${escapeAttr(sub)}" style="position:absolute;top:0.5rem;right:0.5rem;padding:0.2rem 0.5rem;font-size:0.65rem;" title="Delete subject"><i class="fas fa-trash"></i></button>
                         ${btn}
                     </div>
                 `;
@@ -2344,30 +2367,52 @@ Include Nigerian names, locations, naira (₦), and references to Nigerian textb
             showToast('Saved', 'Syllabus draft saved', 'success'); 
         });
         
-        document.getElementById('submitSyllabusBtn').addEventListener('click', async () => { 
+        // Updated syllabus submit button (UPDATE 2)
+        document.getElementById('submitSyllabusBtn').addEventListener('click', async (e) => {
+            e.preventDefault();
             if (!currentSubject) {
                 return showToast('Error', 'Please select a subject first', 'error');
             }
             if (!syllabusMap[currentSubject]) {
                 syllabusMap[currentSubject] = { weeks: [], status: 'draft' };
             }
-            const weeks = syllabusMap[currentSubject]?.weeks; 
-            if (!weeks?.length) return showToast('Error', 'Add at least one week', 'error'); 
-            const d = { 
-                teacherId: currentUser.uid,
-                teacherName: `${userData?.firstName||''} ${userData?.surname||''}`.trim(),
-                subject: currentSubject, 
-                classId: currentClass, 
-                weeks, 
-                status: 'pending', 
-                submittedAt: firebase.firestore.FieldValue.serverTimestamp() 
-            }; 
-            if (syllabusMap[currentSubject].id) await db.collection('syllabus').doc(syllabusMap[currentSubject].id).update(d); 
-            else { const r = await db.collection('syllabus').add(d); syllabusMap[currentSubject].id = r.id; } 
-            updateSyllabusStatus('pending'); 
-            await addPoints(2, 'Syllabus submitted for approval'); 
-            await logAudit('SYLLABUS_SUBMITTED', `${currentSubject} syllabus for ${currentClass}`);
-            showToast('Submitted', 'Syllabus submitted for approval', 'success'); 
+            const weeks = syllabusMap[currentSubject]?.weeks;
+            if (!weeks?.length) return showToast('Error', 'Add at least one week', 'error');
+
+            const btn = document.getElementById('submitSyllabusBtn');
+            const origHTML = btn.innerHTML;
+            btn.disabled = true;
+            btn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Submitting...';
+            showLoading();
+
+            try {
+                const d = {
+                    teacherId: currentUser.uid,
+                    teacherName: `${userData?.firstName||''} ${userData?.surname||''}`.trim(),
+                    subject: currentSubject,
+                    classId: currentClass,
+                    weeks,
+                    status: 'pending',
+                    submittedAt: firebase.firestore.FieldValue.serverTimestamp()
+                };
+                if (syllabusMap[currentSubject].id) {
+                    await db.collection('syllabus').doc(syllabusMap[currentSubject].id).update(d);
+                } else {
+                    const r = await db.collection('syllabus').add(d);
+                    syllabusMap[currentSubject].id = r.id;
+                }
+                updateSyllabusStatus('pending');
+                await addPoints(2, 'Syllabus submitted for approval');
+                await logAudit('SYLLABUS_SUBMITTED', `${currentSubject} syllabus for ${currentClass}`);
+                showToast('Submitted', 'Syllabus submitted for approval', 'success');
+            } catch (err) {
+                console.error('Syllabus submit error:', err);
+                showToast('Error', err.message || 'Failed to submit syllabus', 'error');
+            } finally {
+                btn.disabled = false;
+                btn.innerHTML = origHTML;
+                hideLoading();
+            }
         });
 
         // ==================== DRAFTS TAB FUNCTIONS ====================
@@ -2615,59 +2660,25 @@ Include Nigerian names, locations, naira (₦), and references to Nigerian textb
             }
         }
         
-        document.getElementById('saveEditorBtn').addEventListener('click', async () => {
+        // Updated save editor button (UPDATE 8)
+        document.getElementById('saveEditorBtn').addEventListener('click', async (e) => {
+            e.preventDefault();
             if (!currentSubjectDraft || !currentWeekDraft) return;
-            const lnHtml = quill.root.innerHTML; 
+            const lnHtml = quill.root.innerHTML;
             const lnText = quill.getText();
             if (!lnText.trim()) return showToast('Empty', 'Write something first', 'warning');
-            
+
             setAutoSaveStatus('saving');
-            const key = `${currentSubjectDraft}_${currentWeekDraft}`; 
+            const btn = document.getElementById('saveEditorBtn');
+            const origHTML = btn.innerHTML;
+            btn.disabled = true;
+            btn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Saving...';
+
+            const key = `${currentSubjectDraft}_${currentWeekDraft}`;
             const existing = lessonNotesMap[key] || {};
             const topic = syllabusMap[currentSubjectDraft]?.weeks?.find(w => w.week == currentWeekDraft)?.topic || '';
-            
-            const d = { 
-                teacherId: currentUser.uid,
-                teacherName: `${userData?.firstName||''} ${userData?.surname||''}`.trim(),
-                subject: currentSubjectDraft, 
-                week: currentWeekDraft, 
-                topic: topic, 
-                lessonNote: lnHtml, 
-                classId: currentClass, 
-                status: existing.status || 'draft', 
-                updatedAt: firebase.firestore.FieldValue.serverTimestamp() 
-            };
-            
-            try {
-                if (existing.id) await db.collection('lessonNotes').doc(existing.id).update(d); 
-                else { const r = await db.collection('lessonNotes').add(d); lessonNotesMap[key] = { id: r.id, ...d }; }
-                setAutoSaveStatus('saved');
-                showToast('Saved', 'Draft saved successfully', 'success'); 
-                loadDraftSubjects();
-            } catch(e) {
-                setAutoSaveStatus('error');
-                showToast('Error', 'Failed to save draft', 'error');
-            }
-        });
-        
-        document.getElementById('submitEditorBtn').addEventListener('click', async () => {
-            if (!currentSubjectDraft || !currentWeekDraft) return;
-            const lnHtml = quill.root.innerHTML; 
-            const lnText = quill.getText();
-            const wc = lnText.trim() ? lnText.trim().split(/\s+/).length : 0;
-            
-            if (wc < 200) return showToast('Incomplete', `Only ${wc} words. Minimum 200 required for submission.`, 'warning');
-            if (!lnText.includes('Objectives') || !lnText.includes('Evaluation')) 
-                return showToast('Missing Sections', 'Include "Objectives" and "Evaluation" sections.', 'warning');
-            
-            if (await checkDuplicate(currentSubjectDraft, currentWeekDraft) && 
-                !confirm('A lesson note for this week has already been submitted. Submit another version?')) return;
-            
-            const key = `${currentSubjectDraft}_${currentWeekDraft}`; 
-            const existing = lessonNotesMap[key] || {};
-            const topic = syllabusMap[currentSubjectDraft]?.weeks?.find(w => w.week == currentWeekDraft)?.topic || '';
-            
-            const d = { 
+
+            const d = {
                 teacherId: currentUser.uid,
                 teacherName: `${userData?.firstName||''} ${userData?.surname||''}`.trim(),
                 subject: currentSubjectDraft,
@@ -2675,23 +2686,85 @@ Include Nigerian names, locations, naira (₦), and references to Nigerian textb
                 topic: topic,
                 lessonNote: lnHtml,
                 classId: currentClass,
-                status: 'pending', 
-                submittedAt: firebase.firestore.FieldValue.serverTimestamp() 
+                status: existing.status || 'draft',
+                updatedAt: firebase.firestore.FieldValue.serverTimestamp()
             };
-            
-            if (existing.id) await db.collection('lessonNotes').doc(existing.id).update({ ...d }); 
-            else { 
-                const r = await db.collection('lessonNotes').add({ ...d }); 
-                lessonNotesMap[key] = { id: r.id, ...d }; 
+
+            try {
+                if (existing.id) await db.collection('lessonNotes').doc(existing.id).update(d);
+                else { const r = await db.collection('lessonNotes').add(d); lessonNotesMap[key] = { id: r.id, ...d }; }
+                setAutoSaveStatus('saved');
+                showToast('Saved', 'Draft saved successfully', 'success');
+                loadDraftSubjects();
+            } catch(err) {
+                setAutoSaveStatus('error');
+                showToast('Error', 'Failed to save draft', 'error');
+            } finally {
+                btn.disabled = false;
+                btn.innerHTML = origHTML;
             }
-            
-            await addPoints(2, 'Lesson note submitted for approval');
-            await logAudit('LESSON_NOTE_SUBMITTED', `${currentSubjectDraft} Week ${currentWeekDraft} for ${currentClass}`);
-            document.getElementById('draftEditorSection').style.display = 'none'; 
-            loadDraftSubjects(); 
-            renderSubmittedTab();
-            setAutoSaveStatus('saved');
-            showToast('Submitted', 'Lesson note sent for approval', 'success');
+        });
+        
+        // Updated submit editor button (UPDATE 3)
+        document.getElementById('submitEditorBtn').addEventListener('click', async (e) => {
+            e.preventDefault();
+            if (!currentSubjectDraft || !currentWeekDraft) return;
+            const lnHtml = quill.root.innerHTML;
+            const lnText = quill.getText();
+            const wc = lnText.trim() ? lnText.trim().split(/\s+/).length : 0;
+
+            if (wc < 200) return showToast('Incomplete', `Only ${wc} words. Minimum 200 required for submission.`, 'warning');
+            if (!lnText.includes('Objectives') || !lnText.includes('Evaluation'))
+                return showToast('Missing Sections', 'Include "Objectives" and "Evaluation" sections.', 'warning');
+
+            if (await checkDuplicate(currentSubjectDraft, currentWeekDraft) &&
+                !confirm('A lesson note for this week has already been submitted. Submit another version?')) return;
+
+            const key = `${currentSubjectDraft}_${currentWeekDraft}`;
+            const existing = lessonNotesMap[key] || {};
+            const topic = syllabusMap[currentSubjectDraft]?.weeks?.find(w => w.week == currentWeekDraft)?.topic || '';
+
+            const btn = document.getElementById('submitEditorBtn');
+            const origHTML = btn.innerHTML;
+            btn.disabled = true;
+            btn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Submitting...';
+            showLoading();
+
+            try {
+                const d = {
+                    teacherId: currentUser.uid,
+                    teacherName: `${userData?.firstName||''} ${userData?.surname||''}`.trim(),
+                    subject: currentSubjectDraft,
+                    week: currentWeekDraft,
+                    topic: topic,
+                    lessonNote: lnHtml,
+                    classId: currentClass,
+                    status: 'pending',
+                    submittedAt: firebase.firestore.FieldValue.serverTimestamp()
+                };
+
+                if (existing.id) {
+                    await db.collection('lessonNotes').doc(existing.id).update({ ...d });
+                } else {
+                    const r = await db.collection('lessonNotes').add({ ...d });
+                    lessonNotesMap[key] = { id: r.id, ...d };
+                }
+
+                await addPoints(2, 'Lesson note submitted for approval');
+                await logAudit('LESSON_NOTE_SUBMITTED', `${currentSubjectDraft} Week ${currentWeekDraft} for ${currentClass}`);
+                document.getElementById('draftEditorSection').style.display = 'none';
+                loadDraftSubjects();
+                renderSubmittedTab();
+                setAutoSaveStatus('saved');
+                showToast('Submitted', 'Lesson note sent for approval', 'success');
+            } catch (err) {
+                console.error('Lesson note submit error:', err);
+                showToast('Error', err.message || 'Failed to submit lesson note', 'error');
+            } finally {
+                btn.disabled = false;
+                btn.innerHTML = origHTML;
+                hideLoading();
+            }
         });
         
         document.getElementById('pushToTeachBtn').addEventListener('click', async () => {
@@ -3153,6 +3226,49 @@ Include Nigerian names, locations, naira (₦), and references to Nigerian textb
             renderSubjectGrid(); 
             showToast('Added', 'Subject added successfully', 'success'); 
         });
+
+        // Delete subject via event delegation (UPDATE 4)
+        document.addEventListener('click', async (e) => {
+            const delBtn = e.target.closest('.delete-subject-btn');
+            if (!delBtn) return;
+            e.preventDefault();
+            e.stopPropagation();
+            const subject = delBtn.dataset.subject;
+            if (!confirm(`Delete subject "${subject}" and all its syllabus data?`)) return;
+
+            const delBtnEl = delBtn;
+            delBtnEl.disabled = true;
+            delBtnEl.innerHTML = '<i class="fas fa-spinner fa-spin"></i>';
+
+            try {
+                subjects = subjects.filter(s => s !== subject);
+                await db.collection('users').doc(currentUser.uid).update({ subjects });
+
+                if (syllabusMap[subject]?.id) {
+                    await db.collection('syllabus').doc(syllabusMap[subject].id).delete();
+                    delete syllabusMap[subject];
+                }
+
+                const notesToDelete = Object.entries(lessonNotesMap)
+                    .filter(([key, val]) => val.subject === subject);
+                for (const [key, val] of notesToDelete) {
+                    if (val.id) await db.collection('lessonNotes').doc(val.id).delete();
+                    delete lessonNotesMap[key];
+                }
+
+                renderSubjectGrid();
+                if (currentSubject === subject) {
+                    currentSubject = null;
+                    document.getElementById('syllabusSection').style.display = 'none';
+                }
+                showToast('Deleted', `Subject "${subject}" removed`, 'success');
+            } catch (err) {
+                console.error('Delete subject error:', err);
+                showToast('Error', err.message || 'Failed to delete subject', 'error');
+                delBtnEl.disabled = false;
+                delBtnEl.innerHTML = '<i class="fas fa-trash"></i>';
+            }
+        });
         
         // Template button
         document.getElementById('useTemplateBtn').addEventListener('click', () => { 
@@ -3317,13 +3433,14 @@ Include Nigerian names, locations, naira (₦), and references to Nigerian textb
             }
         });
 
-        // Submit permission request
-        document.getElementById('submitPermBtn').addEventListener('click', async () => {
+        // Submit permission request (UPDATE 1)
+        document.getElementById('submitPermBtn').addEventListener('click', async (e) => {
+            e.preventDefault();
             const type = document.getElementById('permType').value;
             const startDate = document.getElementById('permStartDate').value;
             const endDate = document.getElementById('permEndDate').value;
             const reason = document.getElementById('permReason').value.trim();
-            const document = document.getElementById('permDocument').value.trim();
+            const doc = document.getElementById('permDocument').value.trim();
 
             if (!startDate) return showToast('Required', 'Select a date.', 'warning');
             if (!reason) return showToast('Required', 'Provide a reason.', 'warning');
@@ -3339,6 +3456,7 @@ Include Nigerian names, locations, naira (₦), and references to Nigerian textb
             if (!confirm(`Submit "${typeLabels[type]}" request for ${startDate}?`)) return;
 
             const btn = document.getElementById('submitPermBtn');
+            const origHTML = btn.innerHTML;
             btn.disabled = true;
             btn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Submitting...';
             showLoading();
@@ -3355,7 +3473,7 @@ Include Nigerian names, locations, naira (₦), and references to Nigerian textb
                         startDate: startDate,
                         endDate: endDate || null,
                         reason: reason,
-                        document: document || null
+                        document: doc || null
                     },
                     status: 'pending',
                     requestedAt: firebase.firestore.FieldValue.serverTimestamp()
@@ -3366,11 +3484,12 @@ Include Nigerian names, locations, naira (₦), and references to Nigerian textb
                 
                 closePermissionModal();
                 showToast('Submitted!', 'Your request has been sent for review.', 'success');
-            } catch (e) {
-                showToast('Error', e.message, 'error');
+            } catch (err) {
+                console.error('Permission submit error:', err);
+                showToast('Error', err.message || 'Failed to submit request', 'error');
             } finally {
                 btn.disabled = false;
-                btn.innerHTML = '<i class="fas fa-paper-plane"></i> Submit Request';
+                btn.innerHTML = origHTML;
                 hideLoading();
             }
         });
@@ -3720,38 +3839,47 @@ Include Nigerian names, locations, naira (₦), and references to Nigerian textb
             });
         };
 
-        // ==================== EVENT DELEGATION FOR DYNAMIC BUTTONS ====================
-        // Handle submitted tab button clicks via delegation
+        // ==================== MASTER EVENT DELEGATION (UPDATE 7) ====================
         document.addEventListener('click', async (e) => {
-            // Cancel submission
             const cancelBtn = e.target.closest('.cancel-submission-btn');
             if (cancelBtn) {
+                e.preventDefault();
                 const id = cancelBtn.dataset.id;
-                await db.collection('lessonNotes').doc(id).update({ status: 'draft' });
-                await loadAllLessonNotes();
-                renderSubmittedTab();
-                loadDraftSubjects();
-                showToast('Cancelled', 'Submission cancelled, moved back to drafts', 'info');
+                try {
+                    await db.collection('lessonNotes').doc(id).update({ status: 'draft' });
+                    await loadAllLessonNotes();
+                    renderSubmittedTab();
+                    loadDraftSubjects();
+                    showToast('Cancelled', 'Submission cancelled, moved back to drafts', 'info');
+                } catch(err) {
+                    console.error('Cancel error:', err);
+                    showToast('Error', 'Failed to cancel submission', 'error');
+                }
                 return;
             }
-            
-            // Push to teach from submitted
+
             const pushBtn = e.target.closest('.push-teach-btn');
             if (pushBtn) {
+                e.preventDefault();
                 const id = pushBtn.dataset.id;
-                await db.collection('lessonNotes').doc(id).update({ teachable: true });
-                await addPoints(2, 'Lesson moved to Teach');
-                await logAudit('LESSON_PUSHED_TO_TEACH', `Lesson note ${id}`);
-                await loadAllLessonNotes();
-                renderSubmittedTab();
-                renderPublishedTab();
-                showToast('Pushed', 'Lesson moved to Teach', 'success');
+                try {
+                    await db.collection('lessonNotes').doc(id).update({ teachable: true });
+                    await addPoints(2, 'Lesson moved to Teach');
+                    await logAudit('LESSON_PUSHED_TO_TEACH', `Lesson note ${id}`);
+                    await loadAllLessonNotes();
+                    renderSubmittedTab();
+                    renderPublishedTab();
+                    showToast('Pushed', 'Lesson moved to Teach', 'success');
+                } catch(err) {
+                    console.error('Push error:', err);
+                    showToast('Error', 'Failed to push to teach', 'error');
+                }
                 return;
             }
-            
-            // Edit rejected
+
             const editBtn = e.target.closest('.edit-rejected-btn');
             if (editBtn) {
+                e.preventDefault();
                 const id = editBtn.dataset.id;
                 const note = Object.values(lessonNotesMap).find(n => n.id === id);
                 if (note) {
@@ -3763,30 +3891,35 @@ Include Nigerian names, locations, naira (₦), and references to Nigerian textb
                 }
                 return;
             }
-            
-            // Import library resource
+
             const importBtn = e.target.closest('.import-library-btn');
             if (importBtn) {
+                e.preventDefault();
                 const id = importBtn.dataset.id;
-                const doc = await db.collection('resourceLibrary').doc(id).get();
-                if (!doc.exists) return;
-                const data = doc.data();
-                if (!subjects.includes(data.subject)) {
-                    showToast('Error', 'Subject not in your list.', 'error');
-                    return;
-                }
-                if (confirm(`Import "${data.subject}" Week ${data.week} from library?`)) {
-                    selectDraftSubject(null, data.subject);
-                    selectDraftWeek(null, data.week);
-                    quill.root.innerHTML = data.lessonNote || '';
-                    showToast('Imported', 'Content imported from library', 'success');
+                try {
+                    const doc = await db.collection('resourceLibrary').doc(id).get();
+                    if (!doc.exists) return;
+                    const data = doc.data();
+                    if (!subjects.includes(data.subject)) {
+                        showToast('Error', 'Subject not in your list.', 'error');
+                        return;
+                    }
+                    if (confirm(`Import "${data.subject}" Week ${data.week} from library?`)) {
+                        selectDraftSubject(null, data.subject);
+                        selectDraftWeek(null, data.week);
+                        quill.root.innerHTML = data.lessonNote || '';
+                        showToast('Imported', 'Content imported from library', 'success');
+                    }
+                } catch(err) {
+                    console.error('Import error:', err);
+                    showToast('Error', 'Failed to import', 'error');
                 }
                 return;
             }
-            
-            // Create lesson note from syllabus
+
             const createLNbtn = e.target.closest('.create-ln-btn');
             if (createLNbtn) {
+                e.preventDefault();
                 const sub = createLNbtn.dataset.subject;
                 currentSubject = sub;
                 currentSubjectDraft = sub;
@@ -3798,10 +3931,10 @@ Include Nigerian names, locations, naira (₦), and references to Nigerian textb
                 }
                 return;
             }
-            
-            // Reply to daily report question
+
             const replyBtn = e.target.closest('.reply-btn');
             if (replyBtn) {
+                e.preventDefault();
                 const reportId = replyBtn.dataset.reportId;
                 const qIndex = parseInt(replyBtn.dataset.qIndex);
                 const textarea = document.getElementById(`rep_${reportId}_${qIndex}`);
@@ -3813,14 +3946,18 @@ Include Nigerian names, locations, naira (₦), and references to Nigerian textb
                     const ref = db.collection('dailyReports').doc(reportId);
                     const d = await ref.get();
                     const qs = d.data().questions || [];
-                    if (qs[qIndex]) { 
-                        qs[qIndex].reply = r; 
-                        await ref.update({ questions: qs }); 
-                        loadMyReports(); 
-                        showToast('Sent', 'Reply sent successfully', 'success'); 
+                    if (qs[qIndex]) {
+                        qs[qIndex].reply = r;
+                        await ref.update({ questions: qs });
+                        loadMyReports();
+                        showToast('Sent', 'Reply sent successfully', 'success');
                     }
-                } catch(err) { showToast('Error', err.message, 'error'); } 
-                finally { hideLoading(); }
+                } catch(err) {
+                    console.error('Reply error:', err);
+                    showToast('Error', err.message, 'error');
+                } finally {
+                    hideLoading();
+                }
                 return;
             }
         });
