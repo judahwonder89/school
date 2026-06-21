@@ -783,6 +783,104 @@
                 </div>
             </div>
         </div>
+
+        <!-- PANEL 6: ATTENDANCE (Class Teacher Only) -->
+        <div class="workspace-panel" id="panel-attendance">
+            <div class="card">
+                <div class="card-header">
+                    <h3><i class="fas fa-clipboard-check"></i> Class Attendance: <span id="attClassName">Loading...</span></h3>
+                    <div style="display:flex;gap:0.5rem;align-items:center;">
+                        <input type="date" id="attendanceDate" style="width:auto;" onchange="loadAttendance()">
+                        <button class="btn btn-primary" id="saveAttendanceBtn"><i class="fas fa-save"></i> Save Attendance</button>
+                    </div>
+                </div>
+                <div class="table-responsive">
+                    <table>
+                        <thead><tr><th>#</th><th>Student Name</th><th>Student ID</th><th>Status</th></tr></thead>
+                        <tbody id="attendanceBody"><tr><td colspan="4">Loading students...</td></tr></tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+
+        <!-- PANEL 7: REPORT CARDS (Class Teacher Only) -->
+        <div class="workspace-panel" id="panel-reportCards">
+            <div class="card">
+                <div class="card-header">
+                    <h3><i class="fas fa-file-alt"></i> Report Cards</h3>
+                    <div style="display:flex;gap:0.5rem;">
+                        <select id="rcTerm" style="width:auto;">
+                            <option value="First Term">First Term</option>
+                            <option value="Second Term">Second Term</option>
+                            <option value="Third Term">Third Term</option>
+                        </select>
+                        <select id="rcSession" style="width:auto;">
+                            <option value="2025/2026">2025/2026</option>
+                            <option value="2026/2027">2026/2027</option>
+                        </select>
+                        <button class="btn btn-primary" onclick="generateReportCards()"><i class="fas fa-sync"></i> Generate/Refresh</button>
+                    </div>
+                </div>
+                <div id="reportCardsList">
+                    <p style="color:var(--text-secondary);">Select term and session, then click Generate.</p>
+                </div>
+            </div>
+        </div>
+
+        <!-- PANEL 8: STUDENT REQUESTS (Class Teacher Only) -->
+        <div class="workspace-panel" id="panel-studentRequests">
+            <div class="card">
+                <div class="card-header">
+                    <h3><i class="fas fa-envelope"></i> Student Requests</h3>
+                    <select id="srStatusFilter" style="width:auto;" onchange="loadStudentRequests()">
+                        <option value="pending">Pending</option>
+                        <option value="approved_by_teacher">Approved</option>
+                        <option value="escalated">Escalated</option>
+                        <option value="all">All</option>
+                    </select>
+                </div>
+                <div id="studentRequestsList">
+                    <p style="color:var(--text-secondary);">Loading requests...</p>
+                </div>
+            </div>
+        </div>
+
+        <!-- PANEL 9: ASSIGNMENTS (Subject Teacher Only) -->
+        <div class="workspace-panel" id="panel-assignments">
+            <div class="card">
+                <div class="card-header">
+                    <h3><i class="fas fa-tasks"></i> Assignments</h3>
+                    <button class="btn btn-primary" onclick="createAssignment()"><i class="fas fa-plus"></i> New Assignment</button>
+                </div>
+                <div id="assignmentsList">
+                    <p style="color:var(--text-secondary);">Loading assignments...</p>
+                </div>
+            </div>
+        </div>
+
+        <!-- PANEL 10: QUESTION BANK (Subject Teacher Only) -->
+        <div class="workspace-panel" id="panel-questionBank">
+            <div class="card">
+                <div class="card-header">
+                    <h3><i class="fas fa-database"></i> Question Bank</h3>
+                    <button class="btn btn-primary" onclick="addQuestion()"><i class="fas fa-plus"></i> Add Question</button>
+                </div>
+                <div class="filter-bar" style="display:flex;gap:0.5rem;margin-bottom:1rem;">
+                    <select id="qbSubject" style="width:auto;" onchange="loadQuestionBank()">
+                        <option value="">All Subjects</option>
+                    </select>
+                    <select id="qbDifficulty" style="width:auto;" onchange="loadQuestionBank()">
+                        <option value="">All Difficulties</option>
+                        <option value="easy">Easy</option>
+                        <option value="medium">Medium</option>
+                        <option value="hard">Hard</option>
+                    </select>
+                </div>
+                <div id="questionBankList">
+                    <p style="color:var(--text-secondary);">Loading questions...</p>
+                </div>
+            </div>
+        </div>
         
         <!-- Permission Request Modal -->
         <div class="modal-overlay" id="permissionModal">
@@ -969,6 +1067,13 @@ Include Nigerian names, locations, naira (₦), and references to Nigerian textb
         let pointsChart = null;
         let aiContextMode = 'general';
         let realtimeListeners = [];
+
+        // Role-based flags
+        let isClassTeacher = false;
+        let isSubjectTeacher = false;
+        let classTeacherFor = [];
+        let subjectClassMap = {};
+        let isClassTeacherForCurrentClass = false;
 
         // Timetable state
         let draftId = null, draftData = [], draftType = 'academic';
@@ -1192,7 +1297,70 @@ Include Nigerian names, locations, naira (₦), and references to Nigerian textb
             }
             sel.addEventListener('change', e => { 
                 currentClass = e.target.value; 
-                if (currentClass) loadAllTimetableData(); 
+                if (currentClass) {
+                    // Re-evaluate role for the newly selected class
+                    isClassTeacherForCurrentClass = classTeacherFor.includes(currentClass);
+                    // Re-filter subjects if subject-only teacher
+                    if (isSubjectTeacher && !isClassTeacher) {
+                        const classSubjects = subjectClassMap[currentClass] || [];
+                        subjects = classSubjects.length ? classSubjects : (userData.subjects || []);
+                        renderSubjectGrid();
+                    }
+                    loadAllTimetableData(); 
+                }
+            });
+        }
+
+        // ==================== DYNAMIC TAB RENDERING ====================
+        function renderWorkspaceTabs(isCT, isST) {
+            const tabsContainer = document.getElementById('workspaceTabs');
+            let tabsHTML = '';
+            
+            // Everyone gets these
+            tabsHTML += `<div class="workspace-tab active" data-panel="timetable"><i class="fas fa-calendar-alt"></i> Timetable</div>`;
+            tabsHTML += `<div class="workspace-tab" data-panel="lessonNotes"><i class="fas fa-book-open"></i> Lesson Notes</div>`;
+            tabsHTML += `<div class="workspace-tab" data-panel="dailyReport"><i class="fas fa-journal-whills"></i> Daily Report</div>`;
+            
+            // Class Teacher only tabs
+            if (isCT) {
+                tabsHTML += `<div class="workspace-tab" data-panel="attendance"><i class="fas fa-clipboard-check"></i> Attendance</div>`;
+                tabsHTML += `<div class="workspace-tab" data-panel="reportCards"><i class="fas fa-file-alt"></i> Report Cards</div>`;
+                tabsHTML += `<div class="workspace-tab" data-panel="studentRequests"><i class="fas fa-envelope"></i> Student Requests</div>`;
+            }
+            
+            // Subject Teacher only tabs
+            if (isST) {
+                tabsHTML += `<div class="workspace-tab" data-panel="assignments"><i class="fas fa-tasks"></i> Assignments</div>`;
+                tabsHTML += `<div class="workspace-tab" data-panel="questionBank"><i class="fas fa-database"></i> Question Bank</div>`;
+            }
+            
+            // Everyone gets these
+            tabsHTML += `<div class="workspace-tab" data-panel="publishedContent"><i class="fas fa-check-double"></i> Published</div>`;
+            tabsHTML += `<div class="workspace-tab" data-panel="insights"><i class="fas fa-chart-line"></i> Insights</div>`;
+            
+            tabsContainer.innerHTML = tabsHTML;
+            
+            // Re-attach event listeners
+            document.querySelectorAll('#workspaceTabs .workspace-tab').forEach(tab => {
+                tab.addEventListener('click', () => {
+                    document.querySelectorAll('#workspaceTabs .workspace-tab').forEach(t => t.classList.remove('active'));
+                    tab.classList.add('active');
+                    const panel = tab.dataset.panel;
+                    document.querySelectorAll('.workspace-panel').forEach(p => p.classList.remove('active'));
+                    
+                    const panelEl = document.getElementById('panel-' + panel);
+                    if (panelEl) panelEl.classList.add('active');
+                    
+                    if (panel === 'timetable') loadAllTimetableData();
+                    else if (panel === 'dailyReport') loadMyReports();
+                    else if (panel === 'publishedContent') renderPublishedContent();
+                    else if (panel === 'insights') renderInsights();
+                    else if (panel === 'attendance') loadAttendance();
+                    else if (panel === 'reportCards') generateReportCards();
+                    else if (panel === 'studentRequests') loadStudentRequests();
+                    else if (panel === 'assignments') loadAssignments();
+                    else if (panel === 'questionBank') loadQuestionBank();
+                });
             });
         }
 
@@ -1212,8 +1380,28 @@ Include Nigerian names, locations, naira (₦), and references to Nigerian textb
             
             currentUser = user; 
             userData = doc.data();
+
+            // Determine teacher type
+            isClassTeacher = userData.teacherType === 'classTeacher' || userData.teacherType === 'both';
+            isSubjectTeacher = userData.teacherType === 'subjectTeacher' || userData.teacherType === 'both';
+            classTeacherFor = userData.classTeacherFor || [];
+            subjectClassMap = userData.subjectClassMap || {};
+
+            // Get all assigned classes
             allAssignedClasses = userData.classesTeaching || (userData.classTeaching ? [userData.classTeaching] : []);
             currentClass = userData.classTeaching || allAssignedClasses[0] || null;
+
+            // Filter subjects based on teacher type
+            if (isSubjectTeacher && !isClassTeacher) {
+                // Subject-only teacher: only show subjects assigned in current class
+                const classSubjects = subjectClassMap[currentClass] || [];
+                subjects = classSubjects.length ? classSubjects : (userData.subjects || []);
+            } else {
+                subjects = userData.subjects || [];
+            }
+
+            // Check if current class is one where teacher is class teacher
+            isClassTeacherForCurrentClass = classTeacherFor.includes(currentClass);
             
             // Setup profile display
             const profilePic = document.getElementById('profilePic');
@@ -1226,7 +1414,10 @@ Include Nigerian names, locations, naira (₦), and references to Nigerian textb
             
             updatePointsDisplay();
             populateClassSelector();
-            subjects = userData.subjects || [];
+            
+            // Render dynamic tabs based on role
+            renderWorkspaceTabs(isClassTeacherForCurrentClass, isSubjectTeacher);
+            
             renderSubjectGrid();
             await loadAllLessonNotes();
             document.getElementById('reportDate').valueAsDate = new Date();
@@ -1357,21 +1548,9 @@ Include Nigerian names, locations, naira (₦), and references to Nigerian textb
             realtimeListeners.push(unsub3);
         }
 
-        // Panel Navigation
-        document.querySelectorAll('#workspaceTabs .workspace-tab').forEach(tab => {
-            tab.addEventListener('click', () => {
-                document.querySelectorAll('#workspaceTabs .workspace-tab').forEach(t => t.classList.remove('active'));
-                tab.classList.add('active');
-                const panel = tab.dataset.panel;
-                document.querySelectorAll('.workspace-panel').forEach(p => p.classList.remove('active'));
-                document.getElementById('panel-' + panel).classList.add('active');
-                
-                if (panel === 'timetable') loadAllTimetableData();
-                else if (panel === 'dailyReport') loadMyReports();
-                else if (panel === 'publishedContent') renderPublishedContent();
-                else if (panel === 'insights') renderInsights();
-            });
-        });
+        // Panel Navigation (Dynamic tabs handled in renderWorkspaceTabs)
+        // Initial panel activation
+        document.getElementById('panel-timetable').classList.add('active');
 
         // ==================== TIMETABLE FUNCTIONS ====================
         function getEmptyPeriod(t) {
@@ -2982,6 +3161,239 @@ Include Nigerian names, locations, naira (₦), and references to Nigerian textb
                 console.error(e);
             }
         }
+
+        // ==================== ATTENDANCE (Class Teacher) ====================
+        async function loadAttendance() {
+            if (!currentClass) return;
+            document.getElementById('attClassName').textContent = currentClass;
+            document.getElementById('attendanceDate').valueAsDate = new Date();
+            
+            const date = document.getElementById('attendanceDate').value;
+            
+            // Load students in this class
+            const studentsSnap = await db.collection('users')
+                .where('role', '==', 'student')
+                .where('class', '==', currentClass)
+                .where('approved', '==', true)
+                .get();
+            
+            const students = studentsSnap.docs.map(d => ({ id: d.id, ...d.data() }));
+            
+            // Load existing attendance for today
+            const attSnap = await db.collection('attendance')
+                .where('classId', '==', currentClass)
+                .where('date', '==', date)
+                .get();
+            
+            const attendanceMap = {};
+            attSnap.forEach(d => { const data = d.data(); attendanceMap[data.studentId] = { id: d.id, status: data.status }; });
+            
+            document.getElementById('attendanceBody').innerHTML = students.map((s, i) => {
+                const status = attendanceMap[s.id]?.status || 'present';
+                return `<tr>
+                    <td>${i + 1}</td>
+                    <td>${escapeHtml(s.firstName || '')} ${escapeHtml(s.surname || '')}</td>
+                    <td>${escapeHtml(s.userId || '—')}</td>
+                    <td>
+                        <select class="att-status" data-student="${s.id}" style="width:auto;">
+                            <option value="present" ${status === 'present' ? 'selected' : ''}>✅ Present</option>
+                            <option value="absent" ${status === 'absent' ? 'selected' : ''}>❌ Absent</option>
+                            <option value="late" ${status === 'late' ? 'selected' : ''}>⏰ Late</option>
+                        </select>
+                    </td>
+                </tr>`;
+            }).join('');
+        }
+
+        document.getElementById('saveAttendanceBtn').addEventListener('click', async () => {
+            const date = document.getElementById('attendanceDate').value;
+            const batch = db.batch();
+            
+            document.querySelectorAll('.att-status').forEach(sel => {
+                const studentId = sel.dataset.student;
+                const status = sel.value;
+                const ref = db.collection('attendance').doc();
+                batch.set(ref, {
+                    studentId, classId: currentClass, date, status,
+                    markedBy: currentUser.uid,
+                    markedByName: `${userData.firstName || ''} ${userData.surname || ''}`.trim(),
+                    timestamp: firebase.firestore.FieldValue.serverTimestamp()
+                });
+            });
+            
+            await batch.commit();
+            await logAudit('ATTENDANCE_MARKED', `Class: ${currentClass}, Date: ${date}`);
+            showToast('Saved', 'Attendance recorded', 'success');
+        });
+
+        // ==================== REPORT CARDS (Class Teacher) ====================
+        async function generateReportCards() {
+            const term = document.getElementById('rcTerm').value;
+            const session = document.getElementById('rcSession').value;
+            
+            const studentsSnap = await db.collection('users')
+                .where('role', '==', 'student')
+                .where('class', '==', currentClass)
+                .where('approved', '==', true)
+                .get();
+            
+            const students = studentsSnap.docs.map(d => ({ id: d.id, ...d.data() }));
+            
+            const scoresSnap = await db.collection('scores')
+                .where('classId', '==', currentClass)
+                .where('term', '==', term)
+                .where('session', '==', session)
+                .get();
+            
+            const scoresByStudent = {};
+            scoresSnap.forEach(d => {
+                const s = d.data();
+                if (!scoresByStudent[s.studentId]) scoresByStudent[s.studentId] = [];
+                scoresByStudent[s.studentId].push(s);
+            });
+            
+            document.getElementById('reportCardsList').innerHTML = students.map(s => {
+                const scores = scoresByStudent[s.id] || [];
+                const avg = scores.length ? Math.round(scores.reduce((sum, sc) => sum + (sc.score || 0), 0) / scores.length) : 0;
+                return `<div class="card" style="padding:1rem;">
+                    <div style="display:flex;justify-content:space-between;align-items:center;">
+                        <div>
+                            <strong>${escapeHtml(s.firstName || '')} ${escapeHtml(s.surname || '')}</strong>
+                            <span style="color:var(--text-muted);margin-left:0.5rem;">${escapeHtml(s.userId || '')}</span>
+                        </div>
+                        <div>
+                            <span class="badge badge-info">${scores.length} scores</span>
+                            <span class="badge badge-success">Avg: ${avg}%</span>
+                            <button class="btn btn-primary btn-sm" onclick="viewReportCard('${s.id}')"><i class="fas fa-eye"></i> View</button>
+                        </div>
+                    </div>
+                </div>`;
+            }).join('') || '<p>No students found.</p>';
+        }
+
+        window.viewReportCard = (studentId) => {
+            showToast('Coming Soon', 'Detailed report card view will be available soon.', 'info');
+        };
+
+        // ==================== STUDENT REQUESTS (Class Teacher) ====================
+        async function loadStudentRequests() {
+            const status = document.getElementById('srStatusFilter').value;
+            let query = db.collection('studentRequests').where('classId', '==', currentClass);
+            if (status !== 'all') query = query.where('status', '==', status);
+            
+            const snap = await query.orderBy('requestedAt', 'desc').get();
+            const requests = snap.docs.map(d => ({ id: d.id, ...d.data() }));
+            
+            document.getElementById('studentRequestsList').innerHTML = requests.length ? requests.map(r => `
+                <div class="card" style="padding:1rem;margin-bottom:0.5rem;">
+                    <div style="display:flex;justify-content:space-between;">
+                        <div>
+                            <strong>${escapeHtml(r.studentName || 'Student')}</strong>
+                            <span class="badge badge-${r.status === 'pending' ? 'warning' : r.status === 'approved_by_teacher' ? 'success' : 'info'}">${r.status}</span>
+                            <p style="font-size:0.85rem;color:var(--text-secondary);">${escapeHtml(r.type || 'Request')}: ${escapeHtml((r.details?.reason || '').substring(0, 100))}</p>
+                        </div>
+                        <div class="btn-group">
+                            ${r.status === 'pending' ? `
+                                <button class="btn btn-success btn-sm" onclick="handleStudentRequest('${r.id}','approved_by_teacher')">Approve</button>
+                                <button class="btn btn-warning btn-sm" onclick="handleStudentRequest('${r.id}','escalated')">Escalate</button>
+                            ` : ''}
+                        </div>
+                    </div>
+                </div>
+            `).join('') : '<p>No requests found.</p>';
+        }
+
+        window.handleStudentRequest = async (id, status) => {
+            await db.collection('studentRequests').doc(id).update({ status, handledAt: firebase.firestore.FieldValue.serverTimestamp() });
+            loadStudentRequests();
+            showToast('Updated', `Request ${status === 'approved_by_teacher' ? 'approved' : 'escalated'}`, 'success');
+        };
+
+        // ==================== ASSIGNMENTS (Subject Teacher) ====================
+        async function loadAssignments() {
+            const snap = await db.collection('assignments')
+                .where('teacherId', '==', currentUser.uid)
+                .where('classId', '==', currentClass)
+                .orderBy('createdAt', 'desc')
+                .get();
+            
+            const assignments = snap.docs.map(d => ({ id: d.id, ...d.data() }));
+            
+            document.getElementById('assignmentsList').innerHTML = assignments.length ? assignments.map(a => `
+                <div class="card" style="padding:1rem;margin-bottom:0.5rem;">
+                    <strong>${escapeHtml(a.subject)}</strong> — ${escapeHtml(a.title)}
+                    <span class="badge badge-info">Due: ${a.dueDate || 'No date'}</span>
+                    <p style="font-size:0.85rem;color:var(--text-secondary);">${escapeHtml((a.description || '').substring(0, 150))}</p>
+                </div>
+            `).join('') : '<p>No assignments yet. Click "New Assignment" to create one.</p>';
+        }
+
+        window.createAssignment = () => {
+            const title = prompt('Assignment title:');
+            if (!title) return;
+            const description = prompt('Description:');
+            const dueDate = prompt('Due date (YYYY-MM-DD):');
+            
+            db.collection('assignments').add({
+                teacherId: currentUser.uid,
+                classId: currentClass,
+                subject: currentSubjectDraft || subjects[0],
+                title, description: description || '', dueDate: dueDate || '',
+                createdAt: firebase.firestore.FieldValue.serverTimestamp()
+            }).then(() => {
+                loadAssignments();
+                showToast('Created', 'Assignment created', 'success');
+            });
+        };
+
+        // ==================== QUESTION BANK (Subject Teacher) ====================
+        async function loadQuestionBank() {
+            const subject = document.getElementById('qbSubject').value;
+            const difficulty = document.getElementById('qbDifficulty').value;
+            
+            let query = db.collection('questionBank').where('teacherId', '==', currentUser.uid);
+            if (subject) query = query.where('subject', '==', subject);
+            if (difficulty) query = query.where('difficulty', '==', difficulty);
+            
+            const snap = await query.orderBy('createdAt', 'desc').get();
+            const questions = snap.docs.map(d => ({ id: d.id, ...d.data() }));
+            
+            // Populate subject filter
+            const subjects = [...new Set(questions.map(q => q.subject))];
+            document.getElementById('qbSubject').innerHTML = '<option value="">All Subjects</option>' + 
+                subjects.map(s => `<option value="${s}">${s}</option>`).join('');
+            
+            document.getElementById('questionBankList').innerHTML = questions.length ? questions.map((q, i) => `
+                <div class="card" style="padding:1rem;margin-bottom:0.5rem;">
+                    <strong>Q${i + 1}:</strong> ${escapeHtml(q.question)}
+                    <span class="badge badge-info">${escapeHtml(q.subject)}</span>
+                    <span class="badge badge-warning">${q.difficulty}</span>
+                    ${q.options?.length ? `<p style="font-size:0.8rem;color:var(--text-muted);">Options: ${q.options.map(o => escapeHtml(o)).join(', ')}</p>` : ''}
+                    <p style="color:var(--success-text);font-size:0.8rem;">Answer: ${escapeHtml(q.answer || '—')}</p>
+                </div>
+            `).join('') : '<p>No questions yet. Click "Add Question" to create one.</p>';
+        }
+
+        window.addQuestion = () => {
+            const subject = prompt('Subject:');
+            if (!subject) return;
+            const question = prompt('Question:');
+            if (!question) return;
+            const answer = prompt('Answer:');
+            const difficulty = prompt('Difficulty (easy/medium/hard):', 'medium');
+            const options = prompt('Options (comma-separated, optional):');
+            
+            db.collection('questionBank').add({
+                teacherId: currentUser.uid,
+                classId: currentClass,
+                subject, question, answer: answer || '', difficulty: difficulty || 'medium',
+                options: options ? options.split(',').map(o => o.trim()) : [],
+                createdAt: firebase.firestore.FieldValue.serverTimestamp()
+            }).then(() => {
+                loadQuestionBank();
+                showToast('Added', 'Question added to bank', 'success');
+            });
+        };
 
         // Initial data load
         if (currentClass) {
