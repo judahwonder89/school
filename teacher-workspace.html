@@ -448,6 +448,12 @@
         .badge-success { background: var(--success-bg); color: var(--success-text); }
         .badge-warning { background: var(--warning-bg); color: var(--warning-text); }
         .badge-danger { background: var(--danger-bg); color: var(--danger-text); }
+
+        /* AI Assistant messages */
+        .ai-message { margin:0.4rem 0; padding:0.6rem 1rem; border-radius:1rem; max-width:85%; word-wrap:break-word; }
+        .ai-message.user { background:var(--assistant-user-bg); color:white; margin-left:auto; }
+        .ai-message.assistant { background:var(--assistant-bot-bg); border:1px solid var(--border); }
+        .ai-message .thinking { font-style:italic; color:var(--accent); }
     </style>
 </head>
 <body>
@@ -947,6 +953,28 @@
                     </div>
                 </div>
             </div>
+        </div>
+
+        <!-- AI Assistant Modal -->
+        <div class="modal-overlay" id="aiAssistantModal">
+          <div class="modal-content" style="max-width:750px;height:85vh;display:flex;flex-direction:column;">
+            <div class="modal-header">
+              <h3><i class="fas fa-robot"></i> AI Lesson Note Assistant</h3>
+              <i class="fas fa-times modal-close" onclick="closeAIAssistant()"></i>
+            </div>
+            <div id="aiChatHistory" style="flex:1;overflow-y:auto;padding:0.5rem;background:var(--input-bg);border-radius:0.8rem;margin-bottom:0.5rem;">
+              <div class="ai-message assistant">Hello! I can help you create a complete lesson note.<br>Tell me the <strong>Subject, Class, Week, and Topic</strong>.</div>
+            </div>
+            <div style="display:flex;gap:0.5rem;">
+              <input type="text" id="aiChatInput" placeholder="Type your message..." style="flex:1;">
+              <button class="btn btn-primary" id="aiSendBtn"><i class="fas fa-paper-plane"></i></button>
+              <button class="btn btn-outline btn-sm" id="aiThinkBtn" title="Ask the assistant to think first"><i class="fas fa-brain"></i> Think</button>
+            </div>
+            <div style="display:flex;justify-content:space-between;margin-top:0.5rem;">
+              <button class="btn btn-success btn-sm" id="aiApplyBtn" style="display:none;">📄 Apply to Editor</button>
+              <button class="btn btn-outline btn-sm" id="aiClearChatBtn">Clear Chat</button>
+            </div>
+          </div>
         </div>
 
         <!-- Debug Panel Toggle -->
@@ -2025,22 +2053,34 @@ Include Nigerian names, locations, naira (₦), and references to Nigerian textb
         
         // Create new timetable draft
         document.getElementById('createNewTimetableBtn').addEventListener('click', async () => { 
-            draftType = document.getElementById('timetableType').value || 'academic';
-            draftData = [getEmptyPeriod(draftType)]; 
-            const d = { 
-                classId: currentClass, 
-                teacherId: currentUser.uid,
-                teacherName: `${userData?.firstName||''} ${userData?.surname||''}`.trim(),
-                periods: draftData, 
-                type: draftType, 
-                status: 'draft', 
-                updatedAt: firebase.firestore.FieldValue.serverTimestamp() 
-            }; 
-            const r = await db.collection('timetableProposals').add(d); 
-            draftId = r.id; 
-            renderDraftTable(); 
-            document.getElementById('deleteDraftBtn').style.display = 'inline-block'; 
-            showToast('Created', 'New timetable draft created', 'success'); 
+            const btn = document.getElementById('createNewTimetableBtn');
+            const origHTML = btn.innerHTML;
+            btn.disabled = true;
+            btn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Creating...';
+            
+            try {
+                draftType = document.getElementById('timetableType').value || 'academic';
+                draftData = [getEmptyPeriod(draftType)]; 
+                const d = { 
+                    classId: currentClass, 
+                    teacherId: currentUser.uid,
+                    teacherName: `${userData?.firstName||''} ${userData?.surname||''}`.trim(),
+                    periods: draftData, 
+                    type: draftType, 
+                    status: 'draft', 
+                    updatedAt: firebase.firestore.FieldValue.serverTimestamp() 
+                }; 
+                const r = await db.collection('timetableProposals').add(d); 
+                draftId = r.id; 
+                renderDraftTable(); 
+                document.getElementById('deleteDraftBtn').style.display = 'inline-block'; 
+                showToast('Created', 'New timetable draft created', 'success'); 
+            } catch(e) {
+                showToast('Error', 'Failed to create draft: ' + e.message, 'error');
+            } finally {
+                btn.disabled = false;
+                btn.innerHTML = origHTML;
+            }
         });
         
         // Add row
@@ -2074,7 +2114,7 @@ Include Nigerian names, locations, naira (₦), and references to Nigerian textb
                 showToast('Saved', 'Draft saved successfully', 'success'); 
             } catch(e) {
                 setAutoSaveStatus('error');
-                showToast('Error', 'Failed to save draft', 'error');
+                showToast('Error', 'Failed to save draft: ' + e.message, 'error');
             } finally {
                 btn.disabled = false;
                 btn.innerHTML = origHTML;
@@ -2107,7 +2147,7 @@ Include Nigerian names, locations, naira (₦), and references to Nigerian textb
                 setAutoSaveStatus('saved');
                 showToast('Submitted', 'Timetable sent for approval', 'success'); 
             } catch(e) {
-                showToast('Error', 'Failed to submit timetable', 'error');
+                showToast('Error', 'Failed to submit timetable: ' + e.message, 'error');
             } finally {
                 btn.disabled = false;
                 btn.innerHTML = origHTML;
@@ -2118,23 +2158,45 @@ Include Nigerian names, locations, naira (₦), and references to Nigerian textb
         // Delete draft
         document.getElementById('deleteDraftBtn').addEventListener('click', () => { 
             openDeleteModal('Are you sure you want to delete this timetable draft?', async () => { 
-                if (!draftId) return; 
-                await db.collection('timetableProposals').doc(draftId).delete(); 
-                draftId = null; 
-                draftData = [getEmptyPeriod('academic')]; 
-                renderDraftTable(); 
-                document.getElementById('deleteDraftBtn').style.display = 'none'; 
-                closeDeleteModal(); 
-                showToast('Deleted', 'Draft deleted', 'success'); 
+                if (!draftId) return;
+                const btn = document.getElementById('deleteDraftBtn');
+                const origHTML = btn.innerHTML;
+                btn.disabled = true;
+                btn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Deleting...';
+                try {
+                    await db.collection('timetableProposals').doc(draftId).delete(); 
+                    draftId = null; 
+                    draftData = [getEmptyPeriod('academic')]; 
+                    renderDraftTable(); 
+                    document.getElementById('deleteDraftBtn').style.display = 'none'; 
+                    closeDeleteModal(); 
+                    showToast('Deleted', 'Draft deleted', 'success');
+                } catch(e) {
+                    showToast('Error', 'Failed to delete draft: ' + e.message, 'error');
+                } finally {
+                    btn.disabled = false;
+                    btn.innerHTML = origHTML;
+                }
             }); 
         });
         
         // Edit pending - move back to draft
         document.getElementById('editPendingBtn').addEventListener('click', async () => { 
             if (!pendingId) return; 
-            await db.collection('timetableProposals').doc(pendingId).update({ status: 'draft' }); 
-            await loadAllTimetableData(); 
-            showToast('Moved', 'Moved back to draft', 'info'); 
+            const btn = document.getElementById('editPendingBtn');
+            const origHTML = btn.innerHTML;
+            btn.disabled = true;
+            btn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Moving...';
+            try {
+                await db.collection('timetableProposals').doc(pendingId).update({ status: 'draft' }); 
+                await loadAllTimetableData(); 
+                showToast('Moved', 'Moved back to draft', 'info');
+            } catch(e) {
+                showToast('Error', 'Failed to move: ' + e.message, 'error');
+            } finally {
+                btn.disabled = false;
+                btn.innerHTML = origHTML;
+            }
         });
 
         // Approved timetable handling
@@ -2184,36 +2246,58 @@ Include Nigerian names, locations, naira (₦), and references to Nigerian textb
         // Publish approved timetable
         document.getElementById('publishTimetableBtn').addEventListener('click', async () => {
             if (!currentApprovedTimetableId) return;
-            await db.collection('timetables').doc(currentApprovedTimetableId).update({ published: true });
-            await loadAllTimetableData();
-            await addPoints(2, 'Timetable published');
-            await logAudit('TIMETABLE_PUBLISHED', `Timetable published for ${currentClass}`);
-            showToast('Published', 'Timetable published to students', 'success');
+            const btn = document.getElementById('publishTimetableBtn');
+            const origHTML = btn.innerHTML;
+            btn.disabled = true;
+            btn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Publishing...';
+            try {
+                await db.collection('timetables').doc(currentApprovedTimetableId).update({ published: true });
+                await loadAllTimetableData();
+                await addPoints(2, 'Timetable published');
+                await logAudit('TIMETABLE_PUBLISHED', `Timetable published for ${currentClass}`);
+                showToast('Published', 'Timetable published to students', 'success');
+            } catch(e) {
+                showToast('Error', 'Failed to publish: ' + e.message, 'error');
+            } finally {
+                btn.disabled = false;
+                btn.innerHTML = origHTML;
+            }
         });
         
         // Create new draft from approved
         document.getElementById('editApprovedBtn').addEventListener('click', async () => {
             if (!currentApprovedTimetableId) return;
-            const doc = await db.collection('timetables').doc(currentApprovedTimetableId).get();
-            if (!doc.exists) return;
-            const d = doc.data();
-            draftType = d.type || 'academic';
-            draftData = JSON.parse(JSON.stringify(d.periods || []));
-            const newDraft = { 
-                classId: currentClass, 
-                teacherId: currentUser.uid,
-                teacherName: `${userData?.firstName||''} ${userData?.surname||''}`.trim(),
-                periods: draftData, 
-                type: draftType, 
-                status: 'draft', 
-                updatedAt: firebase.firestore.FieldValue.serverTimestamp() 
-            };
-            const ref = await db.collection('timetableProposals').add(newDraft);
-            draftId = ref.id;
-            renderDraftTable();
-            document.getElementById('deleteDraftBtn').style.display = 'inline-block';
-            document.querySelector('#tt-tabs .sub-tab[data-tt="draft"]').click();
-            showToast('Draft Created', 'New draft created from approved timetable', 'success');
+            const btn = document.getElementById('editApprovedBtn');
+            const origHTML = btn.innerHTML;
+            btn.disabled = true;
+            btn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Creating draft...';
+            try {
+                const doc = await db.collection('timetables').doc(currentApprovedTimetableId).get();
+                if (!doc.exists) return;
+                const d = doc.data();
+                draftType = d.type || 'academic';
+                draftData = JSON.parse(JSON.stringify(d.periods || []));
+                const newDraft = { 
+                    classId: currentClass, 
+                    teacherId: currentUser.uid,
+                    teacherName: `${userData?.firstName||''} ${userData?.surname||''}`.trim(),
+                    periods: draftData, 
+                    type: draftType, 
+                    status: 'draft', 
+                    updatedAt: firebase.firestore.FieldValue.serverTimestamp() 
+                };
+                const ref = await db.collection('timetableProposals').add(newDraft);
+                draftId = ref.id;
+                renderDraftTable();
+                document.getElementById('deleteDraftBtn').style.display = 'inline-block';
+                document.querySelector('#tt-tabs .sub-tab[data-tt="draft"]').click();
+                showToast('Draft Created', 'New draft created from approved timetable', 'success');
+            } catch(e) {
+                showToast('Error', 'Failed to create draft: ' + e.message, 'error');
+            } finally {
+                btn.disabled = false;
+                btn.innerHTML = origHTML;
+            }
         });
 
         // Rejected timetable
@@ -2238,9 +2322,20 @@ Include Nigerian names, locations, naira (₦), and references to Nigerian textb
         
         document.getElementById('editRejectedBtn').addEventListener('click', async () => {
             if (!rejectedId) return;
-            await db.collection('timetableProposals').doc(rejectedId).update({ status: 'draft' });
-            await loadAllTimetableData();
-            showToast('Moved', 'Moved back to draft for editing', 'info');
+            const btn = document.getElementById('editRejectedBtn');
+            const origHTML = btn.innerHTML;
+            btn.disabled = true;
+            btn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Moving...';
+            try {
+                await db.collection('timetableProposals').doc(rejectedId).update({ status: 'draft' });
+                await loadAllTimetableData();
+                showToast('Moved', 'Moved back to draft for editing', 'info');
+            } catch(e) {
+                showToast('Error', 'Failed to move: ' + e.message, 'error');
+            } finally {
+                btn.disabled = false;
+                btn.innerHTML = origHTML;
+            }
         });
 
         // ==================== SYLLABUS FUNCTIONS ====================
@@ -2357,7 +2452,7 @@ Include Nigerian names, locations, naira (₦), and references to Nigerian textb
                 teacherName: `${userData?.firstName||''} ${userData?.surname||''}`.trim(),
                 subject: currentSubject, 
                 classId: currentClass, 
-                weeks, 
+                 weeks, 
                 status: 'draft', 
                 updatedAt: firebase.firestore.FieldValue.serverTimestamp() 
             }; 
@@ -2537,67 +2632,121 @@ Include Nigerian names, locations, naira (₦), and references to Nigerian textb
             });
             return completion.choices[0].message.content;
         }
-        
-        async function generateStructuredLessonNote(topic, subject, week, className) {
-            const text = await generateAI(
-                `Write a complete lesson note for ${subject} Week ${week} Topic "${topic}" for class ${className || 'JSS1'}. Return ONLY valid JSON.`, 
-                'You are a JSON generator. Return ONLY valid JSON with these fields: subject, class, week, topic, duration, instructionalMaterials (array), objectives (array), presentation (array of {step, teacherActivity, pupilActivity}), evaluation (array), assignment (array).'
-            );
-            return JSON.parse(text.replace(/```json|```/g, '').trim());
+
+        // AI Assistant variables and functions (UPDATE: interactive chat assistant)
+        let aiConversation = [];
+        let lastGeneratedLessonNote = null;
+
+        function openAIAssistant() {
+            if (!window.groq) return showToast('Error', 'AI service not available', 'error');
+            document.getElementById('aiAssistantModal').classList.add('active');
+            document.getElementById('aiChatInput').focus();
         }
-        
-        function renderLessonNoteFromJSON(json) {
-            let h = `<h2>LESSON NOTE</h2>`;
-            h += `<h3>Subject:</h3><p>${escapeHtml(json.subject)}</p>`;
-            h += `<h3>Class:</h3><p>${escapeHtml(json.class)}</p>`;
-            h += `<h3>Week:</h3><p>${json.week}</p>`;
-            h += `<h3>Topic:</h3><p>${escapeHtml(json.topic)}</p>`;
-            h += `<h3>Duration:</h3><p>${escapeHtml(json.duration)}</p>`;
-            h += `<h3>Instructional Materials:</h3><ul>${json.instructionalMaterials.map(m => `<li>${escapeHtml(m)}</li>`).join('')}</ul>`;
-            h += `<h3>Objectives:</h3><ol>${json.objectives.map(o => `<li>${escapeHtml(o)}</li>`).join('')}</ol>`;
-            h += `<h3>Content / Presentation:</h3>`;
-            json.presentation.forEach(p => { 
-                h += `<h4>${escapeHtml(p.step)}</h4>`;
-                h += `<p><strong>Teacher:</strong> ${escapeHtml(p.teacherActivity)}</p>`;
-                h += `<p><strong>Pupils:</strong> ${escapeHtml(p.pupilActivity)}</p>`; 
-            });
-            h += `<h3>Evaluation:</h3><ol>${json.evaluation.map(e => `<li>${escapeHtml(e)}</li>`).join('')}</ol>`;
-            h += `<h3>Assignment:</h3><ol>${json.assignment.map(a => `<li>${escapeHtml(a)}</li>`).join('')}</ol>`;
-            return h;
+        function closeAIAssistant() {
+            document.getElementById('aiAssistantModal').classList.remove('active');
         }
-        
-        document.getElementById('useAIContentBtn').addEventListener('click', async () => {
-            const topic = syllabusMap[currentSubjectDraft]?.weeks?.find(w => w.week == currentWeekDraft)?.topic || '';
-            if (!topic) return showToast('Error', 'No topic found for this week', 'error');
-            
-            const btn = document.getElementById('useAIContentBtn');
-            const origHTML = btn.innerHTML;
-            btn.disabled = true;
-            btn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Generating...';
-            showLoading();
-            
-            try {
-                const json = await generateStructuredLessonNote(topic, currentSubjectDraft, currentWeekDraft, currentClass);
-                quill.root.innerHTML = renderLessonNoteFromJSON(json);
-                contentMerged = true;
-                document.getElementById('submitEditorBtn').style.display = 'inline-block';
-                lastGeneratedText = quill.root.innerHTML;
-                showToast('Generated', 'Lesson note generated successfully', 'success');
-                
-                const review = await generateAI(`Evaluate this lesson note in 1-2 sentences: ${JSON.stringify(json)}`, 'You are a quality reviewer. Be constructive.');
-                document.getElementById('aiReviewBox').classList.add('visible');
-                document.getElementById('aiReviewBox').innerHTML = `<strong><i class="fas fa-robot"></i> AI Review:</strong> ${escapeHtml(review)}`;
-                document.getElementById('useAIContentBtn').innerHTML = '<i class="fas fa-redo"></i> Regenerate';
-            } catch (e) {
-                showToast('Error', e.message, 'error');
-            } finally {
-                btn.disabled = false;
-                if (btn.innerHTML.includes('Generating')) btn.innerHTML = origHTML;
-                hideLoading();
-            }
+        window.openAIAssistant = openAIAssistant;
+        window.closeAIAssistant = closeAIAssistant;
+
+        document.getElementById('aiAssistantModal').addEventListener('click', function(e) {
+            if (e.target === this) closeAIAssistant();
         });
 
-        // Auto-format
+        async function sendAIMessage() {
+            const input = document.getElementById('aiChatInput');
+            const text = input.value.trim();
+            if (!text) return;
+            input.value = '';
+            addChatMessage('user', text);
+            aiConversation.push({ role: 'user', content: text });
+
+            const thinking = document.getElementById('aiThinkBtn').classList.contains('active');
+            const assistantMsg = addChatMessage('assistant', thinking ? '🤔 Thinking...' : '✍️ Writing...');
+
+            try {
+                const systemPrompt = `You are a Nigerian teacher AI assistant. Use the NERDC curriculum. 
+        Always ask clarifying questions if the request is missing subject, class, week, or topic.
+        When ready, produce the FULL lesson note in this EXACT format:
+        <h2>LESSON NOTE</h2>
+        <h3>Subject:</h3><p>...</p>
+        <h3>Class:</h3><p>...</p>
+        <h3>Week:</h3><p>...</p>
+        <h3>Term:</h3><p>...</p>
+        <h3>Topic:</h3><p>...</p>
+        <h3>Duration:</h3><p>...</p>
+        <h3>Instructional Materials:</h3><ul>...</ul>
+        <h3>Objectives:</h3><ol>...</ol>
+        <h3>Content / Presentation:</h3> (use <h4>Step</h4><p><strong>Teacher:</strong> ...</p><p><strong>Pupils:</strong> ...</p>)
+        <h3>Evaluation:</h3><ol>...</ol>
+        <h3>Assignment:</h3><ol>...</ol>
+        Use Nigerian names, naira (₦), and real Nigerian textbooks where possible.
+        If asked to "think", first explain your reasoning inside a <div class="thinking"> block.`;
+
+                const messages = [
+                    { role: 'system', content: systemPrompt },
+                    ...aiConversation
+                ];
+
+                if (thinking) messages.push({ role: 'system', content: 'Now think step-by-step, output your reasoning in a <div class="thinking"> block, then give the final answer.' });
+
+                const completion = await window.groq.chat.completions.create({
+                    messages,
+                    model: 'llama-3.3-70b-versatile',
+                    temperature: 0.5,
+                    max_tokens: 3000,
+                });
+
+                const reply = completion.choices[0].message.content;
+                assistantMsg.innerHTML = reply;
+                aiConversation.push({ role: 'assistant', content: reply });
+
+                if (reply.includes('<h2>LESSON NOTE</h2>')) {
+                    lastGeneratedLessonNote = reply;
+                    document.getElementById('aiApplyBtn').style.display = 'inline-block';
+                } else {
+                    document.getElementById('aiApplyBtn').style.display = 'none';
+                }
+            } catch (err) {
+                assistantMsg.innerHTML = '❌ Error: ' + err.message;
+                aiConversation.pop();
+            }
+        }
+
+        function addChatMessage(role, html) {
+            const div = document.createElement('div');
+            div.className = `ai-message ${role}`;
+            div.innerHTML = html;
+            document.getElementById('aiChatHistory').appendChild(div);
+            document.getElementById('aiChatHistory').scrollTop = document.getElementById('aiChatHistory').scrollHeight;
+            return div;
+        }
+
+        document.getElementById('aiSendBtn').addEventListener('click', sendAIMessage);
+        document.getElementById('aiChatInput').addEventListener('keypress', (e) => {
+            if (e.key === 'Enter') sendAIMessage();
+        });
+        document.getElementById('aiThinkBtn').addEventListener('click', function() {
+            this.classList.toggle('active');
+        });
+        document.getElementById('aiApplyBtn').addEventListener('click', () => {
+            if (lastGeneratedLessonNote) {
+                quill.root.innerHTML = lastGeneratedLessonNote;
+                showToast('Applied', 'Lesson note inserted into editor', 'success');
+                closeAIAssistant();
+            }
+        });
+        document.getElementById('aiClearChatBtn').addEventListener('click', () => {
+            aiConversation = [];
+            document.getElementById('aiChatHistory').innerHTML = '<div class="ai-message assistant">Hello! I can help you create a complete lesson note.<br>Tell me the <strong>Subject, Class, Week, and Topic</strong>.</div>';
+            document.getElementById('aiApplyBtn').style.display = 'none';
+        });
+
+        // Repurpose both AI buttons to open the assistant
+        document.getElementById('useAIContentBtn').addEventListener('click', openAIAssistant);
+        const aiAssistantBtn = document.getElementById('useAIAssistantLessonNoteBtn');
+        if (aiAssistantBtn) aiAssistantBtn.addEventListener('click', openAIAssistant);
+
+        // Auto-format function (kept for other editors but not attached to lesson note button)
         async function aiFormatEditor(quillInstance) {
             if (!window.groq) return showToast('Error', 'AI service not available', 'error');
             const content = quillInstance.getText();
@@ -2619,11 +2768,30 @@ Include Nigerian names, locations, naira (₦), and references to Nigerian textb
                 hideLoading(); 
             }
         }
-        
-        document.getElementById('aiFormatBtn').addEventListener('click', () => aiFormatEditor(quill));
-        document.getElementById('autoFormatLessonNoteBtn').addEventListener('click', () => aiFormatEditor(quill));
-        document.getElementById('autoFormatTPBtn').addEventListener('click', () => aiFormatEditor(teachingProcessQuill));
-        document.getElementById('autoFormatResourceBtn').addEventListener('click', () => aiFormatEditor(studentQuill));
+
+        // Remove the old auto-format listeners for the main lesson note button
+        // (aiFormatBtn, autoFormatTPBtn, autoFormatResourceBtn are now not attached to aiFormatEditor)
+        // The lesson note auto-format button is replaced with template filler below.
+
+        // Replace autoFormatLessonNoteBtn with simple template filler
+        document.getElementById('autoFormatLessonNoteBtn').addEventListener('click', () => {
+            const text = quill.getText();
+            if (!text.includes('Objectives') || !text.includes('Evaluation')) {
+                const topic = syllabusMap[currentSubjectDraft]?.weeks?.find(w => w.week == currentWeekDraft)?.topic || '';
+                quill.root.innerHTML = `<h2>LESSON NOTE</h2>
+                  <p><strong>Subject:</strong> ${currentSubjectDraft} &nbsp;&nbsp; <strong>Class:</strong> ${currentClass || '___'}</p>
+                  <p><strong>Week:</strong> ${currentWeekDraft} &nbsp;&nbsp; <strong>Topic:</strong> ${topic || '___'}</p>
+                  <p><strong>Duration:</strong> 40 minutes</p>
+                  <h3>Instructional Materials:</h3><ul><li>...</li></ul>
+                  <h3>Objectives:</h3><ol><li>...</li></ol>
+                  <h3>Content / Presentation:</h3><p>Step 1: ...</p>
+                  <h3>Evaluation:</h3><ol><li>...</li></ol>
+                  <h3>Assignment:</h3><ol><li>...</li></ol>`;
+                showToast('Template Inserted', 'Fill in the details or use the AI Assistant.', 'info');
+                return;
+            }
+            showToast('Info', 'The editor already contains a valid structure. Use the AI Assistant for help.', 'info');
+        });
 
         // File upload
         document.getElementById('fileUploadBtn').addEventListener('click', () => document.getElementById('fileUploadInput').click());
@@ -2698,7 +2866,39 @@ Include Nigerian names, locations, naira (₦), and references to Nigerian textb
                 loadDraftSubjects();
             } catch(err) {
                 setAutoSaveStatus('error');
-                showToast('Error', 'Failed to save draft', 'error');
+                showToast('Error', 'Failed to save draft: ' + (err.message || 'Permission denied'), 'error');
+            } finally {
+                btn.disabled = false;
+                btn.innerHTML = origHTML;
+            }
+        });
+
+        // Save as Template listener (ADDED)
+        document.getElementById('saveAsTemplateBtn').addEventListener('click', async () => {
+            if (!currentSubjectDraft || !currentWeekDraft) return showToast('Error', 'Select a subject and week first', 'error');
+            const lnHtml = quill.root.innerHTML;
+            if (!lnHtml.trim()) return showToast('Empty', 'Write something first', 'warning');
+            
+            const btn = document.getElementById('saveAsTemplateBtn');
+            const origHTML = btn.innerHTML;
+            btn.disabled = true;
+            btn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Saving...';
+            
+            try {
+                await db.collection('lessonTemplates').add({
+                    teacherId: currentUser.uid,
+                    teacherName: `${userData?.firstName||''} ${userData?.surname||''}`.trim(),
+                    subject: currentSubjectDraft,
+                    week: currentWeekDraft,
+                    classId: currentClass,
+                    topic: syllabusMap[currentSubjectDraft]?.weeks?.find(w => w.week == currentWeekDraft)?.topic || '',
+                    lessonNote: lnHtml,
+                    isPublic: true,
+                    createdAt: firebase.firestore.FieldValue.serverTimestamp()
+                });
+                showToast('Saved', 'Lesson note saved as a public template', 'success');
+            } catch(err) {
+                showToast('Error', 'Failed to save template: ' + err.message, 'error');
             } finally {
                 btn.disabled = false;
                 btn.innerHTML = origHTML;
@@ -2713,9 +2913,9 @@ Include Nigerian names, locations, naira (₦), and references to Nigerian textb
             const lnText = quill.getText();
             const wc = lnText.trim() ? lnText.trim().split(/\s+/).length : 0;
 
-            if (wc < 200) return showToast('Incomplete', `Only ${wc} words. Minimum 200 required for submission.`, 'warning');
+            if (wc < 200) return showToast('Incomplete', `Only ${wc} words. Minimum 200 required.`, 'warning');
             if (!lnText.includes('Objectives') || !lnText.includes('Evaluation'))
-                return showToast('Missing Sections', 'Include "Objectives" and "Evaluation" sections.', 'warning');
+                return showToast('Missing Sections', 'Include "Objectives" and "Evaluation".', 'warning');
 
             if (await checkDuplicate(currentSubjectDraft, currentWeekDraft) &&
                 !confirm('A lesson note for this week has already been submitted. Submit another version?')) return;
@@ -2771,12 +2971,23 @@ Include Nigerian names, locations, naira (₦), and references to Nigerian textb
             const key = `${currentSubjectDraft}_${currentWeekDraft}`; 
             const note = lessonNotesMap[key]; 
             if (!note?.id) return;
-            await db.collection('lessonNotes').doc(note.id).update({ teachable: true }); 
-            await addPoints(2, 'Lesson moved to Teach');
-            await logAudit('LESSON_PUSHED_TO_TEACH', `${currentSubjectDraft} Week ${currentWeekDraft}`);
-            document.getElementById('pushToTeachBtn').style.display = 'none'; 
-            renderPublishedTab(); 
-            showToast('Pushed', 'Lesson moved to Teach', 'success');
+            const btn = document.getElementById('pushToTeachBtn');
+            const origHTML = btn.innerHTML;
+            btn.disabled = true;
+            btn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Pushing...';
+            try {
+                await db.collection('lessonNotes').doc(note.id).update({ teachable: true }); 
+                await addPoints(2, 'Lesson moved to Teach');
+                await logAudit('LESSON_PUSHED_TO_TEACH', `${currentSubjectDraft} Week ${currentWeekDraft}`);
+                document.getElementById('pushToTeachBtn').style.display = 'none'; 
+                renderPublishedTab(); 
+                showToast('Pushed', 'Lesson moved to Teach', 'success');
+            } catch(e) {
+                showToast('Error', 'Failed to push: ' + e.message, 'error');
+            } finally {
+                btn.disabled = false;
+                btn.innerHTML = origHTML;
+            }
         });
 
         // Submitted, Published, Library tabs
@@ -3118,16 +3329,27 @@ Include Nigerian names, locations, naira (₦), and references to Nigerian textb
         }
         window.deleteHandwritingImage = i => { handwritingImages.splice(i, 1); renderHandwritingImages(); };
 
-        // Post-approval section handlers
+        // Post-approval section handlers with spinners
         document.getElementById('saveTeachingProcessBtn').addEventListener('click', async () => {
             if (!currentSubjectDraft || !currentWeekDraft) return;
             const key = `${currentSubjectDraft}_${currentWeekDraft}`;
             const existing = lessonNotesMap[key] || {};
             const teachingProcessHtml = teachingProcessQuill.root.innerHTML;
             if (!teachingProcessHtml.trim()) return showToast('Empty', 'Write teaching process first', 'warning');
-            const d = { teachingProcess: teachingProcessHtml, updatedAt: firebase.firestore.FieldValue.serverTimestamp() };
-            if (existing.id) await db.collection('lessonNotes').doc(existing.id).update(d);
-            showToast('Saved', 'Teaching process saved', 'success');
+            const btn = document.getElementById('saveTeachingProcessBtn');
+            const origHTML = btn.innerHTML;
+            btn.disabled = true;
+            btn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Saving...';
+            try {
+                const d = { teachingProcess: teachingProcessHtml, updatedAt: firebase.firestore.FieldValue.serverTimestamp() };
+                if (existing.id) await db.collection('lessonNotes').doc(existing.id).update(d);
+                showToast('Saved', 'Teaching process saved', 'success');
+            } catch(e) {
+                showToast('Error', 'Failed to save: ' + e.message, 'error');
+            } finally {
+                btn.disabled = false;
+                btn.innerHTML = origHTML;
+            }
         });
         
         document.getElementById('saveStudentResourceBtn').addEventListener('click', async () => {
@@ -3136,9 +3358,20 @@ Include Nigerian names, locations, naira (₦), and references to Nigerian textb
             const existing = lessonNotesMap[key] || {};
             const resourceHtml = studentQuill.root.innerHTML;
             if (!resourceHtml.trim()) return showToast('Empty', 'Write student resource first', 'warning');
-            const d = { studentResource: resourceHtml, updatedAt: firebase.firestore.FieldValue.serverTimestamp() };
-            if (existing.id) await db.collection('lessonNotes').doc(existing.id).update(d);
-            showToast('Saved', 'Student resource saved', 'success');
+            const btn = document.getElementById('saveStudentResourceBtn');
+            const origHTML = btn.innerHTML;
+            btn.disabled = true;
+            btn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Saving...';
+            try {
+                const d = { studentResource: resourceHtml, updatedAt: firebase.firestore.FieldValue.serverTimestamp() };
+                if (existing.id) await db.collection('lessonNotes').doc(existing.id).update(d);
+                showToast('Saved', 'Student resource saved', 'success');
+            } catch(e) {
+                showToast('Error', 'Failed to save: ' + e.message, 'error');
+            } finally {
+                btn.disabled = false;
+                btn.innerHTML = origHTML;
+            }
         });
         
         document.getElementById('moveToTeachBtn').addEventListener('click', async () => {
@@ -3146,10 +3379,21 @@ Include Nigerian names, locations, naira (₦), and references to Nigerian textb
             const key = `${currentSubjectDraft}_${currentWeekDraft}`;
             const note = lessonNotesMap[key];
             if (!note?.id) return showToast('Error', 'Save lesson note first', 'error');
-            await db.collection('lessonNotes').doc(note.id).update({ teachable: true });
-            await addPoints(2, 'Lesson moved to Teach');
-            await logAudit('LESSON_MOVED_TO_TEACH', `${currentSubjectDraft} Week ${currentWeekDraft}`);
-            showToast('Moved', 'Lesson moved to Teach', 'success');
+            const btn = document.getElementById('moveToTeachBtn');
+            const origHTML = btn.innerHTML;
+            btn.disabled = true;
+            btn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Moving...';
+            try {
+                await db.collection('lessonNotes').doc(note.id).update({ teachable: true });
+                await addPoints(2, 'Lesson moved to Teach');
+                await logAudit('LESSON_MOVED_TO_TEACH', `${currentSubjectDraft} Week ${currentWeekDraft}`);
+                showToast('Moved', 'Lesson moved to Teach', 'success');
+            } catch(e) {
+                showToast('Error', 'Failed to move: ' + e.message, 'error');
+            } finally {
+                btn.disabled = false;
+                btn.innerHTML = origHTML;
+            }
         });
         
         document.getElementById('shareToLibraryBtn').addEventListener('click', async () => {
@@ -3157,27 +3401,42 @@ Include Nigerian names, locations, naira (₦), and references to Nigerian textb
             const key = `${currentSubjectDraft}_${currentWeekDraft}`;
             const note = lessonNotesMap[key];
             if (!note?.id) return showToast('Error', 'Save lesson note first', 'error');
-            await db.collection('resourceLibrary').add({
-                teacherId: currentUser.uid,
-                teacherName: `${userData?.firstName||''} ${userData?.surname||''}`.trim(),
-                subject: currentSubjectDraft,
-                week: currentWeekDraft,
-                topic: note.topic || '',
-                lessonNote: note.lessonNote || '',
-                studentResource: note.studentResource || '',
-                teachingProcess: note.teachingProcess || '',
-                videoLinks: videoLinks,
-                handwritingImages: handwritingImages,
-                createdAt: firebase.firestore.FieldValue.serverTimestamp()
-            });
-            await logAudit('RESOURCE_SHARED_TO_LIBRARY', `${currentSubjectDraft} Week ${currentWeekDraft}`);
-            showToast('Shared', 'Added to resource library', 'success');
+            const btn = document.getElementById('shareToLibraryBtn');
+            const origHTML = btn.innerHTML;
+            btn.disabled = true;
+            btn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Sharing...';
+            try {
+                await db.collection('resourceLibrary').add({
+                    teacherId: currentUser.uid,
+                    teacherName: `${userData?.firstName||''} ${userData?.surname||''}`.trim(),
+                    subject: currentSubjectDraft,
+                    week: currentWeekDraft,
+                    topic: note.topic || '',
+                    lessonNote: note.lessonNote || '',
+                    studentResource: note.studentResource || '',
+                    teachingProcess: note.teachingProcess || '',
+                    videoLinks: videoLinks,
+                    handwritingImages: handwritingImages,
+                    createdAt: firebase.firestore.FieldValue.serverTimestamp()
+                });
+                await logAudit('RESOURCE_SHARED_TO_LIBRARY', `${currentSubjectDraft} Week ${currentWeekDraft}`);
+                showToast('Shared', 'Added to resource library', 'success');
+            } catch(e) {
+                showToast('Error', 'Failed to share: ' + e.message, 'error');
+            } finally {
+                btn.disabled = false;
+                btn.innerHTML = origHTML;
+            }
         });
 
-        // AI Generate for Teaching Process and Resources
+        // AI Generate for Teaching Process and Resources with spinners
         document.getElementById('aiGenerateTPBtn').addEventListener('click', async () => {
             if (!window.groq) return showToast('Error', 'AI service not available', 'error');
             const topic = syllabusMap[currentSubjectDraft]?.weeks?.find(w => w.week == currentWeekDraft)?.topic || 'this topic';
+            const btn = document.getElementById('aiGenerateTPBtn');
+            const origHTML = btn.innerHTML;
+            btn.disabled = true;
+            btn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Generating...';
             showLoading();
             try {
                 const content = await generateAI(
@@ -3186,12 +3445,22 @@ Include Nigerian names, locations, naira (₦), and references to Nigerian textb
                 );
                 teachingProcessQuill.root.innerHTML = content;
                 showToast('Generated', 'Teaching process generated', 'success');
-            } catch (e) { showToast('Error', e.message, 'error'); } finally { hideLoading(); }
+            } catch (e) { 
+                showToast('Error', e.message, 'error'); 
+            } finally { 
+                btn.disabled = false;
+                btn.innerHTML = origHTML;
+                hideLoading(); 
+            }
         });
         
         document.getElementById('aiGenerateResourceBtn').addEventListener('click', async () => {
             if (!window.groq) return showToast('Error', 'AI service not available', 'error');
             const topic = syllabusMap[currentSubjectDraft]?.weeks?.find(w => w.week == currentWeekDraft)?.topic || 'this topic';
+            const btn = document.getElementById('aiGenerateResourceBtn');
+            const origHTML = btn.innerHTML;
+            btn.disabled = true;
+            btn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Generating...';
             showLoading();
             try {
                 const content = await generateAI(
@@ -3200,7 +3469,13 @@ Include Nigerian names, locations, naira (₦), and references to Nigerian textb
                 );
                 studentQuill.root.innerHTML = content;
                 showToast('Generated', 'Student resources generated', 'success');
-            } catch (e) { showToast('Error', e.message, 'error'); } finally { hideLoading(); }
+            } catch (e) { 
+                showToast('Error', e.message, 'error'); 
+            } finally { 
+                btn.disabled = false;
+                btn.innerHTML = origHTML;
+                hideLoading(); 
+            }
         });
 
         // Lesson Notes sub-tab switching
@@ -3433,7 +3708,7 @@ Include Nigerian names, locations, naira (₦), and references to Nigerian textb
             }
         });
 
-        // Submit permission request (UPDATE 1)
+        // Submit permission request (UPDATE 1) - already had spinner, keep as is
         document.getElementById('submitPermBtn').addEventListener('click', async (e) => {
             e.preventDefault();
             const type = document.getElementById('permType').value;
