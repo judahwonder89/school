@@ -1,0 +1,287 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Create All Firebase Indexes — Judah Wonders</title>
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body {
+            font-family: 'Inter', system-ui, -apple-system, sans-serif;
+            background: #0a0f1e;
+            color: #f0f4fa;
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 2rem;
+        }
+        .container {
+            background: rgba(15,23,42,0.9);
+            border: 1px solid rgba(255,255,255,0.08);
+            border-radius: 1.5rem;
+            padding: 2.5rem;
+            max-width: 620px;
+            width: 100%;
+            text-align: center;
+            box-shadow: 0 25px 60px rgba(0,0,0,0.5);
+        }
+        h1 {
+            font-size: 1.5rem;
+            font-weight: 700;
+            margin-bottom: 0.5rem;
+            background: linear-gradient(135deg, #C8963E, #D4AF37);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+        p {
+            color: #a0b3d9;
+            font-size: 0.9rem;
+            margin-bottom: 1.5rem;
+            line-height: 1.6;
+        }
+        .index-list {
+            text-align: left;
+            background: rgba(30,41,59,0.5);
+            border-radius: 1rem;
+            padding: 1.2rem;
+            margin-bottom: 1.5rem;
+            font-size: 0.8rem;
+            color: #a0b3d9;
+            max-height: 300px;
+            overflow-y: auto;
+        }
+        .index-list .item {
+            padding: 0.4rem 0;
+            border-bottom: 1px solid rgba(255,255,255,0.04);
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+        .index-list .item:last-child { border-bottom: none; }
+        .index-list .num {
+            background: rgba(200,150,62,0.2);
+            color: #D4AF37;
+            width: 22px;
+            height: 22px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 0.7rem;
+            font-weight: 700;
+            flex-shrink: 0;
+        }
+        .index-list .name {
+            color: #f0f4fa;
+            font-weight: 500;
+        }
+        .btn {
+            display: inline-block;
+            padding: 1rem 2.5rem;
+            background: linear-gradient(135deg, #C8963E, #D4AF37);
+            color: #0a0f1e;
+            border: none;
+            border-radius: 3rem;
+            font-size: 1rem;
+            font-weight: 700;
+            cursor: pointer;
+            transition: all 0.2s;
+            text-decoration: none;
+            letter-spacing: 0.02em;
+        }
+        .btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 10px 30px rgba(200,150,62,0.3);
+        }
+        .btn:active { transform: translateY(0); }
+        .btn:disabled {
+            opacity: 0.5;
+            cursor: not-allowed;
+            transform: none;
+        }
+        .status {
+            margin-top: 1rem;
+            font-size: 0.85rem;
+            color: #4ade80;
+            min-height: 1.5rem;
+        }
+        .warning {
+            margin-top: 0.8rem;
+            font-size: 0.75rem;
+            color: #fbbf24;
+            line-height: 1.5;
+        }
+        .progress {
+            display: flex;
+            justify-content: center;
+            gap: 0.4rem;
+            margin-top: 1rem;
+        }
+        .dot {
+            width: 10px;
+            height: 10px;
+            border-radius: 50%;
+            background: rgba(255,255,255,0.1);
+            transition: background 0.3s;
+        }
+        .dot.done { background: #4ade80; }
+        .dot.current { background: #fbbf24; animation: pulse 0.8s infinite; }
+        @keyframes pulse {
+            0%,100% { opacity: 1; }
+            50% { opacity: 0.3; }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>🔥 Create All Firebase Indexes</h1>
+        <p>Judah Wonders Model School<br>9 composite indexes for Firestore</p>
+
+        <div class="index-list" id="indexList"></div>
+
+        <div class="progress" id="progress"></div>
+
+        <button class="btn" id="createBtn" onclick="createAllIndexes()">
+            🚀 Create All 9 Indexes
+        </button>
+        <div class="status" id="status"></div>
+        <div class="warning">
+            ⚠️ <strong>Important:</strong> Pop-ups must be allowed for this page.<br>
+            Each click opens Firebase Console — click <strong>"Create Index"</strong> on each tab.<br>
+            Wait for each index to show <strong>Enabled</strong> before closing its tab.
+        </div>
+    </div>
+
+    <script>
+        const INDEXES = [
+            {
+                collection: 'timetableProposals',
+                fields: 'classId ASC, teacherId ASC, status ASC, updatedAt DESC',
+                label: 'Draft query'
+            },
+            {
+                collection: 'timetableProposals',
+                fields: 'classId ASC, teacherId ASC, status ASC, submittedAt DESC',
+                label: 'Pending / Rejected query'
+            },
+            {
+                collection: 'syllabus',
+                fields: 'teacherId ASC, subject ASC, submittedAt DESC',
+                label: 'Select subject'
+            },
+            {
+                collection: 'lessonNotes',
+                fields: 'teacherId ASC',
+                label: 'Load all'
+            },
+            {
+                collection: 'lessonNotes',
+                fields: 'teacherId ASC, subject ASC, week ASC, status ASC',
+                label: 'Check duplicate'
+            },
+            {
+                collection: 'dailyReports',
+                fields: 'teacherId ASC, date DESC',
+                label: 'Load reports'
+            },
+            {
+                collection: 'dailyReports',
+                fields: 'teacherId ASC, date ASC',
+                label: 'Check existing'
+            },
+            {
+                collection: 'auditLogs',
+                fields: 'userId ASC, action ASC, timestamp DESC',
+                label: 'Notifications'
+            },
+            {
+                collection: 'pendingActions',
+                fields: 'teacherId ASC, requestedAt DESC',
+                label: 'My requests'
+            }
+        ];
+
+        function buildUrl(index) {
+            const fields = index.fields.split(', ').map(f => {
+                const [name, order] = f.split(' ');
+                const dir = order === 'DESC' ? 'DESCENDING' : 'ASCENDING';
+                return { fieldPath: name, direction: dir };
+            });
+            const payload = {
+                collectionGroup: index.collection,
+                queryScope: 'COLLECTION',
+                fields: fields.map(f => ({
+                    fieldPath: f.fieldPath,
+                    order: f.direction
+                }))
+            };
+            return `https://console.firebase.google.com/project/judah-c737e/firestore/indexes?create_composite=${encodeURIComponent(JSON.stringify(payload))}`;
+        }
+
+        // Render list
+        const list = document.getElementById('indexList');
+        INDEXES.forEach((idx, i) => {
+            const div = document.createElement('div');
+            div.className = 'item';
+            div.innerHTML = `<span class="num">${i + 1}</span> <span class="name">${idx.collection}</span> → ${idx.fields} <span style="color:#64748b;font-size:0.7rem;">(${idx.label})</span>`;
+            list.appendChild(div);
+        });
+
+        // Render progress dots
+        const progress = document.getElementById('progress');
+        INDEXES.forEach((_, i) => {
+            const dot = document.createElement('div');
+            dot.className = 'dot';
+            dot.id = `dot-${i}`;
+            progress.appendChild(dot);
+        });
+
+        async function createAllIndexes() {
+            const btn = document.getElementById('createBtn');
+            const status = document.getElementById('status');
+            btn.disabled = true;
+            btn.textContent = 'Opening tabs...';
+
+            for (let i = 0; i < INDEXES.length; i++) {
+                const url = buildUrl(INDEXES[i]);
+                
+                // Update progress
+                document.querySelectorAll('.dot').forEach((d, j) => {
+                    d.classList.remove('current', 'done');
+                    if (j < i) d.classList.add('done');
+                    if (j === i) d.classList.add('current');
+                });
+                
+                status.textContent = `Opening #${i + 1}/${INDEXES.length}: ${INDEXES[i].collection}`;
+                btn.textContent = `⏳ ${i + 1}/${INDEXES.length} — Click "Create" on the tab`;
+                
+                const win = window.open(url, `firebase-index-${i}`);
+                
+                if (!win) {
+                    status.textContent = '⚠️ Pop-up blocked! Allow pop-ups and try again.';
+                    btn.disabled = false;
+                    btn.textContent = '🚀 Create All 9 Indexes';
+                    return;
+                }
+                
+                // Wait before opening next
+                await new Promise(resolve => setTimeout(resolve, 1500));
+            }
+
+            // All done
+            document.querySelectorAll('.dot').forEach(d => d.classList.add('done'));
+            document.querySelectorAll('.dot').forEach(d => d.classList.remove('current'));
+            status.textContent = '✅ All 9 tabs opened! Click "Create Index" on each tab.';
+            btn.textContent = '✅ Done — 9 Tabs Opened';
+            btn.disabled = false;
+            
+            // Reset after 5 seconds
+            setTimeout(() => {
+                btn.textContent = '🚀 Create All 9 Indexes';
+            }, 5000);
+        }
+    </script>
+</body>
+</html>
