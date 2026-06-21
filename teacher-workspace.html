@@ -1723,8 +1723,7 @@
             <h3>Processing...</h3>
         </div>
     </div>
-
-    <script type="module">
+        <script type="module">
         import Groq from "groq-sdk";
         
         // ==================== FIREBASE CONFIGURATION ====================
@@ -1979,18 +1978,21 @@ Include Nigerian names, locations, naira (₦), and references to Nigerian textb
             }).join('');
         }
 
-        // ==================== EVENT DELEGATION (Replaces inline onclick) ====================
+        // ==================== EVENT DELEGATION SYSTEM ====================
+        // Replaces all inline onclick handlers for security and maintainability
         document.addEventListener('click', async (e) => {
-            // Notification mark as read
+            // --- Notification mark as read ---
             const notifItem = e.target.closest('[data-notif-id]');
             if (notifItem) {
                 const id = notifItem.dataset.notifId;
-                try { await db.collection('auditLogs').doc(id).update({ read: true }); loadNotifications(); }
-                catch(err) { console.error('Mark read error:', err); }
+                try { 
+                    await db.collection('auditLogs').doc(id).update({ read: true }); 
+                    loadNotifications(); 
+                } catch(err) { console.error('Mark read error:', err); }
                 return;
             }
             
-            // Delete timetable row
+            // --- Delete timetable row ---
             const delTTRowBtn = e.target.closest('.delete-tt-row-btn');
             if (delTTRowBtn) {
                 const i = parseInt(delTTRowBtn.dataset.index);
@@ -1999,7 +2001,7 @@ Include Nigerian names, locations, naira (₦), and references to Nigerian textb
                 return;
             }
             
-            // Delete syllabus week
+            // --- Delete syllabus week ---
             const delSWBtn = e.target.closest('.delete-sw-btn');
             if (delSWBtn) {
                 const i = parseInt(delSWBtn.dataset.index);
@@ -2010,7 +2012,7 @@ Include Nigerian names, locations, naira (₦), and references to Nigerian textb
                 return;
             }
             
-            // Remove video link
+            // --- Remove video link ---
             const removeVidBtn = e.target.closest('.remove-video-btn');
             if (removeVidBtn) {
                 const i = parseInt(removeVidBtn.dataset.index);
@@ -2019,7 +2021,7 @@ Include Nigerian names, locations, naira (₦), and references to Nigerian textb
                 return;
             }
             
-            // Delete handwriting image
+            // --- Delete handwriting image ---
             const delHWBtn = e.target.closest('.delete-hw-btn');
             if (delHWBtn) {
                 const i = parseInt(delHWBtn.dataset.index);
@@ -2028,28 +2030,28 @@ Include Nigerian names, locations, naira (₦), and references to Nigerian textb
                 return;
             }
             
-            // Subject card click
+            // --- Subject card click (Syllabus tab) ---
             const subjectCard = e.target.closest('.subject-card');
             if (subjectCard && subjectCard.dataset.subject && !e.target.closest('button')) {
                 selectSubject(subjectCard.dataset.subject, subjectCard);
                 return;
             }
             
-            // Draft subject card click
+            // --- Draft subject card click (Drafts tab) ---
             const draftSubjectCard = e.target.closest('.draft-subject-card');
             if (draftSubjectCard && draftSubjectCard.dataset.subject) {
                 selectDraftSubject(draftSubjectCard.dataset.subject);
                 return;
             }
             
-            // Week tab click
+            // --- Week tab click (Drafts tab) ---
             const weekTab = e.target.closest('.week-tab');
             if (weekTab && weekTab.dataset.week) {
                 selectDraftWeek(parseInt(weekTab.dataset.week), weekTab);
                 return;
             }
             
-            // Cancel submission
+            // --- Cancel submission button ---
             const cancelSubBtn = e.target.closest('.cancel-submission-btn');
             if (cancelSubBtn) {
                 const id = cancelSubBtn.dataset.id;
@@ -2057,11 +2059,11 @@ Include Nigerian names, locations, naira (₦), and references to Nigerian textb
                 await loadAllLessonNotes();
                 renderSubmittedTab();
                 loadDraftSubjects();
-                showToast('Cancelled', 'Submission cancelled', 'info');
+                showToast('Cancelled', 'Submission cancelled, moved back to drafts', 'info');
                 return;
             }
             
-            // Push to teach from submitted
+            // --- Push to teach button (from submitted) ---
             const pushTeachBtn = e.target.closest('.push-teach-btn');
             if (pushTeachBtn) {
                 const id = pushTeachBtn.dataset.id;
@@ -2075,7 +2077,7 @@ Include Nigerian names, locations, naira (₦), and references to Nigerian textb
                 return;
             }
             
-            // Edit rejected from submitted
+            // --- Edit rejected button (from submitted) ---
             const editRejectedBtn = e.target.closest('.edit-rejected-btn');
             if (editRejectedBtn) {
                 const id = editRejectedBtn.dataset.id;
@@ -2090,7 +2092,7 @@ Include Nigerian names, locations, naira (₦), and references to Nigerian textb
                 return;
             }
             
-            // Import library resource
+            // --- Import library resource ---
             const importLibBtn = e.target.closest('.import-library-btn');
             if (importLibBtn) {
                 const id = importLibBtn.dataset.id;
@@ -2101,16 +2103,16 @@ Include Nigerian names, locations, naira (₦), and references to Nigerian textb
                     showToast('Error', 'Subject not in your list.', 'error');
                     return;
                 }
-                if (confirm(`Import "${data.subject}" Week ${data.week}?`)) {
+                if (confirm(`Import "${data.subject}" Week ${data.week} from library?`)) {
                     selectDraftSubject(data.subject);
                     selectDraftWeek(data.week);
                     quill.root.innerHTML = data.lessonNote || '';
-                    showToast('Imported', 'Content imported', 'success');
+                    showToast('Imported', 'Content imported from library', 'success');
                 }
                 return;
             }
             
-            // Create lesson note for syllabus
+            // --- Create lesson note for syllabus ---
             const createLNbtn = e.target.closest('.create-ln-btn');
             if (createLNbtn) {
                 const sub = createLNbtn.dataset.subject;
@@ -2121,6 +2123,56 @@ Include Nigerian names, locations, naira (₦), and references to Nigerian textb
                     document.getElementById('ln-subtabs').querySelector('[data-ln="drafts"]').click();
                     selectDraftSubject(sub);
                     selectDraftWeek(w[0].week);
+                }
+                return;
+            }
+            
+            // --- Reply button (daily reports) ---
+            const replyBtn = e.target.closest('.reply-btn');
+            if (replyBtn) {
+                const reportId = replyBtn.dataset.reportId;
+                const qIndex = parseInt(replyBtn.dataset.qIndex);
+                const textarea = document.getElementById(`rep_${reportId}_${qIndex}`);
+                if (!textarea) return;
+                const r = textarea.value;
+                if (!r?.trim()) { showToast('Empty', 'Write a reply first', 'warning'); return; }
+                showLoading();
+                try {
+                    const ref = db.collection('dailyReports').doc(reportId);
+                    const d = await ref.get();
+                    const qs = d.data().questions || [];
+                    if (qs[qIndex]) { 
+                        qs[qIndex].reply = r; 
+                        await ref.update({ questions: qs }); 
+                        loadMyReports(); 
+                        showToast('Sent', 'Reply sent successfully', 'success'); 
+                    }
+                } catch(err) { showToast('Error', err.message, 'error'); } 
+                finally { hideLoading(); }
+                return;
+            }
+            
+            // --- Book flip navigation (Teach Mode) ---
+            const bookNavBtn = e.target.closest('.book-nav-btn');
+            if (bookNavBtn) {
+                const panelKey = bookNavBtn.dataset.flip;
+                const direction = parseInt(bookNavBtn.dataset.direction);
+                const state = teachModeState.bookPages[panelKey];
+                if (!state) return;
+                const newPage = state.currentPage + direction;
+                if (newPage < 0 || newPage >= state.pages.length) return;
+                const containerKey = panelKey === 'lessonNote' ? 'teachContentLessonNote' : 'teachContentTeachingProcess';
+                const container = document.getElementById(containerKey);
+                const oldPageDiv = container.querySelector('.book-page');
+                if (oldPageDiv) {
+                    oldPageDiv.classList.add('flipping-out');
+                    setTimeout(() => {
+                        state.currentPage = newPage;
+                        renderBookMode(container, state.pages, state.currentPage, panelKey);
+                    }, 200);
+                } else {
+                    state.currentPage = newPage;
+                    renderBookMode(container, state.pages, state.currentPage, panelKey);
                 }
                 return;
             }
@@ -2319,19 +2371,41 @@ Include Nigerian names, locations, naira (₦), and references to Nigerian textb
             if (!currentClass) return;
             document.getElementById('ttClassName').textContent = currentClass;
             
-            const ds = await db.collection('timetableProposals').where('classId','==',currentClass).where('teacherId','==',currentUser.uid).where('status','==','draft').orderBy('updatedAt','desc').limit(1).get();
+            // Load draft
+            const ds = await db.collection('timetableProposals')
+                .where('classId','==',currentClass)
+                .where('teacherId','==',currentUser.uid)
+                .where('status','==','draft')
+                .orderBy('updatedAt','desc').limit(1).get();
+            
             if (!ds.empty) { const d=ds.docs[0]; draftId=d.id; draftData=d.data().periods||[]; draftType=d.data().type||'academic'; }
             else { draftId=null; draftData=[getEmptyPeriod('academic')]; draftType='academic'; }
             
-            const ps = await db.collection('timetableProposals').where('classId','==',currentClass).where('teacherId','==',currentUser.uid).where('status','==','pending').orderBy('submittedAt','desc').limit(1).get();
+            // Load pending
+            const ps = await db.collection('timetableProposals')
+                .where('classId','==',currentClass)
+                .where('teacherId','==',currentUser.uid)
+                .where('status','==','pending')
+                .orderBy('submittedAt','desc').limit(1).get();
+            
             if (!ps.empty) { const d=ps.docs[0]; pendingId=d.id; pendingData=d.data().periods||[]; }
             else { pendingId=null; pendingData=[]; }
             
+            // Load approved - FIXED: Query timetables collection with published==true
             approvedList=[];
-            const as = await db.collection('timetables').where('classId','==',currentClass).where('published','==',true).get();
+            const as = await db.collection('timetables')
+                .where('classId','==',currentClass)
+                .where('published','==',true)
+                .get();
             as.forEach(d=>approvedList.push({type:d.data().type||'academic',data:d.data(),id:d.id}));
             
-            const rs = await db.collection('timetableProposals').where('classId','==',currentClass).where('teacherId','==',currentUser.uid).where('status','==','rejected').orderBy('submittedAt','desc').limit(1).get();
+            // Load rejected
+            const rs = await db.collection('timetableProposals')
+                .where('classId','==',currentClass)
+                .where('teacherId','==',currentUser.uid)
+                .where('status','==','rejected')
+                .orderBy('submittedAt','desc').limit(1).get();
+            
             if (!rs.empty) { const d=rs.docs[0]; rejectedId=d.id; rejectedData=d.data().periods||[]; }
             else { rejectedId=null; rejectedData=[]; }
             
@@ -2340,19 +2414,40 @@ Include Nigerian names, locations, naira (₦), and references to Nigerian textb
             document.getElementById('timetableType').value = draftType;
             loadPublishedTimetables();
             
+            // Render pending table
             if (pendingId) {
                 document.getElementById('pendingTableHeader').innerHTML = '<tr>'+getTHeaders(draftType).map(h=>`<th>${h}</th>`).join('')+'</tr>';
-                document.getElementById('pendingBody').innerHTML = pendingData.map(p=>{let row='<tr>';row+=`<td>${escapeHtml(p.startTime||'')}</td><td>${escapeHtml(p.endTime||'')}</td>`;['monday','tuesday','wednesday','thursday','friday'].forEach(d=>{if(draftType==='academic'||['monday','tuesday','wednesday'].includes(d))row+=`<td>${escapeHtml(p[d]||'')}</td>`;});row+='</tr>';return row;}).join('');
+                document.getElementById('pendingBody').innerHTML = pendingData.map(p=>{
+                    let row='<tr>';
+                    row+=`<td>${escapeHtml(p.startTime||'')}</td><td>${escapeHtml(p.endTime||'')}</td>`;
+                    ['monday','tuesday','wednesday','thursday','friday'].forEach(d=>{
+                        if(draftType==='academic'||['monday','tuesday','wednesday'].includes(d))
+                            row+=`<td>${escapeHtml(p[d]||'')}</td>`;
+                    });
+                    row+='</tr>';
+                    return row;
+                }).join('');
             }
         }
         
         async function loadPublishedTimetables() {
             if (!currentClass) return;
-            const snap = await db.collection('timetables').where('classId','==',currentClass).where('published','==',true).get();
+            const snap = await db.collection('timetables')
+                .where('classId','==',currentClass)
+                .where('published','==',true)
+                .get();
             const list = document.getElementById('publishedTimetablesList');
-            list.innerHTML = snap.empty ? '<p style="color:var(--text-secondary);">No published timetables yet.</p>' : snap.docs.map(d=>`<div class="card"><p><strong>${d.data().type?d.data().type.charAt(0).toUpperCase()+d.data().type.slice(1):'Academic'}</strong> Timetable - Published</p></div>`).join('');
+            if (snap.empty) { 
+                list.innerHTML = '<p style="color:var(--text-secondary);">No published timetables yet.</p>'; 
+                return; 
+            }
+            list.innerHTML = snap.docs.map(d => {
+                const t = d.data();
+                return `<div class="card"><p><strong>${t.type ? t.type.charAt(0).toUpperCase() + t.type.slice(1) : 'Academic'}</strong> Timetable - Published</p></div>`;
+            }).join('');
         }
         
+        // Timetable sub-tab switching
         document.querySelectorAll('#tt-tabs .sub-tab').forEach(t => t.addEventListener('click', () => {
             document.querySelectorAll('#tt-tabs .sub-tab').forEach(x=>{x.classList.remove('active');x.setAttribute('aria-selected','false');});
             t.classList.add('active');t.setAttribute('aria-selected','true');
@@ -2361,6 +2456,7 @@ Include Nigerian names, locations, naira (₦), and references to Nigerian textb
         }));
         
         document.getElementById('timetableType').addEventListener('change',e=>{draftType=e.target.value;draftData=[getEmptyPeriod(draftType)];renderDraftTable();});
+        
         document.getElementById('createNewTimetableBtn').addEventListener('click',async()=>{
             draftType=document.getElementById('timetableType').value||'academic';draftData=[getEmptyPeriod(draftType)];
             const d={classId:currentClass,teacherId:currentUser.uid,teacherName:`${userData?.firstName||''} ${userData?.surname||''}`.trim(),periods:draftData,type:draftType,status:'draft',updatedAt:firebase.firestore.FieldValue.serverTimestamp()};
@@ -2376,7 +2472,7 @@ Include Nigerian names, locations, naira (₦), and references to Nigerian textb
             try{
                 if(draftId) await db.collection('timetableProposals').doc(draftId).update(d);
                 else{const r=await db.collection('timetableProposals').add(d);draftId=r.id;}
-                document.getElementById('deleteDraftBtn').style.display='inline-block';setAutoSaveStatus('saved');showToast('Saved','Draft saved','success');
+                document.getElementById('deleteDraftBtn').style.display='inline-block';setAutoSaveStatus('saved');showToast('Saved','Draft saved successfully','success');
             }catch(e){setAutoSaveStatus('error');showToast('Error','Failed to save draft','error');}
         });
         
@@ -2384,12 +2480,22 @@ Include Nigerian names, locations, naira (₦), and references to Nigerian textb
             const d={classId:currentClass,teacherId:currentUser.uid,teacherName:`${userData?.firstName||''} ${userData?.surname||''}`.trim(),periods:draftData,type:draftType,status:'pending',submittedAt:firebase.firestore.FieldValue.serverTimestamp()};
             if(draftId) await db.collection('timetableProposals').doc(draftId).update(d);
             else{const r=await db.collection('timetableProposals').add(d);draftId=r.id;}
-            await loadAllTimetableData();await addPoints(2,'Timetable submitted');await logAudit('TIMETABLE_SUBMITTED',`${draftType} timetable`);setAutoSaveStatus('saved');showToast('Submitted','Timetable sent for approval','success');
+            await loadAllTimetableData();await addPoints(2,'Timetable submitted');await logAudit('TIMETABLE_SUBMITTED',`${draftType} timetable for ${currentClass}`);setAutoSaveStatus('saved');showToast('Submitted','Timetable sent for approval','success');
         });
         
-        document.getElementById('deleteDraftBtn').addEventListener('click',()=>{openDeleteModal('Delete this timetable draft?',async()=>{if(!draftId)return;await db.collection('timetableProposals').doc(draftId).delete();draftId=null;draftData=[getEmptyPeriod('academic')];renderDraftTable();document.getElementById('deleteDraftBtn').style.display='none';closeDeleteModal();showToast('Deleted','Draft deleted','success');});});
-        document.getElementById('editPendingBtn').addEventListener('click',async()=>{if(!pendingId)return;await db.collection('timetableProposals').doc(pendingId).update({status:'draft'});await loadAllTimetableData();showToast('Moved','Moved back to draft','info');});
+        document.getElementById('deleteDraftBtn').addEventListener('click',()=>{
+            openDeleteModal('Are you sure you want to delete this timetable draft?',async()=>{
+                if(!draftId)return;await db.collection('timetableProposals').doc(draftId).delete();
+                draftId=null;draftData=[getEmptyPeriod('academic')];renderDraftTable();
+                document.getElementById('deleteDraftBtn').style.display='none';closeDeleteModal();showToast('Deleted','Draft deleted','success');
+            });
+        });
         
+        document.getElementById('editPendingBtn').addEventListener('click',async()=>{
+            if(!pendingId)return;await db.collection('timetableProposals').doc(pendingId).update({status:'draft'});
+            await loadAllTimetableData();showToast('Moved','Moved back to draft','info');
+        });
+
         function renderApprovedTimetableList(){
             const select=document.getElementById('approvedTypeSelect');select.innerHTML='';
             const types=[...new Set(approvedList.map(a=>a.type))];
@@ -2403,19 +2509,41 @@ Include Nigerian names, locations, naira (₦), and references to Nigerian textb
             const periods=entry.data.periods||[];
             document.getElementById('approvedTableHeader').innerHTML='<tr>'+getTHeaders(type).map(h=>`<th>${h}</th>`).join('')+'</tr>';
             let html='';periods.forEach(p=>{html+='<tr>';html+=`<td>${escapeHtml(p.startTime||'')}</td><td>${escapeHtml(p.endTime||'')}</td>`;['monday','tuesday','wednesday','thursday','friday'].forEach(d=>{if(type==='academic'||(['hairstyle','test','exam'].includes(type)&&['monday','tuesday','wednesday'].includes(d)))html+=`<td>${escapeHtml(p[d]||'')}</td>`;});html+='</tr>';});
-            document.getElementById('approvedBody').innerHTML=html;currentApprovedTimetableId=entry.id;
+            document.getElementById('approvedBody').innerHTML=html;
+            currentApprovedTimetableId=entry.id;
         }
         
-        document.getElementById('publishTimetableBtn').addEventListener('click',async()=>{if(!currentApprovedTimetableId)return;await db.collection('timetables').doc(currentApprovedTimetableId).update({published:true});await loadAllTimetableData();await addPoints(2,'Timetable published');showToast('Published','Timetable published to students','success');});
-        
-        document.getElementById('editApprovedBtn').addEventListener('click',async()=>{
-            if(!currentApprovedTimetableId)return;const doc=await db.collection('timetables').doc(currentApprovedTimetableId).get();
-            if(!doc.exists)return;const d=doc.data();draftType=d.type||'academic';draftData=JSON.parse(JSON.stringify(d.periods||[]));
-            const ref=await db.collection('timetableProposals').add({classId:currentClass,teacherId:currentUser.uid,teacherName:`${userData?.firstName||''} ${userData?.surname||''}`.trim(),periods:draftData,type:draftType,status:'draft',updatedAt:firebase.firestore.FieldValue.serverTimestamp()});
-            draftId=ref.id;renderDraftTable();document.getElementById('deleteDraftBtn').style.display='inline-block';document.querySelector('#tt-tabs .sub-tab[data-tt="draft"]').click();showToast('Draft Created','New draft created from approved','success');
+        document.getElementById('publishTimetableBtn').addEventListener('click',async()=>{
+            if(!currentApprovedTimetableId)return;
+            await db.collection('timetables').doc(currentApprovedTimetableId).update({published:true});
+            await loadAllTimetableData();await addPoints(2,'Timetable published');
+            showToast('Published','Timetable published to students','success');
         });
         
-        document.getElementById('editRejectedBtn').addEventListener('click',async()=>{if(!rejectedId)return;await db.collection('timetableProposals').doc(rejectedId).update({status:'draft'});await loadAllTimetableData();showToast('Moved','Moved back to draft','info');});
+        document.getElementById('editApprovedBtn').addEventListener('click',async()=>{
+            if(!currentApprovedTimetableId)return;
+            const doc=await db.collection('timetables').doc(currentApprovedTimetableId).get();
+            if(!doc.exists)return;const d=doc.data();draftType=d.type||'academic';draftData=JSON.parse(JSON.stringify(d.periods||[]));
+            const ref=await db.collection('timetableProposals').add({classId:currentClass,teacherId:currentUser.uid,teacherName:`${userData?.firstName||''} ${userData?.surname||''}`.trim(),periods:draftData,type:draftType,status:'draft',updatedAt:firebase.firestore.FieldValue.serverTimestamp()});
+            draftId=ref.id;renderDraftTable();document.getElementById('deleteDraftBtn').style.display='inline-block';
+            document.querySelector('#tt-tabs .sub-tab[data-tt="draft"]').click();showToast('Draft Created','New draft created from approved timetable','success');
+        });
+
+        function renderRejectedTable(){
+            if(!rejectedId){document.getElementById('rejectedBody').innerHTML='<tr><td colspan="7">No rejected submissions.</td></tr>';return;}
+            document.getElementById('rejectedTableHeader').innerHTML='<tr>'+getTHeaders(draftType).map(h=>`<th>${h}</th>`).join('')+'</tr>';
+            let html='';rejectedData.forEach(p=>{html+='<tr>';html+=`<td>${escapeHtml(p.startTime||'')}</td><td>${escapeHtml(p.endTime||'')}</td>`;['monday','tuesday','wednesday','thursday','friday'].forEach(d=>{if(draftType==='academic'||['monday','tuesday','wednesday'].includes(d))html+=`<td>${escapeHtml(p[d]||'')}</td>`;});html+='</tr>';});
+            document.getElementById('rejectedBody').innerHTML=html;
+        }
+        
+        document.getElementById('editRejectedBtn').addEventListener('click',async()=>{
+            if(!rejectedId)return;await db.collection('timetableProposals').doc(rejectedId).update({status:'draft'});
+            await loadAllTimetableData();showToast('Moved','Moved back to draft for editing','info');
+        });
+
+        // Trigger rejected table render when tab clicked
+        document.querySelector('#tt-tabs .sub-tab[data-tt="rejected"]').addEventListener('click',()=>{renderRejectedTable();});
+        document.querySelector('#tt-tabs .sub-tab[data-tt="approved"]').addEventListener('click',()=>{if(approvedList.length)renderApprovedTimetableList();});
 
         // ==================== SYLLABUS FUNCTIONS ====================
         function renderSubjectGrid(){
@@ -2435,9 +2563,17 @@ Include Nigerian names, locations, naira (₦), and references to Nigerian textb
         }
         
         async function selectSubject(subject, card){
-            currentSubject=subject;document.querySelectorAll('#subjectGrid .subject-card').forEach(c=>c.classList.remove('active'));if(card)card.classList.add('active');
-            document.getElementById('syllabusSection').style.display='block';document.getElementById('currentSubjectTitle').textContent=`${subject} Syllabus`;
-            const s=await db.collection('syllabus').where('teacherId','==',currentUser.uid).where('subject','==',subject).orderBy('submittedAt','desc').limit(1).get();
+            currentSubject=subject;
+            document.querySelectorAll('#subjectGrid .subject-card').forEach(c=>c.classList.remove('active'));
+            if(card)card.classList.add('active');
+            document.getElementById('syllabusSection').style.display='block';
+            document.getElementById('currentSubjectTitle').textContent=`${subject} Syllabus`;
+            
+            const s=await db.collection('syllabus')
+                .where('teacherId','==',currentUser.uid)
+                .where('subject','==',subject)
+                .orderBy('submittedAt','desc').limit(1).get();
+            
             if(!s.empty){const d=s.docs[0];syllabusMap[subject]={id:d.id,...d.data()};renderSyllabusTable(d.data().weeks||[]);updateSyllabusStatus(d.data().status);}
             else{syllabusMap[subject]={weeks:[],status:'draft'};renderSyllabusTable([]);updateSyllabusStatus('draft');}
             renderSubjectGrid();
@@ -2450,31 +2586,45 @@ Include Nigerian names, locations, naira (₦), and references to Nigerian textb
                 <td><input type="text" value="${escapeAttr(w.topic||'')}" data-i="${i}" data-f="topic" placeholder="Enter topic" class="form-control"></td>
                 <td><input type="text" value="${escapeAttr(w.objectives||'')}" data-i="${i}" data-f="objectives" placeholder="Learning objectives" class="form-control"></td>
                 <td><button class="btn btn-danger btn-sm delete-sw-btn" data-index="${i}"><i class="fas fa-trash"></i></button></td></tr>`).join('');
-            document.querySelectorAll('#syllabusBody input').forEach(inp=>inp.addEventListener('input',function(){const i=parseInt(this.dataset.i),f=this.dataset.f;if(!syllabusMap[currentSubject].weeks[i])syllabusMap[currentSubject].weeks[i]={};syllabusMap[currentSubject].weeks[i][f]=this.value;}));
+            document.querySelectorAll('#syllabusBody input').forEach(inp=>inp.addEventListener('input',function(){
+                const i=parseInt(this.dataset.i),f=this.dataset.f;
+                if(!syllabusMap[currentSubject].weeks[i])syllabusMap[currentSubject].weeks[i]={};
+                syllabusMap[currentSubject].weeks[i][f]=this.value;
+            }));
         }
         
         function updateSyllabusStatus(s){const el=document.getElementById('syllabusStatus');el.textContent=s;el.className=`status-badge status-${s}`;}
         
-        document.getElementById('addWeekBtn').addEventListener('click',()=>{if(!syllabusMap[currentSubject])syllabusMap[currentSubject]={weeks:[]};const last=syllabusMap[currentSubject].weeks.length?syllabusMap[currentSubject].weeks[syllabusMap[currentSubject].weeks.length-1].week:0;syllabusMap[currentSubject].weeks.push({week:last+1,topic:'',objectives:''});renderSyllabusTable(syllabusMap[currentSubject].weeks);});
+        document.getElementById('addWeekBtn').addEventListener('click',()=>{
+            if(!syllabusMap[currentSubject])syllabusMap[currentSubject]={weeks:[]};
+            const last=syllabusMap[currentSubject].weeks.length?syllabusMap[currentSubject].weeks[syllabusMap[currentSubject].weeks.length-1].week:0;
+            syllabusMap[currentSubject].weeks.push({week:last+1,topic:'',objectives:''});
+            renderSyllabusTable(syllabusMap[currentSubject].weeks);
+        });
         
         document.getElementById('saveSyllabusBtn').addEventListener('click',async()=>{
             const weeks=syllabusMap[currentSubject]?.weeks;if(!weeks?.length)return showToast('Error','Add at least one week','error');
             const d={teacherId:currentUser.uid,teacherName:`${userData?.firstName||''} ${userData?.surname||''}`.trim(),subject:currentSubject,classId:currentClass,weeks,status:'draft',updatedAt:firebase.firestore.FieldValue.serverTimestamp()};
-            if(syllabusMap[currentSubject].id)await db.collection('syllabus').doc(syllabusMap[currentSubject].id).update(d);else{const r=await db.collection('syllabus').add(d);syllabusMap[currentSubject].id=r.id;}
+            if(syllabusMap[currentSubject].id)await db.collection('syllabus').doc(syllabusMap[currentSubject].id).update(d);
+            else{const r=await db.collection('syllabus').add(d);syllabusMap[currentSubject].id=r.id;}
             renderSubjectGrid();showToast('Saved','Syllabus draft saved','success');
         });
         
         document.getElementById('submitSyllabusBtn').addEventListener('click',async()=>{
             const weeks=syllabusMap[currentSubject]?.weeks;if(!weeks?.length)return showToast('Error','Add at least one week','error');
             const d={teacherId:currentUser.uid,teacherName:`${userData?.firstName||''} ${userData?.surname||''}`.trim(),subject:currentSubject,classId:currentClass,weeks,status:'pending',submittedAt:firebase.firestore.FieldValue.serverTimestamp()};
-            if(syllabusMap[currentSubject].id)await db.collection('syllabus').doc(syllabusMap[currentSubject].id).update(d);else{const r=await db.collection('syllabus').add(d);syllabusMap[currentSubject].id=r.id;}
+            if(syllabusMap[currentSubject].id)await db.collection('syllabus').doc(syllabusMap[currentSubject].id).update(d);
+            else{const r=await db.collection('syllabus').add(d);syllabusMap[currentSubject].id=r.id;}
             updateSyllabusStatus('pending');await addPoints(2,'Syllabus submitted');await logAudit('SYLLABUS_SUBMITTED',`${currentSubject} syllabus`);showToast('Submitted','Syllabus submitted for approval','success');
         });
 
-        // ==================== LESSON NOTES - DRAFTS ====================
+        // ==================== DRAFTS TAB FUNCTIONS ====================
         function loadDraftSubjects(){
             const grid=document.getElementById('draftSubjectGrid');
-            grid.innerHTML=subjects.map(sub=>{const drafts=Object.values(lessonNotesMap).filter(n=>n.subject===sub&&(!n.status||n.status==='draft')).length;return`<div class="subject-card draft-subject-card" data-subject="${escapeAttr(sub)}" tabindex="0"><h3>${escapeHtml(sub)}</h3><p style="color:var(--text-secondary);">${drafts} draft${drafts!==1?'s':''}</p></div>`;}).join('');
+            grid.innerHTML=subjects.map(sub=>{
+                const drafts=Object.values(lessonNotesMap).filter(n=>n.subject===sub&&(!n.status||n.status==='draft')).length;
+                return `<div class="subject-card draft-subject-card" data-subject="${escapeAttr(sub)}" tabindex="0"><h3>${escapeHtml(sub)}</h3><p style="color:var(--text-secondary);">${drafts} draft${drafts!==1?'s':''}</p></div>`;
+            }).join('');
         }
         
         function selectDraftSubject(subject){
@@ -2487,8 +2637,9 @@ Include Nigerian names, locations, naira (₦), and references to Nigerian textb
             const syllabusWeeks=syllabusMap[subject]?.weeks||[];
             const draftWeeks=syllabusWeeks.filter(w=>{const note=allNotes.find(n=>n.week==w.week);return!note||note.status==='draft'||!note.status;});
             document.getElementById('draftWeekList').innerHTML=draftWeeks.map(wk=>{
-                const note=allNotes.find(n=>n.week==wk.week);let statusClass='';if(note?.status==='approved')statusClass='completed';else if(note?.status==='pending')statusClass='pending-approval';
-                return`<div class="week-tab ${statusClass}" data-week="${wk.week}" tabindex="0">Week ${wk.week}: ${escapeHtml(wk.topic||'No topic')}</div>`;
+                const note=allNotes.find(n=>n.week==wk.week);
+                let statusClass='';if(note?.status==='approved')statusClass='completed';else if(note?.status==='pending')statusClass='pending-approval';
+                return `<div class="week-tab ${statusClass}" data-week="${wk.week}" tabindex="0">Week ${wk.week}: ${escapeHtml(wk.topic||'No topic')}</div>`;
             }).join('');
             document.getElementById('draftEditorSection').style.display='none';
         }
@@ -2497,21 +2648,25 @@ Include Nigerian names, locations, naira (₦), and references to Nigerian textb
             if(tabEl){document.querySelectorAll('#draftWeekList .week-tab').forEach(t=>t.classList.remove('active'));tabEl.classList.add('active');}
             currentWeekDraft=week;const key=`${currentSubjectDraft}_${week}`;const note=lessonNotesMap[key]||{};
             if(note.status&&note.status!=='draft'&&note.status!=='approved'){showToast('Info','This week is not available for editing.','warning');document.getElementById('draftEditorSection').style.display='none';return;}
-            document.getElementById('draftEditorSection').style.display='block';document.getElementById('editorTitle').textContent=`Week ${week} – ${currentSubjectDraft}`;
             
-            // Set Quill content
-            if(quill)quill.root.innerHTML=note.lessonNote||'';
+            document.getElementById('draftEditorSection').style.display='block';
+            document.getElementById('editorTitle').textContent=`Week ${week} – ${currentSubjectDraft}`;
+            
+            if(quill) quill.root.innerHTML=note.lessonNote||'';
+            
             lessonNoteApproved=note.status==='approved';
             document.getElementById('postApprovalSections').style.display=lessonNoteApproved?'block':'none';
             document.getElementById('pushToTeachBtn').style.display=lessonNoteApproved&&!note.teachable?'inline-block':'none';
             contentMerged=!!(note.lessonNote);
             document.getElementById('submitEditorBtn').style.display=(!lessonNoteApproved)?'inline-block':'none';
-            if(studentQuill)studentQuill.root.innerHTML=note.studentResource||'';
-            if(teachingProcessQuill)teachingProcessQuill.root.innerHTML=note.teachingProcess||'';
-            videoLinks=note.videoLinks||[];renderVideoList();handwritingImages=note.handwritingImages||[];renderHandwritingImages();
+            
+            if(studentQuill) studentQuill.root.innerHTML=note.studentResource||'';
+            if(teachingProcessQuill) teachingProcessQuill.root.innerHTML=note.teachingProcess||'';
+            videoLinks=note.videoLinks||[];renderVideoList();
+            handwritingImages=note.handwritingImages||[];renderHandwritingImages();
             displayAdminFeedback(note);
             
-            // Refresh Quill dimensions
+            // Refresh Quill dimensions after display
             setTimeout(() => {
                 if(quill)quill.update();
                 if(studentQuill)studentQuill.update();
@@ -2524,158 +2679,410 @@ Include Nigerian names, locations, naira (₦), and references to Nigerian textb
         
         function displayAdminFeedback(note){
             const box=document.getElementById('adminFeedbackBox'),rating=document.getElementById('adminRatingDisplay');
-            if(note.adminRating||note.adminFeedback){box.classList.add('visible');document.getElementById('adminFeedbackText').innerHTML=note.adminFeedback?`<i class="fas fa-comment"></i> ${escapeHtml(note.adminFeedback)}`:'';rating.innerHTML=note.adminRating?`Rating: ${'★'.repeat(note.adminRating)}${'☆'.repeat(5-note.adminRating)} (${note.adminRating}/5)`:'';}
-            else box.classList.remove('visible');
+            if(note.adminRating||note.adminFeedback){
+                box.classList.add('visible');
+                document.getElementById('adminFeedbackText').innerHTML=note.adminFeedback?`<i class="fas fa-comment"></i> ${escapeHtml(note.adminFeedback)}`:'';
+                rating.innerHTML=note.adminRating?`Rating: ${'★'.repeat(note.adminRating)}${'☆'.repeat(5-note.adminRating)} (${note.adminRating}/5)`:'';
+            }else box.classList.remove('visible');
         }
 
         // ==================== AI GENERATION ====================
         async function generateAI(prompt,role=''){
-            if(!window.groq)throw new Error('AI service not available.');
-            const completion=await window.groq.chat.completions.create({messages:[{role:'system',content:(role||NIGERIAN_SYSTEM_PROMPT)},{role:'user',content:prompt}],model:'llama-3.3-70b-versatile',temperature:0.5,max_tokens:3000});
+            if(!window.groq)throw new Error('AI service not available. Check your connection.');
+            const completion=await window.groq.chat.completions.create({
+                messages:[{role:'system',content:(role||NIGERIAN_SYSTEM_PROMPT)},{role:'user',content:prompt}],
+                model:'llama-3.3-70b-versatile',temperature:0.5,max_tokens:3000
+            });
             return completion.choices[0].message.content;
         }
         
         async function generateStructuredLessonNote(topic,subject,week,className){
-            const text=await generateAI(`Write a complete lesson note for ${subject} Week ${week} Topic "${topic}" for class ${className||'JSS1'}. Return ONLY valid JSON.`,'You are a JSON generator. Return ONLY valid JSON.');
+            const text=await generateAI(
+                `Write a complete lesson note for ${subject} Week ${week} Topic "${topic}" for class ${className||'JSS1'}. Return ONLY valid JSON.`,
+                'You are a JSON generator. Return ONLY valid JSON with these fields: subject, class, week, topic, duration, instructionalMaterials (array), objectives (array), presentation (array of {step, teacherActivity, pupilActivity}), evaluation (array), assignment (array).'
+            );
             return JSON.parse(text.replace(/```json|```/g,'').trim());
         }
         
         function renderLessonNoteFromJSON(json){
-            let h=`<h2>LESSON NOTE</h2>`;h+=`<h3>Subject:</h3><p>${escapeHtml(json.subject)}</p>`;h+=`<h3>Class:</h3><p>${escapeHtml(json.class)}</p>`;h+=`<h3>Week:</h3><p>${json.week}</p>`;h+=`<h3>Topic:</h3><p>${escapeHtml(json.topic)}</p>`;h+=`<h3>Duration:</h3><p>${escapeHtml(json.duration)}</p>`;h+=`<h3>Instructional Materials:</h3><ul>${json.instructionalMaterials.map(m=>`<li>${escapeHtml(m)}</li>`).join('')}</ul>`;h+=`<h3>Objectives:</h3><ol>${json.objectives.map(o=>`<li>${escapeHtml(o)}</li>`).join('')}</ol>`;h+=`<h3>Content / Presentation:</h3>`;
-            json.presentation.forEach(p=>{h+=`<h4>${escapeHtml(p.step)}</h4>`;h+=`<p><strong>Teacher:</strong> ${escapeHtml(p.teacherActivity)}</p>`;h+=`<p><strong>Pupils:</strong> ${escapeHtml(p.pupilActivity)}</p>`;});
-            h+=`<h3>Evaluation:</h3><ol>${json.evaluation.map(e=>`<li>${escapeHtml(e)}</li>`).join('')}</ol>`;h+=`<h3>Assignment:</h3><ol>${json.assignment.map(a=>`<li>${escapeHtml(a)}</li>`).join('')}</ol>`;return h;
+            let h=`<h2>LESSON NOTE</h2>`;
+            h+=`<h3>Subject:</h3><p>${escapeHtml(json.subject)}</p>`;
+            h+=`<h3>Class:</h3><p>${escapeHtml(json.class)}</p>`;
+            h+=`<h3>Week:</h3><p>${json.week}</p>`;
+            h+=`<h3>Topic:</h3><p>${escapeHtml(json.topic)}</p>`;
+            h+=`<h3>Duration:</h3><p>${escapeHtml(json.duration)}</p>`;
+            h+=`<h3>Instructional Materials:</h3><ul>${json.instructionalMaterials.map(m=>`<li>${escapeHtml(m)}</li>`).join('')}</ul>`;
+            h+=`<h3>Objectives:</h3><ol>${json.objectives.map(o=>`<li>${escapeHtml(o)}</li>`).join('')}</ol>`;
+            h+=`<h3>Content / Presentation:</h3>`;
+            json.presentation.forEach(p=>{
+                h+=`<h4>${escapeHtml(p.step)}</h4>`;
+                h+=`<p><strong>Teacher:</strong> ${escapeHtml(p.teacherActivity)}</p>`;
+                h+=`<p><strong>Pupils:</strong> ${escapeHtml(p.pupilActivity)}</p>`;
+            });
+            h+=`<h3>Evaluation:</h3><ol>${json.evaluation.map(e=>`<li>${escapeHtml(e)}</li>`).join('')}</ol>`;
+            h+=`<h3>Assignment:</h3><ol>${json.assignment.map(a=>`<li>${escapeHtml(a)}</li>`).join('')}</ol>`;
+            return h;
         }
         
         document.getElementById('useAIContentBtn').addEventListener('click',async()=>{
             const topic=syllabusMap[currentSubjectDraft]?.weeks?.find(w=>w.week==currentWeekDraft)?.topic||'';
             if(!topic)return showToast('Error','No topic found for this week','error');
-            const btn=document.getElementById('useAIContentBtn');const origHTML=btn.innerHTML;btn.disabled=true;btn.innerHTML='<i class="fas fa-spinner fa-spin"></i> Generating...';
+            
+            const btn=document.getElementById('useAIContentBtn');
+            const origHTML=btn.innerHTML;
+            btn.disabled=true;
+            btn.innerHTML='<i class="fas fa-spinner fa-spin"></i> Generating...';
             showLoading();
+            
             try{
                 const json=await generateStructuredLessonNote(topic,currentSubjectDraft,currentWeekDraft,currentClass);
-                quill.root.innerHTML=renderLessonNoteFromJSON(json);contentMerged=true;document.getElementById('submitEditorBtn').style.display='inline-block';lastGeneratedText=quill.root.innerHTML;showToast('Generated','Lesson note generated','success');
-                const review=await generateAI(`Evaluate this lesson note: ${JSON.stringify(json)}`,'You are a quality reviewer.');
-                document.getElementById('aiReviewBox').classList.add('visible');document.getElementById('aiReviewBox').innerHTML=`<strong><i class="fas fa-robot"></i> AI Review:</strong> ${escapeHtml(review)}`;document.getElementById('useAIContentBtn').innerHTML='<i class="fas fa-redo"></i> Regenerate';
-            }catch(e){showToast('Error',e.message,'error');}finally{btn.disabled=false;if(btn.innerHTML.includes('Generating'))btn.innerHTML=origHTML;hideLoading();}
+                quill.root.innerHTML=renderLessonNoteFromJSON(json);
+                contentMerged=true;
+                document.getElementById('submitEditorBtn').style.display='inline-block';
+                lastGeneratedText=quill.root.innerHTML;
+                showToast('Generated','Lesson note generated successfully','success');
+                
+                const review=await generateAI(`Evaluate this lesson note in 1-2 sentences: ${JSON.stringify(json)}`,'You are a quality reviewer. Be constructive.');
+                document.getElementById('aiReviewBox').classList.add('visible');
+                document.getElementById('aiReviewBox').innerHTML=`<strong><i class="fas fa-robot"></i> AI Review:</strong> ${escapeHtml(review)}`;
+                document.getElementById('useAIContentBtn').innerHTML='<i class="fas fa-redo"></i> Regenerate';
+            }catch(e){
+                showToast('Error',e.message,'error');
+            }finally{
+                btn.disabled=false;
+                if(btn.innerHTML.includes('Generating'))btn.innerHTML=origHTML;
+                hideLoading();
+            }
         });
-        
+
+        // Auto-format
         async function aiFormatEditor(quillInstance){
             if(!window.groq)return showToast('Error','AI service not available','error');
-            const content=quillInstance.getText();if(!content.trim())return;
+            const content=quillInstance.getText();
+            if(!content.trim())return;
             showLoading();
             try{
-                const formatted=await generateAI(content,'Apply professional HTML formatting. Return ONLY the HTML.');
+                const formatted=await generateAI(content,'Apply professional HTML formatting: use <h2> for main title, <h3> for section headings, <strong> for key terms, <ol>/<ul> for lists. Return ONLY the HTML.');
                 const cleaned=formatted.replace(/```html|```/g,'').trim();
-                if(cleaned){quillInstance.root.innerHTML=cleaned;showToast('Formatted','Document formatted','success');}else showToast('Error','AI returned empty response','error');
-            }catch(e){showToast('Error',e.message,'error');}finally{hideLoading();}
+                if(cleaned){quillInstance.root.innerHTML=cleaned;showToast('Formatted','Document formatted successfully','success');}
+                else showToast('Error','AI returned empty response','error');
+            }catch(e){showToast('Error',e.message,'error');}
+            finally{hideLoading();}
         }
         
         document.getElementById('autoFormatLessonNoteBtn').addEventListener('click',()=>aiFormatEditor(quill));
         document.getElementById('autoFormatTPBtn').addEventListener('click',()=>aiFormatEditor(teachingProcessQuill));
         document.getElementById('autoFormatResourceBtn').addEventListener('click',()=>aiFormatEditor(studentQuill));
-        
+
+        // File upload
         document.getElementById('fileUploadBtn').addEventListener('click',()=>document.getElementById('fileUploadInput').click());
-        document.getElementById('fileUploadInput').addEventListener('change',(e)=>{const file=e.target.files[0];if(!file)return;const reader=new FileReader();reader.onload=(ev)=>{quill.setText((quill.getText().trim()?quill.getText()+'\n':'')+ev.target.result);showToast('Uploaded','File content inserted','success');};reader.readAsText(file);});
-        
-        async function checkDuplicate(subject,week){const snap=await db.collection('lessonNotes').where('teacherId','==',currentUser.uid).where('subject','==',subject).where('week','==',week).where('status','in',['approved','pending']).get();return!snap.empty;}
+        document.getElementById('fileUploadInput').addEventListener('change',(e)=>{
+            const file=e.target.files[0];if(!file)return;
+            const reader=new FileReader();
+            reader.onload=(ev)=>{quill.setText((quill.getText().trim()?quill.getText()+'\n':'')+ev.target.result);showToast('Uploaded','File content inserted','success');};
+            reader.readAsText(file);
+        });
+
+        // Save & Submit Lesson Note
+        async function checkDuplicate(subject,week){
+            const snap=await db.collection('lessonNotes')
+                .where('teacherId','==',currentUser.uid)
+                .where('subject','==',subject)
+                .where('week','==',week)
+                .where('status','in',['approved','pending']).get();
+            return!snap.empty;
+        }
         
         document.getElementById('saveEditorBtn').addEventListener('click',async()=>{
-            if(!currentSubjectDraft||!currentWeekDraft)return;const lnHtml=quill.root.innerHTML,lnText=quill.getText();if(!lnText.trim())return showToast('Empty','Write something first','warning');
-            setAutoSaveStatus('saving');const key=`${currentSubjectDraft}_${currentWeekDraft}`;const existing=lessonNotesMap[key]||{};const topic=syllabusMap[currentSubjectDraft]?.weeks?.find(w=>w.week==currentWeekDraft)?.topic||'';
-            const d={teacherId:currentUser.uid,teacherName:`${userData?.firstName||''} ${userData?.surname||''}`.trim(),subject:currentSubjectDraft,week:currentWeekDraft,topic,lessonNote:lnHtml,classId:currentClass,status:existing.status||'draft',updatedAt:firebase.firestore.FieldValue.serverTimestamp()};
-            try{if(existing.id)await db.collection('lessonNotes').doc(existing.id).update(d);else{const r=await db.collection('lessonNotes').add(d);lessonNotesMap[key]={id:r.id,...d};}setAutoSaveStatus('saved');showToast('Saved','Draft saved','success');loadDraftSubjects();}catch(e){setAutoSaveStatus('error');showToast('Error','Failed to save draft','error');}
+            if(!currentSubjectDraft||!currentWeekDraft)return;
+            const lnHtml=quill.root.innerHTML,lnText=quill.getText();
+            if(!lnText.trim())return showToast('Empty','Write something first','warning');
+            
+            setAutoSaveStatus('saving');
+            const key=`${currentSubjectDraft}_${currentWeekDraft}`;
+            const existing=lessonNotesMap[key]||{};
+            const topic=syllabusMap[currentSubjectDraft]?.weeks?.find(w=>w.week==currentWeekDraft)?.topic||'';
+            
+            const d={
+                teacherId:currentUser.uid,
+                teacherName:`${userData?.firstName||''} ${userData?.surname||''}`.trim(),
+                subject:currentSubjectDraft,week:currentWeekDraft,topic,lessonNote:lnHtml,
+                classId:currentClass,status:existing.status||'draft',
+                updatedAt:firebase.firestore.FieldValue.serverTimestamp()
+            };
+            
+            try{
+                if(existing.id)await db.collection('lessonNotes').doc(existing.id).update(d);
+                else{const r=await db.collection('lessonNotes').add(d);lessonNotesMap[key]={id:r.id,...d};}
+                setAutoSaveStatus('saved');showToast('Saved','Draft saved successfully','success');loadDraftSubjects();
+            }catch(e){setAutoSaveStatus('error');showToast('Error','Failed to save draft','error');}
         });
         
         document.getElementById('submitEditorBtn').addEventListener('click',async()=>{
-            if(!currentSubjectDraft||!currentWeekDraft)return;const lnHtml=quill.root.innerHTML,lnText=quill.getText();const wc=lnText.trim()?lnText.trim().split(/\s+/).length:0;
-            if(wc<200)return showToast('Incomplete',`Only ${wc} words. Minimum 200 required.`,'warning');
-            if(!lnText.includes('Objectives')||!lnText.includes('Evaluation'))return showToast('Missing Sections','Include Objectives and Evaluation sections.','warning');
-            if(await checkDuplicate(currentSubjectDraft,currentWeekDraft)&&!confirm('Already submitted. Submit another version?'))return;
-            const key=`${currentSubjectDraft}_${currentWeekDraft}`;const existing=lessonNotesMap[key]||{};const topic=syllabusMap[currentSubjectDraft]?.weeks?.find(w=>w.week==currentWeekDraft)?.topic||'';
-            const d={teacherId:currentUser.uid,teacherName:`${userData?.firstName||''} ${userData?.surname||''}`.trim(),subject:currentSubjectDraft,week:currentWeekDraft,topic,lessonNote:lnHtml,classId:currentClass,status:'pending',submittedAt:firebase.firestore.FieldValue.serverTimestamp()};
-            if(existing.id)await db.collection('lessonNotes').doc(existing.id).update({...d});else{const r=await db.collection('lessonNotes').add({...d});lessonNotesMap[key]={id:r.id,...d};}
-            await addPoints(2,'Lesson note submitted');await logAudit('LESSON_NOTE_SUBMITTED',`${currentSubjectDraft} Week ${currentWeekDraft}`);document.getElementById('draftEditorSection').style.display='none';loadDraftSubjects();renderSubmittedTab();setAutoSaveStatus('saved');showToast('Submitted','Lesson note sent for approval','success');
+            if(!currentSubjectDraft||!currentWeekDraft)return;
+            const lnHtml=quill.root.innerHTML,lnText=quill.getText();
+            const wc=lnText.trim()?lnText.trim().split(/\s+/).length:0;
+            
+            if(wc<200)return showToast('Incomplete',`Only ${wc} words. Minimum 200 required for submission.`,'warning');
+            if(!lnText.includes('Objectives')||!lnText.includes('Evaluation'))
+                return showToast('Missing Sections','Include "Objectives" and "Evaluation" sections.','warning');
+            
+            if(await checkDuplicate(currentSubjectDraft,currentWeekDraft)&&
+                !confirm('A lesson note for this week has already been submitted. Submit another version?'))return;
+            
+            const key=`${currentSubjectDraft}_${currentWeekDraft}`;
+            const existing=lessonNotesMap[key]||{};
+            const topic=syllabusMap[currentSubjectDraft]?.weeks?.find(w=>w.week==currentWeekDraft)?.topic||'';
+            
+            const d={
+                teacherId:currentUser.uid,
+                teacherName:`${userData?.firstName||''} ${userData?.surname||''}`.trim(),
+                subject:currentSubjectDraft,week:currentWeekDraft,topic,
+                lessonNote:lnHtml,classId:currentClass,
+                status:'pending',submittedAt:firebase.firestore.FieldValue.serverTimestamp()
+            };
+            
+            if(existing.id)await db.collection('lessonNotes').doc(existing.id).update({...d});
+            else{const r=await db.collection('lessonNotes').add({...d});lessonNotesMap[key]={id:r.id,...d};}
+            
+            await addPoints(2,'Lesson note submitted for approval');
+            await logAudit('LESSON_NOTE_SUBMITTED',`${currentSubjectDraft} Week ${currentWeekDraft} for ${currentClass}`);
+            document.getElementById('draftEditorSection').style.display='none';
+            loadDraftSubjects();renderSubmittedTab();
+            setAutoSaveStatus('saved');showToast('Submitted','Lesson note sent for approval','success');
         });
         
         document.getElementById('pushToTeachBtn').addEventListener('click',async()=>{
-            const key=`${currentSubjectDraft}_${currentWeekDraft}`;const note=lessonNotesMap[key];if(!note?.id)return;
-            await db.collection('lessonNotes').doc(note.id).update({teachable:true});await addPoints(2,'Lesson moved to Teach');document.getElementById('pushToTeachBtn').style.display='none';renderPublishedTab();showToast('Pushed','Lesson moved to Teach','success');
+            const key=`${currentSubjectDraft}_${currentWeekDraft}`;
+            const note=lessonNotesMap[key];if(!note?.id)return;
+            await db.collection('lessonNotes').doc(note.id).update({teachable:true});
+            await addPoints(2,'Lesson moved to Teach');
+            await logAudit('LESSON_PUSHED_TO_TEACH',`${currentSubjectDraft} Week ${currentWeekDraft}`);
+            document.getElementById('pushToTeachBtn').style.display='none';
+            renderPublishedTab();showToast('Pushed','Lesson moved to Teach','success');
         });
-        
+
+        // Submitted, Published, Library tabs
         function renderSubmittedTab(){
-            if(!currentSubjectDraft){document.getElementById('submittedNotesList').innerHTML='<p style="color:var(--text-secondary);">Select a subject in the Drafts tab first.</p>';return;}
-            const notes=Object.values(lessonNotesMap).filter(n=>n.subject===currentSubjectDraft&&['pending','approved','rejected'].includes(n.status));
-            document.getElementById('submittedNotesList').innerHTML=notes.length?notes.map(n=>`<div class="card"><div style="display:flex;justify-content:space-between;align-items:center;"><div><strong>Week ${n.week}: ${escapeHtml(n.topic||'Untitled')}</strong><span class="status-badge status-${n.status}">${n.status}</span>${n.adminRating?`<span style="color:var(--accent-glow);margin-left:0.5rem;">${'★'.repeat(n.adminRating)}${'☆'.repeat(5-n.adminRating)}</span>`:''}${n.adminFeedback?`<div style="color:var(--accent);font-size:0.8rem;margin-top:0.3rem;"><i class="fas fa-comment"></i> ${escapeHtml(n.adminFeedback)}</div>`:''}</div><div>${n.status==='pending'?`<button class="btn btn-warning btn-sm cancel-submission-btn" data-id="${escapeAttr(n.id)}">Cancel</button>`:n.status==='approved'?`<button class="btn btn-success btn-sm push-teach-btn" data-id="${escapeAttr(n.id)}">Push to Teach</button>`:`<button class="btn btn-warning btn-sm edit-rejected-btn" data-id="${escapeAttr(n.id)}">Edit & Resubmit</button>`}</div></div></div>`).join(''):'<p style="color:var(--text-secondary);">No submitted notes for this subject.</p>';
+            if(!currentSubjectDraft){
+                document.getElementById('submittedNotesList').innerHTML='<p style="color:var(--text-secondary);">Select a subject in the Drafts tab first.</p>';
+                return;
+            }
+            const notes=Object.values(lessonNotesMap).filter(n=>
+                n.subject===currentSubjectDraft&&['pending','approved','rejected'].includes(n.status)
+            );
+            
+            document.getElementById('submittedNotesList').innerHTML=notes.length?notes.map(n=>`
+                <div class="card">
+                    <div style="display:flex;justify-content:space-between;align-items:center;">
+                        <div>
+                            <strong>Week ${n.week}: ${escapeHtml(n.topic||'Untitled')}</strong>
+                            <span class="status-badge status-${n.status}">${n.status}</span>
+                            ${n.adminRating?`
+                                <span style="color:var(--accent-glow);margin-left:0.5rem;">
+                                    ${'★'.repeat(n.adminRating)}${'☆'.repeat(5-n.adminRating)}
+                                </span>
+                            `:''}
+                            ${n.adminFeedback?`
+                                <div style="color:var(--accent);font-size:0.8rem;margin-top:0.3rem;">
+                                    <i class="fas fa-comment"></i> ${escapeHtml(n.adminFeedback)}
+                                </div>
+                            `:''}
+                        </div>
+                        <div>
+                            ${n.status==='pending'?
+                                `<button class="btn btn-warning btn-sm cancel-submission-btn" data-id="${escapeAttr(n.id)}">Cancel Submission</button>`:
+                                n.status==='approved'?
+                                `<button class="btn btn-success btn-sm push-teach-btn" data-id="${escapeAttr(n.id)}">Push to Teach</button>`:
+                                `<button class="btn btn-warning btn-sm edit-rejected-btn" data-id="${escapeAttr(n.id)}">Edit & Resubmit</button>`
+                            }
+                        </div>
+                    </div>
+                </div>
+            `).join(''):'<p style="color:var(--text-secondary);">No submitted notes for this subject.</p>';
         }
         
         function renderPublishedTab(){
-            if(!currentSubjectDraft){document.getElementById('publishedNotesList').innerHTML='<p style="color:var(--text-secondary);">Select a subject.</p>';return;}
-            const notes=Object.values(lessonNotesMap).filter(n=>n.subject===currentSubjectDraft&&(n.teachable||n.resourcePublished));
-            document.getElementById('publishedNotesList').innerHTML=notes.length?notes.map(n=>`<div class="card"><strong>Week ${n.week}: ${escapeHtml(n.topic||'Untitled')}</strong><span class="status-badge status-published">Published</span></div>`).join(''):'<p style="color:var(--text-secondary);">No published content yet.</p>';
+            if(!currentSubjectDraft){
+                document.getElementById('publishedNotesList').innerHTML='<p style="color:var(--text-secondary);">Select a subject.</p>';
+                return;
+            }
+            const notes=Object.values(lessonNotesMap).filter(n=>
+                n.subject===currentSubjectDraft&&(n.teachable||n.resourcePublished)
+            );
+            document.getElementById('publishedNotesList').innerHTML=notes.length?notes.map(n=>`
+                <div class="card">
+                    <strong>Week ${n.week}: ${escapeHtml(n.topic||'Untitled')}</strong>
+                    <span class="status-badge status-published">Published</span>
+                </div>
+            `).join(''):'<p style="color:var(--text-secondary);">No published content yet.</p>';
         }
         
         async function loadLibraryTab(){
-            const grid=document.getElementById('resourceLibraryGrid');const snap=await db.collection('resourceLibrary').orderBy('createdAt','desc').limit(30).get();
-            grid.innerHTML=snap.empty?'<p style="color:var(--text-secondary);">No shared resources yet.</p>':snap.docs.map(d=>{const r=d.data();return`<div class="card import-library-btn" data-id="${escapeAttr(d.id)}" style="cursor:pointer;" tabindex="0"><h4>${escapeHtml(r.subject)} – Week ${r.week}</h4><p>${escapeHtml(r.topic)}</p><small>By ${escapeHtml(r.teacherName)}</small></div>`;}).join('');
+            const grid=document.getElementById('resourceLibraryGrid');
+            const snap=await db.collection('resourceLibrary').orderBy('createdAt','desc').limit(30).get();
+            grid.innerHTML=snap.empty?
+                '<p style="color:var(--text-secondary);">No shared resources yet.</p>':
+                snap.docs.map(d=>{
+                    const r=d.data();
+                    return `<div class="card import-library-btn" data-id="${escapeAttr(d.id)}" style="cursor:pointer;" tabindex="0">
+                        <h4>${escapeHtml(r.subject)} – Week ${r.week}</h4>
+                        <p>${escapeHtml(r.topic)}</p>
+                        <small style="color:var(--text-secondary);">By ${escapeHtml(r.teacherName)}</small>
+                    </div>`;
+                }).join('');
         }
 
         // ==================== DAILY REPORT ====================
         async function submitDailyReport(){
-            const date=document.getElementById('reportDate').value,open=document.getElementById('openingTime').value,close=document.getElementById('closingTime').value,content=document.getElementById('reportContent').value;
-            if(!date||!content)return showToast('Error','Fill all required fields','error');
+            const date=document.getElementById('reportDate').value;
+            const open=document.getElementById('openingTime').value;
+            const close=document.getElementById('closingTime').value;
+            const content=document.getElementById('reportContent').value;
+            
+            if(!date||!content)return showToast('Error','Fill in all required fields','error');
+            
             showLoading();
             try{
-                const existing=await db.collection('dailyReports').where('teacherId','==',currentUser.uid).where('date','==',date).get();
-                const data={teacherId:currentUser.uid,teacherName:`${userData?.firstName||''} ${userData?.surname||''}`.trim(),teacherClass:currentClass,date,openingTime:open,closingTime:close,content,status:'pending',createdAt:firebase.firestore.FieldValue.serverTimestamp()};
-                if(!existing.empty)await db.collection('dailyReports').doc(existing.docs[0].id).update(data);else await db.collection('dailyReports').add(data);
-                loadMyReports();document.getElementById('openingTime').value='';document.getElementById('closingTime').value='';document.getElementById('reportContent').value='';updateWeeklyStats();await addPoints(1,'Daily report submitted');showToast('Submitted','Daily report submitted','success');
-            }catch(e){showToast('Error',e.message,'error');}finally{hideLoading();}
+                const existing=await db.collection('dailyReports')
+                    .where('teacherId','==',currentUser.uid)
+                    .where('date','==',date).get();
+                
+                const data={
+                    teacherId:currentUser.uid,
+                    teacherName:`${userData?.firstName||''} ${userData?.surname||''}`.trim(),
+                    teacherClass:currentClass,date,
+                    openingTime:open,closingTime:close,content,
+                    status:'pending',
+                    createdAt:firebase.firestore.FieldValue.serverTimestamp()
+                };
+                
+                if(!existing.empty)await db.collection('dailyReports').doc(existing.docs[0].id).update(data);
+                else await db.collection('dailyReports').add(data);
+                
+                loadMyReports();
+                document.getElementById('openingTime').value='';
+                document.getElementById('closingTime').value='';
+                document.getElementById('reportContent').value='';
+                updateWeeklyStats();
+                await addPoints(1,'Daily report submitted');
+                await logAudit('DAILY_REPORT_SUBMITTED',`Report for ${date}`);
+                showToast('Submitted','Daily report submitted','success');
+            }catch(e){showToast('Error',e.message,'error');}
+            finally{hideLoading();}
         }
         
         async function loadMyReports(){
             if(!currentUser)return;
             try{
-                const s=await db.collection('dailyReports').where('teacherId','==',currentUser.uid).orderBy('date','desc').limit(20).get();
+                const s=await db.collection('dailyReports')
+                    .where('teacherId','==',currentUser.uid)
+                    .orderBy('date','desc').limit(20).get();
                 const c=document.getElementById('reportsList');
-                if(s.empty){c.innerHTML='<p style="color:var(--text-secondary);">No reports yet.</p>';return;}
-                c.innerHTML=s.docs.map(d=>{const r=d.data();const badge=r.status==='acknowledged'?'<span class="status-badge status-approved">Acknowledged</span>':'<span class="status-badge status-pending">Pending</span>';let h=`<div class="card"><div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:0.5rem;"><strong>📅 ${escapeHtml(r.date)}</strong><span>${escapeHtml(r.openingTime||'?')} - ${escapeHtml(r.closingTime||'?')} ${badge}</span></div><p>${escapeHtml(r.content)}</p>`;if(r.adminRemark)h+=`<div style="background:var(--info-bg);padding:0.5rem;border-radius:0.5rem;margin-top:0.5rem;"><strong>Admin Remark:</strong> ${escapeHtml(r.adminRemark)}</div>`;if(r.questions?.length)r.questions.forEach((q,i)=>{h+=`<div style="background:var(--warning-bg);padding:0.5rem;border-radius:0.5rem;margin-top:0.5rem;"><strong>Q${i+1}:</strong> ${escapeHtml(q.question)}${q.reply?`<div><strong>Reply:</strong> ${escapeHtml(q.reply)}</div>`:`<div style="margin-top:0.3rem;"><textarea id="rep_${d.id}_${i}" rows="2" placeholder="Your reply..." class="form-control"></textarea><button class="btn btn-primary btn-sm reply-btn" data-report-id="${escapeAttr(d.id)}" data-q-index="${i}" style="margin-top:0.3rem;">Reply</button></div>`}</div>`;});h+='</div>';return h;}).join('');
+                
+                if(s.empty){c.innerHTML='<p style="color:var(--text-secondary);">No reports submitted yet.</p>';return;}
+                
+                c.innerHTML=s.docs.map(d=>{
+                    const r=d.data();
+                    const statusBadge=r.status==='acknowledged'?
+                        '<span class="status-badge status-approved">Acknowledged</span>':
+                        '<span class="status-badge status-pending">Pending</span>';
+                    
+                    let h=`<div class="card">
+                        <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:0.5rem;">
+                            <strong>📅 ${escapeHtml(r.date)}</strong>
+                            <span>${escapeHtml(r.openingTime||'?')} - ${escapeHtml(r.closingTime||'?')} ${statusBadge}</span>
+                        </div>
+                        <p>${escapeHtml(r.content)}</p>`;
+                    
+                    if(r.adminRemark)h+=`
+                        <div style="background:var(--info-bg);padding:0.5rem;border-radius:0.5rem;margin-top:0.5rem;">
+                            <strong>Admin Remark:</strong> ${escapeHtml(r.adminRemark)}
+                        </div>`;
+                    
+                    if(r.questions?.length)r.questions.forEach((q,i)=>{
+                        h+=`
+                            <div style="background:var(--warning-bg);padding:0.5rem;border-radius:0.5rem;margin-top:0.5rem;">
+                                <strong>Q${i+1}:</strong> ${escapeHtml(q.question)}
+                                ${q.reply?
+                                    `<div><strong>Reply:</strong> ${escapeHtml(q.reply)}</div>`:
+                                    `<div style="margin-top:0.3rem;">
+                                        <textarea id="rep_${d.id}_${i}" rows="2" placeholder="Type your reply..." class="form-control"></textarea>
+                                        <button class="btn btn-primary btn-sm reply-btn" data-report-id="${escapeAttr(d.id)}" data-q-index="${i}" style="margin-top:0.3rem;">Reply</button>
+                                    </div>`
+                                }
+                            </div>`;
+                    });
+                    
+                    h+='</div>';
+                    return h;
+                }).join('');
             }catch(e){showToast('Error','Failed to load reports','error');}
         }
-        
-        // Reply button delegation
-        document.addEventListener('click', async (e) => {
-            const replyBtn = e.target.closest('.reply-btn');
-            if (!replyBtn) return;
-            const id = replyBtn.dataset.reportId;
-            const i = parseInt(replyBtn.dataset.qIndex);
-            const textarea = document.getElementById(`rep_${id}_${i}`);
-            if (!textarea) return;
-            const r = textarea.value;
-            if (!r?.trim()) { showToast('Empty','Write a reply first','warning'); return; }
-            showLoading();
-            try {
-                const ref = db.collection('dailyReports').doc(id);
-                const d = await ref.get();
-                const qs = d.data().questions || [];
-                if (qs[i]) { qs[i].reply = r; await ref.update({ questions: qs }); loadMyReports(); showToast('Sent','Reply sent','success'); }
-            } catch(err) { showToast('Error', err.message, 'error'); } finally { hideLoading(); }
-        });
         
         document.getElementById('submitReportBtn').addEventListener('click',submitDailyReport);
 
         // ==================== PUBLISHED CONTENT & INSIGHTS ====================
         function renderPublishedContent(){
-            const all=Object.values(lessonNotesMap).filter(n=>n.teachable||n.resourcePublished||n.handwritingImagesPublished||n.videosPublished);
-            document.getElementById('publishedContentList').innerHTML=all.length?all.map(n=>`<div class="card"><h4>${escapeHtml(n.subject)} Week ${n.week}</h4><p>${escapeHtml(n.topic||'Untitled')}</p><span class="status-badge status-published">Published</span></div>`).join(''):'<p style="color:var(--text-secondary);">No published content yet.</p>';
+            const all=Object.values(lessonNotesMap).filter(n=>
+                n.teachable||n.resourcePublished||n.handwritingImagesPublished||n.videosPublished
+            );
+            document.getElementById('publishedContentList').innerHTML=all.length?
+                all.map(n=>`
+                    <div class="card">
+                        <h4>${escapeHtml(n.subject)} Week ${n.week}</h4>
+                        <p>${escapeHtml(n.topic||'Untitled')}</p>
+                        <span class="status-badge status-published">Published</span>
+                    </div>
+                `).join(''):
+                '<p style="color:var(--text-secondary);">No published content yet. Submit and get approved to publish.</p>';
         }
         
         function renderInsights(){
-            const all=Object.values(lessonNotesMap);const published=all.filter(n=>n.teachable||n.resourcePublished).length;
+            const all=Object.values(lessonNotesMap);
+            const published=all.filter(n=>n.teachable||n.resourcePublished).length;
+            
             document.getElementById('previewResourceCount').textContent=published;
+            
             const history=userData?.pointHistory||[];
-            document.getElementById('insightPointHistory').innerHTML=history.length?history.slice().reverse().map(h=>`<div style="margin-bottom:0.5rem;padding-bottom:0.5rem;border-bottom:1px dashed var(--border);"><strong>${new Date(h.date).toLocaleDateString()}</strong><span style="color:${h.points>0?'var(--success-text)':'var(--danger-text)'};">${h.points>0?'+':''}${h.points} pts</span>: ${escapeHtml(h.reason)}<span style="color:var(--text-secondary);font-size:0.75rem;"> (Balance: ${h.newPoints})</span></div>`).join(''):'<p style="color:var(--text-secondary);">No point history yet.</p>';
-            const ctx=document.getElementById('pointsChart').getContext('2d');if(pointsChart)pointsChart.destroy();
-            pointsChart=new Chart(ctx,{type:'line',data:{labels:history.length?history.map(h=>new Date(h.date).toLocaleDateString()):['Start'],datasets:[{label:'Points',data:history.length?history.map(h=>h.newPoints):[0],borderColor:'#3b82f6',backgroundColor:'rgba(59,130,246,0.1)',fill:true,tension:0.4}]},options:{responsive:true,plugins:{legend:{display:false}},scales:{y:{beginAtZero:true}}}});
+            document.getElementById('insightPointHistory').innerHTML=history.length?
+                history.slice().reverse().map(h=>`
+                    <div style="margin-bottom:0.5rem;padding-bottom:0.5rem;border-bottom:1px dashed var(--border);">
+                        <strong>${new Date(h.date).toLocaleDateString()}</strong>
+                        <span style="color:${h.points>0?'var(--success-text)':'var(--danger-text)'};">
+                            ${h.points>0?'+':''}${h.points} pts
+                        </span>
+                        : ${escapeHtml(h.reason)}
+                        <span style="color:var(--text-secondary);font-size:0.75rem;">(Balance: ${h.newPoints})</span>
+                    </div>
+                `).join(''):
+                '<p style="color:var(--text-secondary);">No point history yet. Submit content to earn points!</p>';
+            
+            const ctx=document.getElementById('pointsChart').getContext('2d');
+            if(pointsChart)pointsChart.destroy();
+            const pointsArray=history.map(h=>h.newPoints);
+            const labels=history.map(h=>new Date(h.date).toLocaleDateString());
+            
+            pointsChart=new Chart(ctx,{
+                type:'line',
+                data:{
+                    labels:labels.length?labels:['Start'],
+                    datasets:[{
+                        label:'Points Balance',
+                        data:pointsArray.length?pointsArray:[0],
+                        borderColor:'#3b82f6',
+                        backgroundColor:'rgba(59,130,246,0.1)',
+                        fill:true,
+                        tension:0.4
+                    }]
+                },
+                options:{
+                    responsive:true,
+                    maintainAspectRatio:true,
+                    plugins:{legend:{display:false}},
+                    scales:{y:{beginAtZero:true}}
+                }
+            });
         }
 
         // ==================== TEACH MODE ====================
@@ -2689,115 +3096,372 @@ Include Nigerian names, locations, naira (₦), and references to Nigerian textb
         function renderBookMode(container,pages,currentPage,panelKey){
             container.innerHTML='';
             const flipContainer=document.createElement('div');flipContainer.className='book-flip-container';
-            const pageDiv=document.createElement('div');pageDiv.className='book-page';pageDiv.textContent=pages[currentPage]||'';flipContainer.appendChild(pageDiv);
+            const pageDiv=document.createElement('div');pageDiv.className='book-page';pageDiv.textContent=pages[currentPage]||'';
+            flipContainer.appendChild(pageDiv);
+            
             const nav=document.createElement('div');nav.className='book-nav';
-            nav.innerHTML=`<button class="book-nav-btn" data-flip="${panelKey}" data-direction="-1" ${currentPage===0?'disabled':''} aria-label="Previous page"><i class="fas fa-chevron-left"></i></button><span class="page-indicator">Page ${currentPage+1}/${pages.length}</span><button class="book-nav-btn" data-flip="${panelKey}" data-direction="1" ${currentPage>=pages.length-1?'disabled':''} aria-label="Next page"><i class="fas fa-chevron-right"></i></button>`;
+            nav.innerHTML=`
+                <button class="book-nav-btn" data-flip="${panelKey}" data-direction="-1" ${currentPage===0?'disabled':''} aria-label="Previous page">
+                    <i class="fas fa-chevron-left"></i>
+                </button>
+                <span class="page-indicator">Page ${currentPage+1}/${pages.length}</span>
+                <button class="book-nav-btn" data-flip="${panelKey}" data-direction="1" ${currentPage>=pages.length-1?'disabled':''} aria-label="Next page">
+                    <i class="fas fa-chevron-right"></i>
+                </button>
+            `;
             container.appendChild(flipContainer);container.appendChild(nav);
         }
-        
-        // Book navigation via event delegation
-        document.addEventListener('click', (e) => {
-            const bookNavBtn = e.target.closest('.book-nav-btn');
-            if (!bookNavBtn) return;
-            const panelKey = bookNavBtn.dataset.flip;
-            const direction = parseInt(bookNavBtn.dataset.direction);
-            const state = teachModeState.bookPages[panelKey];
-            if (!state) return;
-            const newPage = state.currentPage + direction;
-            if (newPage < 0 || newPage >= state.pages.length) return;
-            const containerKey = panelKey === 'lessonNote' ? 'teachContentLessonNote' : 'teachContentTeachingProcess';
-            const container = document.getElementById(containerKey);
-            const oldPageDiv = container.querySelector('.book-page');
-            if (oldPageDiv) {
-                oldPageDiv.classList.add('flipping-out');
-                setTimeout(() => {
-                    state.currentPage = newPage;
-                    renderBookMode(container, state.pages, state.currentPage, panelKey);
-                }, 200);
-            } else {
-                state.currentPage = newPage;
-                renderBookMode(container, state.pages, state.currentPage, panelKey);
-            }
-        });
         
         function setReadingMode(panelKey,mode){
             teachModeState.readingModes[panelKey]=mode;
             const containerKey=panelKey==='lessonNote'?'teachContentLessonNote':'teachContentTeachingProcess';
             const container=document.getElementById(containerKey);
-            container.classList.remove('scroll-mode','book-mode');container.classList.add(mode==='book'?'book-mode':'scroll-mode');
+            container.classList.remove('scroll-mode','book-mode');
+            container.classList.add(mode==='book'?'book-mode':'scroll-mode');
+            
             const note=lessonNotesMap[`${currentSubjectDraft}_${currentWeekDraft}`]||{};
             const content=panelKey==='lessonNote'?(note.lessonNote||''):(note.teachingProcess||'');
-            if(mode==='book'){const pages=paginateContent(content);teachModeState.bookPages[panelKey]={pages,currentPage:0};renderBookMode(container,pages,0,panelKey);}
-            else container.innerHTML=`<p style="white-space:pre-wrap;">${escapeHtml(content)||'Not available.'}</p>`;
+            
+            if(mode==='book'){
+                const pages=paginateContent(content);
+                teachModeState.bookPages[panelKey]={pages,currentPage:0};
+                renderBookMode(container,pages,0,panelKey);
+            }else{
+                container.innerHTML=`<p style="white-space:pre-wrap;">${escapeHtml(content)||'Not available.'}</p>`;
+            }
         }
         
         function setupReadingModeToggles(){
             ['lessonNote','teachingProcess'].forEach(panelKey=>{
                 const toggleId=panelKey==='lessonNote'?'readingModeToggleLN':'readingModeToggleTP';
                 const toggle=document.getElementById(toggleId);if(!toggle)return;
-                toggle.querySelectorAll('.reading-mode-option').forEach(opt=>{opt.addEventListener('click',()=>{toggle.querySelectorAll('.reading-mode-option').forEach(o=>{o.classList.remove('active');o.setAttribute('aria-checked','false');});opt.classList.add('active');opt.setAttribute('aria-checked','true');setReadingMode(panelKey,opt.dataset.mode);});opt.addEventListener('keydown',(e)=>{if(e.key==='Enter'||e.key===' '){e.preventDefault();opt.click();}});});
+                toggle.querySelectorAll('.reading-mode-option').forEach(opt=>{
+                    opt.addEventListener('click',()=>{
+                        toggle.querySelectorAll('.reading-mode-option').forEach(o=>{o.classList.remove('active');o.setAttribute('aria-checked','false');});
+                        opt.classList.add('active');opt.setAttribute('aria-checked','true');
+                        setReadingMode(panelKey,opt.dataset.mode);
+                    });
+                    opt.addEventListener('keydown',(e)=>{if(e.key==='Enter'||e.key===' '){e.preventDefault();opt.click();}});
+                });
             });
         }
         
         function openTeachMode(){
-            if(!currentSubjectDraft||!currentWeekDraft){showToast('Select a week','Select a subject and week in Drafts tab first.','warning');return;}
+            if(!currentSubjectDraft||!currentWeekDraft){
+                showToast('Select a week','Select a subject and week in Drafts tab first.','warning');
+                return;
+            }
             const key=`${currentSubjectDraft}_${currentWeekDraft}`;const note=lessonNotesMap[key]||{};
-            const hasLN=note.teachable&&note.lessonNote;const hasTP=note.teachingProcessReady&&note.teachingProcess;
-            if(!hasLN&&!hasTP){showToast('No content','No lesson note or teaching process available.','warning');return;}
-            teachModeState.active=true;teachModeState.activePanels={lessonNote:hasLN,teachingProcess:hasTP};
-            document.getElementById('teachModeOverlay').classList.add('active');document.getElementById('teachModeContainer').classList.add('active');
+            const hasLN=note.teachable&&note.lessonNote;
+            const hasTP=note.teachingProcessReady&&note.teachingProcess;
+            
+            if(!hasLN&&!hasTP){
+                showToast('No content','No lesson note or teaching process available.','warning');
+                return;
+            }
+            
+            teachModeState.active=true;
+            teachModeState.activePanels={lessonNote:hasLN,teachingProcess:hasTP};
+            document.getElementById('teachModeOverlay').classList.add('active');
+            document.getElementById('teachModeContainer').classList.add('active');
             document.getElementById('teachModeContainer').setAttribute('aria-hidden','false');
-            const btn=document.getElementById('viewInTeachModeBtn');btn.classList.add('active-teach');btn.innerHTML='<i class="fas fa-times"></i> Exit Teach Mode <span class="keyboard-hint">Esc</span>';
-            updatePanelVisibility();populateTeachPanels();logAudit('TEACH_MODE_STARTED',`${currentSubjectDraft} Week ${currentWeekDraft}`);document.body.style.overflow='hidden';
+            
+            const btn=document.getElementById('viewInTeachModeBtn');
+            btn.classList.add('active-teach');
+            btn.innerHTML='<i class="fas fa-times"></i> Exit Teach Mode <span class="keyboard-hint">Esc</span>';
+            
+            updatePanelVisibility();populateTeachPanels();
+            logAudit('TEACH_MODE_STARTED',`${currentSubjectDraft} Week ${currentWeekDraft}`);
+            document.body.style.overflow='hidden';
         }
         
         function closeTeachMode(){
-            teachModeState.active=false;document.getElementById('teachModeOverlay').classList.remove('active');document.getElementById('teachModeContainer').classList.remove('active');document.getElementById('teachModeContainer').setAttribute('aria-hidden','true');
-            const btn=document.getElementById('viewInTeachModeBtn');btn.classList.remove('active-teach');btn.innerHTML='<i class="fas fa-chalkboard"></i> Teach Mode <span class="keyboard-hint">Ctrl+T</span>';document.body.style.overflow='';
+            teachModeState.active=false;
+            document.getElementById('teachModeOverlay').classList.remove('active');
+            document.getElementById('teachModeContainer').classList.remove('active');
+            document.getElementById('teachModeContainer').setAttribute('aria-hidden','true');
+            
+            const btn=document.getElementById('viewInTeachModeBtn');
+            btn.classList.remove('active-teach');
+            btn.innerHTML='<i class="fas fa-chalkboard"></i> Teach Mode <span class="keyboard-hint">Ctrl+T</span>';
+            document.body.style.overflow='';
         }
         
-        window.cancelTeachPanel=(panelKey)=>{teachModeState.activePanels[panelKey]=false;updatePanelVisibility();if(!Object.values(teachModeState.activePanels).some(v=>v)){closeTeachMode();showToast('Exited','All panels closed.','info');}};
+        window.cancelTeachPanel=(panelKey)=>{
+            teachModeState.activePanels[panelKey]=false;
+            updatePanelVisibility();
+            if(!Object.values(teachModeState.activePanels).some(v=>v)){
+                closeTeachMode();
+                showToast('Exited','All panels closed.','info');
+            }
+        };
         
         function updatePanelVisibility(){
-            const ln=document.getElementById('teachPanelLessonNote'),tp=document.getElementById('teachPanelTeachingProcess');
-            if(teachModeState.activePanels.lessonNote){ln.classList.remove('hidden');ln.setAttribute('aria-hidden','false');}else{ln.classList.add('hidden');ln.setAttribute('aria-hidden','true');}
-            if(teachModeState.activePanels.teachingProcess){tp.classList.remove('hidden');tp.setAttribute('aria-hidden','false');}else{tp.classList.add('hidden');tp.setAttribute('aria-hidden','true');}
+            const ln=document.getElementById('teachPanelLessonNote');
+            const tp=document.getElementById('teachPanelTeachingProcess');
+            if(teachModeState.activePanels.lessonNote){ln.classList.remove('hidden');ln.setAttribute('aria-hidden','false');}
+            else{ln.classList.add('hidden');ln.setAttribute('aria-hidden','true');}
+            if(teachModeState.activePanels.teachingProcess){tp.classList.remove('hidden');tp.setAttribute('aria-hidden','false');}
+            else{tp.classList.add('hidden');tp.setAttribute('aria-hidden','true');}
         }
         
         function populateTeachPanels(){
             const note=lessonNotesMap[`${currentSubjectDraft}_${currentWeekDraft}`]||{};
-            if(teachModeState.activePanels.lessonNote){const c=document.getElementById('teachContentLessonNote');const content=note.lessonNote||'Not available.';if(teachModeState.readingModes.lessonNote==='book'){const pages=paginateContent(content);teachModeState.bookPages.lessonNote={pages,currentPage:0};c.classList.add('book-mode');c.classList.remove('scroll-mode');renderBookMode(c,pages,0,'lessonNote');}else{c.classList.add('scroll-mode');c.classList.remove('book-mode');c.innerHTML=`<p style="white-space:pre-wrap;">${escapeHtml(content)}</p>`;}}
-            if(teachModeState.activePanels.teachingProcess){const c=document.getElementById('teachContentTeachingProcess');const content=note.teachingProcess||'Not available.';if(teachModeState.readingModes.teachingProcess==='book'){const pages=paginateContent(content);teachModeState.bookPages.teachingProcess={pages,currentPage:0};c.classList.add('book-mode');c.classList.remove('scroll-mode');renderBookMode(c,pages,0,'teachingProcess');}else{c.classList.add('scroll-mode');c.classList.remove('book-mode');c.innerHTML=`<p style="white-space:pre-wrap;">${escapeHtml(content)}</p>`;}}
+            
+            if(teachModeState.activePanels.lessonNote){
+                const c=document.getElementById('teachContentLessonNote');
+                const content=note.lessonNote||'Not available.';
+                if(teachModeState.readingModes.lessonNote==='book'){
+                    const pages=paginateContent(content);
+                    teachModeState.bookPages.lessonNote={pages,currentPage:0};
+                    c.classList.add('book-mode');c.classList.remove('scroll-mode');
+                    renderBookMode(c,pages,0,'lessonNote');
+                }else{
+                    c.classList.add('scroll-mode');c.classList.remove('book-mode');
+                    c.innerHTML=`<p style="white-space:pre-wrap;">${escapeHtml(content)}</p>`;
+                }
+            }
+            
+            if(teachModeState.activePanels.teachingProcess){
+                const c=document.getElementById('teachContentTeachingProcess');
+                const content=note.teachingProcess||'Not available.';
+                if(teachModeState.readingModes.teachingProcess==='book'){
+                    const pages=paginateContent(content);
+                    teachModeState.bookPages.teachingProcess={pages,currentPage:0};
+                    c.classList.add('book-mode');c.classList.remove('scroll-mode');
+                    renderBookMode(c,pages,0,'teachingProcess');
+                }else{
+                    c.classList.add('scroll-mode');c.classList.remove('book-mode');
+                    c.innerHTML=`<p style="white-space:pre-wrap;">${escapeHtml(content)}</p>`;
+                }
+            }
         }
         
-        document.getElementById('viewInTeachModeBtn').addEventListener('click',()=>{if(teachModeState.active)closeTeachMode();else openTeachMode();});
+        document.getElementById('viewInTeachModeBtn').addEventListener('click',()=>{
+            if(teachModeState.active)closeTeachMode();else openTeachMode();
+        });
         
         document.addEventListener('keydown',(e)=>{
             if((e.ctrlKey||e.metaKey)&&e.key==='t'){e.preventDefault();if(teachModeState.active)closeTeachMode();else openTeachMode();}
             if(e.key==='Escape'&&teachModeState.active){e.preventDefault();closeTeachMode();}
-            if(teachModeState.active&&e.key==='ArrowLeft'){['lessonNote','teachingProcess'].forEach(k=>{if(teachModeState.readingModes[k]==='book'){const s=teachModeState.bookPages[k];if(s&&s.currentPage>0){const btn=document.querySelector(`.book-nav-btn[data-flip="${k}"][data-direction="-1"]`);if(btn)btn.click();}}});}
-            if(teachModeState.active&&e.key==='ArrowRight'){['lessonNote','teachingProcess'].forEach(k=>{if(teachModeState.readingModes[k]==='book'){const s=teachModeState.bookPages[k];if(s&&s.currentPage<s.pages.length-1){const btn=document.querySelector(`.book-nav-btn[data-flip="${k}"][data-direction="1"]`);if(btn)btn.click();}}});}
+            if(teachModeState.active&&e.key==='ArrowLeft'){
+                ['lessonNote','teachingProcess'].forEach(k=>{
+                    if(teachModeState.readingModes[k]==='book'){
+                        const s=teachModeState.bookPages[k];
+                        if(s&&s.currentPage>0){
+                            const btn=document.querySelector(`.book-nav-btn[data-flip="${k}"][data-direction="-1"]`);
+                            if(btn)btn.click();
+                        }
+                    }
+                });
+            }
+            if(teachModeState.active&&e.key==='ArrowRight'){
+                ['lessonNote','teachingProcess'].forEach(k=>{
+                    if(teachModeState.readingModes[k]==='book'){
+                        const s=teachModeState.bookPages[k];
+                        if(s&&s.currentPage<s.pages.length-1){
+                            const btn=document.querySelector(`.book-nav-btn[data-flip="${k}"][data-direction="1"]`);
+                            if(btn)btn.click();
+                        }
+                    }
+                });
+            }
         });
 
-        // ==================== VIDEO & HANDWRITING ====================
-        function renderVideoList(){const l=document.getElementById('videoList');l.innerHTML=videoLinks.length?videoLinks.map((v,i)=>`<div style="display:flex;justify-content:space-between;align-items:center;padding:0.3rem 0;"><span><i class="fas fa-video"></i> ${escapeHtml(v)}</span><button class="btn btn-danger btn-sm remove-video-btn" data-index="${i}"><i class="fas fa-trash"></i></button></div>`).join(''):'<p style="color:var(--text-secondary);">No video links added.</p>';}
+        // ==================== QUILL EDITORS INITIALIZATION ====================
+        quill=new Quill('#editor',{
+            theme:'snow',
+            modules:{
+                toolbar:[
+                    ['bold','italic','underline'],
+                    [{'header':[1,2,3,false]}],
+                    [{'list':'ordered'},{'list':'bullet'}],
+                    ['link','blockquote'],
+                    ['clean']
+                ]
+            },
+            placeholder:'Write your lesson note here...'
+        });
         
-        function renderHandwritingImages(){const c=document.getElementById('handwritingImages');c.innerHTML=handwritingImages.length?handwritingImages.map((img,i)=>`<div style="display:inline-block;margin:0.3rem;position:relative;"><img src="${escapeAttr(img.url)}" style="max-width:100px;cursor:pointer;border-radius:0.5rem;" onclick="window.open('${escapeAttr(img.url)}')" alt="Visual note ${i+1}"><button class="btn btn-danger btn-sm delete-hw-btn" data-index="${i}" style="position:absolute;top:-5px;right:-5px;">×</button></div>`).join(''):'<p style="color:var(--text-secondary);">No images yet.</p>';}
+        studentQuill=new Quill('#studentResourceEditor',{
+            theme:'snow',
+            modules:{
+                toolbar:[
+                    ['bold','italic'],
+                    [{'header':[1,2,false]}],
+                    [{'list':'ordered'},{'list':'bullet'}],
+                    ['link'],
+                    ['clean']
+                ]
+            },
+            placeholder:'Student resource...'
+        });
+        
+        teachingProcessQuill=new Quill('#teachingProcessEditor',{
+            theme:'snow',
+            modules:{
+                toolbar:[
+                    ['bold','italic'],
+                    [{'header':[1,2,false]}],
+                    [{'list':'ordered'},{'list':'bullet'}],
+                    ['link'],
+                    ['clean']
+                ]
+            },
+            placeholder:'Teaching process...'
+        });
+        
+        quill.on('text-change',()=>{setAutoSaveStatus('unsaved');});
 
-        // Post-approval handlers
-        document.getElementById('saveTeachingProcessBtn').addEventListener('click',async()=>{if(!currentSubjectDraft||!currentWeekDraft)return;const key=`${currentSubjectDraft}_${currentWeekDraft}`;const existing=lessonNotesMap[key]||{};const html=teachingProcessQuill.root.innerHTML;if(!html.trim())return showToast('Empty','Write teaching process first','warning');if(existing.id)await db.collection('lessonNotes').doc(existing.id).update({teachingProcess:html,teachingProcessReady:true,updatedAt:firebase.firestore.FieldValue.serverTimestamp()});showToast('Saved','Teaching process saved','success');});
-        document.getElementById('saveStudentResourceBtn').addEventListener('click',async()=>{if(!currentSubjectDraft||!currentWeekDraft)return;const key=`${currentSubjectDraft}_${currentWeekDraft}`;const existing=lessonNotesMap[key]||{};const html=studentQuill.root.innerHTML;if(!html.trim())return showToast('Empty','Write student resource first','warning');if(existing.id)await db.collection('lessonNotes').doc(existing.id).update({studentResource:html,studentResourceReady:true,updatedAt:firebase.firestore.FieldValue.serverTimestamp()});showToast('Saved','Student resource saved','success');});
-        document.getElementById('moveToTeachBtn').addEventListener('click',async()=>{if(!currentSubjectDraft||!currentWeekDraft)return;const key=`${currentSubjectDraft}_${currentWeekDraft}`;const note=lessonNotesMap[key];if(!note?.id)return showToast('Error','Save first','error');await db.collection('lessonNotes').doc(note.id).update({teachable:true,teachingProcessReady:true});await addPoints(2,'Lesson moved to Teach');showToast('Moved','Lesson moved to Teach','success');});
-        document.getElementById('shareToLibraryBtn').addEventListener('click',async()=>{if(!currentSubjectDraft||!currentWeekDraft)return;const key=`${currentSubjectDraft}_${currentWeekDraft}`;const note=lessonNotesMap[key];if(!note?.id)return showToast('Error','Save first','error');await db.collection('resourceLibrary').add({teacherId:currentUser.uid,teacherName:`${userData?.firstName||''} ${userData?.surname||''}`.trim(),subject:currentSubjectDraft,week:currentWeekDraft,topic:note.topic||'',lessonNote:note.lessonNote||'',studentResource:note.studentResource||'',teachingProcess:note.teachingProcess||'',createdAt:firebase.firestore.FieldValue.serverTimestamp()});showToast('Shared','Added to library','success');});
+        // ==================== VIDEO & HANDWRITING ====================
+        function renderVideoList(){
+            const l=document.getElementById('videoList');
+            if(!videoLinks.length){l.innerHTML='<p style="color:var(--text-secondary);">No video links added.</p>';return;}
+            l.innerHTML=videoLinks.map((v,i)=>`
+                <div style="display:flex;justify-content:space-between;align-items:center;padding:0.3rem 0;">
+                    <span><i class="fas fa-video"></i> ${escapeHtml(v)}</span>
+                    <button class="btn btn-danger btn-sm remove-video-btn" data-index="${i}"><i class="fas fa-trash"></i></button>
+                </div>
+            `).join('');
+        }
         
-        document.getElementById('aiGenerateTPBtn').addEventListener('click',async()=>{if(!window.groq)return showToast('Error','AI not available','error');const topic=syllabusMap[currentSubjectDraft]?.weeks?.find(w=>w.week==currentWeekDraft)?.topic||'this topic';showLoading();try{const content=await generateAI(`Create a detailed teaching process for ${currentSubjectDraft} Week ${currentWeekDraft} topic "${topic}".`,NIGERIAN_SYSTEM_PROMPT);teachingProcessQuill.root.innerHTML=content;showToast('Generated','Teaching process generated','success');}catch(e){showToast('Error',e.message,'error');}finally{hideLoading();}});
-        document.getElementById('aiGenerateResourceBtn').addEventListener('click',async()=>{if(!window.groq)return showToast('Error','AI not available','error');const topic=syllabusMap[currentSubjectDraft]?.weeks?.find(w=>w.week==currentWeekDraft)?.topic||'this topic';showLoading();try{const content=await generateAI(`Create student resources for ${currentSubjectDraft} Week ${currentWeekDraft} topic "${topic}".`,NIGERIAN_SYSTEM_PROMPT);studentQuill.root.innerHTML=content;showToast('Generated','Student resources generated','success');}catch(e){showToast('Error',e.message,'error');}finally{hideLoading();}});
+        function renderHandwritingImages(){
+            const c=document.getElementById('handwritingImages');
+            c.innerHTML=handwritingImages.length?
+                handwritingImages.map((img,i)=>`
+                    <div style="display:inline-block;margin:0.3rem;position:relative;">
+                        <img src="${escapeAttr(img.url)}" style="max-width:100px;cursor:pointer;border-radius:0.5rem;" onclick="window.open('${escapeAttr(img.url)}')" alt="Visual note ${i+1}">
+                        <button class="btn btn-danger btn-sm delete-hw-btn" data-index="${i}" style="position:absolute;top:-5px;right:-5px;">×</button>
+                    </div>
+                `).join(''):
+                '<p style="color:var(--text-secondary);">No images generated yet.</p>';
+        }
+
+        // Post-approval section handlers
+        document.getElementById('saveTeachingProcessBtn').addEventListener('click',async()=>{
+            if(!currentSubjectDraft||!currentWeekDraft)return;
+            const key=`${currentSubjectDraft}_${currentWeekDraft}`;
+            const existing=lessonNotesMap[key]||{};
+            const teachingProcessHtml=teachingProcessQuill.root.innerHTML;
+            if(!teachingProcessHtml.trim())return showToast('Empty','Write teaching process first','warning');
+            const d={teachingProcess:teachingProcessHtml,teachingProcessReady:true,updatedAt:firebase.firestore.FieldValue.serverTimestamp()};
+            if(existing.id)await db.collection('lessonNotes').doc(existing.id).update(d);
+            showToast('Saved','Teaching process saved','success');
+        });
+        
+        document.getElementById('saveStudentResourceBtn').addEventListener('click',async()=>{
+            if(!currentSubjectDraft||!currentWeekDraft)return;
+            const key=`${currentSubjectDraft}_${currentWeekDraft}`;
+            const existing=lessonNotesMap[key]||{};
+            const resourceHtml=studentQuill.root.innerHTML;
+            if(!resourceHtml.trim())return showToast('Empty','Write student resource first','warning');
+            const d={studentResource:resourceHtml,studentResourceReady:true,updatedAt:firebase.firestore.FieldValue.serverTimestamp()};
+            if(existing.id)await db.collection('lessonNotes').doc(existing.id).update(d);
+            showToast('Saved','Student resource saved','success');
+        });
+        
+        document.getElementById('moveToTeachBtn').addEventListener('click',async()=>{
+            if(!currentSubjectDraft||!currentWeekDraft)return;
+            const key=`${currentSubjectDraft}_${currentWeekDraft}`;
+            const note=lessonNotesMap[key];
+            if(!note?.id)return showToast('Error','Save lesson note first','error');
+            await db.collection('lessonNotes').doc(note.id).update({teachable:true,teachingProcessReady:true});
+            await addPoints(2,'Lesson moved to Teach');
+            await logAudit('LESSON_MOVED_TO_TEACH',`${currentSubjectDraft} Week ${currentWeekDraft}`);
+            showToast('Moved','Lesson moved to Teach','success');
+        });
+        
+        document.getElementById('shareToLibraryBtn').addEventListener('click',async()=>{
+            if(!currentSubjectDraft||!currentWeekDraft)return;
+            const key=`${currentSubjectDraft}_${currentWeekDraft}`;
+            const note=lessonNotesMap[key];
+            if(!note?.id)return showToast('Error','Save lesson note first','error');
+            await db.collection('resourceLibrary').add({
+                teacherId:currentUser.uid,
+                teacherName:`${userData?.firstName||''} ${userData?.surname||''}`.trim(),
+                subject:currentSubjectDraft,week:currentWeekDraft,
+                topic:note.topic||'',
+                lessonNote:note.lessonNote||'',
+                studentResource:note.studentResource||'',
+                teachingProcess:note.teachingProcess||'',
+                videoLinks:videoLinks,
+                handwritingImages:handwritingImages,
+                createdAt:firebase.firestore.FieldValue.serverTimestamp()
+            });
+            await logAudit('RESOURCE_SHARED_TO_LIBRARY',`${currentSubjectDraft} Week ${currentWeekDraft}`);
+            showToast('Shared','Added to resource library','success');
+        });
+
+        // AI Generate for Teaching Process and Resources
+        document.getElementById('aiGenerateTPBtn').addEventListener('click',async()=>{
+            if(!window.groq)return showToast('Error','AI service not available','error');
+            const topic=syllabusMap[currentSubjectDraft]?.weeks?.find(w=>w.week==currentWeekDraft)?.topic||'this topic';
+            showLoading();
+            try{
+                const content=await generateAI(
+                    `Create a detailed teaching process for ${currentSubjectDraft} Week ${currentWeekDraft} topic "${topic}". Include step-by-step activities, timing, materials, and evaluation methods.`,
+                    NIGERIAN_SYSTEM_PROMPT
+                );
+                teachingProcessQuill.root.innerHTML=content;
+                showToast('Generated','Teaching process generated','success');
+            }catch(e){showToast('Error',e.message,'error');}
+            finally{hideLoading();}
+        });
+        
+        document.getElementById('aiGenerateResourceBtn').addEventListener('click',async()=>{
+            if(!window.groq)return showToast('Error','AI service not available','error');
+            const topic=syllabusMap[currentSubjectDraft]?.weeks?.find(w=>w.week==currentWeekDraft)?.topic||'this topic';
+            showLoading();
+            try{
+                const content=await generateAI(
+                    `Create student resources (worksheets, reading materials, practice exercises) for ${currentSubjectDraft} Week ${currentWeekDraft} topic "${topic}". Use clear language suitable for ${currentClass||'JSS1'} level.`,
+                    NIGERIAN_SYSTEM_PROMPT
+                );
+                studentQuill.root.innerHTML=content;
+                showToast('Generated','Student resources generated','success');
+            }catch(e){showToast('Error',e.message,'error');}
+            finally{hideLoading();}
+        });
 
         // Lesson Notes sub-tab switching
-        document.querySelectorAll('#ln-subtabs .sub-tab').forEach(t=>t.addEventListener('click',()=>{document.querySelectorAll('#ln-subtabs .sub-tab').forEach(x=>{x.classList.remove('active');x.setAttribute('aria-selected','false');});t.classList.add('active');t.setAttribute('aria-selected','true');['syllabus','drafts','submitted','published','library'].forEach(k=>document.getElementById('ln-'+k).style.display=k===t.dataset.ln?'block':'none');if(t.dataset.ln==='drafts')loadDraftSubjects();else if(t.dataset.ln==='submitted')renderSubmittedTab();else if(t.dataset.ln==='published')renderPublishedTab();else if(t.dataset.ln==='library')loadLibraryTab();}));
+        document.querySelectorAll('#ln-subtabs .sub-tab').forEach(t=>t.addEventListener('click',()=>{
+            document.querySelectorAll('#ln-subtabs .sub-tab').forEach(x=>{x.classList.remove('active');x.setAttribute('aria-selected','false');});
+            t.classList.add('active');t.setAttribute('aria-selected','true');
+            ['syllabus','drafts','submitted','published','library'].forEach(k=>
+                document.getElementById('ln-'+k).style.display=k===t.dataset.ln?'block':'none'
+            );
+            if(t.dataset.ln==='drafts')loadDraftSubjects();
+            else if(t.dataset.ln==='submitted')renderSubmittedTab();
+            else if(t.dataset.ln==='published')renderPublishedTab();
+            else if(t.dataset.ln==='library')loadLibraryTab();
+        }));
         
-        document.getElementById('addSubjectBtn').addEventListener('click',async()=>{const name=prompt('Enter new subject name:');if(!name?.trim())return;if(subjects.includes(name.trim()))return showToast('Exists','Subject already in your list','warning');subjects.push(name.trim());await db.collection('users').doc(currentUser.uid).update({subjects});renderSubjectGrid();showToast('Added','Subject added','success');});
-        document.getElementById('useTemplateBtn').addEventListener('click',()=>{if(!currentWeekDraft||!currentSubjectDraft)return;const topic=syllabusMap[currentSubjectDraft]?.weeks?.find(w=>w.week==currentWeekDraft)?.topic||'';quill.root.innerHTML=`<h2>LESSON NOTE</h2><p><strong>Subject:</strong> ${escapeHtml(currentSubjectDraft)} &nbsp;&nbsp; <strong>Class:</strong> ${escapeHtml(currentClass||'___')}</p><p><strong>Week:</strong> ${currentWeekDraft} &nbsp;&nbsp; <strong>Topic:</strong> ${escapeHtml(topic||'___')}</p><p><strong>Duration:</strong> 40 minutes</p><h3>Instructional Materials:</h3><ul><li>...</li></ul><h3>Objectives:</h3><ol><li>...</li></ol><h3>Content / Presentation:</h3><p>...</p><h3>Evaluation:</h3><ol><li>...</li></ol><h3>Assignment:</h3><ol><li>...</li></ol>`;showToast('Template','Template inserted.','success');});
+        // Add subject
+        document.getElementById('addSubjectBtn').addEventListener('click',async()=>{
+            const name=prompt('Enter new subject name:');
+            if(!name?.trim())return;
+            if(subjects.includes(name.trim()))return showToast('Exists','Subject already in your list','warning');
+            subjects.push(name.trim());
+            await db.collection('users').doc(currentUser.uid).update({subjects});
+            renderSubjectGrid();
+            showToast('Added','Subject added successfully','success');
+        });
+        
+        // Template button
+        document.getElementById('useTemplateBtn').addEventListener('click',()=>{
+            if(!currentWeekDraft||!currentSubjectDraft)return;
+            const topic=syllabusMap[currentSubjectDraft]?.weeks?.find(w=>w.week==currentWeekDraft)?.topic||'';
+            quill.root.innerHTML=`<h2>LESSON NOTE</h2>
+                <p><strong>Subject:</strong> ${escapeHtml(currentSubjectDraft)} &nbsp;&nbsp; <strong>Class:</strong> ${escapeHtml(currentClass||'___')}</p>
+                <p><strong>Week:</strong> ${currentWeekDraft} &nbsp;&nbsp; <strong>Topic:</strong> ${escapeHtml(topic||'___')}</p>
+                <p><strong>Duration:</strong> 40 minutes</p>
+                <h3>Instructional Materials:</h3><ul><li>...</li></ul>
+                <h3>Objectives:</h3><ol><li>...</li></ol>
+                <h3>Content / Presentation:</h3><p>...</p>
+                <h3>Evaluation:</h3><ol><li>...</li></ol>
+                <h3>Assignment:</h3><ol><li>...</li></ol>`;
+            showToast('Template','Template inserted. Fill in the details.','success');
+        });
         
         // Delete modal
         function openDeleteModal(msg,cb){
@@ -2813,17 +3477,38 @@ Include Nigerian names, locations, naira (₦), and references to Nigerian textb
         document.getElementById('printBtn').addEventListener('click',()=>{window.print();});
         
         // Video link handlers
-        document.getElementById('addVideoLinkBtn').addEventListener('click',()=>{document.getElementById('videoInputArea').style.display='block';});
-        document.getElementById('previewVideoBtn').addEventListener('click',()=>{const url=document.getElementById('videoLinkInput').value.trim();if(url)window.open(url,'_blank');});
-        document.getElementById('videoLinkInput').addEventListener('keypress',e=>{if(e.key==='Enter'&&e.target.value.trim()){videoLinks.push(e.target.value.trim());renderVideoList();e.target.value='';document.getElementById('videoInputArea').style.display='none';}});
-        document.getElementById('generateHandwritingBtn').addEventListener('click',()=>{showToast('Coming Soon','Handwriting generation coming soon','info');});
+        document.getElementById('addVideoLinkBtn').addEventListener('click',()=>{
+            document.getElementById('videoInputArea').style.display='block';
+        });
+        document.getElementById('previewVideoBtn').addEventListener('click',()=>{
+            const url=document.getElementById('videoLinkInput').value.trim();
+            if(url)window.open(url,'_blank');
+        });
+        document.getElementById('videoLinkInput').addEventListener('keypress',e=>{
+            if(e.key==='Enter'&&e.target.value.trim()){
+                videoLinks.push(e.target.value.trim());
+                renderVideoList();
+                e.target.value='';
+                document.getElementById('videoInputArea').style.display='none';
+            }
+        });
+
+        // Handwriting generation placeholder
+        document.getElementById('generateHandwritingBtn').addEventListener('click',async()=>{
+            showToast('Coming Soon','Handwriting generation will be available in a future update','info');
+        });
 
         // ==================== PERMISSION REQUESTS ====================
         function openPermissionModal(){
             document.getElementById('permType').value='leave_request';
-            const today=new Date();const yyyy=today.getFullYear();const mm=String(today.getMonth()+1).padStart(2,'0');const dd=String(today.getDate()).padStart(2,'0');
+            const today=new Date();
+            const yyyy=today.getFullYear();
+            const mm=String(today.getMonth()+1).padStart(2,'0');
+            const dd=String(today.getDate()).padStart(2,'0');
             document.getElementById('permStartDate').value=`${yyyy}-${mm}-${dd}`;
-            document.getElementById('permEndDate').value='';document.getElementById('permReason').value='';document.getElementById('permDocument').value='';
+            document.getElementById('permEndDate').value='';
+            document.getElementById('permReason').value='';
+            document.getElementById('permDocument').value='';
             document.getElementById('permissionModal').classList.add('active');
         }
         function closePermissionModal(){document.getElementById('permissionModal').classList.remove('active');}
@@ -2834,52 +3519,224 @@ Include Nigerian names, locations, naira (₦), and references to Nigerian textb
         document.getElementById('permissionModal').addEventListener('click',function(e){if(e.target===this)closePermissionModal();});
         
         document.getElementById('submitPermBtn').addEventListener('click',async()=>{
-            const type=document.getElementById('permType').value,startDate=document.getElementById('permStartDate').value,endDate=document.getElementById('permEndDate').value,reason=document.getElementById('permReason').value.trim(),document=document.getElementById('permDocument').value.trim();
-            if(!startDate)return showToast('Required','Select a date.','warning');if(!reason)return showToast('Required','Provide a reason.','warning');
-            const labels={leave_request:'Leave of Absence',event_request:'School Event/Trip',resource_request:'Classroom Resource',schedule_change:'Schedule Change',other:'Other Request'};
-            if(!confirm(`Submit "${labels[type]}" request for ${startDate}?`))return;
-            const btn=document.getElementById('submitPermBtn');btn.disabled=true;btn.innerHTML='<i class="fas fa-spinner fa-spin"></i> Submitting...';showLoading();
+            const type=document.getElementById('permType').value;
+            const startDate=document.getElementById('permStartDate').value;
+            const endDate=document.getElementById('permEndDate').value;
+            const reason=document.getElementById('permReason').value.trim();
+            const document=document.getElementById('permDocument').value.trim();
+
+            if(!startDate)return showToast('Required','Select a date.','warning');
+            if(!reason)return showToast('Required','Provide a reason.','warning');
+
+            const typeLabels={
+                leave_request:'Leave of Absence',
+                event_request:'School Event/Trip',
+                resource_request:'Classroom Resource',
+                schedule_change:'Schedule Change',
+                other:'Other Request'
+            };
+
+            if(!confirm(`Submit "${typeLabels[type]}" request for ${startDate}?`))return;
+
+            const btn=document.getElementById('submitPermBtn');
+            btn.disabled=true;
+            btn.innerHTML='<i class="fas fa-spinner fa-spin"></i> Submitting...';
+            showLoading();
+
             try{
-                await db.collection('pendingActions').add({teacherId:currentUser.uid,teacherName:`${userData?.firstName||''} ${userData?.surname||''}`.trim(),actionType:type,classId:currentClass||'',details:{startDate,endDate:endDate||null,reason,document:document||null},status:'pending',requestedAt:firebase.firestore.FieldValue.serverTimestamp()});
-                await logAudit('PERMISSION_REQUESTED',`${labels[type]}: ${reason.substring(0,50)}`);await addPoints(1,'Permission request submitted');closePermissionModal();showToast('Submitted!','Request sent for review.','success');
-            }catch(e){showToast('Error',e.message,'error');}finally{btn.disabled=false;btn.innerHTML='<i class="fas fa-paper-plane"></i> Submit Request';hideLoading();}
+                await db.collection('pendingActions').add({
+                    teacherId:currentUser.uid,
+                    teacherName:`${userData?.firstName||''} ${userData?.surname||''}`.trim(),
+                    studentId:null,
+                    studentName:null,
+                    actionType:type,
+                    classId:currentClass||'',
+                    details:{
+                        startDate:startDate,
+                        endDate:endDate||null,
+                        reason:reason,
+                        document:document||null
+                    },
+                    status:'pending',
+                    requestedAt:firebase.firestore.FieldValue.serverTimestamp()
+                });
+
+                await logAudit('PERMISSION_REQUESTED',`${typeLabels[type]}: ${reason.substring(0,50)}`);
+                await addPoints(1,'Permission request submitted');
+                
+                closePermissionModal();
+                showToast('Submitted!','Your request has been sent for review.','success');
+            }catch(e){
+                showToast('Error',e.message,'error');
+            }finally{
+                btn.disabled=false;
+                btn.innerHTML='<i class="fas fa-paper-plane"></i> Submit Request';
+                hideLoading();
+            }
         });
-        
-        function openMyRequestsModal(){document.getElementById('myRequestsModal').classList.add('active');loadMyRequests();}
+
+        // ==================== MY REQUESTS MODAL ====================
+        function openMyRequestsModal(){
+            document.getElementById('myRequestsModal').classList.add('active');
+            loadMyRequests();
+        }
         function closeMyRequestsModal(){document.getElementById('myRequestsModal').classList.remove('active');}
         
         document.getElementById('openMyRequestsBtn').addEventListener('click',openMyRequestsModal);
         document.getElementById('closeMyRequestsModalBtn').addEventListener('click',closeMyRequestsModal);
         document.getElementById('myRequestsModal').addEventListener('click',function(e){if(e.target===this)closeMyRequestsModal();});
-        
-        async function loadMyRequests(){
-            if(!currentUser)return;const container=document.getElementById('myRequestsList');container.innerHTML='<div class="empty-state"><i class="fas fa-spinner fa-spin"></i><p>Loading...</p></div>';
-            try{
-                const snap=await db.collection('pendingActions').where('teacherId','==',currentUser.uid).orderBy('requestedAt','desc').get();
-                if(snap.empty){container.innerHTML='<div class="empty-state"><i class="fas fa-inbox" style="font-size:2rem;opacity:0.3;"></i><h3>No Requests</h3><p>No permission requests submitted yet.</p></div>';return;}
-                const labels={leave_request:'🏠 Leave',event_request:'🎉 Event',resource_request:'📦 Resource',schedule_change:'📅 Schedule',other:'📋 Other'};
-                container.innerHTML=snap.docs.map(doc=>{const req=doc.data();const sc=req.status==='approved'?'badge-success':req.status==='rejected'?'badge-danger':'badge-warning';const si=req.status==='approved'?'fa-check-circle':req.status==='rejected'?'fa-times-circle':'fa-clock';const dateStr=req.requestedAt?.toDate?.()?.toLocaleDateString('en-GB',{day:'numeric',month:'short',year:'numeric'})||'Unknown';return`<div class="card" style="padding:1rem;margin-bottom:0.75rem;"><div style="display:flex;justify-content:space-between;align-items:flex-start;gap:1rem;"><div style="flex:1;"><div style="display:flex;gap:0.5rem;align-items:center;margin-bottom:0.3rem;"><span class="badge badge-info">${labels[req.actionType]||req.actionType}</span><span class="badge ${sc}"><i class="fas ${si}"></i> ${req.status?.toUpperCase()||'PENDING'}</span></div>${req.details?.startDate?`<p style="font-size:0.85rem;"><strong>Date:</strong> ${escapeHtml(req.details.startDate)}${req.details.endDate?` → ${escapeHtml(req.details.endDate)}`:''}</p>`:''}<p style="font-size:0.85rem;color:var(--text-secondary);"><strong>Reason:</strong> ${escapeHtml((req.details?.reason||'No reason').substring(0,100))}</p>${req.adminNote?`<p style="font-size:0.8rem;color:var(--accent);"><strong>Response:</strong> ${escapeHtml(req.adminNote)}</p>`:''}</div><small style="color:var(--text-tertiary);">${dateStr}</small></div></div>`;}).join('');
-            }catch(e){container.innerHTML='<p style="color:var(--danger-text);">Error loading requests.</p>';}
-        }
-        
-        document.addEventListener('keydown',function(e){if(e.key==='Escape'){closePermissionModal();closeMyRequestsModal();}});
 
-        // ==================== QUILL EDITORS INITIALIZATION ====================
-        quill=new Quill('#editor',{theme:'snow',modules:{toolbar:[['bold','italic','underline'],[{'header':[1,2,3,false]}],[{'list':'ordered'},{'list':'bullet'}],['link','blockquote'],['clean']]},placeholder:'Write your lesson note here...'});
-        studentQuill=new Quill('#studentResourceEditor',{theme:'snow',modules:{toolbar:[['bold','italic'],[{'header':[1,2,false]}],[{'list':'ordered'},{'list':'bullet'}],['link'],['clean']]},placeholder:'Student resource...'});
-        teachingProcessQuill=new Quill('#teachingProcessEditor',{theme:'snow',modules:{toolbar:[['bold','italic'],[{'header':[1,2,false]}],[{'list':'ordered'},{'list':'bullet'}],['link'],['clean']]},placeholder:'Teaching process...'});
-        quill.on('text-change',()=>setAutoSaveStatus('unsaved'));
+        async function loadMyRequests(){
+            if(!currentUser)return;
+            
+            const container=document.getElementById('myRequestsList');
+            container.innerHTML='<div style="text-align:center;padding:2rem;"><i class="fas fa-spinner fa-spin"></i> Loading...</div>';
+
+            try{
+                const snap=await db.collection('pendingActions')
+                    .where('teacherId','==',currentUser.uid)
+                    .orderBy('requestedAt','desc')
+                    .get();
+
+                if(snap.empty){
+                    container.innerHTML=`
+                        <div style="text-align:center;padding:2rem;color:var(--text-muted);">
+                            <i class="fas fa-inbox" style="font-size:2rem;display:block;margin-bottom:0.5rem;opacity:0.3;"></i>
+                            <p>No permission requests submitted yet.</p>
+                        </div>`;
+                    return;
+                }
+
+                const typeLabels={
+                    leave_request:'🏠 Leave',
+                    event_request:'🎉 Event',
+                    resource_request:'📦 Resource',
+                    schedule_change:'📅 Schedule',
+                    other:'📋 Other',
+                    absence_request:'📝 Absence (Student)',
+                    absence_explanation:'📝 Absence Explanation (Student)',
+                    assign_prefect:'👑 Prefect Assignment',
+                    suspend:'⏸️ Suspend Student',
+                    activate:'▶️ Activate Student',
+                    delete:'🗑️ Delete Student'
+                };
+
+                container.innerHTML=snap.docs.map(doc=>{
+                    const req=doc.data();
+                    const statusClass=req.status==='approved'?'badge-success':
+                                       req.status==='rejected'?'badge-danger':'badge-warning';
+                    const statusIcon=req.status==='approved'?'fa-check-circle':
+                                      req.status==='rejected'?'fa-times-circle':'fa-clock';
+                    const dateStr=req.requestedAt?.toDate?
+                        req.requestedAt.toDate().toLocaleDateString('en-GB',{
+                            day:'numeric',month:'short',year:'numeric'
+                        }):'Unknown';
+                    const typeLabel=typeLabels[req.actionType]||req.actionType;
+
+                    return `
+                        <div class="card" style="padding:1rem;margin-bottom:0.75rem;">
+                            <div style="display:flex;justify-content:space-between;align-items:flex-start;gap:1rem;flex-wrap:wrap;">
+                                <div style="flex:1;min-width:200px;">
+                                    <div style="display:flex;gap:0.5rem;align-items:center;flex-wrap:wrap;margin-bottom:0.3rem;">
+                                        <span class="badge badge-info">${typeLabel}</span>
+                                        <span class="badge ${statusClass}">
+                                            <i class="fas ${statusIcon}"></i> ${req.status?.toUpperCase()||'PENDING'}
+                                        </span>
+                                    </div>
+                                    ${req.details?.startDate?`
+                                        <p style="font-size:0.85rem;margin:0.3rem 0;">
+                                            <strong>Date:</strong> ${escapeHtml(req.details.startDate)}
+                                            ${req.details.endDate?` → ${escapeHtml(req.details.endDate)}`:''}
+                                        </p>
+                                    `:''}
+                                    ${req.studentName?`
+                                        <p style="font-size:0.85rem;margin:0.3rem 0;">
+                                            <strong>Student:</strong> ${escapeHtml(req.studentName)}
+                                        </p>
+                                    `:''}
+                                    <p style="font-size:0.85rem;color:var(--text-secondary);margin:0.3rem 0;">
+                                        <strong>Reason:</strong> ${escapeHtml((req.details?.reason||'No reason').substring(0,100))}
+                                    </p>
+                                    ${req.adminNote?`
+                                        <p style="font-size:0.8rem;color:var(--accent);margin-top:0.3rem;">
+                                            <strong>Response:</strong> ${escapeHtml(req.adminNote)}
+                                        </p>
+                                    `:''}
+                                </div>
+                                <small style="color:var(--text-muted);">${dateStr}</small>
+                            </div>
+                        </div>
+                    `;
+                }).join('');
+            }catch(e){
+                container.innerHTML='<p style="color:var(--danger-text);">Error loading requests.</p>';
+                console.error(e);
+            }
+        }
+
+        // Close modals on Escape
+        document.addEventListener('keydown',function(e){
+            if(e.key==='Escape'){
+                closePermissionModal();
+                closeMyRequestsModal();
+            }
+        });
 
         // ==================== VOICE INPUT ====================
         const SpeechRecognition=window.SpeechRecognition||window.webkitSpeechRecognition;
-        if(SpeechRecognition){const recognition=new SpeechRecognition();recognition.continuous=true;recognition.interimResults=true;recognition.onresult=(event)=>{let transcript='';for(let i=event.resultIndex;i<event.results.length;++i)transcript+=event.results[i][0].transcript;quill.setText(quill.getText()+' '+transcript);};document.getElementById('voiceBtn').addEventListener('click',()=>{const btn=document.getElementById('voiceBtn');if(btn.classList.contains('listening')){recognition.stop();btn.classList.remove('listening');btn.innerHTML='<i class="fas fa-microphone"></i>';btn.title='Voice Input';}else{recognition.start();btn.classList.add('listening');btn.innerHTML='<i class="fas fa-microphone-slash"></i>';btn.title='Stop Recording';}});}
+        if(SpeechRecognition){
+            const recognition=new SpeechRecognition();
+            recognition.continuous=true;
+            recognition.interimResults=true;
+            recognition.onresult=(event)=>{
+                let transcript='';
+                for(let i=event.resultIndex;i<event.results.length;++i)
+                    transcript+=event.results[i][0].transcript;
+                quill.setText(quill.getText()+' '+transcript);
+            };
+            document.getElementById('voiceBtn').addEventListener('click',()=>{
+                const btn=document.getElementById('voiceBtn');
+                if(btn.classList.contains('listening')){
+                    recognition.stop();
+                    btn.classList.remove('listening');
+                    btn.innerHTML='<i class="fas fa-microphone"></i>';
+                    btn.title='Voice Input';
+                }else{
+                    recognition.start();
+                    btn.classList.add('listening');
+                    btn.innerHTML='<i class="fas fa-microphone-slash"></i>';
+                    btn.title='Stop Recording';
+                }
+            });
+        }
 
         // ==================== LOAD LESSON NOTES ====================
-        async function loadAllLessonNotes(){const snap=await db.collection('lessonNotes').where('teacherId','==',currentUser.uid).get();lessonNotesMap={};snap.forEach(d=>{const dd=d.data();lessonNotesMap[`${dd.subject}_${dd.week}`]={id:d.id,...dd};});updateWeeklyStats();}
-        function updateWeeklyStats(){const all=Object.values(lessonNotesMap);document.getElementById('statLessons').textContent=all.length;document.getElementById('statPending').textContent=all.filter(n=>n.status==='pending').length;document.getElementById('statApproved').textContent=all.filter(n=>n.status==='approved').length;document.getElementById('statReports').textContent=all.length;}
+        async function loadAllLessonNotes(){
+            const snap=await db.collection('lessonNotes')
+                .where('teacherId','==',currentUser.uid).get();
+            lessonNotesMap={};
+            snap.forEach(d=>{
+                const dd=d.data();
+                lessonNotesMap[`${dd.subject}_${dd.week}`]={id:d.id,...dd};
+            });
+            updateWeeklyStats();
+        }
+        
+        function updateWeeklyStats(){
+            const all=Object.values(lessonNotesMap);
+            document.getElementById('statLessons').textContent=all.length;
+            document.getElementById('statPending').textContent=all.filter(n=>n.status==='pending').length;
+            document.getElementById('statApproved').textContent=all.filter(n=>n.status==='approved').length;
+            document.getElementById('statReports').textContent=all.length;
+        }
 
         // Initial data load
-        if(currentClass){loadAllTimetableData().then(()=>{if(approvedList.length)renderApprovedTimetableList();});}
+        if(currentClass){
+            loadAllTimetableData().then(()=>{
+                if(approvedList.length)renderApprovedTimetableList();
+                renderRejectedTable();
+            });
+        }
     </script>
 </body>
 </html>
