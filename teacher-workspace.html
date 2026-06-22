@@ -978,7 +978,6 @@
               <button class="btn btn-outline btn-sm" id="aiThinkBtn" title="Ask the assistant to think first"><i class="fas fa-brain"></i> Think</button>
             </div>
             <div style="display:flex;justify-content:space-between;margin-top:0.5rem;">
-              <!-- UPDATE 1: Changed button id, removed display:none, changed text -->
               <button class="btn btn-success btn-sm" id="aiCopyToEditorBtn">📄 Copy to Editor</button>
               <button class="btn btn-outline btn-sm" id="aiClearChatBtn">Clear Chat</button>
             </div>
@@ -1663,7 +1662,6 @@ Include Nigerian names, locations, naira (₦), and references to Nigerian textb
         });
 
         document.getElementById('logoutBtn').addEventListener('click', async () => {
-            // Clean up listeners before logout
             realtimeListeners.forEach(unsub => unsub());
             realtimeListeners = [];
             await auth.signOut();
@@ -1676,13 +1674,11 @@ Include Nigerian names, locations, naira (₦), and references to Nigerian textb
 
         // ==================== REAL-TIME LISTENERS ====================
         function setupRealtimeListeners() {
-            // Clean up existing listeners
             realtimeListeners.forEach(unsub => unsub());
             realtimeListeners = [];
             
             if (!currentUser) return;
             
-            // Listen for lesson note status changes
             const unsub1 = db.collection('lessonNotes')
                 .where('teacherId', '==', currentUser.uid)
                 .onSnapshot(snap => {
@@ -1706,12 +1702,10 @@ Include Nigerian names, locations, naira (₦), and references to Nigerian textb
                             }
                         }
                     });
-                    // Refresh data
                     loadAllLessonNotes();
                 });
             realtimeListeners.push(unsub1);
             
-            // Listen for syllabus status changes
             const unsub2 = db.collection('syllabus')
                 .where('teacherId', '==', currentUser.uid)
                 .onSnapshot(snap => {
@@ -1732,7 +1726,6 @@ Include Nigerian names, locations, naira (₦), and references to Nigerian textb
                                         'warning', 6000);
                                     logAudit('SYLLABUS_REJECTED', `${data.subject} syllabus`);
                                 }
-                                // Refresh syllabus data
                                 syllabusMap[data.subject] = { id: change.doc.id, ...data };
                                 renderSubjectGrid();
                             }
@@ -1741,7 +1734,6 @@ Include Nigerian names, locations, naira (₦), and references to Nigerian textb
                 });
             realtimeListeners.push(unsub2);
             
-            // Listen for timetable status changes
             const unsub3 = db.collection('timetableProposals')
                 .where('teacherId', '==', currentUser.uid)
                 .onSnapshot(snap => {
@@ -1766,8 +1758,6 @@ Include Nigerian names, locations, naira (₦), and references to Nigerian textb
             realtimeListeners.push(unsub3);
         }
 
-        // Panel Navigation (Dynamic tabs handled in renderWorkspaceTabs)
-        // Initial panel activation
         document.getElementById('panel-timetable').classList.add('active');
 
         // ==================== TIMETABLE FUNCTIONS ====================
@@ -1832,7 +1822,6 @@ Include Nigerian names, locations, naira (₦), and references to Nigerian textb
         async function loadAllTimetableData() {
             if (!currentClass) return;
             
-            // Load draft
             let ds;
             try {
                 ds = await db.collection('timetableProposals')
@@ -1863,7 +1852,6 @@ Include Nigerian names, locations, naira (₦), and references to Nigerian textb
                 draftType = 'academic'; 
             }
             
-            // Load pending
             let ps;
             try {
                 ps = await db.collection('timetableProposals')
@@ -1892,10 +1880,8 @@ Include Nigerian names, locations, naira (₦), and references to Nigerian textb
                 pendingData = []; 
             }
             
-            // Load approved — check BOTH timetables (published) AND timetableProposals (approved)
             approvedList = [];
 
-            // First check timetables collection (published/active)
             const asPublished = await db.collection('timetables')
                 .where('classId', '==', currentClass)
                 .where('published', '==', true)
@@ -1907,7 +1893,6 @@ Include Nigerian names, locations, naira (₦), and references to Nigerian textb
                 source: 'timetables'
             }));
 
-            // Also check timetableProposals that were approved but not yet published
             const asApproved = await db.collection('timetableProposals')
                 .where('classId', '==', currentClass)
                 .where('teacherId', '==', currentUser.uid)
@@ -1920,7 +1905,6 @@ Include Nigerian names, locations, naira (₦), and references to Nigerian textb
                 source: 'proposals'
             }));
             
-            // Load rejected
             let rs;
             try {
                 rs = await db.collection('timetableProposals')
@@ -1954,7 +1938,6 @@ Include Nigerian names, locations, naira (₦), and references to Nigerian textb
             document.getElementById('timetableType').value = draftType;
             loadPublishedTimetables();
             
-            // Render pending table
             if (pendingId) {
                 document.getElementById('pendingTableHeader').innerHTML = '<tr>' + getTHeaders(draftType).map(h => `<th>${h}</th>`).join('') + '</tr>';
                 document.getElementById('pendingBody').innerHTML = pendingData.map(p => {
@@ -1973,7 +1956,6 @@ Include Nigerian names, locations, naira (₦), and references to Nigerian textb
         async function loadPublishedTimetables() {
             if (!currentClass) return;
             
-            // Get both published timetables and approved proposals
             const snap1 = await db.collection('timetables')
                 .where('classId', '==', currentClass)
                 .where('published', '==', true).get();
@@ -1987,7 +1969,6 @@ Include Nigerian names, locations, naira (₦), and references to Nigerian textb
             snap1.forEach(d => allPublished.push({ id: d.id, ...d.data(), source: 'published' }));
             snap2.forEach(d => allPublished.push({ id: d.id, ...d.data(), source: 'approved' }));
             
-            // Deduplicate by type
             const seen = new Set();
             const unique = allPublished.filter(t => {
                 const key = t.type + '_' + t.classId;
@@ -2006,7 +1987,6 @@ Include Nigerian names, locations, naira (₦), and references to Nigerian textb
             }).join('');
         }
         
-        // Timetable sub-tab switching
         document.querySelectorAll('#tt-tabs .sub-tab').forEach(t => t.addEventListener('click', () => { 
             document.querySelectorAll('#tt-tabs .sub-tab').forEach(x => x.classList.remove('active')); 
             t.classList.add('active'); 
@@ -2016,14 +1996,12 @@ Include Nigerian names, locations, naira (₦), and references to Nigerian textb
             if (currentClass) loadAllTimetableData(); 
         }));
         
-        // Timetable type selector
         document.getElementById('timetableType').addEventListener('change', (e) => {
             draftType = e.target.value;
             draftData = [getEmptyPeriod(draftType)];
             renderDraftTable();
         });
         
-        // Create new timetable draft
         document.getElementById('createNewTimetableBtn').addEventListener('click', async () => { 
             draftType = document.getElementById('timetableType').value || 'academic';
             draftData = [getEmptyPeriod(draftType)]; 
@@ -2043,13 +2021,11 @@ Include Nigerian names, locations, naira (₦), and references to Nigerian textb
             showToast('Created', 'New timetable draft created', 'success'); 
         });
         
-        // Add row
         document.getElementById('addTimetableRowBtn').addEventListener('click', () => { 
             draftData.push(getEmptyPeriod(draftType)); 
             renderDraftTable(); 
         });
         
-        // Save draft (timetable)
         document.getElementById('saveDraftBtn').addEventListener('click', async (e) => {
             e.preventDefault();
             setAutoSaveStatus('saving');
@@ -2082,7 +2058,6 @@ Include Nigerian names, locations, naira (₦), and references to Nigerian textb
             }
         });
         
-        // Submit for approval (timetable)
         document.getElementById('submitTimetableBtn').addEventListener('click', async (e) => {
             e.preventDefault();
             const btn = document.getElementById('submitTimetableBtn');
@@ -2117,7 +2092,6 @@ Include Nigerian names, locations, naira (₦), and references to Nigerian textb
             }
         });
         
-        // Delete draft
         document.getElementById('deleteDraftBtn').addEventListener('click', () => { 
             openDeleteModal('Are you sure you want to delete this timetable draft?', async () => { 
                 if (!draftId) return; 
@@ -2131,7 +2105,6 @@ Include Nigerian names, locations, naira (₦), and references to Nigerian textb
             }); 
         });
         
-        // Edit pending - move back to draft
         document.getElementById('editPendingBtn').addEventListener('click', async () => { 
             if (!pendingId) return; 
             await db.collection('timetableProposals').doc(pendingId).update({ status: 'draft' }); 
@@ -2139,7 +2112,6 @@ Include Nigerian names, locations, naira (₦), and references to Nigerian textb
             showToast('Moved', 'Moved back to draft', 'info'); 
         });
 
-        // Approved timetable handling
         function renderApprovedTimetableList() {
             const select = document.getElementById('approvedTypeSelect');
             select.innerHTML = '';
@@ -2183,7 +2155,6 @@ Include Nigerian names, locations, naira (₦), and references to Nigerian textb
             currentApprovedTimetableId = entry.id;
         }
         
-        // Publish approved timetable
         document.getElementById('publishTimetableBtn').addEventListener('click', async () => {
             if (!currentApprovedTimetableId) return;
             await db.collection('timetables').doc(currentApprovedTimetableId).update({ published: true });
@@ -2193,7 +2164,6 @@ Include Nigerian names, locations, naira (₦), and references to Nigerian textb
             showToast('Published', 'Timetable published to students', 'success');
         });
         
-        // Create new draft from approved
         document.getElementById('editApprovedBtn').addEventListener('click', async () => {
             if (!currentApprovedTimetableId) return;
             const doc = await db.collection('timetables').doc(currentApprovedTimetableId).get();
@@ -2218,7 +2188,6 @@ Include Nigerian names, locations, naira (₦), and references to Nigerian textb
             showToast('Draft Created', 'New draft created from approved timetable', 'success');
         });
 
-        // Rejected timetable
         function renderRejectedTable() {
             if (!rejectedId) { 
                 document.getElementById('rejectedBody').innerHTML = '<tr><td colspan="7">No rejected submissions.</td></tr>'; 
@@ -2369,7 +2338,6 @@ Include Nigerian names, locations, naira (₦), and references to Nigerian textb
             showToast('Saved', 'Syllabus draft saved', 'success'); 
         });
         
-        // Submit syllabus
         document.getElementById('submitSyllabusBtn').addEventListener('click', async (e) => {
             e.preventDefault();
             if (!currentSubject) {
@@ -2464,7 +2432,7 @@ Include Nigerian names, locations, naira (₦), and references to Nigerian textb
             document.getElementById('draftEditorSection').style.display = 'none';
         };
         
-        // UPDATE 5: Fixed post-approval visibility with correct submit button handling
+        // UPDATE 5: Fixed post-approval visibility with ALL sections visible
         window.selectDraftWeek = (e, week) => {
             if (e) {
                 document.querySelectorAll('#draftWeekList .week-tab').forEach(t => t.classList.remove('active'));
@@ -2500,6 +2468,8 @@ Include Nigerian names, locations, naira (₦), and references to Nigerian textb
             // Show ALL post-approval sections immediately when approved
             if (lessonNoteApproved) {
                 document.getElementById('postApprovalSections').style.display = 'block';
+                document.getElementById('createOthersBtnContainer').style.display = 'block';
+                document.getElementById('additionalResources').style.display = 'block';
                 document.getElementById('studentResourceSection').style.display = 'block';
                 document.getElementById('handwritingSection').style.display = 'block';
                 document.getElementById('teachingProcessCard').style.display = 'block';
@@ -2507,6 +2477,8 @@ Include Nigerian names, locations, naira (₦), and references to Nigerian textb
                 document.getElementById('pushToTeachBtn').style.display = !note.teachable ? 'inline-block' : 'none';
             } else {
                 document.getElementById('postApprovalSections').style.display = 'none';
+                document.getElementById('createOthersBtnContainer').style.display = 'none';
+                document.getElementById('additionalResources').style.display = 'none';
                 document.getElementById('submitEditorBtn').style.display = 'inline-block';
                 document.getElementById('pushToTeachBtn').style.display = 'none';
             }
@@ -2857,7 +2829,7 @@ Return the entire lesson note in plain text with clear headings. Do NOT use HTML
             }
         });
 
-        // UPDATE 6: DELETED the createOthersBtn click handler (removed from this section)
+        // UPDATE 6: createOthersBtn click handler DELETED
 
         // DELETE LESSON NOTE BUTTON
         document.getElementById('deleteLessonNoteBtn').addEventListener('click', async () => {
