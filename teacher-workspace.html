@@ -837,29 +837,8 @@
             </div>
         </div>
 
-        <!-- PANEL 7: REPORT CARDS (Class Teacher Only) -->
-        <div class="workspace-panel" id="panel-reportCards">
-            <div class="card">
-                <div class="card-header">
-                    <h3><i class="fas fa-file-alt"></i> Report Cards</h3>
-                    <div style="display:flex;gap:0.5rem;">
-                        <select id="rcTerm" style="width:auto;">
-                            <option value="First Term">First Term</option>
-                            <option value="Second Term">Second Term</option>
-                            <option value="Third Term">Third Term</option>
-                        </select>
-                        <select id="rcSession" style="width:auto;">
-                            <option value="2025/2026">2025/2026</option>
-                            <option value="2026/2027">2026/2027</option>
-                        </select>
-                        <button class="btn btn-primary" onclick="generateReportCards()"><i class="fas fa-sync"></i> Generate/Refresh</button>
-                    </div>
-                </div>
-                <div id="reportCardsList">
-                    <p style="color:var(--text-secondary);">Select term and session, then click Generate.</p>
-                </div>
-            </div>
-        </div>
+        <!-- PANEL 7: REPORT CARDS (REMOVED) -->
+        <!-- The report cards panel has been removed as per the update. -->
 
         <!-- PANEL 8: STUDENT REQUESTS (Class Teacher Only) -->
         <div class="workspace-panel" id="panel-studentRequests">
@@ -1575,7 +1554,7 @@ Include Nigerian names, locations, naira (₦), and references to Nigerian textb
             tabsHTML += `<div class="workspace-tab" data-panel="dailyReport"><i class="fas fa-journal-whills"></i> Daily Report</div>`;
             if (isCT) {
                 tabsHTML += `<div class="workspace-tab" data-panel="attendance"><i class="fas fa-clipboard-check"></i> Attendance</div>`;
-                tabsHTML += `<div class="workspace-tab" data-panel="reportCards"><i class="fas fa-file-alt"></i> Report Cards</div>`;
+                // Report Cards tab removed as per update 7
             }
             tabsHTML += `<div class="workspace-tab" data-panel="publishedContent"><i class="fas fa-check-double"></i> Published</div>`;
             tabsHTML += `<div class="workspace-tab" data-panel="insights"><i class="fas fa-chart-line"></i> Insights</div>`;
@@ -1593,7 +1572,7 @@ Include Nigerian names, locations, naira (₦), and references to Nigerian textb
                     else if (panel === 'publishedContent') renderPublishedContent();
                     else if (panel === 'insights') renderInsights();
                     else if (panel === 'attendance') loadAttendance();
-                    else if (panel === 'reportCards') generateReportCards();
+                    // reportCards panel removed
                 });
             });
         }
@@ -2500,6 +2479,7 @@ Include Nigerian names, locations, naira (₦), and references to Nigerian textb
             document.getElementById('draftEditorSection').style.display = 'none';
         };
         
+        // UPDATED selectDraftWeek function (Update 1)
         window.selectDraftWeek = (e, week) => {
             if (e) {
                 document.querySelectorAll('#draftWeekList .week-tab').forEach(t => t.classList.remove('active'));
@@ -2608,124 +2588,139 @@ Include Nigerian names, locations, naira (₦), and references to Nigerian textb
             return completion.choices[0].message.content;
         }
 
-        // =============== AI ASSISTANT (REPLACES OLD AI BUTTONS) ===============
+        // =============== AI ASSISTANT (REPLACED openAIAssistant) ===============
         let aiConversation = [];
         let lastGeneratedLessonNote = null;
 
+        // UPDATED openAIAssistant (Update 4)
         function openAIAssistant() {
-          if (!window.groq) return showToast('Error', 'AI service not available', 'error');
-          document.getElementById('aiAssistantModal').classList.add('active');
-          document.getElementById('aiChatInput').focus();
+            if (!window.groq) return showToast('Error', 'AI service not available', 'error');
+            document.getElementById('aiAssistantModal').classList.add('active');
+            document.getElementById('aiChatInput').focus();
 
-          const subject = currentSubjectDraft || currentSubject || 'Not selected';
-          const week = currentWeekDraft || 'Not selected';
-          const topic = (syllabusMap[currentSubjectDraft]?.weeks || []).find(w => w.week == currentWeekDraft)?.topic || 'Not specified';
+            const subject = currentSubjectDraft || currentSubject || 'Not selected';
+            const week = currentWeekDraft || 'Not selected';
+            const topic = (syllabusMap[currentSubjectDraft]?.weeks || []).find(w => w.week == currentWeekDraft)?.topic || 'Not specified';
+            const className = currentClass || 'JSS 1';
+            const term = 'First Term'; // You can make this dynamic later
 
-          if (!aiConversation.length) {
-            addChatMessage('assistant', `👋 I see you are working on <strong>${escapeHtml(subject)}</strong>, Week ${week}, Topic: <strong>${escapeHtml(topic)}</strong>.<br>I'm here to help you refine your lesson note. Ask me anything about it!`);
-            aiConversation.push({ role: 'assistant', content: `I see you are working on ${subject}, Week ${week}, Topic: ${topic}. I'm here to help you refine your lesson note.` });
-          }
+            if (!aiConversation.length) {
+                const autoMsg = `Generate a complete, detailed, professional NERDC-style lesson note for the following:\nSubject: ${subject}\nClass: ${className}\nWeek: ${week}\nTerm: ${term}\nTopic: ${topic}\n\nUse the exact structure shown in the Nigerian NERDC lesson plan (Behavioural Objectives, Entry Behaviour, Presentation Steps, Evaluation, Assignment, Summary, Board Summary). Include all sections, be very thorough and detailed. Do not ask me for any missing information – use what I provided and fill in reasonable defaults.`;
+                addChatMessage('user', autoMsg);
+                aiConversation = [{ role: 'user', content: autoMsg }];
+                sendAIMessage();
+            }
         }
+
         function closeAIAssistant() {
-          document.getElementById('aiAssistantModal').classList.remove('active');
+            document.getElementById('aiAssistantModal').classList.remove('active');
         }
         window.openAIAssistant = openAIAssistant;
         window.closeAIAssistant = closeAIAssistant;
 
         document.getElementById('aiAssistantModal').addEventListener('click', function(e) {
-          if (e.target === this) closeAIAssistant();
+            if (e.target === this) closeAIAssistant();
         });
 
         async function sendAIMessage() {
-          const input = document.getElementById('aiChatInput');
-          const text = input.value.trim();
-          if (!text) return;
-          input.value = '';
-          addChatMessage('user', text);
-          aiConversation.push({ role: 'user', content: text });
+            const input = document.getElementById('aiChatInput');
+            const text = input.value.trim();
+            if (!text) return;
+            input.value = '';
+            addChatMessage('user', text);
+            aiConversation.push({ role: 'user', content: text });
 
-          const thinking = document.getElementById('aiThinkBtn').classList.contains('active');
-          const assistantMsg = addChatMessage('assistant', thinking ? '🤔 Thinking...' : '✍️ Writing...');
+            const thinking = document.getElementById('aiThinkBtn').classList.contains('active');
+            const assistantMsg = addChatMessage('assistant', thinking ? '🤔 Thinking...' : '✍️ Writing...');
 
-          try {
-            const systemPrompt = `You are a Nigerian teacher AI assistant. Use the NERDC curriculum.
-        Always ask clarifying questions if the teacher's request is missing subject, class, week, or topic.
-        When the teacher is ready, produce the FULL lesson note in this EXACT HTML format:
-        <h2>LESSON NOTE</h2>
-        <h3>Subject:</h3><p>...</p>
-        <h3>Class:</h3><p>...</p>
-        <h3>Week:</h3><p>...</p>
-        <h3>Term:</h3><p>...</p>
-        <h3>Topic:</h3><p>...</p>
-        <h3>Duration:</h3><p>...</p>
-        <h3>Instructional Materials:</h3><ul>...</ul>
-        <h3>Objectives:</h3><ol>...</ol>
-        <h3>Content / Presentation:</h3> (use <h4>Step</h4><p><strong>Teacher:</strong> ...</p><p><strong>Pupils:</strong> ...</p>)
-        <h3>Evaluation:</h3><ol>...</ol>
-        <h3>Assignment:</h3><ol>...</ol>
-        Use Nigerian names, naira (₦), and real Nigerian textbooks where possible.
-        If the teacher asks you to "think", first explain your reasoning inside a <div class="thinking"> block, then give the final answer.`;
- 
-            const messages = [
-              { role: 'system', content: systemPrompt },
-              ...aiConversation
-            ];
+            try {
+                // UPDATED system prompt (Update 5)
+                const systemPrompt = `You are a professional Nigerian teacher who writes complete, extremely detailed, and well-structured lesson notes using the NERDC curriculum.
+Your task is to produce a FULL lesson note for the given subject, class, week, term, and topic.
+You MUST follow this exact structure and include every section, no matter what. Do NOT ask questions back. Use the information provided.
 
-            if (thinking) {
-              messages.push({ role: 'system', content: 'Now think step-by-step, output your reasoning in a <div class="thinking"> block, then provide the final answer.' });
+The required sections are:
+1. LESSON NOTE header (School, Subject, Class, Term, Week, Date, Duration, Topic, Sub-topic, Teacher's Name, Reference Materials)
+2. LESSON PLAN table (Subject, Class, Topic, Duration, Teaching Method, Instructional Materials, Previous Knowledge, Behavioral Objectives)
+3. BEHAVIOURAL OBJECTIVES (at least 4-6 measurable objectives)
+4. ENTRY BEHAVIOUR (Teacher asks specific questions, pupils respond)
+5. PRESENTATION (Steps 1 to 6 or more, each with detailed teacher and pupil activities)
+   Step 1: Meaning of ...
+   Step 2: Sources / Types ...
+   Step 3: Properties / Characteristics ...
+   Step 4: Uses / Applications ...
+   Step 5: Importance / Significance ...
+   Step 6: Health / Safety / Cleanliness ...
+6. CLASS ACTIVITY (at least 3 activities)
+7. EVALUATION (at least 5 questions)
+8. ASSIGNMENT (at least 3 tasks)
+9. SUMMARY (concise paragraph)
+10. BOARD SUMMARY (bulleted key points)
+
+Write in full sentences, be extremely detailed, and use Nigerian names, textbooks, locations, and Naira (₦) where appropriate.
+Return the entire lesson note in plain text with clear headings. Do NOT use HTML tags except for basic formatting like new lines.`;
+
+                const messages = [
+                    { role: 'system', content: systemPrompt },
+                    ...aiConversation
+                ];
+
+                if (thinking) {
+                    messages.push({ role: 'system', content: 'Now think step-by-step, output your reasoning in a <div class="thinking"> block, then provide the final answer.' });
+                }
+
+                // UPDATED max_tokens to 4000 (Update 6)
+                const completion = await window.groq.chat.completions.create({
+                    messages,
+                    model: 'llama-3.3-70b-versatile',
+                    temperature: 0.5,
+                    max_tokens: 4000,
+                });
+
+                const reply = completion.choices[0].message.content;
+                assistantMsg.innerHTML = reply;
+                aiConversation.push({ role: 'assistant', content: reply });
+
+                // If the reply contains a full lesson note, show the "Apply to Editor" button
+                if (reply.includes('<h2>LESSON NOTE</h2>')) {
+                    lastGeneratedLessonNote = reply;
+                    document.getElementById('aiApplyBtn').style.display = 'inline-block';
+                } else {
+                    document.getElementById('aiApplyBtn').style.display = 'none';
+                }
+            } catch (err) {
+                assistantMsg.innerHTML = '❌ Error: ' + err.message;
+                aiConversation.pop(); // remove user message so it can be resent
             }
-
-            const completion = await window.groq.chat.completions.create({
-              messages,
-              model: 'llama-3.3-70b-versatile',
-              temperature: 0.5,
-              max_tokens: 3000,
-            });
-
-            const reply = completion.choices[0].message.content;
-            assistantMsg.innerHTML = reply;
-            aiConversation.push({ role: 'assistant', content: reply });
-
-            // If the reply contains a full lesson note, show the "Apply to Editor" button
-            if (reply.includes('<h2>LESSON NOTE</h2>')) {
-              lastGeneratedLessonNote = reply;
-              document.getElementById('aiApplyBtn').style.display = 'inline-block';
-            } else {
-              document.getElementById('aiApplyBtn').style.display = 'none';
-            }
-          } catch (err) {
-            assistantMsg.innerHTML = '❌ Error: ' + err.message;
-            aiConversation.pop(); // remove user message so it can be resent
-          }
         }
 
         function addChatMessage(role, html) {
-          const div = document.createElement('div');
-          div.className = `ai-message ${role}`;
-          div.innerHTML = html;
-          document.getElementById('aiChatHistory').appendChild(div);
-          document.getElementById('aiChatHistory').scrollTop = document.getElementById('aiChatHistory').scrollHeight;
-          return div;
+            const div = document.createElement('div');
+            div.className = `ai-message ${role}`;
+            div.innerHTML = html;
+            document.getElementById('aiChatHistory').appendChild(div);
+            document.getElementById('aiChatHistory').scrollTop = document.getElementById('aiChatHistory').scrollHeight;
+            return div;
         }
 
         document.getElementById('aiSendBtn').addEventListener('click', sendAIMessage);
         document.getElementById('aiChatInput').addEventListener('keypress', (e) => {
-          if (e.key === 'Enter') sendAIMessage();
+            if (e.key === 'Enter') sendAIMessage();
         });
         document.getElementById('aiThinkBtn').addEventListener('click', function() {
-          this.classList.toggle('active');
+            this.classList.toggle('active');
         });
         document.getElementById('aiApplyBtn').addEventListener('click', () => {
-          if (lastGeneratedLessonNote) {
-            quill.root.innerHTML = lastGeneratedLessonNote;
-            showToast('Applied', 'Lesson note inserted into editor', 'success');
-            closeAIAssistant();
-          }
+            if (lastGeneratedLessonNote) {
+                quill.root.innerHTML = lastGeneratedLessonNote;
+                showToast('Applied', 'Lesson note inserted into editor', 'success');
+                closeAIAssistant();
+            }
         });
         document.getElementById('aiClearChatBtn').addEventListener('click', () => {
-          aiConversation = [];
-          document.getElementById('aiChatHistory').innerHTML = '<div class="ai-message assistant">Hello! I can help you create a complete lesson note.<br>Tell me the <strong>Subject, Class, Week, and Topic</strong>.</div>';
-          document.getElementById('aiApplyBtn').style.display = 'none';
+            aiConversation = [];
+            document.getElementById('aiChatHistory').innerHTML = '<div class="ai-message assistant">Hello! I can help you create a complete lesson note.<br>Tell me the <strong>Subject, Class, Week, and Topic</strong>.</div>';
+            document.getElementById('aiApplyBtn').style.display = 'none';
         });
 
         // Replace the old AI button listeners with the assistant
@@ -2881,6 +2876,13 @@ Include Nigerian names, locations, naira (₦), and references to Nigerian textb
             }
         });
 
+        // CREATE ADDITIONAL RESOURCES BUTTON LISTENER (Update 2) – inserted after saveEditorBtn
+        document.getElementById('createOthersBtn').addEventListener('click', () => {
+            document.getElementById('additionalResources').style.display = 'block';
+            document.getElementById('createOthersBtnContainer').style.display = 'none';
+            showToast('Opened', 'You can now create additional resources.', 'info');
+        });
+
         // DELETE LESSON NOTE BUTTON
          document.getElementById('deleteLessonNoteBtn').addEventListener('click', async () => {
             if (!currentSubjectDraft || !currentWeekDraft) return;
@@ -2928,7 +2930,7 @@ Include Nigerian names, locations, naira (₦), and references to Nigerian textb
                 btn.innerHTML = origHTML;
             }
         });
-        
+
         // Updated submit editor button (UPDATE 3) with DEBUG LOGGING
         document.getElementById('submitEditorBtn').addEventListener('click', async (e) => {
             console.log('🟢 Submit button clicked');
@@ -3493,13 +3495,6 @@ Include Nigerian names, locations, naira (₦), and references to Nigerian textb
             }
         });
 
-        // Create Additional Resources button listener
-        document.getElementById('createOthersBtn').addEventListener('click', () => {
-            document.getElementById('additionalResources').style.display = 'block';
-            document.getElementById('createOthersBtnContainer').style.display = 'none';
-            showToast('Opened', 'You can now create additional resources.', 'info');
-        });
-
         // AI Generate for Teaching Process and Resources
         // AI Generate TP (UPDATE 11)
         document.getElementById('aiGenerateTPBtn').addEventListener('click', async (e) => {
@@ -3727,13 +3722,12 @@ Include Nigerian names, locations, naira (₦), and references to Nigerian textb
             }
         });
 
-        // Handwriting image generation (Replicate + Cloudinary)
+        // UPDATED Handwriting image generation (Update 3) – Replicate + Cloudinary
         document.getElementById('generateHandwritingBtn').addEventListener('click', async () => {
             const prompt = document.getElementById('handwritingPrompt').value.trim();
             if (!prompt) return showToast('Error', 'Write a prompt first', 'warning');
             if (!currentSubjectDraft || !currentWeekDraft) return showToast('Error', 'Select a subject and week first', 'error');
 
-            // Get Replicate API key from Remote Config (param name = Judahimage)
             let replicateKey = null;
             try {
                 replicateKey = remoteConfig.getString('Judahimage');
@@ -3744,7 +3738,6 @@ Include Nigerian names, locations, naira (₦), and references to Nigerian textb
 
             showLoading();
             try {
-                // 1. Generate image with Replicate (Stable Diffusion SDXL)
                 const replicateRes = await fetch('https://api.replicate.com/v1/predictions', {
                     method: 'POST',
                     headers: {
@@ -3771,7 +3764,6 @@ Include Nigerian names, locations, naira (₦), and references to Nigerian textb
                 const prediction = await replicateRes.json();
                 const predictionId = prediction.id;
 
-                // 2. Poll for the result (max 60 seconds)
                 let imageUrl = null;
                 let attempts = 0;
                 while (!imageUrl && attempts < 30) {
@@ -3789,7 +3781,6 @@ Include Nigerian names, locations, naira (₦), and references to Nigerian textb
                 }
                 if (!imageUrl) throw new Error('Image generation timed out');
 
-                // 3. Upload to YOUR Cloudinary
                 const cloudName = 'dda7kpir8';
                 const uploadPreset = 'Judahschool';
                 const formData = new FormData();
@@ -3806,7 +3797,6 @@ Include Nigerian names, locations, naira (₦), and references to Nigerian textb
 
                 const finalUrl = cloudData.secure_url;
 
-                // 4. Save to Firestore
                 handwritingImages.push({ url: finalUrl, prompt: prompt, createdAt: new Date().toISOString() });
                 renderHandwritingImages();
 
@@ -4125,54 +4115,8 @@ Include Nigerian names, locations, naira (₦), and references to Nigerian textb
             }
         });
 
-        // ==================== REPORT CARDS (Class Teacher) ====================
-        async function generateReportCards() {
-            const term = document.getElementById('rcTerm').value;
-            const session = document.getElementById('rcSession').value;
-            
-            const studentsSnap = await db.collection('users')
-                .where('role', '==', 'student')
-                .where('class', '==', currentClass)
-                .where('approved', '==', true)
-                .get();
-            
-            const students = studentsSnap.docs.map(d => ({ id: d.id, ...d.data() }));
-            
-            const scoresSnap = await db.collection('scores')
-                .where('classId', '==', currentClass)
-                .where('term', '==', term)
-                .where('session', '==', session)
-                .get();
-            
-            const scoresByStudent = {};
-            scoresSnap.forEach(d => {
-                const s = d.data();
-                if (!scoresByStudent[s.studentId]) scoresByStudent[s.studentId] = [];
-                scoresByStudent[s.studentId].push(s);
-            });
-            
-            document.getElementById('reportCardsList').innerHTML = students.map(s => {
-                const scores = scoresByStudent[s.id] || [];
-                const avg = scores.length ? Math.round(scores.reduce((sum, sc) => sum + (sc.score || 0), 0) / scores.length) : 0;
-                return `<div class="card" style="padding:1rem;">
-                    <div style="display:flex;justify-content:space-between;align-items:center;">
-                        <div>
-                            <strong>${escapeHtml(s.firstName || '')} ${escapeHtml(s.surname || '')}</strong>
-                            <span style="color:var(--text-muted);margin-left:0.5rem;">${escapeHtml(s.userId || '')}</span>
-                        </div>
-                        <div>
-                            <span class="badge badge-info">${scores.length} scores</span>
-                            <span class="badge badge-success">Avg: ${avg}%</span>
-                            <button class="btn btn-primary btn-sm" onclick="viewReportCard('${s.id}')"><i class="fas fa-eye"></i> View</button>
-                        </div>
-                    </div>
-                </div>`;
-            }).join('') || '<p>No students found.</p>';
-        }
-
-        window.viewReportCard = (studentId) => {
-            showToast('Coming Soon', 'Detailed report card view will be available soon.', 'info');
-        };
+        // ==================== REPORT CARDS (REMOVED) ====================
+        // Report cards panel and tab removed as per update 7.
 
         // ==================== STUDENT REQUESTS (Class Teacher) ====================
         async function loadStudentRequests() {
