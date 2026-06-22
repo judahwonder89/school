@@ -978,7 +978,7 @@
               <button class="btn btn-outline btn-sm" id="aiThinkBtn" title="Ask the assistant to think first"><i class="fas fa-brain"></i> Think</button>
             </div>
             <div style="display:flex;justify-content:space-between;margin-top:0.5rem;">
-              <button class="btn btn-success btn-sm" id="aiApplyBtn" style="display:none;">📄 Move to Editor</button>
+              <button class="btn btn-success btn-sm" id="aiCopyToEditorBtn">📄 Copy to Editor</button>
               <button class="btn btn-outline btn-sm" id="aiClearChatBtn">Clear Chat</button>
             </div>
           </div>
@@ -2464,7 +2464,7 @@ Include Nigerian names, locations, naira (₦), and references to Nigerian textb
             document.getElementById('draftEditorSection').style.display = 'none';
         };
         
-        // UPDATED selectDraftWeek function (Update 1) — FIXED post-approval visibility
+        // UPDATED selectDraftWeek function (Update 5) — FIXED post-approval visibility
         window.selectDraftWeek = (e, week) => {
             if (e) {
                 document.querySelectorAll('#draftWeekList .week-tab').forEach(t => t.classList.remove('active'));
@@ -2497,43 +2497,20 @@ Include Nigerian names, locations, naira (₦), and references to Nigerian textb
 
             lessonNoteApproved = note.status === 'approved';
 
-            // FIX: Show post-approval sections wrapper when approved
-            const postApprovalSections = document.getElementById('postApprovalSections');
-            const createContainer = document.getElementById('createOthersBtnContainer');
-            const createBtn = document.getElementById('createOthersBtn');
-            const additionalResources = document.getElementById('additionalResources');
-
+            // Show ALL post-approval sections immediately when approved
             if (lessonNoteApproved) {
-                // Make the wrapper visible
-                postApprovalSections.style.display = 'block';
-
-                // Check if additional resources already exist
-                const hasResources = note.teachingProcess || note.studentResource || 
-                                     (note.handwritingImages && note.handwritingImages.length) || 
-                                     (note.videoLinks && note.videoLinks.length);
-
-                if (hasResources) {
-                    // Resources exist — show them directly, hide the "create" button
-                    additionalResources.style.display = 'block';
-                    createContainer.style.display = 'none';
-                } else {
-                    // No resources yet — show the "Create Additional Resources" button
-                    additionalResources.style.display = 'none';
-                    createContainer.style.display = 'block';
-                    createBtn.style.display = 'inline-flex';
-                }
-
+                document.getElementById('postApprovalSections').style.display = 'block';
+                document.getElementById('studentResourceSection').style.display = 'block';
+                document.getElementById('handwritingSection').style.display = 'block';
+                document.getElementById('teachingProcessCard').style.display = 'block';
+                document.getElementById('submitEditorBtn').style.display = 'none';
                 document.getElementById('pushToTeachBtn').style.display = !note.teachable ? 'inline-block' : 'none';
             } else {
-                // Not approved — hide everything
-                postApprovalSections.style.display = 'none';
-                additionalResources.style.display = 'none';
-                createContainer.style.display = 'none';
+                document.getElementById('postApprovalSections').style.display = 'none';
                 document.getElementById('pushToTeachBtn').style.display = 'none';
             }
 
             contentMerged = !!(note.lessonNote);
-            document.getElementById('submitEditorBtn').style.display = (!lessonNoteApproved) ? 'inline-block' : 'none';
             document.getElementById('deleteLessonNoteBtn').style.display = note.id ? 'inline-flex' : 'none';
 
             studentQuill.root.innerHTML = note.studentResource || '';
@@ -2685,14 +2662,8 @@ Return the entire lesson note in plain text with clear headings. Do NOT use HTML
                 assistantMsg.innerHTML = reply;
                 aiConversation.push({ role: 'assistant', content: reply });
 
-                // FIX: Always store the last response and show "Move to Editor" button
-                // when the response is substantial (more than 200 characters)
+                // Always store the last response
                 lastGeneratedLessonNote = reply;
-                if (reply && reply.length > 200) {
-                    document.getElementById('aiApplyBtn').style.display = 'inline-block';
-                } else {
-                    document.getElementById('aiApplyBtn').style.display = 'none';
-                }
             } catch (err) {
                 assistantMsg.innerHTML = '❌ Error: ' + err.message;
                 aiConversation.pop(); // remove user message so it can be resent
@@ -2715,18 +2686,19 @@ Return the entire lesson note in plain text with clear headings. Do NOT use HTML
         document.getElementById('aiThinkBtn').addEventListener('click', function() {
             this.classList.toggle('active');
         });
-        document.getElementById('aiApplyBtn').addEventListener('click', () => {
+        document.getElementById('aiCopyToEditorBtn').addEventListener('click', () => {
             if (lastGeneratedLessonNote) {
-                quill.root.innerHTML = lastGeneratedLessonNote;
-                showToast('Applied', 'Lesson note inserted into editor', 'success');
+                quill.setText(lastGeneratedLessonNote);
+                showToast('Copied', 'AI content copied to Lesson Note Editor', 'success');
                 closeAIAssistant();
+            } else {
+                showToast('Nothing', 'No AI content to copy. Generate content first.', 'warning');
             }
         });
         document.getElementById('aiClearChatBtn').addEventListener('click', () => {
             aiConversation = [];
             lastGeneratedLessonNote = null;
             document.getElementById('aiChatHistory').innerHTML = '<div class="ai-message assistant">Hello! I can help you create a complete lesson note.<br>Tell me the <strong>Subject, Class, Week, and Topic</strong>.</div>';
-            document.getElementById('aiApplyBtn').style.display = 'none';
         });
 
         // Replace the old AI button listeners with the assistant
@@ -2882,22 +2854,14 @@ Return the entire lesson note in plain text with clear headings. Do NOT use HTML
             }
         });
 
-        // CREATE ADDITIONAL RESOURCES BUTTON LISTENER (Update 2) — FIXED to show parent wrapper
-        document.getElementById('createOthersBtn').addEventListener('click', () => {
-            document.getElementById('postApprovalSections').style.display = 'block';
-            document.getElementById('additionalResources').style.display = 'block';
-            document.getElementById('createOthersBtnContainer').style.display = 'none';
-            showToast('Opened', 'You can now create additional resources.', 'info');
-        });
-
         // DELETE LESSON NOTE BUTTON
-         document.getElementById('deleteLessonNoteBtn').addEventListener('click', async () => {
+        document.getElementById('deleteLessonNoteBtn').addEventListener('click', async () => {
             if (!currentSubjectDraft || !currentWeekDraft) return;
             const key = `${currentSubjectDraft}_${currentWeekDraft}`;
             const existing = lessonNotesMap[key];
             if (!existing?.id) return showToast('Error', 'Nothing to delete', 'error');
             if (!confirm(`Delete the lesson note for ${currentSubjectDraft} Week ${currentWeekDraft}?`)) return;
-            await db.collection('lessonNotes').doc(existing.id).delete();
+            await  db.collection('lessonNotes').doc(existing.id).delete();
             delete lessonNotesMap[key];
             quill.setText('');
             document.getElementById('draftEditorSection').style.display = 'none';
