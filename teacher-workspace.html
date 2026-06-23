@@ -838,7 +838,6 @@
         </div>
 
         <!-- PANEL 7: REPORT CARDS (REMOVED) -->
-        <!-- The report cards panel has been removed as per the update. -->
 
         <!-- PANEL 8: STUDENT REQUESTS (Class Teacher Only) -->
         <div class="workspace-panel" id="panel-studentRequests">
@@ -1531,7 +1530,6 @@ Include Nigerian names, locations, naira (₦), and references to Nigerian textb
             sel.addEventListener('change', e => { 
                 currentClass = e.target.value; 
                 if (currentClass) {
-                    // Re-filter subjects based on class
                     if (isSubjectTeacher && !isClassTeacher) {
                         const classSubjects = subjectClassMap[currentClass] || [];
                         subjects = classSubjects.length ? classSubjects : (userData.subjects || []);
@@ -1554,7 +1552,6 @@ Include Nigerian names, locations, naira (₦), and references to Nigerian textb
             tabsHTML += `<div class="workspace-tab" data-panel="dailyReport"><i class="fas fa-journal-whills"></i> Daily Report</div>`;
             if (isCT) {
                 tabsHTML += `<div class="workspace-tab" data-panel="attendance"><i class="fas fa-clipboard-check"></i> Attendance</div>`;
-                // Report Cards tab removed as per update 7
             }
             tabsHTML += `<div class="workspace-tab" data-panel="publishedContent"><i class="fas fa-check-double"></i> Published</div>`;
             tabsHTML += `<div class="workspace-tab" data-panel="insights"><i class="fas fa-chart-line"></i> Insights</div>`;
@@ -1572,7 +1569,6 @@ Include Nigerian names, locations, naira (₦), and references to Nigerian textb
                     else if (panel === 'publishedContent') renderPublishedContent();
                     else if (panel === 'insights') renderInsights();
                     else if (panel === 'attendance') loadAttendance();
-                    // reportCards panel removed
                 });
             });
         }
@@ -1594,17 +1590,15 @@ Include Nigerian names, locations, naira (₦), and references to Nigerian textb
             currentUser = user; 
             userData = doc.data();
 
-            // UPDATE 7: Single role assignment block (duplicate removed)
+            // Single role assignment block
             isClassTeacher = userData.teacherType === 'classTeacher' || userData.teacherType === 'both';
             isSubjectTeacher = userData.teacherType === 'subjectTeacher' || userData.teacherType === 'both';
             classTeacherFor = userData.classTeacherFor || [];
             subjectClassMap = userData.subjectClassMap || {};
 
-            // Get all assigned classes
             allAssignedClasses = userData.classesTeaching || (userData.classTeaching ? [userData.classTeaching] : []);
             currentClass = userData.classTeaching || allAssignedClasses[0] || null;
 
-            // Filter subjects based on teacher type
             if (isSubjectTeacher && !isClassTeacher) {
                 const classSubjects = subjectClassMap[currentClass] || [];
                 subjects = classSubjects.length ? classSubjects : (userData.subjects || []);
@@ -1612,10 +1606,8 @@ Include Nigerian names, locations, naira (₦), and references to Nigerian textb
                 subjects = userData.subjects || [];
             }
 
-            // Check if current class is one where teacher is class teacher
             isClassTeacherForCurrentClass = classTeacherFor.includes(currentClass);
             
-            // Setup profile display
             const profilePic = document.getElementById('profilePic');
             if (userData.photoURL) { 
                 profilePic.innerHTML = `<img src="${userData.photoURL}" style="width:100%;height:100%;object-fit:cover;border-radius:50%;" alt="Profile">`; 
@@ -1626,10 +1618,7 @@ Include Nigerian names, locations, naira (₦), and references to Nigerian textb
             
             updatePointsDisplay();
             populateClassSelector();
-            
-            // Render dynamic tabs based on role
             renderWorkspaceTabs(isClassTeacherForCurrentClass, isSubjectTeacher);
-            
             renderSubjectGrid();
             await loadAllLessonNotes();
             const today = new Date();
@@ -1643,11 +1632,8 @@ Include Nigerian names, locations, naira (₦), and references to Nigerian textb
             loadMyReports();
             updateWeeklyStats();
             loadNotifications();
-            
-            // Setup real-time listeners
             setupRealtimeListeners();
             
-            // Initialize Groq AI
             try {
                 await remoteConfig.fetchAndActivate();
                 const groqKey = remoteConfig.getString('groq_api_key');
@@ -2401,6 +2387,7 @@ Include Nigerian names, locations, naira (₦), and references to Nigerian textb
             }).join('');
         }
         
+        // FIXED: Now includes approved weeks so post-approval resources are accessible
         window.selectDraftSubject = (e, subject) => {
             if (e) e.target.closest('.subject-card').classList.add('active');
             currentSubjectDraft = subject;
@@ -2413,7 +2400,8 @@ Include Nigerian names, locations, naira (₦), and references to Nigerian textb
             const draftWeeks = syllabusWeeks.filter(w => {
                 if (!w.week && w.week !== 0) return false;
                 const note = allNotes.find(n => n.week == w.week);
-                return !note || note.status === 'draft' || !note.status;
+                // Include weeks with no note, draft, approved, or no status
+                return !note || note.status === 'draft' || note.status === 'approved' || !note.status;
             });
 
             if (!draftWeeks.length) {
@@ -2432,7 +2420,7 @@ Include Nigerian names, locations, naira (₦), and references to Nigerian textb
             document.getElementById('draftEditorSection').style.display = 'none';
         };
         
-        // UPDATE 5: Fixed post-approval visibility with ALL sections visible
+        // Fixed post-approval visibility with ALL sections visible
         window.selectDraftWeek = (e, week) => {
             if (e) {
                 document.querySelectorAll('#draftWeekList .week-tab').forEach(t => t.classList.remove('active'));
@@ -2575,7 +2563,6 @@ Include Nigerian names, locations, naira (₦), and references to Nigerian textb
             if (e.target === this) closeAIAssistant();
         });
 
-        // UPDATE 2: Fixed sendAIMessage() - removed conditional block, always store last response
         async function sendAIMessage() {
             const input = document.getElementById('aiChatInput');
             const text = input.value.trim();
@@ -2658,7 +2645,6 @@ Return the entire lesson note in plain text with clear headings. Do NOT use HTML
             this.classList.toggle('active');
         });
 
-        // UPDATE 3: New aiCopyToEditorBtn click handler using quill.setText()
         document.getElementById('aiCopyToEditorBtn').addEventListener('click', () => {
             if (lastGeneratedLessonNote) {
                 quill.setText(lastGeneratedLessonNote);
@@ -2669,14 +2655,12 @@ Return the entire lesson note in plain text with clear headings. Do NOT use HTML
             }
         });
 
-        // UPDATE 4: Fix aiClearChatBtn - reset lastGeneratedLessonNote
         document.getElementById('aiClearChatBtn').addEventListener('click', () => {
             aiConversation = [];
             lastGeneratedLessonNote = null;
             document.getElementById('aiChatHistory').innerHTML = '<div class="ai-message assistant">Hello! I can help you create a complete lesson note.<br>Tell me the <strong>Subject, Class, Week, and Topic</strong>.</div>';
         });
 
-        // Replace the old AI button listeners with the assistant
         document.getElementById('useAIContentBtn').addEventListener('click', openAIAssistant);
         const aiAssistantBtn2 = document.getElementById('useAIAssistantLessonNoteBtn');
         if (aiAssistantBtn2) aiAssistantBtn2.addEventListener('click', openAIAssistant);
@@ -2709,7 +2693,6 @@ Return the entire lesson note in plain text with clear headings. Do NOT use HTML
             return h;
         }
         
-        // Auto-format
         async function aiFormatEditor(quillInstance) {
             if (!window.groq) return showToast('Error', 'AI service not available', 'error');
             const content = quillInstance.getText();
@@ -2737,7 +2720,6 @@ Return the entire lesson note in plain text with clear headings. Do NOT use HTML
         document.getElementById('autoFormatTPBtn').addEventListener('click', () => aiFormatEditor(teachingProcessQuill));
         document.getElementById('autoFormatResourceBtn').addEventListener('click', () => aiFormatEditor(studentQuill));
 
-        // File upload
         document.getElementById('fileUploadBtn').addEventListener('click', () => document.getElementById('fileUploadInput').click());
         document.getElementById('fileUploadInput').addEventListener('change', (e) => {
             const file = e.target.files[0]; 
@@ -2750,7 +2732,6 @@ Return the entire lesson note in plain text with clear headings. Do NOT use HTML
             reader.readAsText(file);
         });
 
-        // Save & Submit Lesson Note
         async function checkDuplicate(subject, week) { 
             try {
                 const snap = await db.collection('lessonNotes')
@@ -2772,7 +2753,6 @@ Return the entire lesson note in plain text with clear headings. Do NOT use HTML
             }
         }
         
-        // Save editor button
         document.getElementById('saveEditorBtn').addEventListener('click', async (e) => {
             console.log('🟢 Save Draft button clicked');
             e.preventDefault();
@@ -2829,8 +2809,6 @@ Return the entire lesson note in plain text with clear headings. Do NOT use HTML
             }
         });
 
-        // UPDATE 6: createOthersBtn click handler DELETED
-
         // DELETE LESSON NOTE BUTTON
         document.getElementById('deleteLessonNoteBtn').addEventListener('click', async () => {
             if (!currentSubjectDraft || !currentWeekDraft) return;
@@ -2846,7 +2824,6 @@ Return the entire lesson note in plain text with clear headings. Do NOT use HTML
             showToast('Deleted', 'Lesson note removed', 'success');
         });
 
-        // Save as Template button
         document.getElementById('saveAsTemplateBtn').addEventListener('click', async (e) => {
             e.preventDefault();
             if (!currentSubjectDraft || !currentWeekDraft) return showToast('Error', 'Select a subject and week first', 'error');
@@ -2879,7 +2856,7 @@ Return the entire lesson note in plain text with clear headings. Do NOT use HTML
             }
         });
 
-        // Submit editor button
+        // FIXED: Submit validation now checks HTML content for Objectives and Evaluation
         document.getElementById('submitEditorBtn').addEventListener('click', async (e) => {
             console.log('🟢 Submit button clicked');
             e.preventDefault();
@@ -2898,7 +2875,9 @@ Return the entire lesson note in plain text with clear headings. Do NOT use HTML
                 console.warn('⛔ Submit blocked - word count:', wc);
                 return showToast('Incomplete', `Only ${wc} words. Minimum 200 required for submission.`, 'warning');
             }
-            if (!lnText.includes('Objectives') || !lnText.includes('Evaluation')) {
+            // Check BOTH plain text AND HTML for Objectives and Evaluation
+            const combinedCheck = (lnHtml + ' ' + lnText).toLowerCase();
+            if (!combinedCheck.includes('objectives') || !combinedCheck.includes('evaluation')) {
                 console.warn('⛔ Submit blocked - missing sections');
                 return showToast('Missing Sections', 'Include "Objectives" and "Evaluation" sections.', 'warning');
             }
@@ -2954,7 +2933,6 @@ Return the entire lesson note in plain text with clear headings. Do NOT use HTML
             }
         });
         
-        // Push to Teach button
         document.getElementById('pushToTeachBtn').addEventListener('click', async (e) => {
             e.preventDefault();
             const key = `${currentSubjectDraft}_${currentWeekDraft}`;
@@ -2981,7 +2959,6 @@ Return the entire lesson note in plain text with clear headings. Do NOT use HTML
             }
         });
 
-        // Submitted, Published, Library tabs
         function renderSubmittedTab() {
             if (!currentSubjectDraft) {
                 document.getElementById('submittedNotesList').innerHTML = '<p style="color:var(--text-secondary);">Select a subject in the Drafts tab first.</p>';
@@ -3119,7 +3096,6 @@ Return the entire lesson note in plain text with clear headings. Do NOT use HTML
             }
         }
         
-        // Submit Daily Report
         document.getElementById('submitReportBtn').addEventListener('click', async (e) => {
             e.preventDefault();
             const date = document.getElementById('reportDate').value;
@@ -3297,7 +3273,6 @@ Return the entire lesson note in plain text with clear headings. Do NOT use HTML
 
         quill.on('text-change', () => { setAutoSaveStatus('unsaved'); });
 
-        // Video and Handwriting
         function renderVideoList() {
             const l = document.getElementById('videoList');
             if (!videoLinks.length) { 
@@ -3326,8 +3301,6 @@ Return the entire lesson note in plain text with clear headings. Do NOT use HTML
         }
         window.deleteHandwritingImage = i => { handwritingImages.splice(i, 1); renderHandwritingImages(); };
 
-        // Post-approval section handlers
-        // Save Teaching Process
         document.getElementById('saveTeachingProcessBtn').addEventListener('click', async (e) => {
             e.preventDefault();
             if (!currentSubjectDraft || !currentWeekDraft) return;
@@ -3353,7 +3326,6 @@ Return the entire lesson note in plain text with clear headings. Do NOT use HTML
             }
         });
         
-        // Save Student Resource
         document.getElementById('saveStudentResourceBtn').addEventListener('click', async (e) => {
             e.preventDefault();
             if (!currentSubjectDraft || !currentWeekDraft) return;
@@ -3379,7 +3351,6 @@ Return the entire lesson note in plain text with clear headings. Do NOT use HTML
             }
         });
         
-        // Move to Teach
         document.getElementById('moveToTeachBtn').addEventListener('click', async (e) => {
             e.preventDefault();
             if (!currentSubjectDraft || !currentWeekDraft) return;
@@ -3405,7 +3376,6 @@ Return the entire lesson note in plain text with clear headings. Do NOT use HTML
             }
         });
         
-        // Share to Library
         document.getElementById('shareToLibraryBtn').addEventListener('click', async (e) => {
             e.preventDefault();
             if (!currentSubjectDraft || !currentWeekDraft) return;
@@ -3442,8 +3412,6 @@ Return the entire lesson note in plain text with clear headings. Do NOT use HTML
             }
         });
 
-        // AI Generate for Teaching Process and Resources
-        // AI Generate TP
         document.getElementById('aiGenerateTPBtn').addEventListener('click', async (e) => {
             e.preventDefault();
             if (!window.groq) return showToast('Error', 'AI service not available', 'error');
@@ -3469,7 +3437,6 @@ Return the entire lesson note in plain text with clear headings. Do NOT use HTML
             }
         });
         
-        // AI Generate Resource
         document.getElementById('aiGenerateResourceBtn').addEventListener('click', async (e) => {
             e.preventDefault();
             if (!window.groq) return showToast('Error', 'AI service not available', 'error');
@@ -3495,7 +3462,6 @@ Return the entire lesson note in plain text with clear headings. Do NOT use HTML
             }
         });
 
-        // Lesson Notes sub-tab switching
         document.querySelectorAll('#ln-subtabs .sub-tab').forEach(t => t.addEventListener('click', () => { 
             document.querySelectorAll('#ln-subtabs .sub-tab').forEach(x => x.classList.remove('active')); 
             t.classList.add('active'); 
@@ -3508,7 +3474,6 @@ Return the entire lesson note in plain text with clear headings. Do NOT use HTML
             else if (t.dataset.ln === 'library') loadLibraryTab(); 
         }));
         
-        // Add subject
         document.getElementById('addSubjectBtn').addEventListener('click', async () => { 
             const name = prompt('Enter new subject name:'); 
             if (!name?.trim()) return; 
@@ -3519,7 +3484,6 @@ Return the entire lesson note in plain text with clear headings. Do NOT use HTML
             showToast('Added', 'Subject added successfully', 'success'); 
         });
 
-        // Delete subject via event delegation
         document.addEventListener('click', async (e) => {
             const delBtn = e.target.closest('.delete-subject-btn');
             if (!delBtn) return;
@@ -3562,7 +3526,6 @@ Return the entire lesson note in plain text with clear headings. Do NOT use HTML
             }
         });
         
-        // Template button
         document.getElementById('useTemplateBtn').addEventListener('click', () => { 
             if (!currentWeekDraft || !currentSubjectDraft) return; 
             const topic = syllabusMap[currentSubjectDraft]?.weeks?.find(w => w.week == currentWeekDraft)?.topic || '';
@@ -3578,7 +3541,6 @@ Return the entire lesson note in plain text with clear headings. Do NOT use HTML
             showToast('Template', 'Template inserted. Fill in the details.', 'success'); 
         });
         
-        // Delete modal
         function openDeleteModal(msg, cb) { 
             document.getElementById('deleteMessage').textContent = msg; 
             document.getElementById('deleteModal').classList.add('active'); 
@@ -3595,7 +3557,6 @@ Return the entire lesson note in plain text with clear headings. Do NOT use HTML
         window.closeTemplatesModal = () => document.getElementById('templatesModal').classList.remove('active');
         window.printLessonNote = () => { window.print(); };
 
-        // Voice input
         const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
         if (SpeechRecognition) { 
             const recognition = new SpeechRecognition(); 
@@ -3623,7 +3584,6 @@ Return the entire lesson note in plain text with clear headings. Do NOT use HTML
             }); 
         }
 
-        // Load lesson notes
         async function loadAllLessonNotes() { 
             try {
                 const snap = await db.collection('lessonNotes')
@@ -3651,7 +3611,6 @@ Return the entire lesson note in plain text with clear headings. Do NOT use HTML
             document.getElementById('statApproved').textContent = all.filter(n => n.status === 'approved').length; 
         }
 
-        // Video link handlers
         document.getElementById('addVideoLinkBtn').addEventListener('click', () => {
             document.getElementById('videoInputArea').style.display = 'block';
         });
@@ -3668,7 +3627,6 @@ Return the entire lesson note in plain text with clear headings. Do NOT use HTML
             }
         });
 
-        // Handwriting image generation – Replicate + Cloudinary
         document.getElementById('generateHandwritingBtn').addEventListener('click', async () => {
             const prompt = document.getElementById('handwritingPrompt').value.trim();
             if (!prompt) return showToast('Error', 'Write a prompt first', 'warning');
@@ -3759,7 +3717,6 @@ Return the entire lesson note in plain text with clear headings. Do NOT use HTML
             }
         });
 
-        // Render rejected table when rejected tab is clicked
         const rejectedSubTab = document.querySelector('#tt-tabs .sub-tab[data-tt="rejected"]');
         if (rejectedSubTab) {
             rejectedSubTab.addEventListener('click', () => { 
@@ -3767,7 +3724,6 @@ Return the entire lesson note in plain text with clear headings. Do NOT use HTML
             });
         }
 
-        // Also render approved list when approved tab clicked
         const approvedSubTab = document.querySelector('#tt-tabs .sub-tab[data-tt="approved"]');
         if (approvedSubTab) {
             approvedSubTab.addEventListener('click', () => { 
@@ -3866,7 +3822,6 @@ Return the entire lesson note in plain text with clear headings. Do NOT use HTML
             }
         });
 
-        // ============ MY REQUESTS MODAL ============
         function openMyRequestsModal() {
             document.getElementById('myRequestsModal').classList.add('active');
             loadMyRequests();
@@ -4054,8 +4009,6 @@ Return the entire lesson note in plain text with clear headings. Do NOT use HTML
                 btn.innerHTML = origHTML;
             }
         });
-
-        // ==================== REPORT CARDS (REMOVED) ====================
 
         // ==================== STUDENT REQUESTS (Class Teacher) ====================
         async function loadStudentRequests() {
@@ -4299,7 +4252,6 @@ Return the entire lesson note in plain text with clear headings. Do NOT use HTML
             }
         });
 
-        // Initial data load
         if (currentClass) {
             loadAllTimetableData().then(() => {
                 if (approvedList.length) renderApprovedTimetableList();
