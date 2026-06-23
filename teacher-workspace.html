@@ -3849,7 +3849,7 @@ Return the entire lesson note in plain text with clear headings. Do NOT use HTML
             }
         });
 
-        // ==================== REPLICATE AI IMAGE GENERATION WITH DEBUG ====================
+        // ==================== REPLICATE AI IMAGE GENERATION (FIXED) ====================
         document.getElementById('generateHandwritingBtn').addEventListener('click', async () => {
             const prompt = document.getElementById('handwritingPrompt').value.trim();
             const debugBox = document.getElementById('aiImageDebug');
@@ -3861,25 +3861,29 @@ Return the entire lesson note in plain text with clear headings. Do NOT use HTML
             let replicateKey = null;
             try {
                 replicateKey = remoteConfig.getString('Judahimage');
-                debugBox.innerHTML = `<strong>🔍 Debug:</strong> Remote Config key 'Judahimage' fetched. Key length: ${replicateKey?.length || 0}`;
+                debugBox.innerHTML = `<strong>🔍 Debug:</strong> Key fetched. Length: ${replicateKey?.length || 0}`;
                 debugBox.classList.add('visible');
             } catch (e) {
-                debugBox.innerHTML = `<strong>❌ Debug:</strong> Failed to read Remote Config: ${e.message}`;
+                debugBox.innerHTML = `<strong>❌ Debug:</strong> Remote Config error: ${e.message}`;
                 debugBox.classList.add('visible');
-                return showToast('Error', 'Remote Config error: ' + e.message, 'error');
+                return showToast('Error', 'Config error', 'error');
             }
             
             if (!replicateKey || replicateKey.length < 5) {
-                debugBox.innerHTML = `<strong>❌ Debug:</strong> Replicate API key is missing or too short. Value: "${replicateKey || 'null'}"`;
+                debugBox.innerHTML = `<strong>❌ Debug:</strong> Key missing or too short`;
                 debugBox.classList.add('visible');
-                return showToast('Error', 'Replicate API key not configured. Check Remote Config.', 'error');
+                return showToast('Error', 'API key not configured', 'error');
             }
 
             showLoading();
-            debugBox.innerHTML += `<br>🔄 Sending request to Replicate API with key: ${replicateKey.substring(0,8)}...`;
+            
+            const CORS_PROXY = 'https://api.allorigins.win/raw?url=';
+            const API_BASE = 'https://api.replicate.com/v1/predictions';
+            
+            debugBox.innerHTML += `<br>🔄 Sending via allorigins proxy...`;
             
             try {
-                const replicateRes = await fetch('https://corsproxy.io/?https://api.replicate.com/v1/predictions', {
+                const replicateRes = await fetch(CORS_PROXY + encodeURIComponent(API_BASE), {
                     method: 'POST',
                     headers: {
                         'Content-Type': 'application/json',
@@ -3901,12 +3905,12 @@ Return the entire lesson note in plain text with clear headings. Do NOT use HTML
                 
                 if (!replicateRes.ok) {
                     const errText = await replicateRes.text();
-                    debugBox.innerHTML += `<br>❌ Replicate API HTTP ${replicateRes.status}: ${errText.substring(0, 300)}`;
-                    throw new Error(`HTTP ${replicateRes.status}: ${errText.substring(0, 200)}`);
+                    debugBox.innerHTML += `<br>❌ HTTP ${replicateRes.status}: ${errText.substring(0, 300)}`;
+                    throw new Error(`HTTP ${replicateRes.status}`);
                 }
                 
                 const prediction = await replicateRes.json();
-                debugBox.innerHTML += `<br>✅ Prediction created. ID: ${prediction.id}<br>⏳ Polling for result (checking every 3 seconds)...`;
+                debugBox.innerHTML += `<br>✅ Prediction ID: ${prediction.id}<br>⏳ Polling...`;
                 
                 let imageUrl = null;
                 let attempts = 0;
@@ -3914,60 +3918,51 @@ Return the entire lesson note in plain text with clear headings. Do NOT use HTML
                 
                 while (!imageUrl && attempts < maxAttempts) {
                     await new Promise(r => setTimeout(r, 3000));
-                    const pollRes = await fetch(`https://corsproxy.io/?https://api.replicate.com/v1/predictions/${prediction.id}`, {
+                    
+                    const pollRes = await fetch(CORS_PROXY + encodeURIComponent(`https://api.replicate.com/v1/predictions/${prediction.id}`), {
                         headers: { 'Authorization': `Token ${replicateKey}` }
                     });
                     const pollData = await pollRes.json();
-                    debugBox.innerHTML += `<br>⏳ Poll #${attempts + 1}: status = ${pollData.status}`;
+                    
+                    debugBox.innerHTML += `<br>⏳ Poll #${attempts + 1}: ${pollData.status}`;
                     
                     if (pollData.status === 'succeeded') {
                         imageUrl = pollData.output?.[0];
-                        debugBox.innerHTML += `<br>✅ Generation succeeded!`;
                     } else if (pollData.status === 'failed') {
-                        debugBox.innerHTML += `<br>❌ Generation failed: ${JSON.stringify(pollData.error || 'Unknown error')}`;
-                        throw new Error('Image generation failed: ' + (pollData.error || 'Unknown error'));
-                    } else if (pollData.status === 'canceled') {
-                        debugBox.innerHTML += `<br>⚠️ Generation was canceled`;
-                        throw new Error('Image generation was canceled');
+                        throw new Error('Generation failed');
                     }
                     attempts++;
                 }
                 
-                if (!imageUrl) {
-                    debugBox.innerHTML += `<br>❌ Timed out after ${maxAttempts} attempts (${(maxAttempts * 3)} seconds)`;
-                    throw new Error('Image generation timed out. Try again with a simpler prompt.');
-                }
+                if (!imageUrl) throw new Error('Timed out');
                 
                 debugBox.innerHTML += `<br>🔄 Uploading to Cloudinary...`;
                 
-                const cloudName = 'dda7kpir8';
-                const uploadPreset = 'Judahschool';
                 const formData = new FormData();
                 formData.append('file', imageUrl);
-                formData.append('upload_preset', uploadPreset);
+                formData.append('upload_preset', 'Judahschool');
                 formData.append('folder', 'handwriting_notes');
                 
-                const cloudRes = await fetch(`https://api.cloudinary.com/v1_1/${cloudName}/image/upload`, {
+                const cloudRes = await fetch('https://api.cloudinary.com/v1_1/dda7kpir8/image/upload', {
                     method: 'POST',
                     body: formData
                 });
                 const cloudData = await cloudRes.json();
                 
-                if (!cloudRes.ok) {
-                    debugBox.innerHTML += `<br>❌ Cloudinary upload failed: ${JSON.stringify(cloudData)}`;
-                    throw new Error(cloudData.error?.message || 'Cloudinary upload failed');
-                }
+                if (!cloudRes.ok) throw new Error(cloudData.error?.message || 'Upload failed');
                 
                 const finalUrl = cloudData.secure_url;
-                debugBox.innerHTML += `<br>✅ Upload complete!<br>🔗 URL: <a href="${finalUrl}" target="_blank" style="color:var(--accent);">${finalUrl.substring(0, 60)}...</a>`;
+                debugBox.innerHTML += `<br>✅ Done! ${finalUrl.substring(0, 50)}...`;
                 
                 handwritingImages.push({ url: finalUrl, prompt: prompt, createdAt: new Date().toISOString() });
                 renderHandwritingImages();
                 
                 const key = `${currentSubjectDraft}_${currentWeekDraft}`;
                 const existing = lessonNotesMap[key] || {};
-                const d = { handwritingImages: handwritingImages, updatedAt: firebase.firestore.FieldValue.serverTimestamp() };
-                if (existing.id) await db.collection('lessonNotes').doc(existing.id).update(d);
+                if (existing.id) await db.collection('lessonNotes').doc(existing.id).update({ 
+                    handwritingImages, 
+                    updatedAt: firebase.firestore.FieldValue.serverTimestamp() 
+                });
                 
                 showToast('Generated', 'Handwriting image saved!', 'success');
                 document.getElementById('handwritingPrompt').value = '';
