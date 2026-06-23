@@ -349,9 +349,25 @@
         .ql-editor { min-height: 350px; font-size: 14px; line-height: 1.7; color: var(--text-primary); }
         .ql-toolbar { border: none !important; border-bottom: 1px solid var(--border) !important; background: var(--toolbar-bg); }
 
-        /* Locked Card */
-        .card.locked { background: var(--locked-bg); border-color: var(--locked-border); position: relative; opacity: 0.85; pointer-events: none; }
+        /* Locked Card - Updated for individual sections */
+        .card.locked { background: var(--locked-bg); border-color: var(--locked-border); position: relative; opacity: 0.85; }
+        .card.locked .ql-editor, .card.locked .ql-toolbar { pointer-events: none; opacity: 0.6; }
+        .card.locked input:not(#handwritingPrompt), .card.locked textarea, .card.locked button:not(.edit-section-btn):not(.publish-student-btn):not(#generateHandwritingBtn) { pointer-events: none; opacity: 0.6; }
         .card.locked::after { content: "🔒 Approved & Locked"; position: absolute; top: 10px; right: 15px; background: var(--success-text); color: white; padding: 0.3rem 1rem; border-radius: 2rem; font-size: 0.75rem; font-weight: 600; z-index: 10; }
+        .card.locked .edit-section-btn { pointer-events: auto; opacity: 1; z-index: 11; }
+        .card.locked .publish-student-btn { pointer-events: auto; opacity: 1; z-index: 11; }
+        .card.locked #generateHandwritingBtn { pointer-events: auto; opacity: 1; z-index: 11; }
+        .card.locked #handwritingPrompt { pointer-events: auto; opacity: 1; }
+
+        /* Video Preview Embed */
+        .video-preview-container { position: relative; margin-top: 0.5rem; display: none; }
+        .video-preview-container.active { display: block; }
+        .video-preview-container iframe { width: 100%; height: 315px; border-radius: 0.8rem; border: 1px solid var(--border); }
+        .video-preview-close { position: absolute; top: -10px; right: -10px; background: var(--danger-text); color: white; border: none; border-radius: 50%; width: 28px; height: 28px; cursor: pointer; font-size: 0.8rem; display: flex; align-items: center; justify-content: center; z-index: 5; }
+
+        /* AI Image Debug */
+        .ai-debug-box { background: var(--info-bg); border-left: 4px solid var(--accent); padding: 0.8rem; border-radius: 0.8rem; margin-top: 0.5rem; font-size: 0.75rem; display: none; max-height: 200px; overflow-y: auto; word-break: break-all; }
+        .ai-debug-box.visible { display: block; }
 
         /* Admin Feedback Box */
         .admin-feedback-box { 
@@ -670,6 +686,8 @@
                                 <button class="btn btn-outline" id="useAIAssistantLessonNoteBtn" title="AI Assistant"><i class="fas fa-robot"></i> AI Assistant</button>
                                 <button class="btn btn-primary" id="saveEditorBtn"><i class="fas fa-save"></i> Save Draft</button>
                                 <button class="btn btn-success" id="submitEditorBtn" style="display:none;"><i class="fas fa-paper-plane"></i> Submit</button>
+                                <!-- NEW EDIT BUTTON FOR LESSON NOTE -->
+                                <button class="btn btn-warning btn-sm edit-section-btn" id="editLessonNoteBtn" style="display:none;" title="Edit Lesson Note"><i class="fas fa-edit"></i> Edit</button>
                                 <button class="btn btn-danger btn-sm" id="deleteLessonNoteBtn" style="display:none;" title="Delete this lesson note"><i class="fas fa-trash"></i></button>
                                 <button class="voice-btn" id="voiceBtn" title="Voice Input"><i class="fas fa-microphone"></i></button>
                                 <button class="ai-format-btn" id="aiFormatBtn" title="AI Format"><i class="fas fa-magic"></i></button>
@@ -702,7 +720,11 @@
 
                             <!-- Teaching Process -->
                             <div class="card" id="teachingProcessCard">
-                                <div class="card-header"><h3>Teaching Process</h3></div>
+                                <div class="card-header"><h3>Teaching Process</h3>
+                                <div style="display:flex;gap:0.3rem;">
+                                    <button class="btn btn-warning btn-sm edit-section-btn" id="editTPBtn" style="display:none;" title="Edit Teaching Process"><i class="fas fa-edit"></i> Edit</button>
+                                    <button class="btn btn-success btn-sm publish-student-btn" id="publishTPBtn" style="display:none;" title="Publish to Students"><i class="fas fa-users"></i> Publish to Students</button>
+                                </div></div>
                                 <button class="btn btn-primary btn-sm" id="aiGenerateTPBtn"><i class="fas fa-robot"></i> Auto-Generate</button>
                                 <button class="btn btn-outline btn-sm" id="autoFormatTPBtn"><i class="fas fa-magic"></i> Auto-Format</button>
                                 <div class="editor-container"><div id="teachingProcessEditor"></div></div>
@@ -712,7 +734,11 @@
 
                             <!-- Student Resources -->
                             <div class="card" id="studentResourceSection">
-                                <div class="card-header"><h3>Student Resources</h3></div>
+                                <div class="card-header"><h3>Student Resources</h3>
+                                <div style="display:flex;gap:0.3rem;">
+                                    <button class="btn btn-warning btn-sm edit-section-btn" id="editResourceBtn" style="display:none;" title="Edit Resources"><i class="fas fa-edit"></i> Edit</button>
+                                    <button class="btn btn-success btn-sm publish-student-btn" id="publishResourceBtn" style="display:none;" title="Publish to Students"><i class="fas fa-users"></i> Publish to Students</button>
+                                </div></div>
                                 <button class="btn btn-primary btn-sm" id="aiGenerateResourceBtn"><i class="fas fa-robot"></i> Auto-Generate</button>
                                 <button class="btn btn-outline btn-sm" id="autoFormatResourceBtn"><i class="fas fa-magic"></i> Auto-Format</button>
                                 <div class="editor-container"><div id="studentResourceEditor"></div></div>
@@ -721,7 +747,11 @@
 
                             <!-- Handwriting & Visual Notes -->
                             <div class="card" id="handwritingSection">
-                                <div class="card-header"><h3>Handwriting & Visual Notes</h3></div>
+                                <div class="card-header"><h3>Handwriting & Visual Notes</h3>
+                                <div style="display:flex;gap:0.3rem;">
+                                    <button class="btn btn-warning btn-sm edit-section-btn" id="editHandwritingBtn" style="display:none;" title="Edit Handwriting"><i class="fas fa-edit"></i> Edit</button>
+                                    <button class="btn btn-success btn-sm publish-student-btn" id="publishHandwritingBtn" style="display:none;" title="Publish to Students"><i class="fas fa-users"></i> Publish to Students</button>
+                                </div></div>
                                 <div id="handwritingImages"></div>
                                 <input type="text" id="handwritingPrompt" placeholder="Describe the image you want to generate...">
                                 <div style="display:flex; gap:0.5rem; margin-top:0.5rem;">
@@ -729,15 +759,26 @@
                                         <i class="fas fa-paint-brush"></i> Generate Image
                                     </button>
                                 </div>
+                                <!-- AI IMAGE DEBUG BOX -->
+                                <div class="ai-debug-box" id="aiImageDebug"></div>
                             </div>
 
                             <!-- Video Links -->
                             <div class="card" id="videoSection">
-                                <div class="card-header"><h3>Video Links</h3></div>
+                                <div class="card-header"><h3>Video Links</h3>
+                                <div style="display:flex;gap:0.3rem;">
+                                    <button class="btn btn-warning btn-sm edit-section-btn" id="editVideoBtn" style="display:none;" title="Edit Videos"><i class="fas fa-edit"></i> Edit</button>
+                                    <button class="btn btn-success btn-sm publish-student-btn" id="publishVideoBtn" style="display:none;" title="Publish to Students"><i class="fas fa-users"></i> Publish to Students</button>
+                                </div></div>
                                 <button class="btn btn-sm btn-outline" id="addVideoLinkBtn">+ Add Link</button>
                                 <div id="videoInputArea" style="display:none; margin-top:0.5rem;">
-                                    <input type="url" id="videoLinkInput" placeholder="https://...">
+                                    <input type="url" id="videoLinkInput" placeholder="https://youtube.com/watch?v=... or https://youtu.be/...">
                                     <button class="btn btn-sm btn-primary" id="previewVideoBtn">Preview</button>
+                                </div>
+                                <!-- VIDEO PREVIEW CONTAINER -->
+                                <div class="video-preview-container" id="videoPreviewContainer">
+                                    <button class="video-preview-close" id="videoPreviewClose" title="Close preview">✕</button>
+                                    <iframe id="videoPreviewFrame" src="" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
                                 </div>
                                 <div id="videoList"></div>
                             </div>
@@ -1142,6 +1183,9 @@ Include Nigerian names, locations, naira (₦), and references to Nigerian textb
         let rejectedId = null, rejectedData = [];
         let currentApprovedTimetableId = null;
 
+        // Section edit state
+        let sectionEditState = { lessonNote: false, teachingProcess: false, studentResource: false, handwriting: false, video: false };
+
         // ==================== UTILITY FUNCTIONS ====================
         function escapeHtml(str) {
             const div = document.createElement('div');
@@ -1204,6 +1248,56 @@ Include Nigerian names, locations, naira (₦), and references to Nigerian textb
                     span.textContent = 'Save failed';
                     break;
             }
+        }
+
+        // ==================== PUBLISH TO STUDENTS ====================
+        async function publishToStudents(type, data) {
+            if (!currentSubjectDraft || !currentWeekDraft || !currentClass) return;
+            const teacherName = `${userData?.firstName||''} ${userData?.surname||''}`.trim();
+            const topic = syllabusMap[currentSubjectDraft]?.weeks?.find(w => w.week == currentWeekDraft)?.topic || '';
+            
+            try {
+                const publishData = {
+                    teacherId: currentUser.uid,
+                    teacherName,
+                    subject: currentSubjectDraft,
+                    week: currentWeekDraft,
+                    topic,
+                    classId: currentClass,
+                    type,
+                    publishedAt: firebase.firestore.FieldValue.serverTimestamp()
+                };
+                
+                if (type === 'resource') publishData.content = data;
+                else if (type === 'handwriting') publishData.images = data;
+                else if (type === 'video') publishData.videoLinks = data;
+                else if (type === 'teachingProcess') publishData.content = data;
+                
+                await db.collection('studentResources').add(publishData);
+                showToast('Published', `${type} published to students!`, 'success');
+            } catch(err) {
+                showToast('Error', `Failed to publish: ${err.message}`, 'error');
+            }
+        }
+
+        // ==================== LOCK/UNLOCK HELPERS ====================
+        function lockAllSections(lock) {
+            const cards = ['lessonNoteCard', 'teachingProcessCard', 'studentResourceSection', 'handwritingSection', 'videoSection'];
+            cards.forEach(id => {
+                const el = document.getElementById(id);
+                if (el) {
+                    if (lock) el.classList.add('locked');
+                    else el.classList.remove('locked');
+                }
+            });
+        }
+
+        function hideAllEditPublishButtons() {
+            ['editLessonNoteBtn','editTPBtn','editResourceBtn','editHandwritingBtn','editVideoBtn',
+             'publishTPBtn','publishResourceBtn','publishHandwritingBtn','publishVideoBtn'].forEach(id => {
+                const el = document.getElementById(id);
+                if (el) el.style.display = 'none';
+            });
         }
 
         // ==================== FIREBASE INDEX HELPER ====================
@@ -2400,7 +2494,6 @@ Include Nigerian names, locations, naira (₦), and references to Nigerian textb
             const draftWeeks = syllabusWeeks.filter(w => {
                 if (!w.week && w.week !== 0) return false;
                 const note = allNotes.find(n => n.week == w.week);
-                // Include weeks with no note, draft, approved, or no status
                 return !note || note.status === 'draft' || note.status === 'approved' || !note.status;
             });
 
@@ -2420,7 +2513,7 @@ Include Nigerian names, locations, naira (₦), and references to Nigerian textb
             document.getElementById('draftEditorSection').style.display = 'none';
         };
         
-        // Fixed post-approval visibility with ALL sections visible
+        // REPLACED selectDraftWeek with full lock/edit/publish logic
         window.selectDraftWeek = (e, week) => {
             if (e) {
                 document.querySelectorAll('#draftWeekList .week-tab').forEach(t => t.classList.remove('active'));
@@ -2453,7 +2546,9 @@ Include Nigerian names, locations, naira (₦), and references to Nigerian textb
 
             lessonNoteApproved = note.status === 'approved';
 
-            // Show ALL post-approval sections immediately when approved
+            // Reset all edit states
+            sectionEditState = { lessonNote: false, teachingProcess: false, studentResource: false, handwriting: false, video: false };
+
             if (lessonNoteApproved) {
                 document.getElementById('postApprovalSections').style.display = 'block';
                 document.getElementById('createOthersBtnContainer').style.display = 'block';
@@ -2463,12 +2558,26 @@ Include Nigerian names, locations, naira (₦), and references to Nigerian textb
                 document.getElementById('teachingProcessCard').style.display = 'block';
                 document.getElementById('submitEditorBtn').style.display = 'none';
                 document.getElementById('pushToTeachBtn').style.display = !note.teachable ? 'inline-block' : 'none';
+                
+                // Lock all cards and show edit + publish buttons
+                lockAllSections(true);
+                document.getElementById('editLessonNoteBtn').style.display = 'inline-flex';
+                document.getElementById('editTPBtn').style.display = 'inline-flex';
+                document.getElementById('editResourceBtn').style.display = 'inline-flex';
+                document.getElementById('editHandwritingBtn').style.display = 'inline-flex';
+                document.getElementById('editVideoBtn').style.display = 'inline-flex';
+                document.getElementById('publishTPBtn').style.display = 'inline-flex';
+                document.getElementById('publishResourceBtn').style.display = 'inline-flex';
+                document.getElementById('publishHandwritingBtn').style.display = 'inline-flex';
+                document.getElementById('publishVideoBtn').style.display = 'inline-flex';
             } else {
                 document.getElementById('postApprovalSections').style.display = 'none';
                 document.getElementById('createOthersBtnContainer').style.display = 'none';
                 document.getElementById('additionalResources').style.display = 'none';
                 document.getElementById('submitEditorBtn').style.display = 'inline-block';
                 document.getElementById('pushToTeachBtn').style.display = 'none';
+                lockAllSections(false);
+                hideAllEditPublishButtons();
             }
 
             contentMerged = !!(note.lessonNote);
@@ -2788,7 +2897,7 @@ Return the entire lesson note in plain text with clear headings. Do NOT use HTML
                 topic: topic,
                 lessonNote: lnHtml,
                 classId: currentClass,
-                status: existing.status || 'draft',
+                status: sectionEditState.lessonNote ? 'pending' : (existing.status || 'draft'),
                 updatedAt: firebase.firestore.FieldValue.serverTimestamp()
             };
 
@@ -3268,10 +3377,95 @@ Return the entire lesson note in plain text with clear headings. Do NOT use HTML
                     ['clean']
                 ] 
             }, 
-            placeholder: 'Teaching process...' 
+            placeholder: 'Teaching process...'  
         });
 
         quill.on('text-change', () => { setAutoSaveStatus('unsaved'); });
+
+        // ==================== EDIT BUTTON HANDLERS ====================
+        document.getElementById('editLessonNoteBtn').addEventListener('click', () => {
+            document.getElementById('lessonNoteCard').classList.remove('locked');
+            document.getElementById('submitEditorBtn').style.display = 'inline-block';
+            document.getElementById('editLessonNoteBtn').style.display = 'none';
+            sectionEditState.lessonNote = true;
+            showToast('Editing', 'Lesson note unlocked for editing. Submit to send for re-approval.', 'info');
+        });
+
+        document.getElementById('editTPBtn').addEventListener('click', () => {
+            document.getElementById('teachingProcessCard').classList.remove('locked');
+            document.getElementById('editTPBtn').style.display = 'none';
+            sectionEditState.teachingProcess = true;
+            showToast('Editing', 'Teaching process unlocked. Save to update.', 'info');
+        });
+
+        document.getElementById('editResourceBtn').addEventListener('click', () => {
+            document.getElementById('studentResourceSection').classList.remove('locked');
+            document.getElementById('editResourceBtn').style.display = 'none';
+            sectionEditState.studentResource = true;
+            showToast('Editing', 'Student resources unlocked. Save to update.', 'info');
+        });
+
+        document.getElementById('editHandwritingBtn').addEventListener('click', () => {
+            document.getElementById('handwritingSection').classList.remove('locked');
+            document.getElementById('editHandwritingBtn').style.display = 'none';
+            sectionEditState.handwriting = true;
+            showToast('Editing', 'Handwriting section unlocked.', 'info');
+        });
+
+        document.getElementById('editVideoBtn').addEventListener('click', () => {
+            document.getElementById('videoSection').classList.remove('locked');
+            document.getElementById('editVideoBtn').style.display = 'none';
+            sectionEditState.video = true;
+            showToast('Editing', 'Video section unlocked.', 'info');
+        });
+
+        // ==================== PUBLISH TO STUDENTS HANDLERS ====================
+        document.getElementById('publishTPBtn').addEventListener('click', async () => {
+            const content = teachingProcessQuill.root.innerHTML;
+            if (!content.trim()) return showToast('Empty', 'No teaching process to publish', 'warning');
+            await publishToStudents('teachingProcess', content);
+            // Also move to teach
+            const key = `${currentSubjectDraft}_${currentWeekDraft}`;
+            const note = lessonNotesMap[key];
+            if (note?.id) {
+                await db.collection('lessonNotes').doc(note.id).update({ teachable: true, teachingProcess: content });
+                showToast('Moved', 'Also copied to Teach', 'success');
+            }
+        });
+
+        document.getElementById('publishResourceBtn').addEventListener('click', async () => {
+            const content = studentQuill.root.innerHTML;
+            if (!content.trim()) return showToast('Empty', 'No resources to publish', 'warning');
+            await publishToStudents('resource', content);
+            const key = `${currentSubjectDraft}_${currentWeekDraft}`;
+            const note = lessonNotesMap[key];
+            if (note?.id) {
+                await db.collection('lessonNotes').doc(note.id).update({ resourcePublished: true, studentResource: content });
+                showToast('Saved', 'Also saved to your records', 'success');
+            }
+        });
+
+        document.getElementById('publishHandwritingBtn').addEventListener('click', async () => {
+            if (!handwritingImages.length) return showToast('Empty', 'No images to publish', 'warning');
+            await publishToStudents('handwriting', handwritingImages);
+            const key = `${currentSubjectDraft}_${currentWeekDraft}`;
+            const note = lessonNotesMap[key];
+            if (note?.id) {
+                await db.collection('lessonNotes').doc(note.id).update({ handwritingImagesPublished: true, handwritingImages });
+                showToast('Saved', 'Images also saved to your records', 'success');
+            }
+        });
+
+        document.getElementById('publishVideoBtn').addEventListener('click', async () => {
+            if (!videoLinks.length) return showToast('Empty', 'No video links to publish', 'warning');
+            await publishToStudents('video', videoLinks);
+            const key = `${currentSubjectDraft}_${currentWeekDraft}`;
+            const note = lessonNotesMap[key];
+            if (note?.id) {
+                await db.collection('lessonNotes').doc(note.id).update({ videosPublished: true, videoLinks });
+                showToast('Saved', 'Videos also saved to your records', 'success');
+            }
+        });
 
         function renderVideoList() {
             const l = document.getElementById('videoList');
@@ -3614,10 +3808,38 @@ Return the entire lesson note in plain text with clear headings. Do NOT use HTML
         document.getElementById('addVideoLinkBtn').addEventListener('click', () => {
             document.getElementById('videoInputArea').style.display = 'block';
         });
+
+        // ==================== VIDEO PREVIEW (EMBEDDED) ====================
+        function getYouTubeEmbedUrl(url) {
+            if (!url) return '';
+            const shortMatch = url.match(/youtu\.be\/([a-zA-Z0-9_-]+)/);
+            if (shortMatch) return `https://www.youtube.com/embed/${shortMatch[1]}`;
+            const longMatch = url.match(/youtube\.com\/watch\?v=([a-zA-Z0-9_-]+)/);
+            if (longMatch) return `https://www.youtube.com/embed/${longMatch[1]}`;
+            const embedMatch = url.match(/youtube\.com\/embed\/([a-zA-Z0-9_-]+)/);
+            if (embedMatch) return url;
+            return '';
+        }
+
         document.getElementById('previewVideoBtn').addEventListener('click', () => {
             const url = document.getElementById('videoLinkInput').value.trim();
-            if (url) window.open(url, '_blank');
+            if (!url) return showToast('Error', 'Enter a video URL first', 'warning');
+            const embedUrl = getYouTubeEmbedUrl(url);
+            if (!embedUrl) return showToast('Error', 'Only YouTube links are supported for preview', 'warning');
+            const container = document.getElementById('videoPreviewContainer');
+            const frame = document.getElementById('videoPreviewFrame');
+            frame.src = embedUrl;
+            container.classList.add('active');
+            showToast('Preview', 'Video preview loaded', 'info');
         });
+
+        document.getElementById('videoPreviewClose').addEventListener('click', () => {
+            const container = document.getElementById('videoPreviewContainer');
+            const frame = document.getElementById('videoPreviewFrame');
+            frame.src = '';
+            container.classList.remove('active');
+        });
+
         document.getElementById('videoLinkInput').addEventListener('keypress', e => {
             if (e.key === 'Enter' && e.target.value.trim()) {
                 videoLinks.push(e.target.value.trim());
@@ -3627,20 +3849,35 @@ Return the entire lesson note in plain text with clear headings. Do NOT use HTML
             }
         });
 
+        // ==================== REPLICATE AI IMAGE GENERATION WITH DEBUG ====================
         document.getElementById('generateHandwritingBtn').addEventListener('click', async () => {
             const prompt = document.getElementById('handwritingPrompt').value.trim();
+            const debugBox = document.getElementById('aiImageDebug');
+            debugBox.classList.remove('visible');
+            
             if (!prompt) return showToast('Error', 'Write a prompt first', 'warning');
             if (!currentSubjectDraft || !currentWeekDraft) return showToast('Error', 'Select a subject and week first', 'error');
 
             let replicateKey = null;
             try {
                 replicateKey = remoteConfig.getString('Judahimage');
-            } catch (e) { /* will fallback */ }
+                debugBox.innerHTML = `<strong>🔍 Debug:</strong> Remote Config key 'Judahimage' fetched. Key length: ${replicateKey?.length || 0}`;
+                debugBox.classList.add('visible');
+            } catch (e) {
+                debugBox.innerHTML = `<strong>❌ Debug:</strong> Failed to read Remote Config: ${e.message}`;
+                debugBox.classList.add('visible');
+                return showToast('Error', 'Remote Config error: ' + e.message, 'error');
+            }
+            
             if (!replicateKey || replicateKey.length < 5) {
-                return showToast('Error', 'Replicate API key not configured in Remote Config.', 'error');
+                debugBox.innerHTML = `<strong>❌ Debug:</strong> Replicate API key is missing or too short. Value: "${replicateKey || 'null'}"`;
+                debugBox.classList.add('visible');
+                return showToast('Error', 'Replicate API key not configured. Check Remote Config.', 'error');
             }
 
             showLoading();
+            debugBox.innerHTML += `<br>🔄 Sending request to Replicate API with key: ${replicateKey.substring(0,8)}...`;
+            
             try {
                 const replicateRes = await fetch('https://api.replicate.com/v1/predictions', {
                     method: 'POST',
@@ -3661,56 +3898,81 @@ Return the entire lesson note in plain text with clear headings. Do NOT use HTML
                         }
                     })
                 });
+                
                 if (!replicateRes.ok) {
-                    const err = await replicateRes.json();
-                    throw new Error(err.detail || 'Replicate request failed');
+                    const errText = await replicateRes.text();
+                    debugBox.innerHTML += `<br>❌ Replicate API HTTP ${replicateRes.status}: ${errText.substring(0, 300)}`;
+                    throw new Error(`HTTP ${replicateRes.status}: ${errText.substring(0, 200)}`);
                 }
+                
                 const prediction = await replicateRes.json();
-                const predictionId = prediction.id;
-
+                debugBox.innerHTML += `<br>✅ Prediction created. ID: ${prediction.id}<br>⏳ Polling for result (checking every 3 seconds)...`;
+                
                 let imageUrl = null;
                 let attempts = 0;
-                while (!imageUrl && attempts < 30) {
-                    await new Promise(r => setTimeout(r, 2000));
-                    const pollRes = await fetch(`https://api.replicate.com/v1/predictions/${predictionId}`, {
+                const maxAttempts = 60;
+                
+                while (!imageUrl && attempts < maxAttempts) {
+                    await new Promise(r => setTimeout(r, 3000));
+                    const pollRes = await fetch(`https://api.replicate.com/v1/predictions/${prediction.id}`, {
                         headers: { 'Authorization': `Token ${replicateKey}` }
                     });
                     const pollData = await pollRes.json();
+                    debugBox.innerHTML += `<br>⏳ Poll #${attempts + 1}: status = ${pollData.status}`;
+                    
                     if (pollData.status === 'succeeded') {
-                        imageUrl = pollData.output[0];
+                        imageUrl = pollData.output?.[0];
+                        debugBox.innerHTML += `<br>✅ Generation succeeded!`;
                     } else if (pollData.status === 'failed') {
-                        throw new Error('Image generation failed');
+                        debugBox.innerHTML += `<br>❌ Generation failed: ${JSON.stringify(pollData.error || 'Unknown error')}`;
+                        throw new Error('Image generation failed: ' + (pollData.error || 'Unknown error'));
+                    } else if (pollData.status === 'canceled') {
+                        debugBox.innerHTML += `<br>⚠️ Generation was canceled`;
+                        throw new Error('Image generation was canceled');
                     }
                     attempts++;
                 }
-                if (!imageUrl) throw new Error('Image generation timed out');
-
+                
+                if (!imageUrl) {
+                    debugBox.innerHTML += `<br>❌ Timed out after ${maxAttempts} attempts (${(maxAttempts * 3)} seconds)`;
+                    throw new Error('Image generation timed out. Try again with a simpler prompt.');
+                }
+                
+                debugBox.innerHTML += `<br>🔄 Uploading to Cloudinary...`;
+                
                 const cloudName = 'dda7kpir8';
                 const uploadPreset = 'Judahschool';
                 const formData = new FormData();
                 formData.append('file', imageUrl);
                 formData.append('upload_preset', uploadPreset);
                 formData.append('folder', 'handwriting_notes');
-
+                
                 const cloudRes = await fetch(`https://api.cloudinary.com/v1_1/${cloudName}/image/upload`, {
                     method: 'POST',
                     body: formData
                 });
                 const cloudData = await cloudRes.json();
-                if (!cloudRes.ok) throw new Error(cloudData.error?.message || 'Cloudinary upload failed');
-
+                
+                if (!cloudRes.ok) {
+                    debugBox.innerHTML += `<br>❌ Cloudinary upload failed: ${JSON.stringify(cloudData)}`;
+                    throw new Error(cloudData.error?.message || 'Cloudinary upload failed');
+                }
+                
                 const finalUrl = cloudData.secure_url;
-
+                debugBox.innerHTML += `<br>✅ Upload complete!<br>🔗 URL: <a href="${finalUrl}" target="_blank" style="color:var(--accent);">${finalUrl.substring(0, 60)}...</a>`;
+                
                 handwritingImages.push({ url: finalUrl, prompt: prompt, createdAt: new Date().toISOString() });
                 renderHandwritingImages();
-
+                
                 const key = `${currentSubjectDraft}_${currentWeekDraft}`;
                 const existing = lessonNotesMap[key] || {};
                 const d = { handwritingImages: handwritingImages, updatedAt: firebase.firestore.FieldValue.serverTimestamp() };
                 if (existing.id) await db.collection('lessonNotes').doc(existing.id).update(d);
-
+                
                 showToast('Generated', 'Handwriting image saved!', 'success');
+                document.getElementById('handwritingPrompt').value = '';
             } catch (err) {
+                debugBox.innerHTML += `<br>❌ <strong>Error:</strong> ${err.message}`;
                 showToast('Error', err.message, 'error');
             } finally {
                 hideLoading();
