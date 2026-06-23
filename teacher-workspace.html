@@ -3879,7 +3879,7 @@ Return the entire lesson note in plain text with clear headings. Do NOT use HTML
             debugBox.innerHTML += `<br>🔄 Sending request to Replicate API with key: ${replicateKey.substring(0,8)}...`;
             
             try {
-                const replicateRes = await fetch('https://api.replicate.com/v1/predictions', {
+                const replicateRes = await fetch('https://corsproxy.io/?https://api.replicate.com/v1/predictions', {
                     method: 'POST',
                     headers: {
                         'Content-Type': 'application/json',
@@ -3914,7 +3914,7 @@ Return the entire lesson note in plain text with clear headings. Do NOT use HTML
                 
                 while (!imageUrl && attempts < maxAttempts) {
                     await new Promise(r => setTimeout(r, 3000));
-                    const pollRes = await fetch(`https://api.replicate.com/v1/predictions/${prediction.id}`, {
+                    const pollRes = await fetch(`https://corsproxy.io/?https://api.replicate.com/v1/predictions/${prediction.id}`, {
                         headers: { 'Authorization': `Token ${replicateKey}` }
                     });
                     const pollData = await pollRes.json();
