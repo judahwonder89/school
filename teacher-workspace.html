@@ -774,6 +774,7 @@
                                 <div id="videoInputArea" style="display:none; margin-top:0.5rem;">
                                     <input type="url" id="videoLinkInput" placeholder="https://youtube.com/watch?v=... or https://youtu.be/...">
                                     <button class="btn btn-sm btn-primary" id="previewVideoBtn">Preview</button>
+                                    <button class="btn btn-sm btn-success" id="saveVideoLinkBtn" style="margin-top:0.3rem;"><i class="fas fa-save"></i> Save Link</button>
                                 </div>
                                 <!-- VIDEO PREVIEW CONTAINER -->
                                 <div class="video-preview-container" id="videoPreviewContainer">
@@ -3809,6 +3810,35 @@ Return the entire lesson note in plain text with clear headings. Do NOT use HTML
             document.getElementById('videoInputArea').style.display = 'block';
         });
 
+        // ==================== SAVE VIDEO LINK BUTTON ====================
+        document.getElementById('saveVideoLinkBtn').addEventListener('click', async (e) => {
+            e.preventDefault();
+            const url = document.getElementById('videoLinkInput').value.trim();
+            if (!url) return showToast('Error', 'Enter a video URL first', 'warning');
+            
+            videoLinks.push(url);
+            renderVideoList();
+            document.getElementById('videoLinkInput').value = '';
+            document.getElementById('videoInputArea').style.display = 'none';
+            
+            // Auto-save to Firestore
+            if (currentSubjectDraft && currentWeekDraft) {
+                const key = `${currentSubjectDraft}_${currentWeekDraft}`;
+                const existing = lessonNotesMap[key] || {};
+                if (existing.id) {
+                    try {
+                        await db.collection('lessonNotes').doc(existing.id).update({ 
+                            videoLinks, 
+                            updatedAt: firebase.firestore.FieldValue.serverTimestamp() 
+                        });
+                        showToast('Saved', 'Video link saved', 'success');
+                    } catch(err) {
+                        console.error('Save video link error:', err);
+                    }
+                }
+            }
+        });
+
         // ==================== VIDEO PREVIEW (EMBEDDED) ====================
         function getYouTubeEmbedUrl(url) {
             if (!url) return '';
@@ -3849,7 +3879,7 @@ Return the entire lesson note in plain text with clear headings. Do NOT use HTML
             }
         });
 
-        // ==================== REPLICATE AI IMAGE GENERATION (FIXED) ====================
+        // ==================== REPLICATE AI IMAGE GENERATION (FIXED WITH FALLBACKS) ====================
         document.getElementById('generateHandwritingBtn').addEventListener('click', async () => {
             const prompt = document.getElementById('handwritingPrompt').value.trim();
             const debugBox = document.getElementById('aiImageDebug');
@@ -3877,13 +3907,58 @@ Return the entire lesson note in plain text with clear headings. Do NOT use HTML
 
             showLoading();
             
-            const CORS_PROXY = 'https://api.allorigins.win/raw?url=';
-            const API_BASE = 'https://api.replicate.com/v1/predictions';
+            // Multiple CORS proxies to try in order
+            const CORS_PROXIES = [
+                'https://api.cors.lol/?url=',
+                'https://cors-proxy.htmldriven.com/?url=',
+                'https://api.allorigins.win/raw?url=',
+                'https://cors.eu.org/',
+                'https://corsproxy.io/?'
+            ];
             
-            debugBox.innerHTML += `<br>🔄 Sending via allorigins proxy...`;
+            const API_BASE = 'https://api.replicate.com/v1/predictions';
+            const POLL_BASE = 'https://api.replicate.com/v1/predictions/';
+            
+            async function fetchWithProxyFallback(url, options, method = 'POST') {
+                let lastError = null;
+                
+                for (const proxy of CORS_PROXIES) {
+                    try {
+                        const proxyUrl = proxy + encodeURIComponent(url);
+                        debugBox.innerHTML += `<br>🔄 Trying proxy: ${proxy.substring(0, 30)}...`;
+                        
+                        const res = await fetch(proxyUrl, {
+                            method: method,
+                            headers: options.headers,
+                            body: method === 'POST' ? options.body : undefined,
+                            signal: AbortSignal.timeout(15000)
+                        });
+                        
+                        if (res.ok) {
+                            debugBox.innerHTML += ` ✅ Connected!`;
+                            return res;
+                        } else if (res.status === 403) {
+                            debugBox.innerHTML += ` ❌ 403 (blocked)`;
+                            continue;
+                        } else {
+                            const errText = await res.text();
+                            debugBox.innerHTML += ` ❌ HTTP ${res.status}: ${errText.substring(0, 100)}`;
+                            if (res.status < 500) continue;
+                        }
+                    } catch (err) {
+                        debugBox.innerHTML += ` ❌ ${err.message.substring(0, 50)}`;
+                        lastError = err;
+                        continue;
+                    }
+                }
+                
+                throw lastError || new Error('All CORS proxies failed');
+            }
             
             try {
-                const replicateRes = await fetch(CORS_PROXY + encodeURIComponent(API_BASE), {
+                debugBox.innerHTML += `<br>🔄 Sending prediction request...`;
+                
+                const replicateRes = await fetchWithProxyFallback(API_BASE, {
                     method: 'POST',
                     headers: {
                         'Content-Type': 'application/json',
@@ -3903,14 +3978,8 @@ Return the entire lesson note in plain text with clear headings. Do NOT use HTML
                     })
                 });
                 
-                if (!replicateRes.ok) {
-                    const errText = await replicateRes.text();
-                    debugBox.innerHTML += `<br>❌ HTTP ${replicateRes.status}: ${errText.substring(0, 300)}`;
-                    throw new Error(`HTTP ${replicateRes.status}`);
-                }
-                
                 const prediction = await replicateRes.json();
-                debugBox.innerHTML += `<br>✅ Prediction ID: ${prediction.id}<br>⏳ Polling...`;
+                debugBox.innerHTML += `<br>✅ Prediction ID: ${prediction.id}<br>⏳ Polling for result (every 3s)...`;
                 
                 let imageUrl = null;
                 let attempts = 0;
@@ -3919,9 +3988,11 @@ Return the entire lesson note in plain text with clear headings. Do NOT use HTML
                 while (!imageUrl && attempts < maxAttempts) {
                     await new Promise(r => setTimeout(r, 3000));
                     
-                    const pollRes = await fetch(CORS_PROXY + encodeURIComponent(`https://api.replicate.com/v1/predictions/${prediction.id}`), {
+                    const pollUrl = POLL_BASE + prediction.id;
+                    const pollRes = await fetchWithProxyFallback(pollUrl, {
                         headers: { 'Authorization': `Token ${replicateKey}` }
-                    });
+                    }, 'GET');
+                    
                     const pollData = await pollRes.json();
                     
                     debugBox.innerHTML += `<br>⏳ Poll #${attempts + 1}: ${pollData.status}`;
@@ -3929,12 +4000,12 @@ Return the entire lesson note in plain text with clear headings. Do NOT use HTML
                     if (pollData.status === 'succeeded') {
                         imageUrl = pollData.output?.[0];
                     } else if (pollData.status === 'failed') {
-                        throw new Error('Generation failed');
+                        throw new Error('Generation failed: ' + (pollData.error || 'Unknown'));
                     }
                     attempts++;
                 }
                 
-                if (!imageUrl) throw new Error('Timed out');
+                if (!imageUrl) throw new Error('Timed out after 3 minutes');
                 
                 debugBox.innerHTML += `<br>🔄 Uploading to Cloudinary...`;
                 
