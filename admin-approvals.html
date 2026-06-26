@@ -5,11 +5,9 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=yes, viewport-fit=cover">
     <title>Judah Wonders Model School · Admin Approvals Hub</title>
     
-    <!-- Fonts & Icons -->
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
     <link href="https://fonts.googleapis.com/css2?family=Inter:opsz,wght@14..32,400;500;600;700;800&family=Playfair+Display:wght@600;700&family=Space+Grotesk:wght@400;500;600;700&display=swap" rel="stylesheet">
     
-    <!-- Firebase -->
     <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-app-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-auth-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-firestore-compat.js"></script>
@@ -54,7 +52,6 @@
         .orb-2 { width:400px; height:400px; bottom:-150px; right:-50px; background:radial-gradient(circle at 70% 70%,rgba(200,150,62,.10),transparent); animation-duration:30s; }
         @keyframes float { 0%{transform:translate(0,0)scale(1)} 100%{transform:translate(40px,30px)scale(1.15)} }
 
-        /* Sidebar */
         .sidebar { width:260px; background:var(--bg-surface); backdrop-filter:blur(20px); -webkit-backdrop-filter:blur(20px); border-right:1px solid var(--border); padding:1.5rem 0.8rem; display:flex; flex-direction:column; transition:all 0.3s cubic-bezier(0.4,0,0.2,1); position:fixed; top:0; left:0; height:100vh; overflow-y:auto; z-index:100; box-shadow:var(--shadow-lg); }
         .sidebar.collapsed { width:85px; }
         .sidebar .logo-area { display:flex; align-items:center; gap:0.8rem; margin-bottom:1.8rem; padding:0 0.3rem; text-decoration:none; }
@@ -73,7 +70,6 @@
         .sidebar .toggle-btn { margin-top:auto; display:flex; justify-content:flex-end; padding:0.8rem 0.5rem; cursor:pointer; color:var(--text-secondary); font-size:1.1rem; transition:all 0.2s; }
         .sidebar .toggle-btn:hover { color:var(--accent); }
 
-        /* Main Content */
         .main-content { flex:1; margin-left:260px; padding:1.5rem; transition:margin-left 0.3s cubic-bezier(0.4,0,0.2,1); max-width:calc(100vw - 260px); position:relative; z-index:5; }
         .main-content.expanded { margin-left:85px; max-width:calc(100vw - 85px); }
 
@@ -93,7 +89,6 @@
         .dropdown-item:hover { background:var(--hover-bg); color:var(--accent); }
         .dropdown-item.danger:hover { background:var(--danger-bg); color:var(--danger-text); }
 
-        /* Tabs */
         .tab-nav { display:flex; gap:0.4rem; margin-bottom:1.5rem; background:var(--card-bg); backdrop-filter:blur(12px); -webkit-backdrop-filter:blur(12px); border:1px solid var(--border); border-radius:1.5rem; padding:0.4rem; overflow-x:auto; box-shadow:var(--shadow); }
         .tab-btn { padding:0.7rem 1.4rem; border-radius:1.25rem; border:none; background:transparent; color:var(--text-secondary); cursor:pointer; font-weight:600; font-size:0.85rem; white-space:nowrap; display:flex; align-items:center; gap:0.4rem; font-family:inherit; transition:all 0.3s; }
         .tab-btn:hover { background:var(--hover-bg); color:var(--accent); }
@@ -102,13 +97,11 @@
         .tab-content.active { display:block; }
         @keyframes fadeSlideIn { from{opacity:0;transform:translateY(10px)} to{opacity:1;transform:translateY(0)} }
 
-        /* Sub Tabs */
         .sub-tabs { display:flex; gap:0.3rem; margin-bottom:1rem; flex-wrap:wrap; }
         .sub-tab-btn { padding:0.5rem 1.2rem; border-radius:2rem; font-weight:600; font-size:0.8rem; cursor:pointer; background:var(--card-bg); color:var(--text-secondary); border:1px solid var(--border); white-space:nowrap; transition:0.2s; font-family:inherit; }
         .sub-tab-btn.active { background:var(--accent); color:white; border-color:var(--accent); }
         .sub-tab-btn:hover:not(.active) { background:var(--hover-bg); color:var(--accent); }
 
-        /* Stats */
         .stats-row { display:grid; grid-template-columns:repeat(auto-fit,minmax(140px,1fr)); gap:0.8rem; margin-bottom:1.5rem; }
         .stat-card { background:var(--card-bg); backdrop-filter:blur(12px); -webkit-backdrop-filter:blur(12px); border:1px solid var(--border); border-radius:1.2rem; padding:1rem; text-align:center; transition:all 0.3s; position:relative; overflow:hidden; }
         .stat-card::before { content:''; position:absolute; top:0; left:0; right:0; height:3px; background:linear-gradient(90deg,var(--gradient-start),var(--gradient-end)); }
@@ -117,19 +110,16 @@
         .stat-card .val { font-size:1.7rem; font-weight:800; font-family:'Space Grotesk',monospace; color:var(--accent); }
         .stat-card .lbl { font-size:0.7rem; color:var(--text-muted); text-transform:uppercase; letter-spacing:0.5px; margin-top:0.2rem; }
 
-        /* Cards */
         .card { background:var(--card-bg); backdrop-filter:blur(12px); -webkit-backdrop-filter:blur(12px); border:1px solid var(--border); border-radius:1.5rem; padding:1.5rem; box-shadow:var(--shadow); margin-bottom:1.5rem; }
         .card-header { display:flex; justify-content:space-between; align-items:center; margin-bottom:1rem; flex-wrap:wrap; gap:0.5rem; padding-bottom:1rem; border-bottom:1px solid var(--border); }
         .card-header h3 { font-size:1.15rem; font-weight:700; display:flex; align-items:center; gap:0.5rem; color:var(--text-primary); }
 
-        /* Tables */
         .table-responsive { overflow-x:auto; border-radius:0.8rem; }
         table { width:100%; border-collapse:collapse; }
         th,td { padding:0.6rem 0.7rem; border-bottom:1px solid var(--border); font-size:0.82rem; text-align:left; }
         th { background:var(--hover-bg); font-weight:700; color:var(--text-muted); text-transform:uppercase; font-size:0.7rem; letter-spacing:0.5px; white-space:nowrap; }
         tr:hover td { background:var(--hover-bg); }
 
-        /* Badges */
         .badge { padding:0.2rem 0.7rem; border-radius:2rem; font-size:0.7rem; font-weight:700; display:inline-flex; align-items:center; gap:0.3rem; text-transform:uppercase; letter-spacing:0.3px; }
         .badge-success { background:var(--success-bg); color:var(--success-text); border:1px solid var(--success-border); }
         .badge-warning { background:var(--warning-bg); color:var(--warning-text); border:1px solid var(--warning-border); }
@@ -139,31 +129,27 @@
         .badge-st { background:var(--st-bg); color:var(--st-text); border:1px solid rgba(139,92,246,0.3); }
         .badge-both { background:var(--both-bg); color:var(--both-text); border:1px solid rgba(200,150,62,0.3); }
 
-        /* Buttons */
         .btn { padding:0.45rem 1rem; border:none; border-radius:2rem; font-weight:600; font-size:0.78rem; cursor:pointer; transition:all 0.25s; display:inline-flex; align-items:center; gap:0.3rem; white-space:nowrap; font-family:inherit; letter-spacing:0.3px; }
         .btn-primary { background:linear-gradient(135deg,var(--gradient-start),var(--gradient-end)); color:white; box-shadow:0 4px 12px rgba(200,150,62,.3); }
         .btn-primary:hover { box-shadow:0 6px 20px rgba(200,150,62,.5); transform:translateY(-2px); }
         .btn-success { background:var(--success-text); color:white; }
         .btn-danger { background:var(--danger-text); color:white; }
-        .btn-warning { background:var(--warning-text); color:white; }
+        .btn-warning { background:var(--warning-text); color:#000; }
         .btn-outline { background:transparent; border:2px solid var(--border); color:var(--text-primary); }
         .btn-outline:hover { background:var(--hover-bg); border-color:var(--accent); }
         .btn-sm { padding:0.3rem 0.8rem; font-size:0.72rem; border-radius:1.5rem; }
         .btn:disabled { opacity:0.4; cursor:not-allowed; }
         .btn-group { display:flex; gap:0.5rem; flex-wrap:wrap; }
 
-        /* Grid & Items */
         .grid-2cols { display:grid; grid-template-columns:repeat(auto-fill,minmax(300px,1fr)); gap:1rem; }
         .item-card { background:var(--hover-bg); border:1px solid var(--border); border-radius:1rem; padding:1rem; transition:all 0.2s; }
         .item-card:hover { border-color:var(--accent); box-shadow:var(--shadow); }
 
-        /* Filter Bar */
         .filter-bar { display:flex; gap:0.5rem; margin-bottom:1rem; flex-wrap:wrap; align-items:center; }
         .search-input { padding:0.5rem 1rem; border:2px solid var(--border); border-radius:2rem; background:var(--input-bg); color:var(--text-primary); font-size:0.85rem; flex:1; min-width:200px; font-family:inherit; transition:border-color 0.2s; }
         .search-input:focus { outline:none; border-color:var(--accent); }
         .select-filter { padding:0.5rem 1rem; border:2px solid var(--border); border-radius:2rem; background:var(--input-bg); color:var(--text-primary); font-size:0.85rem; font-family:inherit; cursor:pointer; min-width:150px; }
 
-        /* Modals */
         .modal-overlay { position:fixed; top:0; left:0; width:100%; height:100%; background:rgba(0,0,0,.75); backdrop-filter:blur(6px); -webkit-backdrop-filter:blur(6px); z-index:2000; display:none; align-items:center; justify-content:center; animation:fadeIn 0.3s; }
         .modal-overlay.active { display:flex; }
         .modal-content { background:var(--card-bg); border:1px solid var(--border); border-radius:1.5rem; padding:2rem; max-width:700px; width:90%; max-height:85vh; overflow-y:auto; box-shadow:0 20px 60px rgba(0,0,0,.5); animation:slideUp 0.3s cubic-bezier(0.4,0,0.2,1); }
@@ -184,7 +170,6 @@
         .detail-label { width:120px; color:var(--text-secondary); font-weight:500; font-size:0.85rem; flex-shrink:0; }
         .detail-value { flex:1; font-weight:400; font-size:0.85rem; }
 
-        /* Checkbox Grid for Classes/Subjects */
         .checkbox-grid { display:flex; flex-wrap:wrap; gap:0.6rem; margin-top:0.3rem; }
         .checkbox-item { display:flex; align-items:center; gap:0.4rem; cursor:pointer; padding:0.5rem 0.9rem; border:1px solid var(--border); border-radius:2rem; font-size:0.85rem; transition:all 0.2s; background:var(--input-bg); user-select:none; }
         .checkbox-item:hover { border-color:var(--accent); background:var(--hover-bg); }
@@ -192,28 +177,20 @@
         .checkbox-item.checked { background:var(--success-bg); border-color:var(--success-border); color:var(--success-text); font-weight:600; }
         .checkbox-item.checked::before { content:'✓ '; font-weight:700; }
 
-        /* Section Divider */
         .section-divider { border:none; border-top:2px dashed var(--border); margin:1.5rem 0; }
 
-        /* Teacher Type Badge in Table */
-        .teacher-type-badge { font-size:0.7rem; padding:0.15rem 0.6rem; border-radius:1rem; font-weight:600; display:inline-block; }
-
-        /* Toast */
         .toast-container { position:fixed; top:1rem; right:1rem; z-index:5000; display:flex; flex-direction:column; gap:0.5rem; pointer-events:none; }
         .toast { background:var(--card-bg); backdrop-filter:blur(16px); -webkit-backdrop-filter:blur(16px); border:1px solid var(--border); border-radius:1rem; padding:0.9rem 1.2rem; min-width:300px; max-width:420px; box-shadow:var(--shadow-lg); display:flex; align-items:flex-start; gap:0.7rem; animation:slideInRight 0.3s; pointer-events:auto; font-size:0.85rem; }
         .toast.removing { animation:slideOutRight 0.3s ease-in forwards; }
         @keyframes slideInRight { from{transform:translateX(120%);opacity:0} to{transform:translateX(0);opacity:1} }
         @keyframes slideOutRight { from{transform:translateX(0);opacity:1} to{transform:translateX(120%);opacity:0} }
 
-        /* Empty State */
         .empty-state { text-align:center; padding:2rem; color:var(--text-muted); grid-column:1/-1; }
         .empty-state i { font-size:2.5rem; margin-bottom:0.8rem; opacity:0.4; display:block; }
 
-        /* Subject per class container */
         .subject-class-block { background:var(--card-bg); border:1px solid var(--border); border-radius:1rem; padding:1rem; margin-bottom:0.8rem; }
         .subject-class-block h4 { font-size:0.9rem; margin-bottom:0.6rem; color:var(--accent); }
 
-        /* Mobile */
         @media(max-width:768px) {
             .sidebar { width:85px; }
             .sidebar .logo-area h2,.sidebar .nav-item span { display:none; }
@@ -341,7 +318,13 @@
             </div>
             <div id="lnPending">
                 <div class="card">
-                    <div class="card-header"><h3><i class="fas fa-book-open"></i> Pending Syllabi & Lesson Notes</h3></div>
+                    <div class="card-header">
+                        <h3><i class="fas fa-book-open"></i> Pending Syllabi & Lesson Notes</h3>
+                        <div class="btn-group">
+                            <button class="btn btn-success btn-sm" id="bulkApproveNotesBtn">✅ Approve All Visible</button>
+                            <button class="btn btn-danger btn-sm" id="bulkRejectNotesBtn">❌ Reject All Visible</button>
+                        </div>
+                    </div>
                     <div class="filter-bar">
                         <input type="text" class="search-input" id="lnSearch" placeholder="🔍 Search subject, topic, teacher..." oninput="renderLessonNotesPending()">
                         <select class="select-filter" id="lnTypeFilter" onchange="renderLessonNotesPending()">
@@ -440,7 +423,6 @@
             <i class="fas fa-bug"></i>
         </button>
 
-        <!-- Debug Panel -->
         <div id="debugPanel" style="display:none;position:fixed;bottom:4rem;right:1rem;z-index:999;background:var(--card-bg);backdrop-filter:blur(16px);-webkit-backdrop-filter:blur(16px);border:1px solid var(--border);border-radius:1rem;padding:1rem;width:420px;max-width:calc(100vw - 2rem);max-height:65vh;overflow-y:auto;box-shadow:var(--shadow-xl);font-size:0.75rem;">
             <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:0.8rem;padding-bottom:0.5rem;border-bottom:1px solid var(--border);">
                 <strong><i class="fas fa-bug"></i> Debug Panel</strong>
@@ -562,7 +544,6 @@
         const auth = firebase.auth();
         const db = firebase.firestore();
         
-        // Enable offline persistence
         db.enablePersistence({ synchronizeTabs: true }).catch(err => {
             if (err.code === 'failed-precondition') {
                 console.warn('Multiple tabs open, offline persistence limited.');
@@ -581,7 +562,6 @@
         let allPendingActions = [];
         let unsubscribers = {};
 
-        // Available classes for assignment
         const AVAILABLE_CLASSES = [
             'Creche', 'Pre-Nursery', 'Nursery 1', 'Nursery 2',
             'Primary 1', 'Primary 2', 'Primary 3', 'Primary 4', 'Primary 5', 'Primary 6',
@@ -589,7 +569,6 @@
             'SS 1', 'SS 2', 'SS 3'
         ];
 
-        // Common Nigerian subjects
         const COMMON_SUBJECTS = [
             'Mathematics', 'English Language', 'Basic Science', 'Basic Technology',
             'Social Studies', 'Civic Education', 'Christian Religious Studies',
@@ -625,19 +604,88 @@
         }
 
         // ============================================
+        // AUDIT LOGGING
+        // ============================================
+        async function logAudit(action, desc, targetUserId = null) {
+            if (!currentUserData) return;
+            try {
+                const entry = {
+                    userId: auth.currentUser?.uid || 'unknown',
+                    userName: `${currentUserData.firstName || ''} ${currentUserData.surname || ''}`.trim(),
+                    userRole: 'admin',
+                    action,
+                    description: desc,
+                    timestamp: firebase.firestore.FieldValue.serverTimestamp()
+                };
+                if (targetUserId) entry.targetUserId = targetUserId;
+                await db.collection('auditLogs').add(entry);
+            } catch (e) {
+                console.error('Audit log error:', e);
+            }
+        }
+
+        // ============================================
+        // TEACHER NOTIFICATIONS
+        // ============================================
+        async function notifyTeacher(teacherId, title, message, type = 'info') {
+            if (!teacherId) return;
+            try {
+                await db.collection('notifications').add({
+                    userId: teacherId,
+                    title,
+                    message,
+                    type,
+                    read: false,
+                    createdAt: firebase.firestore.FieldValue.serverTimestamp()
+                });
+            } catch (e) {
+                console.error('Notification error:', e);
+            }
+        }
+
+        // ============================================
+        // STUDENT ID GENERATION (unified with teacher panel)
+        // ============================================
+        async function generateUserId(firstName, year) {
+            const prefix = 'JWSST' + firstName.substring(0, 3).toUpperCase();
+            const counterRef = db.collection('counters').doc(`userId_${year}_${prefix}`);
+            const newNum = await db.runTransaction(async (transaction) => {
+                const doc = await transaction.get(counterRef);
+                let next = 1;
+                if (doc.exists) next = (doc.data().value || 0) + 1;
+                transaction.set(counterRef, { value: next }, { merge: true });
+                return next;
+            });
+            return `${prefix}${year}${String(newNum).padStart(5, '0')}`;
+        }
+
+        // ============================================
+        // TIMETABLE PUBLICATION (single function)
+        // ============================================
+        async function publishTimetable(proposalDoc) {
+            const data = proposalDoc.data();
+            await db.collection('timetables').add({
+                classId: data.classId,
+                type: data.type || 'academic',
+                periods: data.periods || [],
+                teacherId: data.teacherId,
+                teacherName: data.teacherName || '',
+                published: true,
+                approvedAt: firebase.firestore.FieldValue.serverTimestamp(),
+                approvedBy: `${currentUserData?.firstName || 'Admin'} ${currentUserData?.surname || ''}`.trim()
+            });
+        }
+
+        // ============================================
         // FIREBASE INDEX HELPER
         // ============================================
         function showIndexError(collectionName, fields, originalError) {
             const fieldStr = fields.map(f => `${f.field} (${f.order})`).join(', ');
             const consoleUrl = `https://console.firebase.google.com/project/judah-c737e/firestore/indexes?create_composite=${encodeURIComponent(JSON.stringify({collectionGroup:collectionName,queryScope:'COLLECTION',fields:fields}))}`;
-            
             console.error(`⚠️ MISSING COMPOSITE INDEX: ${collectionName} → [${fieldStr}]`);
             console.error(`🔗 Create it here: ${consoleUrl}`);
-            
             const shouldOpen = confirm(`⚠️ Database Index Needed\n\nCollection: ${collectionName}\nFields: ${fieldStr}\n\nClick OK to open the Firebase Console to create this index, or Cancel to dismiss.`);
-            if (shouldOpen) {
-                window.open(consoleUrl, '_blank', 'noopener');
-            }
+            if (shouldOpen) window.open(consoleUrl, '_blank', 'noopener');
         }
 
         // ============================================
@@ -646,72 +694,26 @@
         function updateDebugPanel() {
             const content = document.getElementById('debugContent');
             if (!content) return;
-            
             const pendingUsers = allUsers.filter(u => !u.approved).length;
             const totalPending = pendingUsers + pendingSyllabi.length + pendingNotes.length + 
                 pendingDailyReports.filter(r => r.status !== 'acknowledged').length + 
                 pendingTimetableProposals.filter(t => t.status === 'pending').length +
                 allPendingActions.filter(a => a.status === 'pending').length;
-            
             content.innerHTML = `
                 <div style="display:grid;grid-template-columns:1fr 1fr;gap:0.4rem;">
-                    <div style="background:var(--hover-bg);padding:0.4rem 0.6rem;border-radius:0.4rem;">
-                        <div style="color:var(--text-muted);font-size:0.6rem;">AUTH</div>
-                        <div>${currentUserData ? '✅ Admin' : '❌ None'}</div>
-                    </div>
-                    <div style="background:var(--hover-bg);padding:0.4rem 0.6rem;border-radius:0.4rem;">
-                        <div style="color:var(--text-muted);font-size:0.6rem;">ROLE</div>
-                        <div>${currentUserData?.role || '—'}</div>
-                    </div>
-                    <div style="background:var(--hover-bg);padding:0.4rem 0.6rem;border-radius:0.4rem;">
-                        <div style="color:var(--text-muted);font-size:0.6rem;">TOTAL PENDING</div>
-                        <div style="font-weight:700;color:var(--warning-text);">${totalPending}</div>
-                    </div>
-                    <div style="background:var(--hover-bg);padding:0.4rem 0.6rem;border-radius:0.4rem;">
-                        <div style="color:var(--text-muted);font-size:0.6rem;">ALL USERS</div>
-                        <div>${allUsers.length}</div>
-                    </div>
-                    <div style="background:var(--hover-bg);padding:0.4rem 0.6rem;border-radius:0.4rem;">
-                        <div style="color:var(--text-muted);font-size:0.6rem;">PENDING USERS</div>
-                        <div>${pendingUsers}</div>
-                    </div>
-                    <div style="background:var(--hover-bg);padding:0.4rem 0.6rem;border-radius:0.4rem;">
-                        <div style="color:var(--text-muted);font-size:0.6rem;">SYLLABI</div>
-                        <div>${pendingSyllabi.length} pending / ${allSyllabi.length} total</div>
-                    </div>
-                    <div style="background:var(--hover-bg);padding:0.4rem 0.6rem;border-radius:0.4rem;">
-                        <div style="color:var(--text-muted);font-size:0.6rem;">LESSON NOTES</div>
-                        <div>${pendingNotes.length} pending / ${allLessonNotes.length} total</div>
-                    </div>
-                    <div style="background:var(--hover-bg);padding:0.4rem 0.6rem;border-radius:0.4rem;">
-                        <div style="color:var(--text-muted);font-size:0.6rem;">DAILY REPORTS</div>
-                        <div>${pendingDailyReports.filter(r=>r.status!=='acknowledged').length} pending</div>
-                    </div>
-                    <div style="background:var(--hover-bg);padding:0.4rem 0.6rem;border-radius:0.4rem;">
-                        <div style="color:var(--text-muted);font-size:0.6rem;">TIMETABLES</div>
-                        <div>${pendingTimetableProposals.filter(t=>t.status==='pending').length} pending</div>
-                    </div>
-                    <div style="background:var(--hover-bg);padding:0.4rem 0.6rem;border-radius:0.4rem;">
-                        <div style="color:var(--text-muted);font-size:0.6rem;">ACTIONS</div>
-                        <div>${allPendingActions.filter(a=>a.status==='pending').length} pending</div>
-                    </div>
-                    <div style="background:var(--hover-bg);padding:0.4rem 0.6rem;border-radius:0.4rem;">
-                        <div style="color:var(--text-muted);font-size:0.6rem;">LISTENERS</div>
-                        <div>${Object.keys(unsubscribers).length} active</div>
-                    </div>
-                    <div style="background:var(--hover-bg);padding:0.4rem 0.6rem;border-radius:0.4rem;">
-                        <div style="color:var(--text-muted);font-size:0.6rem;">POINT VALUE</div>
-                        <div>₦${settings.pointValue || 200}</div>
-                    </div>
+                    <div style="background:var(--hover-bg);padding:0.4rem 0.6rem;border-radius:0.4rem;"><div style="color:var(--text-muted);font-size:0.6rem;">AUTH</div><div>${currentUserData ? '✅ Admin' : '❌ None'}</div></div>
+                    <div style="background:var(--hover-bg);padding:0.4rem 0.6rem;border-radius:0.4rem;"><div style="color:var(--text-muted);font-size:0.6rem;">TOTAL PENDING</div><div style="font-weight:700;color:var(--warning-text);">${totalPending}</div></div>
+                    <div style="background:var(--hover-bg);padding:0.4rem 0.6rem;border-radius:0.4rem;"><div style="color:var(--text-muted);font-size:0.6rem;">ALL USERS</div><div>${allUsers.length}</div></div>
+                    <div style="background:var(--hover-bg);padding:0.4rem 0.6rem;border-radius:0.4rem;"><div style="color:var(--text-muted);font-size:0.6rem;">PENDING USERS</div><div>${pendingUsers}</div></div>
+                    <div style="background:var(--hover-bg);padding:0.4rem 0.6rem;border-radius:0.4rem;"><div style="color:var(--text-muted);font-size:0.6rem;">SYLLABI</div><div>${pendingSyllabi.length} / ${allSyllabi.length}</div></div>
+                    <div style="background:var(--hover-bg);padding:0.4rem 0.6rem;border-radius:0.4rem;"><div style="color:var(--text-muted);font-size:0.6rem;">LESSON NOTES</div><div>${pendingNotes.length} / ${allLessonNotes.length}</div></div>
+                    <div style="background:var(--hover-bg);padding:0.4rem 0.6rem;border-radius:0.4rem;"><div style="color:var(--text-muted);font-size:0.6rem;">LISTENERS</div><div>${Object.keys(unsubscribers).length} active</div></div>
+                    <div style="background:var(--hover-bg);padding:0.4rem 0.6rem;border-radius:0.4rem;"><div style="color:var(--text-muted);font-size:0.6rem;">POINT VALUE</div><div>₦${settings.pointValue || 200}</div></div>
                 </div>
                 <div style="margin-top:0.8rem;padding-top:0.5rem;border-top:1px solid var(--border);">
-                    <button class="btn btn-outline btn-sm" onclick="console.log('AllUsers:',allUsers);console.log('Syllabi:',allSyllabi);console.log('LessonNotes:',allLessonNotes);console.log('DailyReports:',allDailyReports);console.log('TimetableProposals:',allTimetableProposals);console.log('PendingActions:',allPendingActions);alert('Check browser console (F12) for full data dump');" style="width:100%;">
-                        <i class="fas fa-terminal"></i> Dump All Data to Console
-                    </button>
+                    <button class="btn btn-outline btn-sm" onclick="console.log('AllUsers:',allUsers);console.log('Syllabi:',allSyllabi);console.log('LessonNotes:',allLessonNotes);console.log('DailyReports:',allDailyReports);console.log('TimetableProposals:',allTimetableProposals);console.log('PendingActions:',allPendingActions);alert('Check browser console (F12) for full data dump');" style="width:100%;"><i class="fas fa-terminal"></i> Dump All Data to Console</button>
                 </div>
-                <div style="margin-top:0.3rem;color:var(--text-muted);font-size:0.6rem;text-align:center;">
-                    Last updated: ${new Date().toLocaleTimeString()}
-                </div>
+                <div style="margin-top:0.3rem;color:var(--text-muted);font-size:0.6rem;text-align:center;">Last updated: ${new Date().toLocaleTimeString()}</div>
             `;
         }
 
@@ -721,9 +723,7 @@
             panel.style.display = isVisible ? 'none' : 'block';
             if (!isVisible) updateDebugPanel();
         });
-        document.getElementById('debugCloseBtn').addEventListener('click', () => {
-            document.getElementById('debugPanel').style.display = 'none';
-        });
+        document.getElementById('debugCloseBtn').addEventListener('click', () => document.getElementById('debugPanel').style.display = 'none');
         document.getElementById('debugRefreshBtn').addEventListener('click', updateDebugPanel);
 
         // Sidebar toggle
@@ -756,16 +756,10 @@
             if (confirmCallback) confirmCallback();
             document.getElementById('confirmModal').classList.remove('active');
         });
-        document.getElementById('confirmCancelBtn').addEventListener('click', () => {
-            document.getElementById('confirmModal').classList.remove('active');
-        });
-        window.closeConfirmModal = () => document.getElementById('confirmModal').classList.remove('active');
+        document.getElementById('confirmCancelBtn').addEventListener('click', () => document.getElementById('confirmModal').classList.remove('active'));
 
         // Detail modal
-        function closeDetailModal() { 
-            document.getElementById('detailModal').classList.remove('active'); 
-            detailCurrentDoc = null; 
-        }
+        function closeDetailModal() { document.getElementById('detailModal').classList.remove('active'); detailCurrentDoc = null; }
         document.getElementById('closeDetailModalBtn').addEventListener('click', closeDetailModal);
         document.getElementById('detailCancelBtn').addEventListener('click', closeDetailModal);
         document.getElementById('adminRatingStars').addEventListener('click', e => {
@@ -777,26 +771,52 @@
             if (!detailCurrentDoc) return;
             const feedback = document.getElementById('adminFeedback').value;
             const coll = detailType === 'syllabus' ? 'syllabus' : (detailType === 'dailyReport' ? 'dailyReports' : 'lessonNotes');
+            const data = detailCurrentDoc.data();
             const update = { status: 'approved', adminFeedback: feedback, reviewedAt: firebase.firestore.FieldValue.serverTimestamp() };
             if (detailRating > 0) update.adminRating = detailRating;
             await db.collection(coll).doc(detailCurrentDoc.id).update(update);
-            if ((detailType === 'lessonNote' || detailType === 'syllabus') && detailCurrentDoc.data().teacherId && detailRating >= 1) {
+            
+            // Award points
+            if ((detailType === 'lessonNote' || detailType === 'syllabus') && data.teacherId && detailRating >= 1) {
                 const pts = detailRating * 10;
-                const ref = db.collection('users').doc(detailCurrentDoc.data().teacherId);
+                const ref = db.collection('users').doc(data.teacherId);
                 const doc = await ref.get();
                 if (doc.exists) {
                     const cur = doc.data().points || 0;
-                    await ref.update({ points: cur + pts, pointHistory: firebase.firestore.FieldValue.arrayUnion({ points: pts, reason: `${detailType==='lessonNote'?'Lesson note':'Syllabus'} rated ${detailRating}/5`, date: new Date().toISOString(), newPoints: cur + pts }) });
+                    const newPoints = cur + pts;
+                    await ref.update({ 
+                        points: newPoints, 
+                        pointHistory: firebase.firestore.FieldValue.arrayUnion({ 
+                            points: pts, 
+                            reason: `${detailType === 'lessonNote' ? 'Lesson note' : 'Syllabus'} rated ${detailRating}/5`, 
+                            date: new Date().toISOString(), 
+                            newPoints 
+                        }) 
+                    });
                 }
             }
-            showToast('Approved', `${detailType==='syllabus'?'Syllabus':(detailType==='dailyReport'?'Report':'Note')} approved`, 'success');
+            
+            // Audit + Notify
+            await logAudit('APPROVE_ITEM', `${detailType} approved. Rating: ${detailRating}/5. Feedback: ${feedback}`, data.teacherId || null);
+            if (data.teacherId) {
+                await notifyTeacher(data.teacherId, 'Item Approved', `Your ${detailType === 'syllabus' ? 'syllabus' : detailType === 'dailyReport' ? 'daily report' : 'lesson note'} was approved${detailRating > 0 ? ` with ${detailRating}/5 stars` : ''}.`, 'success');
+            }
+            
+            showToast('Approved', `${detailType === 'syllabus' ? 'Syllabus' : (detailType === 'dailyReport' ? 'Report' : 'Note')} approved`, 'success');
             closeDetailModal();
         });
         document.getElementById('detailRejectBtn').addEventListener('click', async () => {
             if (!detailCurrentDoc) return;
             const feedback = document.getElementById('adminFeedback').value;
             const coll = detailType === 'syllabus' ? 'syllabus' : (detailType === 'dailyReport' ? 'dailyReports' : 'lessonNotes');
+            const data = detailCurrentDoc.data();
             await db.collection(coll).doc(detailCurrentDoc.id).update({ status: 'rejected', adminFeedback: feedback });
+            
+            await logAudit('REJECT_ITEM', `${detailType} rejected. Feedback: ${feedback}`, data.teacherId || null);
+            if (data.teacherId) {
+                await notifyTeacher(data.teacherId, 'Item Rejected', `Your ${detailType === 'syllabus' ? 'syllabus' : detailType === 'dailyReport' ? 'daily report' : 'lesson note'} was rejected. Feedback: ${feedback || 'None provided'}`, 'warning');
+            }
+            
             showToast('Rejected', 'Item rejected', 'warning');
             closeDetailModal();
         });
@@ -825,7 +845,6 @@
             document.getElementById('ttPreviewModal').classList.add('active');
         }
 
-        // Update badge & stats
         function updateAllBadges() {
             let total = allUsers.filter(u => !u.approved).length;
             total += pendingSyllabi.length + pendingNotes.length;
@@ -861,6 +880,7 @@
             const val = Number(document.getElementById('pointValueInput').value) || 200;
             await db.collection('settings').doc('points').set({ pointValue: val }, { merge: true });
             settings.pointValue = val;
+            await logAudit('UPDATE_SETTINGS', `Point value changed to ₦${val}`);
             showToast('Saved', 'Point value updated', 'success');
             closeSettings();
         }
@@ -879,13 +899,13 @@
                 </div>`).join('');
             document.getElementById('postCategoriesModal').classList.add('active');
         }
-        // Event delegation for delete post category
         document.addEventListener('click', (e) => {
             const delBtn = e.target.closest('.delete-post-cat-btn');
             if (delBtn) {
                 const id = delBtn.dataset.postCatId;
                 if (!confirm('Delete this category?')) return;
                 db.collection('postCategories').doc(id).delete().then(async () => {
+                    await logAudit('DELETE_POST_CATEGORY', `Deleted category ${id}`);
                     await loadPostCategories(); renderPostCategories();
                 });
             }
@@ -894,6 +914,7 @@
         async function addPostCategoryFn() {
             const name = document.getElementById('newPostName').value.trim(); if (!name) return;
             await db.collection('postCategories').add({ name });
+            await logAudit('ADD_POST_CATEGORY', `Added category: ${name}`);
             document.getElementById('newPostName').value = '';
             await loadPostCategories(); renderPostCategories();
         }
@@ -981,37 +1002,35 @@
             }).join('');
         }
         
-        // Event delegation for all user action buttons
+        // Event delegation for user actions
         document.addEventListener('click', async (e) => {
             const approveBtn = e.target.closest('.approve-user-btn');
             if (approveBtn) {
                 const uid = approveBtn.dataset.userId;
                 const user = allUsers.find(u => u.id === uid); if (!user) return;
+                const firstName = user.firstName || 'STU';
+                const year = user.admissionYear || new Date().getFullYear();
+                let genId = user.userId;
                 if (!user.userId) {
-                    const firstName = user.firstName || 'STU';
-                    const year = user.admissionYear || new Date().getFullYear();
-                    const prefix = firstName.substring(0, 3).toUpperCase();
-                    const counterRef = db.collection('counters').doc(`userId_${year}_${prefix}`);
-                    const newNum = await db.runTransaction(async (tx) => {
-                        const d = await tx.get(counterRef); let n = 1;
-                        if (d.exists) n = (d.data().value || 0) + 1;
-                        tx.set(counterRef, { value: n }, { merge: true }); return n;
-                    });
-                    const genId = `JWS${prefix}${year}${String(newNum).padStart(4, '0')}`;
-                    await db.collection('users').doc(uid).update({ approved: true, userId: genId });
-                    showToast('Approved', `ID: ${genId}`, 'success');
-                } else {
-                    await db.collection('users').doc(uid).update({ approved: true });
-                    showToast('Approved', 'User approved', 'success');
+                    genId = await generateUserId(firstName, year);
                 }
+                await db.collection('users').doc(uid).update({ approved: true, userId: genId || null });
+                await logAudit('APPROVE_USER', `Approved ${user.firstName} ${user.surname} (${user.role}). ID: ${genId || 'N/A'}`, uid);
+                if (user.role === 'teacher') {
+                    await notifyTeacher(uid, 'Account Approved', 'Your teacher account has been approved by the admin. You can now log in.', 'success');
+                }
+                showToast('Approved', genId ? `ID: ${genId}` : 'User approved', 'success');
                 return;
             }
             
             const rejectBtn = e.target.closest('.reject-user-btn');
             if (rejectBtn) {
                 const uid = rejectBtn.dataset.userId;
-                showConfirm('Reject', 'Delete this user?', async () => {
+                const user = allUsers.find(u => u.id === uid);
+                const name = user ? `${user.firstName || ''} ${user.surname || ''}`.trim() : uid;
+                showConfirm('Reject', `Delete "${escapeHtml(name)}"? This cannot be undone.`, async () => {
                     await db.collection('users').doc(uid).delete();
+                    await logAudit('REJECT_USER', `Deleted user ${name}`, uid);
                     showToast('Rejected', 'User deleted', 'warning');
                 });
                 return;
@@ -1021,8 +1040,11 @@
             if (toggleApprovalBtn) {
                 const uid = toggleApprovalBtn.dataset.userId;
                 const approve = toggleApprovalBtn.dataset.approve === 'true';
-                showConfirm(approve ? 'Approve' : 'Revoke', 'Change status?', async () => {
+                const user = allUsers.find(u => u.id === uid);
+                const name = user ? `${user.firstName || ''} ${user.surname || ''}`.trim() : uid;
+                showConfirm(approve ? 'Approve' : 'Revoke', `Change approval status of "${escapeHtml(name)}"?`, async () => {
                     await db.collection('users').doc(uid).update({ approved: approve });
+                    await logAudit(approve ? 'APPROVE_USER' : 'REVOKE_USER', `${approve ? 'Approved' : 'Revoked'} ${name}`, uid);
                     showToast('Updated', 'Status changed', 'success');
                 });
                 return;
@@ -1032,21 +1054,18 @@
             if (toggleSuspendBtn) {
                 const uid = toggleSuspendBtn.dataset.userId;
                 const u = allUsers.find(x => x.id === uid); if (!u) return;
-                await db.collection('users').doc(uid).update({ suspended: !u.suspended });
+                const newStatus = !u.suspended;
+                const name = `${u.firstName || ''} ${u.surname || ''}`.trim();
+                await db.collection('users').doc(uid).update({ suspended: newStatus });
+                await logAudit(newStatus ? 'SUSPEND_USER' : 'ACTIVATE_USER', `${newStatus ? 'Suspended' : 'Activated'} ${name}`, uid);
                 return;
             }
             
             const editUserBtn = e.target.closest('.edit-user-btn');
-            if (editUserBtn) {
-                editUser(editUserBtn.dataset.userId);
-                return;
-            }
+            if (editUserBtn) { editUser(editUserBtn.dataset.userId); return; }
             
             const viewPointsBtn = e.target.closest('.view-points-btn');
-            if (viewPointsBtn) {
-                viewPoints(viewPointsBtn.dataset.userId);
-                return;
-            }
+            if (viewPointsBtn) { viewPoints(viewPointsBtn.dataset.userId); return; }
         });
         
         window.toggleAllRegChecks = () => {
@@ -1058,15 +1077,19 @@
             const ids = [...document.querySelectorAll('.reg-check:checked')].map(cb => cb.dataset.id);
             if (!ids.length) return showToast('Info', 'No users selected', 'info');
             showConfirm('Approve', `Approve ${ids.length} users?`, async () => {
-                const batch = db.batch(); ids.forEach(id => batch.update(db.collection('users').doc(id), { approved: true }));
-                await batch.commit(); showToast('Approved', `${ids.length} users`, 'success');
+                const batch = db.batch();
+                ids.forEach(id => batch.update(db.collection('users').doc(id), { approved: true }));
+                await batch.commit();
+                await logAudit('BULK_APPROVE', `Approved ${ids.length} users`);
+                showToast('Approved', `${ids.length} users`, 'success');
             });
         });
         document.getElementById('bulkRejectBtn').addEventListener('click', () => {
             const ids = [...document.querySelectorAll('.reg-check:checked')].map(cb => cb.dataset.id);
             if (!ids.length) return;
-            showConfirm('Delete', `Delete ${ids.length} users?`, async () => {
+            showConfirm('Delete', `Delete ${ids.length} users? This cannot be undone.`, async () => {
                 for (const id of ids) await db.collection('users').doc(id).delete();
+                await logAudit('BULK_REJECT', `Deleted ${ids.length} users`);
                 showToast('Deleted', `${ids.length} users removed`, 'warning');
             });
         });
@@ -1148,6 +1171,9 @@
                 subjectPerClassHTML = '<p style="color:var(--text-muted);font-size:0.85rem;">Select classes above to assign subjects.</p>';
             }
 
+            const showClassTeacher = teacherType === 'classTeacher' || teacherType === 'both';
+            const showSubjectTeacher = teacherType === 'subjectTeacher' || teacherType === 'both';
+
             document.getElementById('editUserContent').innerHTML = `
                 <div class="form-group">
                     <label>Post</label>
@@ -1174,25 +1200,21 @@
                         <strong>Both</strong> = All permissions.
                     </small>
                 </div>
-                <div id="classTeacherFields" style="display:${teacherType === 'subjectTeacher' ? 'none' : 'block'};">
+                <div id="classTeacherFields" style="display:${showClassTeacher ? 'block' : 'none'};">
                     <hr class="section-divider">
                     <div class="form-group">
                         <label><i class="fas fa-users-class"></i> Class Teacher For <span style="font-weight:400;color:var(--text-muted);">(select all that apply)</span></label>
-                        <div class="checkbox-grid" id="editClassTeacherGrid">
-                            ${ctCheckboxesHTML}
-                        </div>
+                        <div class="checkbox-grid" id="editClassTeacherGrid">${ctCheckboxesHTML}</div>
                         <small style="color:var(--text-muted);margin-top:0.3rem;display:block;">
                             <i class="fas fa-info-circle"></i> This teacher will mark attendance, compile report cards, and handle student requests for these classes.
                         </small>
                     </div>
                 </div>
-                <div id="subjectTeacherFields" style="display:${teacherType === 'classTeacher' ? 'none' : 'block'};">
+                <div id="subjectTeacherFields" style="display:${showSubjectTeacher ? 'block' : 'none'};">
                     <hr class="section-divider">
                     <div class="form-group">
                         <label><i class="fas fa-school"></i> Classes Teaching <span style="font-weight:400;color:var(--text-muted);">(select all where they teach subjects)</span></label>
-                        <div class="checkbox-grid" id="editClassesGrid">
-                            ${classCheckboxesHTML}
-                        </div>
+                        <div class="checkbox-grid" id="editClassesGrid">${classCheckboxesHTML}</div>
                         <small style="color:var(--text-muted);margin-top:0.3rem;display:block;">
                             <i class="fas fa-info-circle"></i> First selected class becomes the primary class.
                         </small>
@@ -1221,7 +1243,6 @@
                 </div>`;
             document.getElementById('editUserModal').classList.add('active');
             
-            // Re-attach checkbox toggle
             document.querySelectorAll('#editUserContent [data-checkbox]').forEach(label => {
                 label.addEventListener('click', function() {
                     const checkbox = this.querySelector('input[type="checkbox"]');
@@ -1237,7 +1258,6 @@
             document.getElementById('subjectTeacherFields').style.display = (type === 'subjectTeacher' || type === 'both') ? 'block' : 'none';
         };
 
-        // Handle add custom subject
         document.addEventListener('keypress', (e) => {
             if (e.key === 'Enter' && e.target.classList.contains('add-custom-subject-input')) {
                 const input = e.target;
@@ -1265,28 +1285,29 @@
 
         async function saveUserChanges() {
             if (!selectedUserId) return;
+            const u = allUsers.find(x => x.id === selectedUserId);
+            const oldName = u ? `${u.firstName || ''} ${u.surname || ''}`.trim() : selectedUserId;
 
             const teacherType = document.getElementById('editTeacherType').value;
 
-            const classTeacherFor = [];
-            document.querySelectorAll('#editClassTeacherGrid input[type="checkbox"]:checked').forEach(cb => {
-                classTeacherFor.push(cb.value);
-            });
+            // FIXED: classTeacherFor only saves when type is classTeacher or both
+            const classTeacherFor = (teacherType === 'classTeacher' || teacherType === 'both')
+                ? [...document.querySelectorAll('#editClassTeacherGrid input[type="checkbox"]:checked')].map(cb => cb.value)
+                : [];
 
-            const selectedClasses = [];
-            document.querySelectorAll('#editClassesGrid input[type="checkbox"]:checked').forEach(cb => {
-                selectedClasses.push(cb.value);
-            });
+            const selectedClasses = (teacherType === 'subjectTeacher' || teacherType === 'both')
+                ? [...document.querySelectorAll('#editClassesGrid input[type="checkbox"]:checked')].map(cb => cb.value)
+                : [];
 
             const subjectClassMap = {};
-            document.querySelectorAll('.subject-cb-group').forEach(group => {
-                const cls = group.dataset.class;
-                const subjects = [];
-                group.querySelectorAll('input[type="checkbox"]:checked').forEach(cb => {
-                    subjects.push(cb.value);
+            if (teacherType === 'subjectTeacher' || teacherType === 'both') {
+                document.querySelectorAll('.subject-cb-group').forEach(group => {
+                    const cls = group.dataset.class;
+                    const subjects = [];
+                    group.querySelectorAll('input[type="checkbox"]:checked').forEach(cb => subjects.push(cb.value));
+                    if (subjects.length) subjectClassMap[cls] = subjects;
                 });
-                if (subjects.length) subjectClassMap[cls] = subjects;
-            });
+            }
 
             const allSubjects = [...new Set(Object.values(subjectClassMap).flat())];
 
@@ -1305,6 +1326,7 @@
             };
 
             await db.collection('users').doc(selectedUserId).update(updateData);
+            await logAudit('EDIT_USER', `Edited ${oldName}: teacherType=${teacherType}, classes=${selectedClasses.join(',')}, subjects=${allSubjects.length}`, selectedUserId);
             showToast('Saved', `Teacher updated: ${teacherType.replace(/([A-Z])/g,' $1').trim()} with ${selectedClasses.length} class(es), ${allSubjects.length} subject(s)`, 'success');
             closeEditModal();
         }
@@ -1339,7 +1361,7 @@
                 renderLessonNotesPending(); renderLessonNotesHistory(); updateAllBadges(); updateStats();
             }, err => {
                 if (err.code === 'failed-precondition') {
-                    showIndexError('syllabus', [{field:'teacherId',order:'ASCENDING'},{field:'subject',order:'ASCENDING'},{field:'submittedAt',order:'DESCENDING'}], err);
+                    showIndexError('syllabus', [{field:'teacherId',order:'ASCENDING'},{field:'submittedAt',order:'DESCENDING'}], err);
                 }
             });
             unsubscribers['lessonNotes'] = db.collection('lessonNotes').onSnapshot(snap => {
@@ -1398,6 +1420,36 @@
                 </div>`).join('');
         }
         
+        // Bulk approve/reject for lesson notes & syllabi
+        document.getElementById('bulkApproveNotesBtn').addEventListener('click', async () => {
+            const visibleSyllabiIds = pendingSyllabi.map(s => s.id);
+            const visibleNotesIds = pendingNotes.map(n => n.id);
+            const total = visibleSyllabiIds.length + visibleNotesIds.length;
+            if (!total) return showToast('Info', 'No pending items visible', 'info');
+            showConfirm('Bulk Approve', `Approve all ${total} visible items?`, async () => {
+                const batch = db.batch();
+                visibleSyllabiIds.forEach(id => batch.update(db.collection('syllabus').doc(id), { status: 'approved', reviewedAt: firebase.firestore.FieldValue.serverTimestamp() }));
+                visibleNotesIds.forEach(id => batch.update(db.collection('lessonNotes').doc(id), { status: 'approved', reviewedAt: firebase.firestore.FieldValue.serverTimestamp() }));
+                await batch.commit();
+                await logAudit('BULK_APPROVE_NOTES', `Approved ${total} lesson notes/syllabi`);
+                showToast('Approved', `${total} items approved`, 'success');
+            });
+        });
+        document.getElementById('bulkRejectNotesBtn').addEventListener('click', async () => {
+            const visibleSyllabiIds = pendingSyllabi.map(s => s.id);
+            const visibleNotesIds = pendingNotes.map(n => n.id);
+            const total = visibleSyllabiIds.length + visibleNotesIds.length;
+            if (!total) return showToast('Info', 'No pending items visible', 'info');
+            showConfirm('Bulk Reject', `Reject all ${total} visible items?`, async () => {
+                const batch = db.batch();
+                visibleSyllabiIds.forEach(id => batch.update(db.collection('syllabus').doc(id), { status: 'rejected', reviewedAt: firebase.firestore.FieldValue.serverTimestamp() }));
+                visibleNotesIds.forEach(id => batch.update(db.collection('lessonNotes').doc(id), { status: 'rejected', reviewedAt: firebase.firestore.FieldValue.serverTimestamp() }));
+                await batch.commit();
+                await logAudit('BULK_REJECT_NOTES', `Rejected ${total} lesson notes/syllabi`);
+                showToast('Rejected', `${total} items rejected`, 'warning');
+            });
+        });
+        
         // Event delegation for lesson notes / syllabus actions
         document.addEventListener('click', async (e) => {
             const viewSyllabusBtn = e.target.closest('.view-syllabus-btn');
@@ -1430,26 +1482,19 @@
             if (quickApproveBtn) {
                 const coll = quickApproveBtn.dataset.collection;
                 const docId = quickApproveBtn.dataset.docId;
-                await db.collection(coll).doc(docId).update({ status: 'approved', reviewedAt: firebase.firestore.FieldValue.serverTimestamp() });
+                const docRef = db.collection(coll).doc(docId);
+                const docSnap = await docRef.get();
+                const data = docSnap.data();
+                await docRef.update({ status: 'approved', reviewedAt: firebase.firestore.FieldValue.serverTimestamp() });
                 
-                // FIXED: If approving a timetableProposal, also create a published timetables entry
                 if (coll === 'timetableProposals') {
-                    const proposalDoc = await db.collection('timetableProposals').doc(docId).get();
-                    if (proposalDoc.exists) {
-                        const data = proposalDoc.data();
-                        await db.collection('timetables').add({
-                            classId: data.classId,
-                            type: data.type || 'academic',
-                            periods: data.periods || [],
-                            teacherId: data.teacherId,
-                            teacherName: data.teacherName || '',
-                            published: true,
-                            approvedAt: firebase.firestore.FieldValue.serverTimestamp(),
-                            approvedBy: currentUserData?.firstName || 'Admin'
-                        });
-                    }
+                    await publishTimetable(docSnap);
                 }
                 
+                await logAudit('APPROVE_ITEM', `${coll} approved via quick action`, data?.teacherId || null);
+                if (data?.teacherId) {
+                    await notifyTeacher(data.teacherId, 'Item Approved', `Your submission was approved.`, 'success');
+                }
                 showToast('Approved', 'Done', 'success');
                 return;
             }
@@ -1458,7 +1503,13 @@
             if (quickRejectBtn) {
                 const coll = quickRejectBtn.dataset.collection;
                 const docId = quickRejectBtn.dataset.docId;
+                const docSnap = await db.collection(coll).doc(docId).get();
+                const data = docSnap.data();
                 await db.collection(coll).doc(docId).update({ status: 'rejected', reviewedAt: firebase.firestore.FieldValue.serverTimestamp() });
+                await logAudit('REJECT_ITEM', `${coll} rejected via quick action`, data?.teacherId || null);
+                if (data?.teacherId) {
+                    await notifyTeacher(data.teacherId, 'Item Rejected', `Your submission was rejected.`, 'warning');
+                }
                 showToast('Rejected', 'Done', 'warning');
                 return;
             }
@@ -1504,7 +1555,6 @@
                 </div>`).join('') : '<p>No acknowledged reports.</p>';
         }
         
-        // Event delegation for daily reports
         document.addEventListener('click', async (e) => {
             const viewReportBtn = e.target.closest('.view-report-btn');
             if (viewReportBtn) {
@@ -1521,7 +1571,13 @@
             const ackReportBtn = e.target.closest('.ack-report-btn');
             if (ackReportBtn) {
                 const id = ackReportBtn.dataset.reportId;
+                const docSnap = await db.collection('dailyReports').doc(id).get();
+                const data = docSnap.data();
                 await db.collection('dailyReports').doc(id).update({ status: 'acknowledged', acknowledgedAt: firebase.firestore.FieldValue.serverTimestamp() });
+                await logAudit('ACKNOWLEDGE_REPORT', `Acknowledged report from ${data?.teacherName || 'unknown'}`, data?.teacherId || null);
+                if (data?.teacherId) {
+                    await notifyTeacher(data.teacherId, 'Report Acknowledged', `Your daily report for ${data?.date || 'unknown date'} was acknowledged.`, 'success');
+                }
                 showToast('Acknowledged', 'Report acknowledged', 'success');
                 return;
             }
@@ -1567,34 +1623,24 @@
                 </div>`).join('') : '<p>No history.</p>';
         }
         
-        // Event delegation for timetables
         document.addEventListener('click', async (e) => {
             const previewBtn = e.target.closest('.preview-tt-btn');
-            if (previewBtn) {
-                viewTimetablePreview(previewBtn.dataset.ttId);
-                return;
-            }
+            if (previewBtn) { viewTimetablePreview(previewBtn.dataset.ttId); return; }
             
             const approveTtBtn = e.target.closest('.approve-tt-btn');
             if (approveTtBtn) {
                 const id = approveTtBtn.dataset.ttId;
-                showConfirm('Approve', 'Approve this timetable?', async () => {
-                    // FIXED: Create published timetables entry
+                showConfirm('Approve', 'Approve and publish this timetable?', async () => {
                     const proposalDoc = await db.collection('timetableProposals').doc(id).get();
                     if (proposalDoc.exists) {
+                        await publishTimetable(proposalDoc);
                         const data = proposalDoc.data();
-                        await db.collection('timetables').add({
-                            classId: data.classId,
-                            type: data.type || 'academic',
-                            periods: data.periods || [],
-                            teacherId: data.teacherId,
-                            teacherName: data.teacherName || '',
-                            published: true,
-                            approvedAt: firebase.firestore.FieldValue.serverTimestamp(),
-                            approvedBy: currentUserData?.firstName || 'Admin'
-                        });
+                        await db.collection('timetableProposals').doc(id).update({ status: 'approved', reviewedAt: firebase.firestore.FieldValue.serverTimestamp() });
+                        await logAudit('APPROVE_TIMETABLE', `Approved timetable for ${data.classId}`, data.teacherId || null);
+                        if (data.teacherId) {
+                            await notifyTeacher(data.teacherId, 'Timetable Approved', `Your timetable for ${data.classId} was approved and published.`, 'success');
+                        }
                     }
-                    await db.collection('timetableProposals').doc(id).update({ status: 'approved', reviewedAt: firebase.firestore.FieldValue.serverTimestamp() });
                     showToast('Approved & Published', 'Timetable is now visible to students', 'success');
                 });
                 return;
@@ -1604,7 +1650,13 @@
             if (rejectTtBtn) {
                 const id = rejectTtBtn.dataset.ttId;
                 showConfirm('Reject', 'Reject this timetable?', async () => {
+                    const docSnap = await db.collection('timetableProposals').doc(id).get();
+                    const data = docSnap.data();
                     await db.collection('timetableProposals').doc(id).update({ status: 'rejected', reviewedAt: firebase.firestore.FieldValue.serverTimestamp() });
+                    await logAudit('REJECT_TIMETABLE', `Rejected timetable for ${data?.classId || 'unknown'}`, data?.teacherId || null);
+                    if (data?.teacherId) {
+                        await notifyTeacher(data.teacherId, 'Timetable Rejected', `Your timetable for ${data?.classId || 'unknown class'} was rejected.`, 'warning');
+                    }
                     showToast('Rejected', 'Timetable rejected', 'warning');
                 });
                 return;
@@ -1643,7 +1695,6 @@
                     <span class="badge ${statusClass}">${a.status}</span><br>
                     ${a.details?.prefectRole?`Role: ${escapeHtml(a.details.prefectRole)}<br>`:''}
                     ${a.details?.reason?`Reason: ${escapeHtml((a.details.reason||'').substring(0,100))}<br>`:''}
-                    ${a.details?.startDate?`Date: ${escapeHtml(a.details.startDate)}${a.details.endDate?` → ${escapeHtml(a.details.endDate)}`:''}<br>`:''}
                     <small>${a.requestedAt?.toDate?.()?.toLocaleDateString()||''}</small>
                     ${a.status==='pending'?`<div class="btn-group" style="margin-top:0.5rem;">
                         <button class="btn btn-success btn-sm approve-action-btn" data-action-id="${escapeAttr(a.id)}">Approve</button>
@@ -1653,7 +1704,6 @@
             }).join('');
         }
         
-        // Event delegation for pending actions
         document.addEventListener('click', async (e) => {
             const approveActionBtn = e.target.closest('.approve-action-btn');
             if (approveActionBtn) {
@@ -1671,6 +1721,10 @@
                     } else if (action.actionType === 'delete' && action.studentId) {
                         await db.collection('users').doc(action.studentId).delete();
                     }
+                    await logAudit('APPROVE_ACTION', `Approved ${action.actionType} for ${label}`, action.teacherId || null);
+                    if (action.teacherId) {
+                        await notifyTeacher(action.teacherId, 'Action Approved', `Your request to ${action.actionType} "${label}" was approved.`, 'success');
+                    }
                     showToast('Approved', 'Action approved and executed', 'success');
                 });
                 return;
@@ -1679,8 +1733,14 @@
             const rejectActionBtn = e.target.closest('.reject-action-btn');
             if (rejectActionBtn) {
                 const id = rejectActionBtn.dataset.actionId;
-                showConfirm('Reject', 'Reject this action?', async () => {
+                const action = allPendingActions.find(a => a.id === id);
+                const label = action?.studentName || action?.teacherName || 'this request';
+                showConfirm('Reject', `Reject this action?`, async () => {
                     await db.collection('pendingActions').doc(id).update({ status: 'rejected', adminNote: 'Rejected', reviewedAt: firebase.firestore.FieldValue.serverTimestamp() });
+                    await logAudit('REJECT_ACTION', `Rejected ${action?.actionType || 'action'} for ${label}`, action?.teacherId || null);
+                    if (action?.teacherId) {
+                        await notifyTeacher(action.teacherId, 'Action Rejected', `Your request to ${action.actionType} "${label}" was rejected.`, 'warning');
+                    }
                     showToast('Rejected', 'Action rejected', 'warning');
                 });
                 return;
