@@ -202,7 +202,8 @@
         /* Syllabus */
         .syllabus-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(350px, 1fr)); gap: 1rem; }
         .syllabus-card { background: var(--card-bg); border: 1px solid var(--border); border-radius: 1rem; padding: 1.2rem; }
-        .syllabus-card h4 { color: var(--accent); margin-bottom: 0.5rem; }
+        .syllabus-card h4 { color: var(--accent); margin-bottom: 0.3rem; }
+        .syllabus-card .syl-meta { font-size: 0.75rem; color: var(--text-muted); margin-bottom: 0.5rem; }
         .syllabus-week { padding: 0.4rem 0; border-bottom: 1px solid var(--border-light); font-size: 0.8rem; }
         .syllabus-week:last-child { border-bottom: none; }
 
@@ -244,7 +245,6 @@
         @keyframes toastIn { from{transform:translateX(120%);opacity:0} to{transform:translateX(0);opacity:1} }
         @keyframes toastOut { from{transform:translateX(0);opacity:1} to{transform:translateX(120%);opacity:0} }
 
-        /* Star rating for teachers */
         .star-rating-sm { display: inline-flex; gap: 0.1rem; color: var(--accent); font-size: 0.8rem; }
 
         @media (max-width: 768px) {
@@ -281,6 +281,7 @@
         <a href="my-analysis.html" class="nav-item"><i class="fas fa-chart-simple"></i><span>My Analysis</span></a>
         <a href="school-noticeboard.html" class="nav-item"><i class="fas fa-bullhorn"></i><span>Noticeboard</span></a>
         <a href="my-student-class.html" class="nav-item active"><i class="fas fa-chalkboard"></i><span>My Class</span></a>
+        <a href="timetable-syllabus.html" class="nav-item"><i class="fas fa-calendar-alt"></i><span>Timetable & Syllabus</span></a>
         <a href="student-report-card.html" class="nav-item"><i class="fas fa-graduation-cap"></i><span>Report Card</span></a>
         <a href="student-attendance.html" class="nav-item"><i class="fas fa-fingerprint"></i><span>Attendance</span></a>
         <a href="student-profile.html" class="nav-item"><i class="fas fa-user-edit"></i><span>Profile</span></a>
@@ -325,63 +326,41 @@
 
         <!-- TAB 1: CLASS INFO -->
         <div class="tab-content active" id="tab-info">
-            <div class="card">
-                <div class="card-header"><h3><i class="fas fa-school"></i> Class Information</h3><span class="badge badge-info" id="classNameBadge">Loading...</span></div>
-                <div class="info-grid" id="classInfoGrid"><div class="empty-state"><i class="fas fa-spinner fa-spin"></i><p>Loading...</p></div></div>
-            </div>
+            <div class="card"><div class="card-header"><h3><i class="fas fa-school"></i> Class Information</h3><span class="badge badge-info" id="classNameBadge">Loading...</span></div><div class="info-grid" id="classInfoGrid"><div class="empty-state"><i class="fas fa-spinner fa-spin"></i><p>Loading...</p></div></div></div>
             <div class="card"><div class="card-header"><h3><i class="fas fa-user-tie"></i> Class Teachers</h3><span id="classTeacherCount" style="font-size:0.8rem;color:var(--text-muted);"></span></div><div id="classTeachersList"><div class="empty-state"><i class="fas fa-spinner fa-spin"></i><p>Loading...</p></div></div></div>
             <div class="card"><div class="card-header"><h3><i class="fas fa-book"></i> Subject Teachers</h3><span id="subjectTeacherCount" style="font-size:0.8rem;color:var(--text-muted);"></span></div><div id="subjectTeachersList"><div class="empty-state"><i class="fas fa-spinner fa-spin"></i><p>Loading...</p></div></div></div>
             <div class="card"><div class="card-header"><h3><i class="fas fa-crown"></i> Class Prefects</h3></div><div id="prefectsList"><div class="empty-state"><i class="fas fa-spinner fa-spin"></i><p>Loading...</p></div></div></div>
         </div>
 
         <!-- TAB 2: ANNOUNCEMENTS -->
-        <div class="tab-content" id="tab-announcements">
-            <div class="card"><div class="card-header"><h3><i class="fas fa-bullhorn"></i> Class Announcements</h3><span id="announcementCount" style="font-size:0.8rem;color:var(--text-muted);">0 announcements</span></div><div id="announcementsList" class="announcement-grid"><div class="empty-state" style="grid-column:1/-1;"><i class="fas fa-spinner fa-spin"></i><p>Loading...</p></div></div></div>
-        </div>
+        <div class="tab-content" id="tab-announcements"><div class="card"><div class="card-header"><h3><i class="fas fa-bullhorn"></i> Class Announcements</h3><span id="announcementCount">0</span></div><div id="announcementsList" class="announcement-grid"><div class="empty-state" style="grid-column:1/-1;"><i class="fas fa-spinner fa-spin"></i><p>Loading...</p></div></div></div></div>
 
         <!-- TAB 3: CLASSMATES -->
-        <div class="tab-content" id="tab-classmates">
-            <div class="card"><div class="card-header"><h3><i class="fas fa-users"></i> My Classmates</h3><span id="classmateCount" style="font-size:0.8rem;color:var(--text-muted);">0 students</span></div>
-            <div class="search-box"><i class="fas fa-search"></i><input type="text" id="classmateSearch" placeholder="Search classmates by name or ID..." oninput="filterClassmates()"></div>
-            <div id="classmatesList" class="classmates-grid"><div class="empty-state" style="grid-column:1/-1;"><i class="fas fa-spinner fa-spin"></i><p>Loading...</p></div></div></div>
-        </div>
+        <div class="tab-content" id="tab-classmates"><div class="card"><div class="card-header"><h3><i class="fas fa-users"></i> My Classmates</h3><span id="classmateCount">0</span></div><div class="search-box"><i class="fas fa-search"></i><input type="text" id="classmateSearch" placeholder="Search by name or ID..." oninput="filterClassmates()"></div><div id="classmatesList" class="classmates-grid"><div class="empty-state" style="grid-column:1/-1;"><i class="fas fa-spinner fa-spin"></i><p>Loading...</p></div></div></div></div>
 
         <!-- TAB 4: ATTENDANCE -->
         <div class="tab-content" id="tab-attendance">
-            <div class="attendance-summary" id="attendanceSummary">
-                <div class="att-summary-card present"><div class="stat-icon" style="font-size:1.5rem;color:var(--success-text);">✅</div><div class="val" id="attPresent" style="color:var(--success-text);font-size:1.8rem;">0</div><div class="lbl">Days Present</div></div>
-                <div class="att-summary-card absent"><div class="stat-icon" style="font-size:1.5rem;color:var(--danger-text);">❌</div><div class="val" id="attAbsent" style="color:var(--danger-text);font-size:1.8rem;">0</div><div class="lbl">Days Absent</div></div>
-                <div class="att-summary-card rate"><div class="stat-icon" style="font-size:1.5rem;color:var(--accent);">📊</div><div class="val" id="attRate" style="color:var(--accent);font-size:1.8rem;">0%</div><div class="lbl">Attendance Rate</div></div>
-            </div>
-            <div class="card"><div class="card-header"><h3><i class="fas fa-envelope-open-text"></i> Absence Requests & Explanations</h3><button class="btn btn-primary btn-sm" onclick="openAbsenceRequestModal()"><i class="fas fa-plus"></i> New Request</button></div><div id="absenceRequestsList"><div class="empty-state"><i class="fas fa-spinner fa-spin"></i><p>Loading...</p></div></div></div>
-            <div class="card"><div class="card-header"><h3><i class="fas fa-list-ul"></i> Attendance Record</h3><div class="filter-row"><select id="attMonthFilter" onchange="renderAttendanceTable()"><option value="all">All Months</option></select><select id="attSessionFilter" onchange="renderAttendanceTable()"><option value="all">All Sessions</option><option value="morning">Morning</option><option value="afternoon">Afternoon</option></select></div></div><div class="table-responsive"><table><thead><tr><th>Date</th><th>Session</th><th>Status</th><th>Remark</th><th>Recorded By</th><th>Actions</th></tr></thead><tbody id="attendanceBody"><tr><td colspan="6"><div class="empty-state"><i class="fas fa-spinner fa-spin"></i><p>Loading...</p></div></td></tr></tbody></table></div></div>
+            <div class="attendance-summary" id="attendanceSummary"><div class="att-summary-card present"><div style="font-size:1.5rem;color:var(--success-text);">✅</div><div class="val" id="attPresent" style="color:var(--success-text);font-size:1.8rem;">0</div><div class="lbl">Days Present</div></div><div class="att-summary-card absent"><div style="font-size:1.5rem;color:var(--danger-text);">❌</div><div class="val" id="attAbsent" style="color:var(--danger-text);font-size:1.8rem;">0</div><div class="lbl">Days Absent</div></div><div class="att-summary-card rate"><div style="font-size:1.5rem;color:var(--accent);">📊</div><div class="val" id="attRate" style="color:var(--accent);font-size:1.8rem;">0%</div><div class="lbl">Attendance Rate</div></div></div>
+            <div class="card"><div class="card-header"><h3><i class="fas fa-envelope-open-text"></i> Absence Requests</h3><button class="btn btn-primary btn-sm" onclick="openAbsenceRequestModal()"><i class="fas fa-plus"></i> New</button></div><div id="absenceRequestsList"></div></div>
+            <div class="card"><div class="card-header"><h3><i class="fas fa-list-ul"></i> Attendance Record</h3><div class="filter-row"><select id="attMonthFilter" onchange="renderAttendanceTable()"><option value="all">All Months</option></select><select id="attSessionFilter" onchange="renderAttendanceTable()"><option value="all">All Sessions</option><option value="morning">Morning</option><option value="afternoon">Afternoon</option></select></div></div><div class="table-responsive"><table><thead><tr><th>Date</th><th>Session</th><th>Status</th><th>Remark</th><th>Recorded By</th><th>Actions</th></tr></thead><tbody id="attendanceBody"></tbody></table></div></div>
         </div>
 
         <!-- TAB 5: TIMETABLE -->
-        <div class="tab-content" id="tab-timetable">
-            <div class="card"><div class="card-header"><h3><i class="fas fa-calendar-alt"></i> Class Timetable</h3></div><div id="timetableContent"><div class="empty-state"><i class="fas fa-spinner fa-spin"></i><p>Loading...</p></div></div></div>
-        </div>
+        <div class="tab-content" id="tab-timetable"><div class="card"><div class="card-header"><h3><i class="fas fa-calendar-alt"></i> Class Timetable</h3></div><div id="timetableContent"><div class="empty-state"><i class="fas fa-spinner fa-spin"></i><p>Loading...</p></div></div></div></div>
 
         <!-- TAB 6: SYLLABUS -->
-        <div class="tab-content" id="tab-syllabus">
-            <div class="card"><div class="card-header"><h3><i class="fas fa-book-open"></i> Approved Syllabus</h3></div><div id="syllabusContent"><div class="empty-state"><i class="fas fa-spinner fa-spin"></i><p>Loading...</p></div></div></div>
-        </div>
+        <div class="tab-content" id="tab-syllabus"><div class="card"><div class="card-header"><h3><i class="fas fa-book-open"></i> Published Syllabus</h3></div><div id="syllabusContent"><div class="empty-state"><i class="fas fa-spinner fa-spin"></i><p>Loading...</p></div></div></div></div>
     </div>
 
-    <!-- Absence Request Modal -->
+    <!-- Absence Modal -->
     <div class="modal-overlay" id="absenceRequestModal">
         <div class="modal-content">
-            <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:1.2rem;padding-bottom:1rem;border-bottom:1px solid var(--border);">
-                <h3><i class="fas fa-envelope-open-text"></i> <span id="absenceModalTitle">Absence Request / Explanation</span></h3>
-                <i class="fas fa-times" style="cursor:pointer;font-size:1.3rem;color:var(--text-secondary);padding:0.3rem;border-radius:0.5rem;" onclick="closeAbsenceRequestModal()"></i>
-            </div>
-            <div class="form-group"><label>Date(s) of Absence *</label><input type="date" id="absenceDate" class="form-control" required></div>
-            <div class="form-group"><label>Type *</label><select id="absenceType" class="form-control" required onchange="updateAbsenceModalTitle()"><option value="upcoming">Upcoming Absence (Request)</option><option value="past">Past Absence (Explanation)</option></select></div>
-            <div class="form-group"><label>Session(s) Affected *</label><select id="absenceSession" class="form-control" required><option value="morning">Morning Only</option><option value="afternoon">Afternoon Only</option><option value="both">Both Sessions (Full Day)</option></select></div>
-            <div class="form-group"><label>Reason *</label><textarea id="absenceReason" class="form-control" rows="4" required placeholder="Explain the reason for your absence..."></textarea></div>
-            <div class="form-group"><label>Supporting Document (optional)</label><input type="text" id="absenceDocument" class="form-control" placeholder="Link to document or reference number"></div>
-            <div style="background:var(--info-bg);border-left:4px solid var(--accent);padding:0.8rem;border-radius:0.8rem;margin-bottom:1rem;font-size:0.8rem;color:var(--info-text);"><i class="fas fa-info-circle"></i> <strong>Note:</strong> Your request will be sent to your class teachers for review.</div>
-            <div style="display:flex;gap:0.5rem;justify-content:flex-end;"><button class="btn btn-outline" onclick="closeAbsenceRequestModal()"><i class="fas fa-times"></i> Cancel</button><button class="btn btn-primary" id="submitAbsenceBtn"><i class="fas fa-paper-plane"></i> Submit Request</button></div>
+            <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:1.2rem;padding-bottom:1rem;border-bottom:1px solid var(--border);"><h3 id="absenceModalTitle">Absence Request</h3><i class="fas fa-times" style="cursor:pointer;font-size:1.3rem;" onclick="closeAbsenceRequestModal()"></i></div>
+            <div class="form-group"><label>Date *</label><input type="date" id="absenceDate" class="form-control" required></div>
+            <div class="form-group"><label>Type *</label><select id="absenceType" class="form-control" onchange="updateAbsenceModalTitle()"><option value="upcoming">Upcoming Absence</option><option value="past">Past Absence (Explanation)</option></select></div>
+            <div class="form-group"><label>Session *</label><select id="absenceSession" class="form-control"><option value="morning">Morning</option><option value="afternoon">Afternoon</option><option value="both">Both</option></select></div>
+            <div class="form-group"><label>Reason *</label><textarea id="absenceReason" class="form-control" rows="3" required></textarea></div>
+            <div style="display:flex;gap:0.5rem;justify-content:flex-end;"><button class="btn btn-outline" onclick="closeAbsenceRequestModal()">Cancel</button><button class="btn btn-primary" id="submitAbsenceBtn">Submit</button></div>
         </div>
     </div>
 
@@ -414,70 +393,58 @@
         // UTILITIES
         // ============================================
         function escapeHtml(s) { const d = document.createElement('div'); d.textContent = s || ''; return d.innerHTML; }
-        function formatDate(dv) {
-            if (!dv) return '—';
-            if (dv.toDate) return dv.toDate().toLocaleDateString('en-GB', { weekday: 'short', day: 'numeric', month: 'short', year: 'numeric' });
-            const d = new Date(dv); return isNaN(d.getTime()) ? String(dv) : d.toLocaleDateString('en-GB', { weekday: 'short', day: 'numeric', month: 'short', year: 'numeric' });
-        }
-        function showToast(title, msg, type = 'info') {
-            const icons = { success: 'fa-check-circle', error: 'fa-exclamation-circle', warning: 'fa-exclamation-triangle', info: 'fa-info-circle' };
+        function formatDate(dv) { if(!dv) return '—'; if(dv.toDate) return dv.toDate().toLocaleDateString('en-GB',{weekday:'short',day:'numeric',month:'short',year:'numeric'}); const d=new Date(dv); return isNaN(d.getTime())?String(dv):d.toLocaleDateString('en-GB',{weekday:'short',day:'numeric',month:'short',year:'numeric'}); }
+        function showToast(title, msg, type='info') {
+            const icons = { success:'fa-check-circle', error:'fa-exclamation-circle', warning:'fa-exclamation-triangle', info:'fa-info-circle' };
             const toast = document.createElement('div'); toast.className = 'toast';
             toast.innerHTML = `<i class="fas ${icons[type]}" style="color:var(--${type==='success'?'success':type==='error'?'danger':type==='warning'?'warning':'info'}-text);font-size:1.1rem;"></i><div><strong>${escapeHtml(title)}</strong><br><span style="font-size:0.8rem;color:var(--text-secondary);">${escapeHtml(msg)}</span></div>`;
             document.getElementById('toastContainer').appendChild(toast);
-            setTimeout(() => { toast.classList.add('removing'); setTimeout(() => toast.remove(), 300); }, 4000);
+            setTimeout(()=>{ toast.classList.add('removing'); setTimeout(()=>toast.remove(),300); },4000);
         }
 
         // ============================================
         // SIDEBAR & THEME
         // ============================================
         const sidebar = document.getElementById('sidebar'), mainContent = document.getElementById('mainContent');
-        document.getElementById('sidebarToggle').addEventListener('click', () => {
-            sidebar.classList.toggle('collapsed'); mainContent.classList.toggle('expanded');
-            const icon = document.getElementById('sidebarToggle').querySelector('i');
-            icon.classList.toggle('fa-chevron-left'); icon.classList.toggle('fa-chevron-right');
-        });
+        document.getElementById('sidebarToggle').addEventListener('click',()=>{ sidebar.classList.toggle('collapsed'); mainContent.classList.toggle('expanded'); const i=document.getElementById('sidebarToggle').querySelector('i'); i.classList.toggle('fa-chevron-left'); i.classList.toggle('fa-chevron-right'); });
         const html = document.documentElement, themeToggle = document.getElementById('themeToggle');
-        const savedTheme = localStorage.getItem('judah-theme') || 'dark';
-        html.setAttribute('data-theme', savedTheme);
-        themeToggle.querySelector('span').textContent = savedTheme === 'dark' ? 'Light' : 'Dark';
-        themeToggle.addEventListener('click', () => {
-            const next = html.getAttribute('data-theme') === 'dark' ? 'light' : 'dark';
-            html.setAttribute('data-theme', next); localStorage.setItem('judah-theme', next);
-            themeToggle.querySelector('span').textContent = next === 'dark' ? 'Light' : 'Dark';
-        });
+        const savedTheme = localStorage.getItem('judah-theme')||'dark';
+        html.setAttribute('data-theme',savedTheme); themeToggle.querySelector('span').textContent = savedTheme==='dark'?'Light':'Dark';
+        themeToggle.addEventListener('click',()=>{ const n=html.getAttribute('data-theme')==='dark'?'light':'dark'; html.setAttribute('data-theme',n); localStorage.setItem('judah-theme',n); themeToggle.querySelector('span').textContent=n==='dark'?'Light':'Dark'; });
 
         // ============================================
         // TABS
         // ============================================
-        document.getElementById('tabNavigation').addEventListener('click', (e) => {
-            const btn = e.target.closest('.tab-btn'); if (!btn) return;
-            document.querySelectorAll('#tabNavigation .tab-btn').forEach(b => b.classList.remove('active'));
-            btn.classList.add('active');
-            document.querySelectorAll('.tab-content').forEach(t => t.classList.remove('active'));
-            const tc = document.getElementById('tab-' + btn.dataset.tab); if (tc) tc.classList.add('active');
+        document.getElementById('tabNavigation').addEventListener('click',(e)=>{
+            const btn = e.target.closest('.tab-btn'); if(!btn) return;
+            document.querySelectorAll('#tabNavigation .tab-btn').forEach(b=>b.classList.remove('active')); btn.classList.add('active');
+            document.querySelectorAll('.tab-content').forEach(t=>t.classList.remove('active'));
+            const tc = document.getElementById('tab-'+btn.dataset.tab); if(tc) tc.classList.add('active');
             const tab = btn.dataset.tab;
-            if (tab === 'announcements') renderAnnouncements();
-            else if (tab === 'classmates') renderClassmatesList(allClassmates);
-            else if (tab === 'attendance') refreshAttendanceTab();
-            else if (tab === 'timetable') renderTimetable();
-            else if (tab === 'syllabus') renderSyllabus();
+            if(tab==='announcements') renderAnnouncements();
+            else if(tab==='classmates') renderClassmatesList(allClassmates);
+            else if(tab==='attendance') refreshAttendanceTab();
+            else if(tab==='timetable') renderTimetable();
+            else if(tab==='syllabus') renderSyllabus();
         });
 
         // ============================================
         // REAL-TIME LISTENERS
         // ============================================
         function startListeners() {
-            if (!studentClass || !currentUser) return;
-            if (unsubscribers['announcements']) unsubscribers['announcements']();
-            unsubscribers['announcements'] = db.collection('classAnnouncements').where('classId', '==', studentClass).orderBy('createdAt', 'desc').onSnapshot(snap => { allAnnouncements = []; snap.forEach(d => allAnnouncements.push({ id: d.id, ...d.data() })); updateStats(); });
-            if (unsubscribers['attendance']) unsubscribers['attendance']();
-            unsubscribers['attendance'] = db.collection('attendance').where('studentId', '==', currentUser.uid).orderBy('date', 'desc').onSnapshot(snap => { allAttendance = []; snap.forEach(d => allAttendance.push({ id: d.id, ...d.data() })); updateStats(); });
-            if (unsubscribers['timetable']) unsubscribers['timetable']();
-            unsubscribers['timetable'] = db.collection('timetables').where('classId', '==', studentClass).where('published', '==', true).limit(1).onSnapshot(snap => { classTimetable = null; snap.forEach(d => classTimetable = { id: d.id, ...d.data() }); });
-            if (unsubscribers['syllabus']) unsubscribers['syllabus']();
-            unsubscribers['syllabus'] = db.collection('syllabus').where('classId', '==', studentClass).where('status', '==', 'approved').onSnapshot(snap => { allSyllabi = []; snap.forEach(d => allSyllabi.push({ id: d.id, ...d.data() })); });
-            if (unsubscribers['absence']) unsubscribers['absence']();
-            unsubscribers['absence'] = db.collection('pendingActions').where('studentId', '==', currentUser.uid).where('actionType', 'in', ['absence_request', 'absence_explanation']).orderBy('requestedAt', 'desc').onSnapshot(snap => { absenceRequests = []; snap.forEach(d => absenceRequests.push({ id: d.id, ...d.data() })); });
+            if(!studentClass||!currentUser) return;
+            if(unsubscribers['announcements']) unsubscribers['announcements']();
+            unsubscribers['announcements'] = db.collection('classAnnouncements').where('classId','==',studentClass).orderBy('createdAt','desc').onSnapshot(snap=>{ allAnnouncements=[]; snap.forEach(d=>allAnnouncements.push({id:d.id,...d.data()})); updateStats(); });
+            if(unsubscribers['attendance']) unsubscribers['attendance']();
+            unsubscribers['attendance'] = db.collection('attendance').where('studentId','==',currentUser.uid).orderBy('date','desc').onSnapshot(snap=>{ allAttendance=[]; snap.forEach(d=>allAttendance.push({id:d.id,...d.data()})); updateStats(); });
+            // UPDATED: Timetable from 'timetables' collection (published)
+            if(unsubscribers['timetable']) unsubscribers['timetable']();
+            unsubscribers['timetable'] = db.collection('timetables').where('classId','==',studentClass).where('status','==','published').limit(1).onSnapshot(snap=>{ classTimetable=null; snap.forEach(d=>classTimetable={id:d.id,...d.data()}); });
+            // UPDATED: Syllabus from 'syllabi' collection (published)
+            if(unsubscribers['syllabus']) unsubscribers['syllabus']();
+            unsubscribers['syllabus'] = db.collection('syllabi').where('classId','==',studentClass).where('status','==','published').onSnapshot(snap=>{ allSyllabi=[]; snap.forEach(d=>allSyllabi.push({id:d.id,...d.data()})); });
+            if(unsubscribers['absence']) unsubscribers['absence']();
+            unsubscribers['absence'] = db.collection('pendingActions').where('studentId','==',currentUser.uid).where('actionType','in',['absence_request','absence_explanation']).orderBy('requestedAt','desc').onSnapshot(snap=>{ absenceRequests=[]; snap.forEach(d=>absenceRequests.push({id:d.id,...d.data()})); });
         }
 
         function refreshAttendanceTab() { updateAttendanceSummary(); populateMonthFilter(); renderAttendanceTable(); renderAbsenceRequests(); }
@@ -486,244 +453,170 @@
         // LOAD DATA
         // ============================================
         async function loadClassData() {
-            if (!studentClass) return;
+            if(!studentClass) return;
             try {
-                const cs = await db.collection('users').where('role', '==', 'student').where('class', '==', studentClass).where('approved', '==', true).get();
-                allClassmates = []; cs.forEach(d => { const dd = d.data(); if (!dd.suspended) allClassmates.push({ id: d.id, ...dd }); });
-                allClassmates.sort((a, b) => `${a.surname||''}${a.firstName||''}`.localeCompare(`${b.surname||''}${b.firstName||''}`));
-
-                const ct = await db.collection('users').where('role', '==', 'teacher').where('classTeacherFor', 'array-contains', studentClass).where('approved', '==', true).get();
-                classTeachers = []; ct.forEach(d => classTeachers.push({ id: d.id, ...d.data() }));
-
-                const at = await db.collection('users').where('role', '==', 'teacher').where('approved', '==', true).get();
-                subjectTeachers = []; const sm = {};
-                at.forEach(d => {
-                    const dd = d.data(); const map = dd.subjectClassMap || {};
-                    if (map[studentClass] && map[studentClass].length) {
-                        const ti = { id: d.id, firstName: dd.firstName, surname: dd.surname, email: dd.email, phone: dd.phone, photoURL: dd.photoURL, publicProfile: dd.publicProfile || {}, starRating: Math.min(5, Math.floor((dd.points || 0) / 100)), points: dd.points || 0, qualifications: dd.qualifications };
-                        map[studentClass].forEach(sub => { if (!sm[sub]) sm[sub] = []; sm[sub].push(ti); });
-                    }
-                });
-                for (const [sub, teachers] of Object.entries(sm)) { subjectTeachers.push({ subject: sub, teachers }); }
-                subjectTeachers.sort((a, b) => a.subject.localeCompare(b.subject));
-
+                const cs = await db.collection('users').where('role','==','student').where('class','==',studentClass).where('approved','==',true).get();
+                allClassmates=[]; cs.forEach(d=>{ const dd=d.data(); if(!dd.suspended) allClassmates.push({id:d.id,...dd}); });
+                allClassmates.sort((a,b)=>`${a.surname||''}${a.firstName||''}`.localeCompare(`${b.surname||''}${b.firstName||''}`));
+                const ct = await db.collection('users').where('role','==','teacher').where('classTeacherFor','array-contains',studentClass).where('approved','==',true).get();
+                classTeachers=[]; ct.forEach(d=>classTeachers.push({id:d.id,...d.data()}));
+                const at = await db.collection('users').where('role','==','teacher').where('approved','==',true).get();
+                subjectTeachers=[]; const sm={};
+                at.forEach(d=>{ const dd=d.data(); const map=dd.subjectClassMap||{}; if(map[studentClass]&&map[studentClass].length){ const ti={id:d.id,firstName:dd.firstName,surname:dd.surname,email:dd.email,phone:dd.phone,photoURL:dd.photoURL,publicProfile:dd.publicProfile||{},points:dd.points||0,qualifications:dd.qualifications}; map[studentClass].forEach(sub=>{ if(!sm[sub]) sm[sub]=[]; sm[sub].push(ti); }); } });
+                for(const [sub,teachers] of Object.entries(sm)){ subjectTeachers.push({subject:sub,teachers}); }
+                subjectTeachers.sort((a,b)=>a.subject.localeCompare(b.subject));
                 updateStats(); renderClassInfo(); renderClassTeachers(); renderSubjectTeachers(); renderPrefects();
-                renderClassmatesList(allClassmates); document.getElementById('classmateCount').textContent = `${allClassmates.length} student(s)`;
+                renderClassmatesList(allClassmates); document.getElementById('classmateCount').textContent=`${allClassmates.length} student(s)`;
                 startListeners();
-                console.log(`📚 Class: ${allClassmates.length} classmates, ${classTeachers.length} CTs, ${subjectTeachers.length} subs`);
-            } catch (e) { console.error('Load error:', e); }
+            } catch(e){ console.error('Load error:',e); }
         }
 
         function updateStats() {
             document.getElementById('statClassmates').textContent = allClassmates.length;
             document.getElementById('statAnnouncements').textContent = allAnnouncements.length;
-            document.getElementById('statTeachers').textContent = classTeachers.length + new Set(subjectTeachers.flatMap(st => st.teachers.map(t => t.id))).size;
-            if (allAttendance.length) {
-                const pc = allAttendance.filter(a => a.status === 'present').length;
-                document.getElementById('statAttendance').textContent = Math.round((pc / allAttendance.length) * 100) + '%';
-            } else document.getElementById('statAttendance').textContent = '—';
+            document.getElementById('statTeachers').textContent = classTeachers.length + new Set(subjectTeachers.flatMap(st=>st.teachers.map(t=>t.id))).size;
+            if(allAttendance.length){ const pc=allAttendance.filter(a=>a.status==='present').length; document.getElementById('statAttendance').textContent = Math.round((pc/allAttendance.length)*100)+'%'; }
+            else document.getElementById('statAttendance').textContent = '—';
         }
 
         // ============================================
         // CLASS INFO
         // ============================================
         function renderClassInfo() {
-            document.getElementById('classNameBadge').textContent = studentClass?.toUpperCase() || 'Unknown';
-            document.getElementById('classSubtitle').textContent = `Class ${studentClass?.toUpperCase() || ''} — Stay connected`;
+            document.getElementById('classNameBadge').textContent = studentClass?.toUpperCase()||'Unknown';
+            document.getElementById('classSubtitle').textContent = `Class ${studentClass?.toUpperCase()||''}`;
             document.getElementById('classInfoGrid').innerHTML = `
-                <div class="info-item"><div class="info-icon"><i class="fas fa-door-open"></i></div><div><div class="info-label">Class Name</div><div class="info-value">${escapeHtml(studentClass?.toUpperCase() || 'Not Assigned')}</div></div></div>
-                <div class="info-item"><div class="info-icon"><i class="fas fa-users"></i></div><div><div class="info-label">Total Students</div><div class="info-value">${allClassmates.length} classmates</div></div></div>
-                <div class="info-item"><div class="info-icon"><i class="fas fa-chalkboard-teacher"></i></div><div><div class="info-label">Class Teachers</div><div class="info-value">${classTeachers.length} teacher(s)</div></div></div>
-                <div class="info-item"><div class="info-icon"><i class="fas fa-book"></i></div><div><div class="info-label">Subject Teachers</div><div class="info-value">${subjectTeachers.length} subject(s) covered</div></div></div>
-                <div class="info-item"><div class="info-icon"><i class="fas fa-crown"></i></div><div><div class="info-label">Prefects</div><div class="info-value">${allClassmates.filter(s => s.prefect).length} appointed</div></div></div>
-                <div class="info-item"><div class="info-icon"><i class="fas fa-graduation-cap"></i></div><div><div class="info-label">Your Student ID</div><div class="info-value" style="font-family:'Space Grotesk',monospace;">${userData?.userId || '—'}</div></div></div>`;
+                <div class="info-item"><div class="info-icon"><i class="fas fa-door-open"></i></div><div><div class="info-label">Class</div><div class="info-value">${escapeHtml(studentClass?.toUpperCase()||'—')}</div></div></div>
+                <div class="info-item"><div class="info-icon"><i class="fas fa-users"></i></div><div><div class="info-label">Students</div><div class="info-value">${allClassmates.length} classmates</div></div></div>
+                <div class="info-item"><div class="info-icon"><i class="fas fa-chalkboard-teacher"></i></div><div><div class="info-label">Class Teachers</div><div class="info-value">${classTeachers.length}</div></div></div>
+                <div class="info-item"><div class="info-icon"><i class="fas fa-book"></i></div><div><div class="info-label">Subject Teachers</div><div class="info-value">${subjectTeachers.length} subjects</div></div></div>
+                <div class="info-item"><div class="info-icon"><i class="fas fa-crown"></i></div><div><div class="info-label">Prefects</div><div class="info-value">${allClassmates.filter(s=>s.prefect).length}</div></div></div>
+                <div class="info-item"><div class="info-icon"><i class="fas fa-graduation-cap"></i></div><div><div class="info-label">Your ID</div><div class="info-value" style="font-family:'Space Grotesk',monospace;">${userData?.userId||'—'}</div></div></div>`;
         }
 
         function renderClassTeachers() {
             const c = document.getElementById('classTeachersList');
             document.getElementById('classTeacherCount').textContent = `${classTeachers.length} teacher(s)`;
-            if (!classTeachers.length) { c.innerHTML = '<div class="empty-state"><i class="fas fa-user-slash"></i><h3>No Class Teachers</h3></div>'; return; }
-            c.innerHTML = `<div class="teacher-grid">${classTeachers.map(t => renderTeacherCard(t, 'Class Teacher')).join('')}</div>`;
+            if(!classTeachers.length){ c.innerHTML='<div class="empty-state"><i class="fas fa-user-slash"></i><h3>No Class Teachers</h3></div>'; return; }
+            c.innerHTML = `<div class="teacher-grid">${classTeachers.map(t=>renderTeacherCard(t,'Class Teacher')).join('')}</div>`;
         }
 
         function renderSubjectTeachers() {
             const c = document.getElementById('subjectTeachersList');
-            const unique = new Set(subjectTeachers.flatMap(st => st.teachers.map(t => t.id))).size;
+            const unique = new Set(subjectTeachers.flatMap(st=>st.teachers.map(t=>t.id))).size;
             document.getElementById('subjectTeacherCount').textContent = `${unique} teacher(s) across ${subjectTeachers.length} subject(s)`;
-            if (!subjectTeachers.length) { c.innerHTML = '<div class="empty-state"><i class="fas fa-book"></i><h3>No Subject Teachers</h3></div>'; return; }
-            c.innerHTML = subjectTeachers.map(st => `
+            if(!subjectTeachers.length){ c.innerHTML='<div class="empty-state"><i class="fas fa-book"></i><h3>No Subject Teachers</h3></div>'; return; }
+            c.innerHTML = subjectTeachers.map(st=>`
                 <div class="subject-group"><h4><span class="badge badge-subject">${escapeHtml(st.subject)}</span></h4>
-                ${st.teachers.map(t => {
-                    const pub = t.publicProfile || {};
-                    const name = `${t.firstName||''} ${t.surname||''}`.trim();
-                    const initials = (t.firstName?.[0]||'') + (t.surname?.[0]||'');
-                    let details = '';
-                    if (pub.email === true && t.email) details += `<span style="font-size:0.7rem;color:var(--text-muted);margin-left:0.5rem;"><i class="fas fa-envelope"></i> ${escapeHtml(t.email)}</span>`;
-                    if (pub.phone === true && t.phone) details += `<span style="font-size:0.7rem;color:var(--text-muted);margin-left:0.5rem;"><i class="fas fa-phone"></i> ${escapeHtml(t.phone)}</span>`;
-                    if (pub.rating !== false && t.starRating > 0) details += `<span class="star-rating-sm" style="margin-left:0.5rem;">${'★'.repeat(t.starRating)}${'☆'.repeat(5-t.starRating)}</span>`;
-                    return `<div class="subject-teacher-row"><div style="width:35px;height:35px;border-radius:50%;background:linear-gradient(135deg,var(--gradient-start),var(--gradient-end));display:flex;align-items:center;justify-content:center;color:white;font-size:0.7rem;font-weight:700;flex-shrink:0;overflow:hidden;">${t.photoURL && pub.photo !== false ? `<img src="${t.photoURL}" style="width:100%;height:100%;object-fit:cover;">` : initials}</div><div><strong style="font-size:0.85rem;">${pub.name !== false ? escapeHtml(name) : 'Teacher'}</strong>${details}</div></div>`;
+                ${st.teachers.map(t=>{
+                    const pub=t.publicProfile||{}; const name=`${t.firstName||''} ${t.surname||''}`.trim(); const ini=(t.firstName?.[0]||'')+(t.surname?.[0]||'');
+                    let d=''; if(pub.email===true&&t.email) d+=`<span style="font-size:0.7rem;color:var(--text-muted);margin-left:0.5rem;"><i class="fas fa-envelope"></i> ${escapeHtml(t.email)}</span>`;
+                    if(pub.phone===true&&t.phone) d+=`<span style="font-size:0.7rem;color:var(--text-muted);margin-left:0.5rem;"><i class="fas fa-phone"></i> ${escapeHtml(t.phone)}</span>`;
+                    if(pub.rating!==false&&t.points>0) d+=`<span class="star-rating-sm" style="margin-left:0.5rem;">${'★'.repeat(Math.min(5,Math.floor((t.points||0)/100)))}${'☆'.repeat(5-Math.min(5,Math.floor((t.points||0)/100)))}</span>`;
+                    return `<div class="subject-teacher-row"><div style="width:35px;height:35px;border-radius:50%;background:linear-gradient(135deg,var(--gradient-start),var(--gradient-end));display:flex;align-items:center;justify-content:center;color:white;font-size:0.7rem;font-weight:700;flex-shrink:0;overflow:hidden;">${t.photoURL&&pub.photo!==false?`<img src="${t.photoURL}" style="width:100%;height:100%;object-fit:cover;">`:ini}</div><div><strong style="font-size:0.85rem;">${pub.name!==false?escapeHtml(name):'Teacher'}</strong>${d}</div></div>`;
                 }).join('')}</div>`).join('');
         }
 
         function renderTeacherCard(t, role) {
-            const pub = t.publicProfile || {};
-            const name = `${t.firstName||''} ${t.surname||''}`.trim();
-            const initials = (t.firstName?.[0]||'') + (t.surname?.[0]||'');
-            let details = '';
-            if (pub.email === true && t.email) details += `<div class="teacher-detail"><i class="fas fa-envelope"></i> ${escapeHtml(t.email)}</div>`;
-            if (pub.phone === true && t.phone) details += `<div class="teacher-detail"><i class="fas fa-phone"></i> ${escapeHtml(t.phone)}</div>`;
-            if (pub.rating !== false && t.points > 0) details += `<div class="teacher-detail"><span class="star-rating-sm">${'★'.repeat(Math.min(5,Math.floor((t.points||0)/100)))}${'☆'.repeat(5-Math.min(5,Math.floor((t.points||0)/100)))}</span> ${(t.points||0)} pts</div>`;
-            if (pub.qualifications !== false && t.qualifications) details += `<div class="teacher-detail"><i class="fas fa-graduation-cap"></i> ${escapeHtml(t.qualifications)}</div>`;
-            if (!details && pub.email !== true && pub.phone !== true) details = '<div class="private-info"><i class="fas fa-lock"></i> Contact info private</div>';
-            return `<div class="teacher-card">
-                <div class="teacher-avatar">${t.photoURL && pub.photo !== false ? `<img src="${t.photoURL}" alt="${escapeHtml(name)}">` : initials}</div>
-                <div class="teacher-info">
-                    <div class="teacher-role"><i class="fas fa-user-tie"></i> ${role}</div>
-                    <div class="teacher-name">${pub.name !== false ? escapeHtml(name) : 'Teacher'}</div>
-                    ${details}
-                </div>
-            </div>`;
+            const pub=t.publicProfile||{}; const name=`${t.firstName||''} ${t.surname||''}`.trim(); const ini=(t.firstName?.[0]||'')+(t.surname?.[0]||'');
+            let d=''; if(pub.email===true&&t.email) d+=`<div class="teacher-detail"><i class="fas fa-envelope"></i> ${escapeHtml(t.email)}</div>`;
+            if(pub.phone===true&&t.phone) d+=`<div class="teacher-detail"><i class="fas fa-phone"></i> ${escapeHtml(t.phone)}</div>`;
+            if(pub.rating!==false&&t.points>0) d+=`<div class="teacher-detail"><span class="star-rating-sm">${'★'.repeat(Math.min(5,Math.floor((t.points||0)/100)))}${'☆'.repeat(5-Math.min(5,Math.floor((t.points||0)/100)))}</span> ${(t.points||0)} pts</div>`;
+            if(pub.qualifications!==false&&t.qualifications) d+=`<div class="teacher-detail"><i class="fas fa-graduation-cap"></i> ${escapeHtml(t.qualifications)}</div>`;
+            if(!d&&pub.email!==true&&pub.phone!==true) d='<div class="private-info"><i class="fas fa-lock"></i> Contact private</div>';
+            return `<div class="teacher-card"><div class="teacher-avatar">${t.photoURL&&pub.photo!==false?`<img src="${t.photoURL}">`:ini}</div><div class="teacher-info"><div class="teacher-role">${role}</div><div class="teacher-name">${pub.name!==false?escapeHtml(name):'Teacher'}</div>${d}</div></div>`;
         }
 
         function renderPrefects() {
-            const prefects = allClassmates.filter(s => s.prefect);
-            const c = document.getElementById('prefectsList');
-            if (!prefects.length) { c.innerHTML = '<div class="empty-state"><i class="fas fa-crown" style="opacity:0.3;"></i><h3>No Prefects</h3></div>'; return; }
-            c.innerHTML = `<div class="classmates-grid">${prefects.map(s => {
-                const name = `${s.firstName||''} ${s.surname||''}`.trim();
-                const ini = (s.firstName?.[0]||'') + (s.surname?.[0]||'');
-                return `<div class="classmate-card"><div class="classmate-avatar">${s.photoURL ? `<img src="${s.photoURL}">` : ini}</div><div class="classmate-info"><div class="name">${escapeHtml(name)}</div><span class="badge badge-prefect"><i class="fas fa-crown"></i> ${escapeHtml(s.prefect)}</span></div></div>`;
-            }).join('')}</div>`;
+            const prefects = allClassmates.filter(s=>s.prefect); const c=document.getElementById('prefectsList');
+            if(!prefects.length){ c.innerHTML='<div class="empty-state"><i class="fas fa-crown" style="opacity:0.3;"></i><h3>No Prefects</h3></div>'; return; }
+            c.innerHTML = `<div class="classmates-grid">${prefects.map(s=>{ const name=`${s.firstName||''} ${s.surname||''}`.trim(); const ini=(s.firstName?.[0]||'')+(s.surname?.[0]||''); return `<div class="classmate-card"><div class="classmate-avatar">${s.photoURL?`<img src="${s.photoURL}">`:ini}</div><div class="classmate-info"><div class="name">${escapeHtml(name)}</div><span class="badge badge-prefect"><i class="fas fa-crown"></i> ${escapeHtml(s.prefect)}</span></div></div>`; }).join('')}</div>`;
         }
 
         // ============================================
         // ANNOUNCEMENTS
         // ============================================
         function renderAnnouncements() {
-            const c = document.getElementById('announcementsList');
-            document.getElementById('announcementCount').textContent = `${allAnnouncements.length} announcement(s)`;
-            if (!allAnnouncements.length) { c.innerHTML = '<div class="empty-state" style="grid-column:1/-1;"><i class="fas fa-bullhorn"></i><h3>No Announcements</h3></div>'; return; }
-            c.innerHTML = allAnnouncements.map(a => `<div class="announcement-card"><h4>${escapeHtml(a.title||'Untitled')}</h4><div class="date"><i class="fas fa-calendar"></i> ${a.createdAt?.toDate?.().toLocaleDateString('en-GB',{day:'numeric',month:'short',year:'numeric',hour:'2-digit',minute:'2-digit'})||'Unknown'} · <i class="fas fa-user"></i> ${escapeHtml(a.teacherName||'Teacher')}</div><p>${escapeHtml(a.content||'')}</p></div>`).join('');
+            const c=document.getElementById('announcementsList'); document.getElementById('announcementCount').textContent=`${allAnnouncements.length} announcement(s)`;
+            if(!allAnnouncements.length){ c.innerHTML='<div class="empty-state" style="grid-column:1/-1;"><i class="fas fa-bullhorn"></i><h3>No Announcements</h3></div>'; return; }
+            c.innerHTML = allAnnouncements.map(a=>`<div class="announcement-card"><h4>${escapeHtml(a.title||'Untitled')}</h4><div class="date"><i class="fas fa-calendar"></i> ${a.createdAt?.toDate?.().toLocaleDateString('en-GB',{day:'numeric',month:'short',year:'numeric',hour:'2-digit',minute:'2-digit'})||'Unknown'} · <i class="fas fa-user"></i> ${escapeHtml(a.teacherName||'Teacher')}</div><p>${escapeHtml(a.content||'')}</p></div>`).join('');
         }
 
         // ============================================
         // CLASSMATES
         // ============================================
         function renderClassmatesList(list) {
-            const c = document.getElementById('classmatesList');
-            if (!list.length) { c.innerHTML = '<div class="empty-state" style="grid-column:1/-1;"><i class="fas fa-user-slash"></i><h3>No classmates</h3></div>'; return; }
-            c.innerHTML = list.map(s => {
-                const name = `${s.firstName||''} ${s.surname||''}`.trim();
-                const ini = (s.firstName?.[0]||'') + (s.surname?.[0]||'');
-                return `<div class="classmate-card" style="${s.id===currentUser.uid?'border-color:var(--accent);border-width:2px;':''}"><div class="classmate-avatar">${s.photoURL?`<img src="${s.photoURL}">`:ini}</div><div class="classmate-info"><div class="name">${escapeHtml(name)}${s.id===currentUser.uid?'<span style="font-size:0.7rem;color:var(--accent);margin-left:0.3rem;">(You)</span>':''}</div><div style="display:flex;gap:0.4rem;align-items:center;flex-wrap:wrap;margin-top:0.2rem;"><span class="id">${s.userId||'—'}</span>${s.prefect?`<span class="badge badge-prefect"><i class="fas fa-crown"></i> ${escapeHtml(s.prefect)}</span>`:''}</div></div></div>`;
-            }).join('');
+            const c=document.getElementById('classmatesList'); if(!list.length){ c.innerHTML='<div class="empty-state" style="grid-column:1/-1;"><i class="fas fa-user-slash"></i><h3>No classmates</h3></div>'; return; }
+            c.innerHTML = list.map(s=>{ const name=`${s.firstName||''} ${s.surname||''}`.trim(); const ini=(s.firstName?.[0]||'')+(s.surname?.[0]||''); return `<div class="classmate-card" style="${s.id===currentUser.uid?'border-color:var(--accent);border-width:2px;':''}"><div class="classmate-avatar">${s.photoURL?`<img src="${s.photoURL}">`:ini}</div><div class="classmate-info"><div class="name">${escapeHtml(name)}${s.id===currentUser.uid?'<span style="font-size:0.7rem;color:var(--accent);margin-left:0.3rem;">(You)</span>':''}</div><div style="display:flex;gap:0.4rem;align-items:center;flex-wrap:wrap;margin-top:0.2rem;"><span class="id">${s.userId||'—'}</span>${s.prefect?`<span class="badge badge-prefect"><i class="fas fa-crown"></i> ${escapeHtml(s.prefect)}</span>`:''}</div></div></div>`; }).join('');
         }
-        window.filterClassmates = () => {
-            const s = document.getElementById('classmateSearch').value.toLowerCase().trim();
-            if (!s) { renderClassmatesList(allClassmates); return; }
-            renderClassmatesList(allClassmates.filter(x => `${x.firstName||''} ${x.surname||''}`.toLowerCase().includes(s) || (x.userId||'').toLowerCase().includes(s)));
-        };
+        window.filterClassmates = ()=>{ const s=document.getElementById('classmateSearch').value.toLowerCase().trim(); if(!s){ renderClassmatesList(allClassmates); return; } renderClassmatesList(allClassmates.filter(x=>`${x.firstName||''} ${x.surname||''}`.toLowerCase().includes(s)||(x.userId||'').toLowerCase().includes(s))); };
 
         // ============================================
         // ATTENDANCE
         // ============================================
-        function updateAttendanceSummary() {
-            const p = allAttendance.filter(a => a.status === 'present').length;
-            const ab = allAttendance.filter(a => a.status === 'absent').length;
-            document.getElementById('attPresent').textContent = p;
-            document.getElementById('attAbsent').textContent = ab;
-            document.getElementById('attRate').textContent = allAttendance.length ? Math.round((p/allAttendance.length)*100)+'%' : '0%';
-        }
-        function populateMonthFilter() {
-            const ms = new Set();
-            allAttendance.forEach(a => { if(a.date){ const d=a.date.toDate?new Date(a.date.toDate()):new Date(a.date); ms.add(JSON.stringify({k:`${d.getFullYear()}-${String(d.getMonth()+1).padStart(2,'0')}`,l:d.toLocaleDateString('en-US',{month:'long',year:'numeric'})})); } });
-            const mf = document.getElementById('attMonthFilter'); mf.innerHTML = '<option value="all">All Months</option>';
-            [...ms].map(JSON.parse).sort((a,b)=>b.k.localeCompare(a.k)).forEach(m => mf.innerHTML += `<option value="${m.k}">${m.l}</option>`);
-        }
-        function renderAttendanceTable() {
-            const mf = document.getElementById('attMonthFilter').value, sf = document.getElementById('attSessionFilter').value;
-            let f = [...allAttendance];
-            if (mf !== 'all') f = f.filter(a => { if(!a.date) return false; const d = a.date.toDate?new Date(a.date.toDate()):new Date(a.date); return `${d.getFullYear()}-${String(d.getMonth()+1).padStart(2,'0')}` === mf; });
-            if (sf !== 'all') f = f.filter(a => a.session === sf);
-            const tb = document.getElementById('attendanceBody');
-            if (!f.length) { tb.innerHTML = '<tr><td colspan="6"><div class="empty-state"><i class="fas fa-calendar-check"></i><h3>No records</h3></div></td></tr>'; return; }
-            tb.innerHTML = f.map(a => {
-                const hasEx = absenceRequests.some(r => r.details?.absenceDate === a.date && r.actionType === 'absence_explanation');
-                return `<tr><td>${formatDate(a.date)}</td><td>${a.session==='morning'?'🌅 Morning':'🌤 Afternoon'}</td><td><span class="badge ${a.status==='present'?'badge-present':'badge-absent'}"><i class="fas ${a.status==='present'?'fa-check-circle':'fa-times-circle'}"></i> ${a.status==='present'?'Present':'Absent'}</span></td><td>${escapeHtml(a.remark||'—')}</td><td>${escapeHtml(a.teacherName||'—')}</td><td>${a.status==='absent'&&!hasEx?`<button class="btn btn-outline btn-sm" onclick="explainAbsence('${a.date}','${a.session||''}')"><i class="fas fa-envelope"></i> Explain</button>`:a.status==='absent'?'<span class="badge badge-info" style="font-size:0.65rem;"><i class="fas fa-check"></i> Explained</span>':'—'}</td></tr>`;
-            }).join('');
-        }
-        function renderAbsenceRequests() {
-            const c = document.getElementById('absenceRequestsList');
-            if (!absenceRequests.length) { c.innerHTML = '<div class="empty-state"><i class="fas fa-envelope-open"></i><h3>No Requests</h3></div>'; return; }
-            c.innerHTML = absenceRequests.map(r => {
-                const sc = r.status==='approved'?'badge-approved':r.status==='rejected'?'badge-rejected':'badge-pending';
-                const si = r.status==='approved'?'fa-check-circle':r.status==='rejected'?'fa-times-circle':'fa-clock';
-                return `<div class="card" style="padding:1rem;margin-bottom:0.75rem;"><div style="display:flex;justify-content:space-between;align-items:flex-start;gap:1rem;flex-wrap:wrap;"><div style="flex:1;min-width:200px;"><div style="display:flex;gap:0.5rem;align-items:center;flex-wrap:wrap;margin-bottom:0.3rem;"><span class="badge badge-info">${r.actionType==='absence_request'?'Upcoming':'Past'}</span><span class="badge ${sc}"><i class="fas ${si}"></i> ${r.status?.toUpperCase()||'PENDING'}</span></div><p style="font-size:0.85rem;margin:0.3rem 0;"><strong>Date:</strong> ${escapeHtml(r.details?.absenceDate||'—')}<br><strong>Session:</strong> ${escapeHtml(r.details?.session||'—')}</p><p style="font-size:0.85rem;color:var(--text-secondary);"><strong>Reason:</strong> ${escapeHtml(r.details?.reason||'—')}</p>${r.adminNote?`<p style="font-size:0.8rem;color:var(--accent);"><strong>Response:</strong> ${escapeHtml(r.adminNote)}</p>`:''}</div><small style="color:var(--text-muted);">${r.requestedAt?.toDate?.().toLocaleDateString('en-GB',{day:'numeric',month:'short',year:'numeric'})||'Unknown'}</small></div></div>`;
-            }).join('');
-        }
+        function updateAttendanceSummary() { const p=allAttendance.filter(a=>a.status==='present').length,ab=allAttendance.filter(a=>a.status==='absent').length; document.getElementById('attPresent').textContent=p; document.getElementById('attAbsent').textContent=ab; document.getElementById('attRate').textContent=allAttendance.length?Math.round((p/allAttendance.length)*100)+'%':'0%'; }
+        function populateMonthFilter() { const ms=new Set(); allAttendance.forEach(a=>{ if(a.date){ const d=a.date.toDate?new Date(a.date.toDate()):new Date(a.date); ms.add(JSON.stringify({k:`${d.getFullYear()}-${String(d.getMonth()+1).padStart(2,'0')}`,l:d.toLocaleDateString('en-US',{month:'long',year:'numeric'})})); } }); const mf=document.getElementById('attMonthFilter'); mf.innerHTML='<option value="all">All Months</option>'; [...ms].map(JSON.parse).sort((a,b)=>b.k.localeCompare(a.k)).forEach(m=>mf.innerHTML+=`<option value="${m.k}">${m.l}</option>`); }
+        function renderAttendanceTable() { const mf=document.getElementById('attMonthFilter').value,sf=document.getElementById('attSessionFilter').value; let f=[...allAttendance]; if(mf!=='all') f=f.filter(a=>{ if(!a.date) return false; const d=a.date.toDate?new Date(a.date.toDate()):new Date(a.date); return `${d.getFullYear()}-${String(d.getMonth()+1).padStart(2,'0')}`===mf; }); if(sf!=='all') f=f.filter(a=>a.session===sf); const tb=document.getElementById('attendanceBody'); if(!f.length){ tb.innerHTML='<tr><td colspan="6"><div class="empty-state"><h3>No records</h3></div></td></tr>'; return; } tb.innerHTML=f.map(a=>{ const he=absenceRequests.some(r=>r.details?.absenceDate===a.date&&r.actionType==='absence_explanation'); return `<tr><td>${formatDate(a.date)}</td><td>${a.session==='morning'?'🌅 Morning':'🌤 Afternoon'}</td><td><span class="badge ${a.status==='present'?'badge-present':'badge-absent'}">${a.status==='present'?'Present':'Absent'}</span></td><td>${escapeHtml(a.remark||'—')}</td><td>${escapeHtml(a.teacherName||'—')}</td><td>${a.status==='absent'&&!he?`<button class="btn btn-outline btn-sm" onclick="explainAbsence('${a.date}','${a.session||''}')">Explain</button>`:a.status==='absent'?'<span class="badge badge-info" style="font-size:0.65rem;">Explained</span>':'—'}</td></tr>`; }).join(''); }
+        function renderAbsenceRequests() { const c=document.getElementById('absenceRequestsList'); if(!absenceRequests.length){ c.innerHTML='<div class="empty-state"><i class="fas fa-envelope-open"></i><h3>No Requests</h3></div>'; return; } c.innerHTML=absenceRequests.map(r=>{ const sc=r.status==='approved'?'badge-approved':r.status==='rejected'?'badge-rejected':'badge-pending'; return `<div class="card" style="padding:1rem;margin-bottom:0.75rem;"><div style="display:flex;justify-content:space-between;gap:1rem;flex-wrap:wrap;"><div><span class="badge ${sc}">${r.status?.toUpperCase()||'PENDING'}</span> <strong>${escapeHtml(r.details?.absenceDate||'—')}</strong> — ${escapeHtml(r.details?.session||'—')}<br><small>${escapeHtml(r.details?.reason||'—')}</small>${r.adminNote?`<br><small style="color:var(--accent);">Response: ${escapeHtml(r.adminNote)}</small>`:''}</div><small style="color:var(--text-muted);">${r.requestedAt?.toDate?.().toLocaleDateString()||''}</small></div></div>`; }).join(''); }
 
-        // ============================================
-        // ABSENCE MODAL
-        // ============================================
-        window.updateAbsenceModalTitle = () => document.getElementById('absenceModalTitle').textContent = document.getElementById('absenceType').value === 'upcoming' ? 'Request Upcoming Absence' : 'Explain Past Absence';
-        window.openAbsenceRequestModal = () => { document.getElementById('absenceDate').valueAsDate = new Date(); document.getElementById('absenceType').value = 'upcoming'; document.getElementById('absenceSession').value = 'morning'; document.getElementById('absenceReason').value = ''; document.getElementById('absenceDocument').value = ''; updateAbsenceModalTitle(); document.getElementById('absenceRequestModal').classList.add('active'); };
-        window.closeAbsenceRequestModal = () => document.getElementById('absenceRequestModal').classList.remove('active');
-        window.explainAbsence = (date, session) => { document.getElementById('absenceDate').value = date; document.getElementById('absenceType').value = 'past'; document.getElementById('absenceSession').value = session || 'morning'; document.getElementById('absenceReason').value = ''; document.getElementById('absenceDocument').value = ''; updateAbsenceModalTitle(); document.getElementById('absenceRequestModal').classList.add('active'); };
-        document.getElementById('absenceRequestModal').addEventListener('click', function(e) { if (e.target === this) closeAbsenceRequestModal(); });
-        document.addEventListener('keydown', function(e) { if (e.key === 'Escape') closeAbsenceRequestModal(); });
-        document.getElementById('submitAbsenceBtn').addEventListener('click', async () => {
-            const date = document.getElementById('absenceDate').value, type = document.getElementById('absenceType').value, session = document.getElementById('absenceSession').value, reason = document.getElementById('absenceReason').value.trim(), doc = document.getElementById('absenceDocument').value.trim();
-            if (!date) return alert('Please select a date.'); if (!reason) return alert('Please provide a reason.');
-            if (!confirm(`Submit ${type==='upcoming'?'upcoming absence request':'past absence explanation'} for ${date}?`)) return;
-            const btn = document.getElementById('submitAbsenceBtn'); btn.disabled = true; btn.innerHTML = '<span class="loading-spinner"></span> Submitting...';
-            try {
-                await db.collection('pendingActions').add({ teacherId: classTeachers[0]?.id || '', teacherIds: classTeachers.map(t => t.id), studentId: currentUser.uid, studentName: `${userData?.firstName||''} ${userData?.surname||''}`.trim(), actionType: type==='upcoming'?'absence_request':'absence_explanation', classId: studentClass, details: { absenceDate: date, session, reason, document: doc || null }, status: 'pending', requestedAt: firebase.firestore.FieldValue.serverTimestamp() });
-                closeAbsenceRequestModal(); alert('Request submitted.');
-            } catch (e) { alert('Error: ' + e.message); }
-            finally { btn.disabled = false; btn.innerHTML = '<i class="fas fa-paper-plane"></i> Submit Request'; }
+        window.updateAbsenceModalTitle = ()=>document.getElementById('absenceModalTitle').textContent=document.getElementById('absenceType').value==='upcoming'?'Request Absence':'Explain Absence';
+        window.openAbsenceRequestModal = ()=>{ document.getElementById('absenceDate').valueAsDate=new Date(); document.getElementById('absenceType').value='upcoming'; document.getElementById('absenceSession').value='morning'; document.getElementById('absenceReason').value=''; updateAbsenceModalTitle(); document.getElementById('absenceRequestModal').classList.add('active'); };
+        window.closeAbsenceRequestModal = ()=>document.getElementById('absenceRequestModal').classList.remove('active');
+        window.explainAbsence = (date,session)=>{ document.getElementById('absenceDate').value=date; document.getElementById('absenceType').value='past'; document.getElementById('absenceSession').value=session||'morning'; document.getElementById('absenceReason').value=''; updateAbsenceModalTitle(); document.getElementById('absenceRequestModal').classList.add('active'); };
+        document.getElementById('absenceRequestModal').addEventListener('click',function(e){ if(e.target===this) closeAbsenceRequestModal(); });
+        document.addEventListener('keydown',function(e){ if(e.key==='Escape') closeAbsenceRequestModal(); });
+        document.getElementById('submitAbsenceBtn').addEventListener('click',async()=>{
+            const date=document.getElementById('absenceDate').value,type=document.getElementById('absenceType').value,session=document.getElementById('absenceSession').value,reason=document.getElementById('absenceReason').value.trim();
+            if(!date) return alert('Select a date.'); if(!reason) return alert('Provide a reason.');
+            if(!confirm('Submit?')) return;
+            const btn=document.getElementById('submitAbsenceBtn'); btn.disabled=true; btn.innerHTML='<span class="loading-spinner"></span>';
+            try { await db.collection('pendingActions').add({teacherId:classTeachers[0]?.id||'',teacherIds:classTeachers.map(t=>t.id),studentId:currentUser.uid,studentName:`${userData?.firstName||''} ${userData?.surname||''}`.trim(),actionType:type==='upcoming'?'absence_request':'absence_explanation',classId:studentClass,details:{absenceDate:date,session,reason},status:'pending',requestedAt:firebase.firestore.FieldValue.serverTimestamp()}); closeAbsenceRequestModal(); alert('Submitted.'); }
+            catch(e){ alert('Error: '+e.message); } finally { btn.disabled=false; btn.innerHTML='Submit'; }
         });
 
         // ============================================
         // TIMETABLE
         // ============================================
         function renderTimetable() {
-            const c = document.getElementById('timetableContent');
-            if (!classTimetable || !classTimetable.periods?.length) { c.innerHTML = '<div class="empty-state"><i class="fas fa-calendar-alt"></i><h3>No Timetable</h3></div>'; return; }
-            const days = ['monday','tuesday','wednesday','thursday','friday'], dl = ['Monday','Tuesday','Wednesday','Thursday','Friday'];
-            c.innerHTML = `<div class="timetable-grid">${days.map((d,i) => {
-                const dp = classTimetable.periods.filter(p => p[d]);
-                return `<div class="timetable-day"><div class="day-header">${dl[i]}</div>${dp.length?dp.map(p=>`<div class="period"><div class="subject">${escapeHtml(p[d]||'—')}</div><div class="time">${escapeHtml(p.startTime||'')} - ${escapeHtml(p.endTime||'')}</div><div class="teacher">${escapeHtml(classTimetable.teacherName||'')}</div></div>`).join(''):'<div class="period"><div class="subject" style="color:var(--text-muted);">No classes</div></div>'}</div>`;
-            }).join('')}</div>`;
+            const c=document.getElementById('timetableContent');
+            if(!classTimetable||!classTimetable.periods?.length){ c.innerHTML='<div class="empty-state"><i class="fas fa-calendar-alt"></i><h3>No Timetable Published</h3><p>Your teachers haven\'t published a timetable yet.</p></div>'; return; }
+            const days=['monday','tuesday','wednesday','thursday','friday'],dl=['Monday','Tuesday','Wednesday','Thursday','Friday'];
+            c.innerHTML = `<div class="timetable-grid">${days.map((d,i)=>{ const dp=classTimetable.periods.filter(p=>p.day===d); return `<div class="timetable-day"><div class="day-header">${dl[i]}</div>${dp.length?dp.map(p=>`<div class="period"><div class="subject">${escapeHtml(p.subject||'—')}</div><div class="time">${escapeHtml(p.startTime||'')} - ${escapeHtml(p.endTime||'')}</div><div class="teacher">${escapeHtml(p.teacherName||'')}</div></div>`).join(''):'<div class="period"><div class="subject" style="color:var(--text-muted);">—</div></div>'}</div>`; }).join('')}</div>`;
         }
 
         // ============================================
-        // SYLLABUS
+        // SYLLABUS (UPDATED for 'syllabi' collection)
         // ============================================
         function renderSyllabus() {
-            const c = document.getElementById('syllabusContent');
-            if (!allSyllabi.length) { c.innerHTML = '<div class="empty-state"><i class="fas fa-book-open"></i><h3>No Syllabus</h3></div>'; return; }
-            c.innerHTML = `<div class="syllabus-grid">${allSyllabi.map(s => `<div class="syllabus-card"><h4><i class="fas fa-book"></i> ${escapeHtml(s.subject||'Untitled')}</h4><p style="font-size:0.8rem;color:var(--text-muted);margin-bottom:0.5rem;">${escapeHtml(s.teacherName||'Unknown')} · ${s.weeks?.length||0} weeks</p>${(s.weeks||[]).map(w=>`<div class="syllabus-week"><strong>Week ${w.week}:</strong> ${escapeHtml(w.topic||'—')}</div>`).join('')}</div>`).join('')}</div>`;
+            const c=document.getElementById('syllabusContent');
+            if(!allSyllabi.length){ c.innerHTML='<div class="empty-state"><i class="fas fa-book-open"></i><h3>No Syllabus Published</h3><p>Your teachers haven\'t published a syllabus yet.</p></div>'; return; }
+            c.innerHTML = `<div class="syllabus-grid">${allSyllabi.map(s=>`
+                <div class="syllabus-card">
+                    <h4><i class="fas fa-book"></i> ${escapeHtml(s.subject||'Untitled')}</h4>
+                    <div class="syl-meta">${escapeHtml(s.term||'')} · ${s.weeks?.length||0} weeks · ${escapeHtml(s.contributorNames?.join(', ')||s.createdByName||'Unknown')}</div>
+                    ${(s.weeks||[]).sort((a,b)=>a.week-b.week).map(w=>`<div class="syllabus-week"><strong>Week ${w.week}:</strong> ${escapeHtml(w.topic||'—')}</div>`).join('')}
+                </div>`).join('')}</div>`;
         }
 
         // ============================================
         // AUTH
         // ============================================
-        auth.onAuthStateChanged(async user => {
-            if (!user) { window.location.href = 'student-login.html'; return; }
+        auth.onAuthStateChanged(async user=>{
+            if(!user){ window.location.href='student-login.html'; return; }
             try {
-                const d = await db.collection('users').doc(user.uid).get();
-                if (!d.exists || d.data().role !== 'student') { await auth.signOut(); window.location.href = 'index.html'; return; }
-                currentUser = user; userData = d.data(); studentClass = userData.class;
-                const pic = document.getElementById('profilePic');
-                if (userData.photoURL) pic.innerHTML = `<img src="${userData.photoURL}" alt="Profile" style="width:100%;height:100%;object-fit:cover;border-radius:50%;">`;
-                else pic.textContent = (userData.firstName?.[0]||'S') + (userData.surname?.[0]||'T');
-                if (!studentClass) { document.getElementById('classSubtitle').textContent = 'No class assigned'; return; }
+                const d=await db.collection('users').doc(user.uid).get();
+                if(!d.exists||d.data().role!=='student'){ await auth.signOut(); window.location.href='index.html'; return; }
+                currentUser=user; userData=d.data(); studentClass=userData.class;
+                const pic=document.getElementById('profilePic');
+                if(userData.photoURL) pic.innerHTML=`<img src="${userData.photoURL}" alt="Profile" style="width:100%;height:100%;object-fit:cover;border-radius:50%;">`;
+                else pic.textContent=(userData.firstName?.[0]||'S')+(userData.surname?.[0]||'T');
+                if(!studentClass){ document.getElementById('classSubtitle').textContent='No class assigned'; return; }
                 await loadClassData();
-            } catch (e) { console.error('Auth error:', e); window.location.href = 'student-login.html'; }
+            } catch(e){ console.error('Auth error:',e); window.location.href='student-login.html'; }
         });
-        document.getElementById('logoutBtn').addEventListener('click', () => { Object.values(unsubscribers).forEach(u => u()); auth.signOut().then(() => window.location.href = 'index.html'); });
-        window.addEventListener('beforeunload', () => Object.values(unsubscribers).forEach(u => u()));
-        console.log('📚 Student My Class ready — Privacy-Respecting Edition');
+        document.getElementById('logoutBtn').addEventListener('click',()=>{ Object.values(unsubscribers).forEach(u=>u()); auth.signOut().then(()=>window.location.href='index.html'); });
+        window.addEventListener('beforeunload',()=>Object.values(unsubscribers).forEach(u=>u()));
+        console.log('📚 Student My Class ready — Updated for new Syllabus & Timetable workflow');
     </script>
 </body>
 </html>
