@@ -25,8 +25,7 @@
             --danger-bg:rgba(239,68,68,0.1); --danger-text:#dc2626;
             --info-bg:rgba(59,130,246,0.1); --info-text:#2563eb;
             --input-bg:rgba(255,255,255,0.9); --panel-bg:rgba(255,255,255,0.92);
-            --teach-mode-bg:rgba(0,0,0,0.03); --overlay-bg:rgba(0,0,0,0.5);
-            --gradient-start:#0A2540; --gradient-end:#C8963E;
+            --overlay-bg:rgba(0,0,0,0.5); --gradient-start:#0A2540; --gradient-end:#C8963E;
         }
         :root[data-theme="dark"] {
             --bg-primary:#0a0f1e; --bg-secondary:#0f1729; --text-primary:#f1f5f9;
@@ -40,106 +39,83 @@
             --danger-bg:rgba(239,68,68,0.15); --danger-text:#f87171;
             --info-bg:rgba(59,130,246,0.15); --info-text:#60a5fa;
             --input-bg:rgba(30,41,59,0.8); --panel-bg:rgba(15,23,42,0.85);
-            --teach-mode-bg:rgba(0,0,0,0.3); --overlay-bg:rgba(0,0,0,0.7);
-            --gradient-start:#0A2540; --gradient-end:#C8963E;
+            --overlay-bg:rgba(0,0,0,0.7); --gradient-start:#0A2540; --gradient-end:#C8963E;
         }
 
-        body { font-family:'Inter',sans-serif; background:var(--bg-primary); color:var(--text-primary); min-height:100vh; transition:background 0.3s,color 0.3s; position:relative; overflow-x:hidden; line-height:1.6; -webkit-font-smoothing:antialiased; }
+        body { font-family:'Inter',sans-serif; background:var(--bg-primary); color:var(--text-primary); min-height:100vh; transition:background 0.3s,color 0.3s; position:relative; overflow-x:hidden; line-height:1.6; }
         .orb { position:fixed; border-radius:50%; filter:blur(100px); z-index:0; pointer-events:none; opacity:0.6; }
-        .orb-1 { width:min(400px,50vw); height:min(400px,50vw); top:-10%; left:-5%; background:radial-gradient(circle at 30% 30%,rgba(10,37,64,0.15),transparent 70%); animation:float1 20s infinite alternate ease-in-out; }
-        .orb-2 { width:min(500px,60vw); height:min(500px,60vw); bottom:-15%; right:-10%; background:radial-gradient(circle at 70% 70%,rgba(200,150,62,0.12),transparent 70%); animation:float2 25s infinite alternate ease-in-out; }
+        .orb-1 { width:400px; height:400px; top:-10%; left:-5%; background:radial-gradient(circle at 30% 30%,rgba(10,37,64,0.15),transparent 70%); animation:float1 20s infinite alternate; }
+        .orb-2 { width:500px; height:500px; bottom:-15%; right:-10%; background:radial-gradient(circle at 70% 70%,rgba(200,150,62,0.12),transparent 70%); animation:float2 25s infinite alternate; }
         @keyframes float1 { 0%{transform:translate(0,0)scale(1)} 100%{transform:translate(5vw,3vw)scale(1.1)} }
         @keyframes float2 { 0%{transform:translate(0,0)scale(1)} 100%{transform:translate(-4vw,-3vw)scale(1.15)} }
 
-        /* Top Navigation */
         .top-nav { position:sticky; top:0; z-index:200; background:var(--card-bg); backdrop-filter:blur(20px); -webkit-backdrop-filter:blur(20px); border-bottom:1px solid var(--border); padding:0.8rem 1.5rem; display:flex; justify-content:space-between; align-items:center; gap:1rem; flex-wrap:wrap; }
         .nav-left,.nav-right { display:flex; align-items:center; gap:0.5rem; flex-wrap:wrap; }
         .nav-btn { background:transparent; border:1px solid var(--border); border-radius:2rem; padding:0.5rem 1.2rem; color:var(--text-primary); font-weight:500; font-size:0.85rem; cursor:pointer; transition:0.2s; text-decoration:none; display:inline-flex; align-items:center; gap:0.4rem; white-space:nowrap; }
         .nav-btn:hover { background:var(--hover-bg); border-color:var(--accent); color:var(--accent); }
-        .theme-toggle { display:inline-flex; align-items:center; gap:0.5rem; background:var(--card-bg); border:1px solid var(--border); border-radius:2rem; padding:0.4rem 1rem; cursor:pointer; font-size:0.85rem; color:var(--text-secondary); transition:0.2s; }
+        .theme-toggle { display:inline-flex; align-items:center; gap:0.5rem; background:var(--card-bg); border:1px solid var(--border); border-radius:2rem; padding:0.4rem 1rem; cursor:pointer; font-size:0.85rem; color:var(--text-secondary); }
         .theme-toggle:hover { border-color:var(--accent); }
         .profile-dropdown { position:relative; cursor:pointer; }
-        .profile-trigger { display:flex; align-items:center; gap:0.7rem; background:var(--card-bg); border:1px solid var(--border); border-radius:3rem; padding:0.3rem 0.3rem 0.3rem 0.9rem; transition:0.2s; }
-        .profile-trigger:hover { border-color:var(--accent); }
-        .profile-name { font-weight:600; color:var(--text-primary); font-size:0.85rem; }
-        .profile-pic { width:36px; height:36px; border-radius:50%; background:linear-gradient(135deg,var(--gradient-start),var(--gradient-end)); display:flex; align-items:center; justify-content:center; color:white; font-weight:600; font-size:0.9rem; overflow:hidden; }
+        .profile-trigger { display:flex; align-items:center; gap:0.7rem; background:var(--card-bg); border:1px solid var(--border); border-radius:3rem; padding:0.3rem 0.3rem 0.3rem 0.9rem; }
+        .profile-name { font-weight:600; font-size:0.85rem; }
+        .profile-pic { width:36px; height:36px; border-radius:50%; background:linear-gradient(135deg,var(--gradient-start),var(--gradient-end)); display:flex; align-items:center; justify-content:center; color:white; font-weight:600; overflow:hidden; }
         .profile-pic img { width:100%; height:100%; object-fit:cover; border-radius:50%; }
-        .dropdown-menu { position:absolute; right:0; top:calc(100% + 8px); background:var(--card-bg); backdrop-filter:blur(20px); -webkit-backdrop-filter:blur(20px); border:1px solid var(--border); border-radius:1rem; padding:0.5rem; min-width:180px; display:none; z-index:100; box-shadow:var(--shadow-xl); }
+        .dropdown-menu { position:absolute; right:0; top:calc(100%+8px); background:var(--card-bg); backdrop-filter:blur(20px); -webkit-backdrop-filter:blur(20px); border:1px solid var(--border); border-radius:1rem; padding:0.5rem; min-width:180px; display:none; z-index:100; box-shadow:var(--shadow-xl); }
         .profile-dropdown:hover .dropdown-menu { display:block; animation:fadeIn 0.2s; }
         @keyframes fadeIn { from{opacity:0;transform:translateY(-8px)} to{opacity:1;transform:translateY(0)} }
-        .dropdown-item { padding:0.7rem 1rem; color:var(--text-primary); border-radius:0.8rem; display:flex; align-items:center; gap:0.6rem; cursor:pointer; font-size:0.9rem; transition:0.2s; }
+        .dropdown-item { padding:0.7rem 1rem; color:var(--text-primary); border-radius:0.8rem; display:flex; align-items:center; gap:0.6rem; cursor:pointer; font-size:0.9rem; }
         .dropdown-item:hover { background:var(--hover-bg); color:var(--accent); }
         .dropdown-item.danger:hover { background:var(--danger-bg); color:var(--danger-text); }
 
-        /* Main */
         .main-container { max-width:1600px; margin:0 auto; padding:1.5rem; position:relative; z-index:5; }
 
-        /* Controls Bar */
         .controls-bar { display:flex; gap:0.8rem; margin-bottom:1.5rem; flex-wrap:wrap; align-items:center; background:var(--card-bg); backdrop-filter:blur(12px); -webkit-backdrop-filter:blur(12px); border:1px solid var(--border); border-radius:2rem; padding:0.5rem 1rem; }
         .controls-bar select { padding:0.5rem 1rem; background:var(--input-bg); border:1px solid var(--border); border-radius:2rem; color:var(--text-primary); font-family:inherit; font-size:0.85rem; cursor:pointer; min-width:140px; }
         .controls-bar select:focus { outline:none; border-color:var(--accent); }
 
-        /* Subject & Week Tabs */
-        .tabs-row { display:flex; gap:0.3rem; margin-bottom:1rem; background:var(--card-bg); backdrop-filter:blur(12px); -webkit-backdrop-filter:blur(12px); border:1px solid var(--border); border-radius:2.5rem; padding:0.25rem; width:fit-content; max-width:100%; flex-wrap:wrap; overflow-x:auto; }
-        .tab { padding:0.55rem 1.3rem; border-radius:2.5rem; font-weight:500; font-size:0.85rem; cursor:pointer; transition:0.2s; color:var(--text-secondary); white-space:nowrap; user-select:none; }
-        .tab:hover:not(.active) { color:var(--text-primary); background:var(--hover-bg); }
-        .tab.active { background:linear-gradient(135deg,var(--gradient-start),var(--gradient-end)); color:white; font-weight:600; box-shadow:0 4px 15px rgba(200,150,62,0.3); }
-
-        /* Cards */
-        .card { background:var(--card-bg); backdrop-filter:blur(12px); -webkit-backdrop-filter:blur(12px); border:1px solid var(--border); border-radius:1.5rem; padding:1.5rem; box-shadow:var(--shadow-md); margin-bottom:1.5rem; transition:0.3s; }
-        .card:hover { box-shadow:var(--shadow-lg); }
+        .card { background:var(--card-bg); backdrop-filter:blur(12px); -webkit-backdrop-filter:blur(12px); border:1px solid var(--border); border-radius:1.5rem; padding:1.5rem; box-shadow:var(--shadow-md); margin-bottom:1.5rem; }
         .card-header { display:flex; justify-content:space-between; align-items:flex-start; margin-bottom:1rem; flex-wrap:wrap; gap:1rem; padding-bottom:1rem; border-bottom:1px solid var(--border); }
         .card-header h3 { font-size:1.15rem; font-weight:700; display:flex; align-items:center; gap:0.5rem; }
 
-        /* Resource Grid */
-        .resource-grid { display:grid; grid-template-columns:repeat(auto-fill,minmax(min(100%,380px),1fr)); gap:1.5rem; }
-        .resource-card { background:var(--card-bg); border:1px solid var(--border); border-radius:1rem; padding:1.5rem; box-shadow:var(--shadow-sm); display:flex; flex-direction:column; transition:0.3s; position:relative; overflow:hidden; }
-        .resource-card::before { content:''; position:absolute; top:0; left:0; right:0; height:3px; background:linear-gradient(90deg,var(--gradient-start),var(--gradient-end)); opacity:0; transition:0.3s; }
+        .resource-grid { display:grid; grid-template-columns:repeat(auto-fill,minmax(380px,1fr)); gap:1.5rem; }
+        .resource-card { background:var(--card-bg); border:1px solid var(--border); border-radius:1rem; padding:1.5rem; box-shadow:var(--shadow-sm); display:flex; flex-direction:column; transition:0.3s; }
         .resource-card:hover { border-color:var(--accent); box-shadow:var(--shadow-lg); transform:translateY(-2px); }
-        .resource-card:hover::before { opacity:1; }
         .resource-card h4 { margin-bottom:0.7rem; color:var(--accent); font-weight:600; }
         .resource-card p { color:var(--text-secondary); font-size:0.9rem; line-height:1.7; margin-bottom:1rem; white-space:pre-wrap; max-height:280px; overflow-y:auto; flex:1; }
 
-        /* Handwriting Grid */
         .handwriting-grid { display:grid; grid-template-columns:repeat(auto-fill,minmax(180px,1fr)); gap:0.6rem; }
         .handwriting-grid img { width:100%; aspect-ratio:4/3; object-fit:cover; border-radius:0.5rem; cursor:pointer; border:2px solid transparent; transition:0.2s; }
         .handwriting-grid img:hover { transform:scale(1.04); border-color:var(--accent); }
 
-        /* Video */
         .video-thumb-grid { display:grid; grid-template-columns:repeat(auto-fill,minmax(200px,1fr)); gap:0.8rem; margin-bottom:1rem; }
         .video-thumb-item { cursor:pointer; border-radius:0.5rem; overflow:hidden; border:2px solid transparent; transition:0.2s; background:#000; position:relative; }
         .video-thumb-item:hover,.video-thumb-item.selected { border-color:var(--accent); }
         .video-thumb-item img { width:100%; aspect-ratio:16/9; object-fit:cover; display:block; }
-        .video-thumb-item::after { content:'\f04b'; font-family:'Font Awesome 6 Free'; font-weight:900; position:absolute; top:50%; left:50%; transform:translate(-50%,-50%); color:white; font-size:1.5rem; opacity:0.7; transition:0.2s; }
-        .video-thumb-item:hover::after { opacity:1; }
         .youtube-wrapper { position:relative; width:100%; padding-bottom:56.25%; border-radius:0.5rem; overflow:hidden; background:#000; }
         .youtube-wrapper iframe { position:absolute; top:0; left:0; width:100%; height:100%; border:none; }
 
-        /* Teach Mode */
         .teach-overlay { position:fixed; inset:0; background:var(--overlay-bg); z-index:300; opacity:0; pointer-events:none; transition:0.3s; }
         .teach-overlay.active { opacity:1; }
         .teach-container { position:fixed; inset:0; z-index:310; display:flex; opacity:0; pointer-events:none; transition:0.3s; }
         .teach-container.active { opacity:1; pointer-events:auto; }
         .teach-panel { flex:1; background:var(--panel-bg); backdrop-filter:blur(20px); -webkit-backdrop-filter:blur(20px); display:flex; flex-direction:column; border-right:1px solid var(--border); min-width:0; }
         .teach-panel:last-child { border-right:none; }
-        .teach-panel.hidden { flex:0; overflow:hidden; border:none; min-width:0; padding:0; opacity:0; }
+        .teach-panel.hidden { display:none; }
         .teach-panel-header { display:flex; justify-content:space-between; align-items:center; padding:1rem 1.5rem; border-bottom:1px solid var(--border); flex-shrink:0; gap:0.5rem; }
         .teach-panel-header h3 { font-size:1rem; font-weight:600; display:flex; align-items:center; gap:0.5rem; }
         .teach-panel-content { flex:1; overflow-y:auto; padding:1.5rem; font-size:1.05rem; line-height:1.8; }
         .teach-panel-content.book-mode { overflow:hidden; display:flex; flex-direction:column; padding:1rem; }
         .book-container { flex:1; display:flex; flex-direction:column; position:relative; overflow:hidden; }
-        .book-page { background:var(--card-bg); border:1px solid var(--border); border-radius:0.5rem; padding:2rem; box-shadow:var(--shadow-lg); flex:1; overflow-y:auto; transition:transform 0.4s,opacity 0.4s; }
-        .book-page.flipping { transform:rotateY(-90deg); opacity:0; }
+        .book-page { background:var(--card-bg); border:1px solid var(--border); border-radius:0.5rem; padding:2rem; box-shadow:var(--shadow-lg); flex:1; overflow-y:auto; }
         .book-nav { display:flex; justify-content:center; align-items:center; gap:1rem; padding:1rem 0 0; flex-shrink:0; }
-        .book-nav-btn { width:40px; height:40px; border-radius:50%; border:1px solid var(--border); background:var(--card-bg); color:var(--text-primary); cursor:pointer; display:flex; align-items:center; justify-content:center; transition:0.2s; }
+        .book-nav-btn { width:40px; height:40px; border-radius:50%; border:1px solid var(--border); background:var(--card-bg); color:var(--text-primary); cursor:pointer; display:flex; align-items:center; justify-content:center; }
         .book-nav-btn:hover:not(:disabled) { border-color:var(--accent); color:var(--accent); }
         .book-nav-btn:disabled { opacity:0.3; cursor:not-allowed; }
         .page-indicator { font-weight:600; color:var(--text-secondary); font-size:0.85rem; min-width:80px; text-align:center; }
         .reading-toggle { display:flex; gap:0; background:var(--hover-bg); border:1px solid var(--border); border-radius:2rem; padding:0.2rem; }
-        .reading-opt { padding:0.3rem 0.8rem; border-radius:2rem; cursor:pointer; font-size:0.8rem; transition:0.2s; color:var(--text-secondary); white-space:nowrap; }
+        .reading-opt { padding:0.3rem 0.8rem; border-radius:2rem; cursor:pointer; font-size:0.8rem; color:var(--text-secondary); white-space:nowrap; }
         .reading-opt.active { background:linear-gradient(135deg,var(--gradient-start),var(--gradient-end)); color:white; }
 
-        /* Buttons */
         .btn { padding:0.5rem 1.2rem; border:none; border-radius:2rem; font-weight:500; font-size:0.85rem; cursor:pointer; transition:0.2s; display:inline-flex; align-items:center; gap:0.4rem; white-space:nowrap; font-family:inherit; }
         .btn-primary { background:linear-gradient(135deg,var(--gradient-start),var(--gradient-end)); color:white; font-weight:600; }
         .btn-primary:hover { box-shadow:0 4px 20px rgba(200,150,62,0.4); transform:translateY(-2px); }
@@ -153,12 +129,9 @@
         @keyframes pulse { 0%,100%{box-shadow:0 4px 20px rgba(99,102,241,0.3)} 50%{box-shadow:0 4px 30px rgba(99,102,241,0.5)} }
         .btn:disabled { opacity:0.5; cursor:not-allowed; }
 
-        /* Badges */
         .badge { display:inline-flex; align-items:center; gap:0.3rem; padding:0.2rem 0.8rem; border-radius:2rem; font-size:0.75rem; font-weight:600; }
         .badge-published { background:var(--success-bg); color:var(--success-text); border:1px solid var(--success-text); }
-        .badge-info { background:var(--info-bg); color:var(--info-text); }
 
-        /* Modals */
         .modal-overlay { position:fixed; inset:0; background:var(--overlay-bg); backdrop-filter:blur(4px); -webkit-backdrop-filter:blur(4px); z-index:400; display:none; align-items:center; justify-content:center; padding:1rem; }
         .modal-overlay.active { display:flex; animation:fadeIn 0.2s; }
         .modal-content { background:var(--card-bg); border:1px solid var(--border); border-radius:1.5rem; padding:1.5rem; max-width:500px; width:100%; box-shadow:var(--shadow-xl); animation:slideUp 0.3s; }
@@ -172,27 +145,23 @@
         .form-control:focus { outline:none; border-color:var(--accent); }
         .modal-actions { display:flex; gap:0.5rem; justify-content:flex-end; margin-top:1.5rem; }
 
-        /* Image Popup */
         .image-popup { position:fixed; inset:0; background:rgba(0,0,0,0.92); backdrop-filter:blur(10px); -webkit-backdrop-filter:blur(10px); z-index:500; display:none; justify-content:center; align-items:center; padding:2rem; cursor:zoom-out; }
         .image-popup.active { display:flex; }
         .image-popup img { max-width:90%; max-height:90vh; border-radius:0.5rem; object-fit:contain; cursor:default; }
         .image-popup-close { position:absolute; top:1.5rem; right:1.5rem; width:44px; height:44px; border-radius:50%; background:rgba(255,255,255,0.1); border:1px solid rgba(255,255,255,0.2); color:white; font-size:1.3rem; cursor:pointer; display:flex; align-items:center; justify-content:center; }
 
-        /* Toast */
+        .guest-link-box { background:var(--info-bg); border:1px solid var(--info-text); border-radius:0.5rem; padding:1rem; margin-top:1rem; word-break:break-all; font-family:'Space Grotesk',monospace; font-size:0.85rem; display:none; }
+        .guest-link-box.show { display:block; }
+
         .toast-container { position:fixed; top:1rem; right:1rem; z-index:600; display:flex; flex-direction:column; gap:0.5rem; pointer-events:none; }
         .toast { background:var(--card-bg); backdrop-filter:blur(16px); -webkit-backdrop-filter:blur(16px); border:1px solid var(--border); border-radius:1rem; padding:0.9rem 1.2rem; min-width:280px; max-width:400px; box-shadow:var(--shadow-xl); display:flex; align-items:flex-start; gap:0.6rem; animation:toastIn 0.3s; pointer-events:auto; font-size:0.85rem; }
         @keyframes toastIn { from{opacity:0;transform:translateX(100%)} to{opacity:1;transform:translateX(0)} }
 
-        /* Guest link display */
-        .guest-link-box { background:var(--info-bg); border:1px solid var(--info-text); border-radius:0.5rem; padding:1rem; margin-top:1rem; word-break:break-all; font-family:'Space Grotesk',monospace; font-size:0.85rem; display:none; }
-        .guest-link-box.show { display:block; }
-
         .empty-state { text-align:center; padding:3rem; color:var(--text-tertiary); }
         .empty-state i { font-size:3rem; margin-bottom:1rem; opacity:0.5; display:block; }
 
-        @media(max-width:1024px){ .teach-container{flex-direction:column;} .teach-panel{flex:none;height:50%;min-height:300px;} .teach-panel.hidden{height:0;min-height:0;} }
-        @media(max-width:768px){ .main-container{padding:1rem;} .top-nav{padding:0.5rem 1rem;gap:0.5rem;} .nav-btn{padding:0.4rem 0.8rem;font-size:0.8rem;} .resource-grid{grid-template-columns:1fr;} }
-        @media(max-width:480px){ .tab{padding:0.4rem 0.8rem;font-size:0.75rem;} }
+        @media(max-width:1024px){ .teach-container{flex-direction:column;} .teach-panel{flex:none;height:50%;min-height:300px;} }
+        @media(max-width:768px){ .main-container{padding:1rem;} .top-nav{padding:0.5rem 1rem;gap:0.5rem;} .resource-grid{grid-template-columns:1fr;} }
     </style>
 </head>
 <body>
@@ -200,7 +169,7 @@
 <div class="toast-container" id="toastContainer"></div>
 <div class="image-popup" id="imagePopup" onclick="closeImagePopup()"><button class="image-popup-close" onclick="closeImagePopup()">✕</button><img id="imagePopupImg" src="" alt="" onclick="event.stopPropagation()"></div>
 
-<!-- TEACH MODE -->
+<!-- TEACH MODE OVERLAY -->
 <div class="teach-overlay" id="teachOverlay"></div>
 <div class="teach-container" id="teachContainer">
     <div class="teach-panel" id="teachPanelLN">
@@ -214,7 +183,7 @@
                 <button class="btn btn-outline btn-sm" onclick="toggleTeachPanel('lessonNote')">✕</button>
             </div>
         </div>
-        <div class="teach-panel-content" id="teachContentLN"><div class="empty-state"><i class="fas fa-book-open"></i><h3>No Lesson Note</h3></div></div>
+        <div class="teach-panel-content scroll-mode" id="teachContentLN"><div class="empty-state"><i class="fas fa-book-open"></i><h3>No Lesson Note</h3></div></div>
     </div>
     <div class="teach-panel" id="teachPanelTP">
         <div class="teach-panel-header">
@@ -227,7 +196,7 @@
                 <button class="btn btn-outline btn-sm" onclick="toggleTeachPanel('teachingProcess')">✕</button>
             </div>
         </div>
-        <div class="teach-panel-content" id="teachContentTP"><div class="empty-state"><i class="fas fa-chalkboard"></i><h3>No Teaching Process</h3></div></div>
+        <div class="teach-panel-content scroll-mode" id="teachContentTP"><div class="empty-state"><i class="fas fa-chalkboard"></i><h3>No Teaching Process</h3></div></div>
     </div>
 </div>
 
@@ -251,34 +220,28 @@
 
 <!-- MAIN -->
 <main class="main-container">
-    <!-- Controls -->
     <div class="controls-bar">
         <label style="font-weight:600;font-size:0.85rem;">Class:</label>
         <select id="classSelect"><option value="">Loading...</option></select>
         <label style="font-weight:600;font-size:0.85rem;">Subject:</label>
-        <select id="subjectSelect" onchange="onSubjectChange()"><option value="">Select Subject</option></select>
+        <select id="subjectSelect"><option value="">Select Subject</option></select>
         <label style="font-weight:600;font-size:0.85rem;">Week:</label>
-        <select id="weekSelect" onchange="onWeekChange()"><option value="">Select Week</option></select>
+        <select id="weekSelect"><option value="">Select Week</option></select>
     </div>
 
-    <!-- Action Buttons -->
     <div style="display:flex;gap:0.5rem;margin-bottom:1.5rem;flex-wrap:wrap;">
-        <button class="btn btn-teach" id="teachModeBtn" onclick="toggleTeachMode()"><i class="fas fa-chalkboard"></i> Teach Mode <small style="opacity:0.7;">Ctrl+T</small></button>
-        <button class="btn btn-outline btn-sm" onclick="openVirtualClassModal()"><i class="fas fa-video"></i> Virtual Class</button>
-        <button class="btn btn-outline btn-sm" onclick="openGuestModal()"><i class="fas fa-user-plus"></i> Invite Guest</button>
-        <button class="btn btn-outline btn-sm" onclick="previewAsStudent()"><i class="fas fa-eye"></i> Student View</button>
-        <button class="btn btn-outline btn-sm" onclick="window.print()"><i class="fas fa-print"></i> Print</button>
+        <button class="btn btn-teach" id="teachModeBtn"><i class="fas fa-chalkboard"></i> Teach Mode <small style="opacity:0.7;">Ctrl+T</small></button>
+        <button class="btn btn-outline btn-sm" id="virtualClassBtn"><i class="fas fa-video"></i> Virtual Class</button>
+        <button class="btn btn-outline btn-sm" id="guestInviteBtn"><i class="fas fa-user-plus"></i> Invite Guest</button>
+        <button class="btn btn-outline btn-sm" id="studentViewBtn"><i class="fas fa-eye"></i> Student View</button>
+        <button class="btn btn-outline btn-sm" id="printBtn"><i class="fas fa-print"></i> Print</button>
     </div>
 
-    <!-- Resources -->
     <div class="card">
-        <div class="card-header">
-            <h3>Teaching Resources — <span id="resourceTitle" style="color:var(--accent);">Select a subject and week</span></h3>
-        </div>
-        <div id="resourcesContainer"><div class="empty-state"><i class="fas fa-folder-open"></i><h3>Select Subject & Week</h3><p>Choose above to view your teaching resources.</p></div></div>
+        <div class="card-header"><h3>Teaching Resources — <span id="resourceTitle" style="color:var(--accent);">Select a subject and week</span></h3></div>
+        <div id="resourcesContainer"><div class="empty-state"><i class="fas fa-folder-open"></i><h3>Select Subject & Week</h3></div></div>
     </div>
 
-    <!-- Virtual Classes -->
     <div class="card">
         <div class="card-header"><h3><i class="fas fa-calendar-alt"></i> Upcoming Virtual Classes</h3></div>
         <div id="virtualClassesList"><div class="empty-state"><i class="fas fa-video-slash"></i><h3>No upcoming classes</h3></div></div>
@@ -288,14 +251,14 @@
 <!-- VIRTUAL CLASS MODAL -->
 <div class="modal-overlay" id="vcModal">
     <div class="modal-content">
-        <div class="modal-header"><h3>Start Virtual Class</h3><button class="modal-close" onclick="closeVCModal()">✕</button></div>
+        <div class="modal-header"><h3>Schedule Virtual Class</h3><button class="modal-close" id="vcModalClose">✕</button></div>
         <form id="vcForm">
             <div class="form-group"><label class="form-label">Platform</label><select id="vcPlatform" class="form-control"><option value="zoom">Zoom</option><option value="google-meet">Google Meet</option><option value="jitsi">Jitsi Meet</option><option value="custom">Custom Link</option></select></div>
             <div class="form-group" id="vcCustomGroup" style="display:none;"><label class="form-label">Meeting Link</label><input type="url" id="vcCustomLink" class="form-control" placeholder="https://meet.example.com"></div>
             <div class="form-group"><label class="form-label">Date</label><input type="date" id="vcDate" class="form-control" required></div>
             <div class="form-group"><label class="form-label">Time</label><input type="time" id="vcTime" class="form-control" required></div>
             <div class="form-group"><label class="form-label">Duration (minutes)</label><input type="number" id="vcDuration" class="form-control" value="40" min="5" max="180"></div>
-            <div class="modal-actions"><button type="button" class="btn btn-outline" onclick="closeVCModal()">Cancel</button><button type="submit" class="btn btn-primary">Create</button></div>
+            <div class="modal-actions"><button type="button" class="btn btn-outline" id="vcCancelBtn">Cancel</button><button type="submit" class="btn btn-primary">Create Session</button></div>
         </form>
     </div>
 </div>
@@ -303,17 +266,17 @@
 <!-- GUEST MODAL -->
 <div class="modal-overlay" id="guestModal">
     <div class="modal-content">
-        <div class="modal-header"><h3>Invite Guest Teacher</h3><button class="modal-close" onclick="closeGuestModal()">✕</button></div>
+        <div class="modal-header"><h3>Invite Guest Teacher</h3><button class="modal-close" id="guestModalClose">✕</button></div>
         <form id="guestForm">
             <div class="form-group"><label class="form-label">Guest Name</label><input type="text" id="guestName" class="form-control" placeholder="e.g., Dr. Adeola" required></div>
             <div class="form-group"><label class="form-label">Purpose</label><input type="text" id="guestPurpose" class="form-control" placeholder="e.g., Health talk on hygiene" required></div>
             <div class="form-group"><label class="form-label">Expires In</label><select id="guestExpiry" class="form-control"><option value="1">1 hour</option><option value="6">6 hours</option><option value="24" selected>24 hours</option><option value="72">3 days</option></select></div>
-            <div class="modal-actions"><button type="button" class="btn btn-outline" onclick="closeGuestModal()">Cancel</button><button type="submit" class="btn btn-primary">Generate Link</button></div>
+            <div class="modal-actions"><button type="button" class="btn btn-outline" id="guestCancelBtn">Cancel</button><button type="submit" class="btn btn-primary">Generate Link</button></div>
         </form>
         <div class="guest-link-box" id="guestLinkBox">
             <strong>Guest Link:</strong><br>
             <span id="guestLinkText"></span>
-            <button class="btn btn-primary btn-sm" onclick="copyGuestLink()" style="margin-top:0.5rem;"><i class="fas fa-copy"></i> Copy Link</button>
+            <button class="btn btn-primary btn-sm" id="copyGuestLinkBtn" style="margin-top:0.5rem;"><i class="fas fa-copy"></i> Copy Link</button>
         </div>
     </div>
 </div>
@@ -337,7 +300,7 @@ const db = firebase.firestore();
 db.enablePersistence({synchronizeTabs:true}).catch(()=>{});
 
 // ============================================
-// STATE
+// GLOBAL STATE
 // ============================================
 let currentUser=null,userData=null,currentClass=null;
 let allClasses=[],subjects=[],currentSubject=null,currentWeek=null;
@@ -365,11 +328,17 @@ function extractYouTubeId(url){if(!url)return null;const p=[/(?:youtube\.com\/wa
 // ============================================
 // THEME
 // ============================================
-const html=document.documentElement,themeToggle=document.getElementById('themeToggle');
-const saved=localStorage.getItem('judah-theme')||'dark';
-html.setAttribute('data-theme',saved);
-themeToggle.querySelector('span').textContent=saved==='dark'?'Light':'Dark';
-themeToggle.addEventListener('click',()=>{const n=html.getAttribute('data-theme')==='dark'?'light':'dark';html.setAttribute('data-theme',n);localStorage.setItem('judah-theme',n);themeToggle.querySelector('span').textContent=n==='dark'?'Light':'Dark';});
+(function(){
+    const html=document.documentElement,tt=document.getElementById('themeToggle');
+    const saved=localStorage.getItem('judah-theme')||'dark';
+    html.setAttribute('data-theme',saved);
+    tt.querySelector('span').textContent=saved==='dark'?'Light':'Dark';
+    tt.addEventListener('click',()=>{
+        const n=html.getAttribute('data-theme')==='dark'?'light':'dark';
+        html.setAttribute('data-theme',n);localStorage.setItem('judah-theme',n);
+        tt.querySelector('span').textContent=n==='dark'?'Light':'Dark';
+    });
+})();
 
 // ============================================
 // IMAGE POPUP
@@ -381,7 +350,12 @@ document.addEventListener('keydown',e=>{if(e.key==='Escape')closeImagePopup();})
 // ============================================
 // TEACH MODE
 // ============================================
-function paginateContent(text,wordsPerPage=150){if(!text||!text.trim())return['No content'];const words=text.split(/\s+/);const pages=[];for(let i=0;i<words.length;i+=wordsPerPage)pages.push(words.slice(i,i+wordsPerPage).join(' '));return pages;}
+function paginateContent(text,wordsPerPage=150){
+    if(!text||!text.trim())return['No content available.'];
+    const words=text.split(/\s+/);const pages=[];
+    for(let i=0;i<words.length;i+=wordsPerPage)pages.push(words.slice(i,i+wordsPerPage).join(' '));
+    return pages;
+}
 
 function renderBookMode(container,pages,current,panelKey){
     container.innerHTML='';
@@ -389,8 +363,17 @@ function renderBookMode(container,pages,current,panelKey){
     const pd=document.createElement('div');pd.className='book-page';pd.textContent=pages[current]||'';
     fc.appendChild(pd);
     const nav=document.createElement('div');nav.className='book-nav';
-    nav.innerHTML=`<button class="book-nav-btn" onclick="flipBookPage('${panelKey}',-1)" ${current===0?'disabled':''}><i class="fas fa-chevron-left"></i></button><span class="page-indicator">Page ${current+1}/${pages.length}</span><button class="book-nav-btn" onclick="flipBookPage('${panelKey}',1)" ${current>=pages.length-1?'disabled':''}><i class="fas fa-chevron-right"></i></button>`;
+    nav.innerHTML=`<button class="book-nav-btn" data-action="prev" data-panel="${panelKey}" ${current===0?'disabled':''}><i class="fas fa-chevron-left"></i></button><span class="page-indicator">Page ${current+1}/${pages.length}</span><button class="book-nav-btn" data-action="next" data-panel="${panelKey}" ${current>=pages.length-1?'disabled':''}><i class="fas fa-chevron-right"></i></button>`;
     container.appendChild(fc);container.appendChild(nav);
+    
+    // Bind book nav buttons
+    nav.querySelectorAll('.book-nav-btn').forEach(btn=>{
+        btn.addEventListener('click',function(){
+            const dir=this.dataset.action==='next'?1:-1;
+            const pk=this.dataset.panel;
+            flipBookPage(pk,dir);
+        });
+    });
 }
 
 function flipBookPage(panelKey,direction){
@@ -398,9 +381,10 @@ function flipBookPage(panelKey,direction){
     if(np<0||np>=bp.pages.length)return;
     const ck=panelKey==='lessonNote'?'teachContentLN':'teachContentTP';
     const container=document.getElementById(ck);
-    const old=container.querySelector('.book-page');
-    if(old){old.classList.add('flipping');setTimeout(()=>{bp.current=np;renderBookMode(container,bp.pages,bp.current,panelKey);},200);}
-    else{bp.current=np;renderBookMode(container,bp.pages,bp.current,panelKey);}
+    bp.current=np;
+    if(container.classList.contains('book-mode')){
+        renderBookMode(container,bp.pages,bp.current,panelKey);
+    }
 }
 
 function setReadingMode(panelKey,mode){
@@ -416,7 +400,7 @@ function setReadingMode(panelKey,mode){
         container.classList.add('book-mode');renderBookMode(container,pages,0,panelKey);
     }else{
         container.classList.add('scroll-mode');
-        container.innerHTML=`<div style="white-space:pre-wrap;">${escapeHtml(content)||'Not available.'}</div>`;
+        container.innerHTML=`<div style="white-space:pre-wrap;padding:1rem;">${escapeHtml(content)||'Not available.'}</div>`;
     }
 }
 
@@ -425,7 +409,13 @@ function setupReadingToggles(){
         const tid=pk==='lessonNote'?'readingToggleLN':'readingToggleTP';
         const toggle=document.getElementById(tid);
         if(!toggle)return;
-        toggle.querySelectorAll('.reading-opt').forEach(opt=>{opt.addEventListener('click',()=>{toggle.querySelectorAll('.reading-opt').forEach(o=>o.classList.remove('active'));opt.classList.add('active');setReadingMode(pk,opt.dataset.mode);});});
+        toggle.querySelectorAll('.reading-opt').forEach(opt=>{
+            opt.addEventListener('click',function(){
+                toggle.querySelectorAll('.reading-opt').forEach(o=>o.classList.remove('active'));
+                this.classList.add('active');
+                setReadingMode(pk,this.dataset.mode);
+            });
+        });
     });
 }
 
@@ -440,14 +430,15 @@ function openTeachMode(){
     if(!currentNote)return showToast('Select a subject and week first','warning');
     const hasLN=currentNote.teachable&&currentNote.lessonNote;
     const hasTP=currentNote.teachable&&currentNote.teachingProcess;
-    if(!hasLN&&!hasTP)return showToast('No content available for this week','warning');
+    if(!hasLN&&!hasTP)return showToast('No teachable content for this week','warning');
     teachActive=true;teachPanels={lessonNote:hasLN,teachingProcess:hasTP};
     document.getElementById('teachOverlay').classList.add('active');
     document.getElementById('teachContainer').classList.add('active');
     document.getElementById('teachPanelLN').classList.toggle('hidden',!hasLN);
     document.getElementById('teachPanelTP').classList.toggle('hidden',!hasTP);
     const btn=document.getElementById('teachModeBtn');btn.classList.add('active-teach');btn.innerHTML='<i class="fas fa-times"></i> Exit Teach <small>Esc</small>';
-    populateTeachPanels();document.body.style.overflow='hidden';logAudit('TEACH_MODE_OPENED',`${currentSubject} Week ${currentWeek}`);
+    populateTeachPanels();document.body.style.overflow='hidden';
+    if(currentUser)logAudit('TEACH_MODE_OPENED',`${currentSubject} Week ${currentWeek}`);
 }
 
 function closeTeachMode(){
@@ -465,79 +456,37 @@ function populateTeachPanels(){
     ['lessonNote','teachingProcess'].forEach(pk=>setReadingMode(pk,teachModes[pk]));
 }
 
-document.getElementById('teachModeBtn').addEventListener('click',toggleTeachMode);
-document.addEventListener('keydown',e=>{
-    if((e.ctrlKey||e.metaKey)&&e.key==='t'){e.preventDefault();toggleTeachMode();}
-    if(e.key==='Escape'&&teachActive){e.preventDefault();closeTeachMode();}
-    if(teachActive&&e.key==='ArrowLeft'){if(teachModes.lessonNote==='book')flipBookPage('lessonNote',-1);if(teachModes.teachingProcess==='book')flipBookPage('teachingProcess',-1);}
-    if(teachActive&&e.key==='ArrowRight'){if(teachModes.lessonNote==='book')flipBookPage('lessonNote',1);if(teachModes.teachingProcess==='book')flipBookPage('teachingProcess',1);}
-});
-
 // ============================================
-// AUTH
-// ============================================
-auth.onAuthStateChanged(async user=>{
-    // Check for guest access
-    const params=new URLSearchParams(window.location.search);
-    const guestId=params.get('guest');
-    if(guestId){
-        await handleGuestAccess(guestId);
-        return;
-    }
-    if(!user){window.location.href='teacher-login.html';return;}
-    try{
-        const doc=await db.collection('users').doc(user.uid).get();
-        if(!doc.exists||doc.data().role!=='teacher'){await auth.signOut();window.location.href='index.html';return;}
-        currentUser=user;userData=doc.data();
-        allClasses=userData.classesTeaching||(userData.classTeaching?[userData.classTeaching]:[]);
-        currentClass=allClasses[0]||null;
-        subjects=userData.subjects||[];
-        const pic=document.getElementById('profilePic');
-        if(userData.photoURL)pic.innerHTML=`<img src="${userData.photoURL}" alt="Profile">`;
-        else pic.textContent=(userData.firstName?.[0]||'T')+(userData.surname?.[0]||'E');
-        document.getElementById('profileName').textContent=userData.firstName||'Teacher';
-        populateClassSelect();populateSubjectSelect();setupReadingToggles();
-        if(currentClass)await loadTeachData();
-        setupVCListener();
-    }catch(e){console.error('Auth error:',e);window.location.href='teacher-login.html';}
-});
-
-document.getElementById('logoutBtn').addEventListener('click',async()=>{if(unsubVC)unsubVC();await auth.signOut();window.location.href='index.html';});
-
-function populateClassSelect(){
-    const sel=document.getElementById('classSelect');sel.innerHTML='';
-    allClasses.forEach(c=>{const o=document.createElement('option');o.value=c;o.textContent=c;sel.appendChild(o);});
-    if(currentClass)sel.value=currentClass;
-    sel.addEventListener('change',e=>{currentClass=e.target.value;if(currentClass)loadTeachData();});
-}
-function populateSubjectSelect(){
-    const sel=document.getElementById('subjectSelect');sel.innerHTML='<option value="">Select Subject</option>';
-    subjects.forEach(s=>{const o=document.createElement('option');o.value=s;o.textContent=s;sel.appendChild(o);});
-}
-
-// ============================================
-// LOAD TEACH DATA
+// LOAD DATA
 // ============================================
 async function loadTeachData(){
     if(!currentUser||!currentClass)return;
     try{
-        const snap=await db.collection('lessonNotes').where('teacherId','==',currentUser.uid).where('classId','==',currentClass).get();
-        lessonNotesMap={};snap.forEach(d=>{const dd=d.data();lessonNotesMap[`${dd.subject}_${dd.week}`]={id:d.id,...dd};});
-        const weeks=new Set();Object.values(lessonNotesMap).forEach(n=>{if(n.teachable)weeks.add(n.week);});
+        const snap=await db.collection('lessonNotes')
+            .where('teacherId','==',currentUser.uid)
+            .where('classId','==',currentClass)
+            .get();
+        lessonNotesMap={};
+        snap.forEach(d=>{const dd=d.data();lessonNotesMap[`${dd.subject}_${dd.week}`]={id:d.id,...dd};});
+        const weeks=new Set();
+        Object.values(lessonNotesMap).forEach(n=>{if(n.teachable)weeks.add(n.week);});
         const wSel=document.getElementById('weekSelect');
         wSel.innerHTML='<option value="">Select Week</option>';
-        [...weeks].sort((a,b)=>a-b).forEach(w=>{const o=document.createElement('option');o.value=w;o.textContent=`Week ${w}`;wSel.appendChild(o);});
+        [...weeks].sort((a,b)=>a-b).forEach(w=>{
+            const o=document.createElement('option');o.value=w;o.textContent=`Week ${w}`;wSel.appendChild(o);
+        });
         renderResources();
     }catch(e){console.error('Load error:',e);}
 }
+
 function onSubjectChange(){
     currentSubject=document.getElementById('subjectSelect').value;
-    document.getElementById('weekSelect').value='';currentWeek=null;
+    document.getElementById('weekSelect').value='';currentWeek=null;currentNote=null;
     renderResources();
 }
+
 function onWeekChange(){
-    currentWeek=document.getElementById('weekSelect').value;
-    if(currentWeek)currentWeek=parseInt(currentWeek);
+    currentWeek=parseInt(document.getElementById('weekSelect').value)||null;
     renderResources();
 }
 
@@ -547,26 +496,69 @@ function onWeekChange(){
 function renderResources(){
     const container=document.getElementById('resourcesContainer');
     const title=document.getElementById('resourceTitle');
-    if(!currentSubject||!currentWeek){container.innerHTML='<div class="empty-state"><i class="fas fa-folder-open"></i><h3>Select Subject & Week</h3></div>';title.textContent='Select a subject and week';currentNote=null;return;}
+    if(!currentSubject||!currentWeek){
+        container.innerHTML='<div class="empty-state"><i class="fas fa-folder-open"></i><h3>Select Subject & Week</h3></div>';
+        title.textContent='Select a subject and week';currentNote=null;return;
+    }
     const key=`${currentSubject}_${currentWeek}`;
     currentNote=lessonNotesMap[key]||null;
     title.textContent=`${currentSubject} — Week ${currentWeek}`;
-    if(!currentNote){container.innerHTML='<div class="empty-state"><i class="fas fa-inbox"></i><h3>No Resources</h3><p>Push content to teach from your Lesson Notes page.</p></div>';return;}
+    if(!currentNote){
+        container.innerHTML='<div class="empty-state"><i class="fas fa-inbox"></i><h3>No Resources</h3><p>Push content to teach from your Lesson Notes page.</p></div>';return;
+    }
     const n=currentNote;let html='<div class="resource-grid">';
+    
     // Lesson Note
-    if(n.teachable&&n.lessonNote){html+=`<div class="resource-card"><h4><i class="fas fa-book"></i> Lesson Note</h4><p>${escapeHtml(n.lessonNote.substring(0,400))}${n.lessonNote.length>400?'...':''}</p></div>`;}
+    if(n.teachable&&n.lessonNote){
+        html+=`<div class="resource-card"><h4><i class="fas fa-book"></i> Lesson Note</h4><p>${escapeHtml(n.lessonNote.substring(0,500))}${n.lessonNote.length>500?'...':''}</p><div style="margin-top:auto;font-size:0.75rem;color:var(--text-secondary);">Ready to teach</div></div>`;
+    }
     // Teaching Process
-    if(n.teachable&&n.teachingProcess){html+=`<div class="resource-card"><h4><i class="fas fa-chalkboard-teacher"></i> Teaching Process</h4><p>${escapeHtml(n.teachingProcess.substring(0,400))}${n.teachingProcess.length>400?'...':''}</p></div>`;}
+    if(n.teachable&&n.teachingProcess){
+        html+=`<div class="resource-card"><h4><i class="fas fa-chalkboard-teacher"></i> Teaching Process</h4><p>${escapeHtml(n.teachingProcess.substring(0,500))}${n.teachingProcess.length>500?'...':''}</p><div style="margin-top:auto;font-size:0.75rem;color:var(--text-secondary);">Ready to teach</div></div>`;
+    }
     // Student Resource
-    if(n.studentResource){const pub=n.resourcePublished?'<span class="badge badge-published">Published</span>':`<button class="btn btn-outline btn-sm" onclick="publishItem('${n.id}','resourcePublished')">Publish</button>`;html+=`<div class="resource-card"><h4><i class="fas fa-users"></i> Student Resources</h4><p>${escapeHtml(n.studentResource.substring(0,400))}${n.studentResource.length>400?'...':''}</p><div style="margin-top:auto;">${pub}</div></div>`;}
+    if(n.studentResource){
+        const pubLabel=n.resourcePublished?'<span class="badge badge-published">Published to Students</span>':`<button class="btn btn-outline btn-sm publish-btn" data-doc="${n.id}" data-field="resourcePublished">📤 Publish to Students</button>`;
+        html+=`<div class="resource-card"><h4><i class="fas fa-users"></i> Student Resources</h4><p>${escapeHtml(n.studentResource.substring(0,400))}${n.studentResource.length>400?'...':''}</p><div style="margin-top:auto;">${pubLabel}</div></div>`;
+    }
     // Handwriting
-    if(n.handwritingImages?.length){let ih='<div class="handwriting-grid">';n.handwritingImages.forEach(img=>{ih+=`<img src="${img.url}" onclick="openImagePopup('${img.url.replace(/'/g,"\\'")}')" alt="Visual note">`;});ih+='</div>';const pub=n.handwritingImagesPublished?'<span class="badge badge-published">Published</span>':`<button class="btn btn-outline btn-sm" onclick="publishItem('${n.id}','handwritingImagesPublished')">Publish</button>`;html+=`<div class="resource-card"><h4><i class="fas fa-pen-fancy"></i> Visual Notes</h4>${ih}<div style="margin-top:auto;">${pub}</div></div>`;}
+    if(n.handwritingImages?.length){
+        let ih='<div class="handwriting-grid">';
+        n.handwritingImages.forEach(img=>{ih+=`<img src="${img.url}" onclick="openImagePopup('${img.url.replace(/'/g,"\\'")}')" alt="Visual note" style="cursor:pointer;">`;});
+        ih+='</div>';
+        const pubLabel=n.handwritingImagesPublished?'<span class="badge badge-published">Published to Students</span>':`<button class="btn btn-outline btn-sm publish-btn" data-doc="${n.id}" data-field="handwritingImagesPublished">📤 Publish to Students</button>`;
+        html+=`<div class="resource-card"><h4><i class="fas fa-pen-fancy"></i> Visual Notes</h4>${ih}<div style="margin-top:0.5rem;">${pubLabel}</div></div>`;
+    }
     // Videos
-    if(n.videoLinks?.length){let vh='<div class="video-thumb-grid">';n.videoLinks.forEach((link,i)=>{const vid=extractYouTubeId(link);if(vid)vh+=`<div class="video-thumb-item ${i===selectedVideoIdx?'selected':''}" onclick="selectVideo(${i})"><img src="https://img.youtube.com/vi/${vid}/hqdefault.jpg" alt="Video ${i+1}"></div>`;});vh+='</div>';const sv=n.videoLinks[selectedVideoIdx]||n.videoLinks[0];const svid=extractYouTubeId(sv);if(svid)vh+=`<div class="youtube-wrapper"><iframe src="https://www.youtube.com/embed/${svid}?rel=0&modestbranding=1" allowfullscreen></iframe></div>`;const pub=n.videosPublished?'<span class="badge badge-published">Published</span>':`<button class="btn btn-outline btn-sm" onclick="publishItem('${n.id}','videosPublished')">Publish</button>`;html+=`<div class="resource-card" style="grid-column:1/-1;"><h4><i class="fab fa-youtube"></i> Videos</h4>${vh}<div style="margin-top:0.5rem;">${pub}</div></div>`;}
+    if(n.videoLinks?.length){
+        let vh='<div class="video-thumb-grid">';
+        n.videoLinks.forEach((link,i)=>{
+            const vid=extractYouTubeId(link);
+            if(vid)vh+=`<div class="video-thumb-item ${i===selectedVideoIdx?'selected':''}" data-video-idx="${i}"><img src="https://img.youtube.com/vi/${vid}/hqdefault.jpg" alt="Video ${i+1}"></div>`;
+        });
+        vh+='</div>';
+        const sv=n.videoLinks[selectedVideoIdx]||n.videoLinks[0];const svid=extractYouTubeId(sv);
+        if(svid)vh+=`<div class="youtube-wrapper"><iframe src="https://www.youtube.com/embed/${svid}?rel=0&modestbranding=1" allowfullscreen></iframe></div>`;
+        const pubLabel=n.videosPublished?'<span class="badge badge-published">Published to Students</span>':`<button class="btn btn-outline btn-sm publish-btn" data-doc="${n.id}" data-field="videosPublished">📤 Publish to Students</button>`;
+        html+=`<div class="resource-card" style="grid-column:1/-1;"><h4><i class="fab fa-youtube"></i> Videos</h4>${vh}<div style="margin-top:0.5rem;">${pubLabel}</div></div>`;
+    }
     html+='</div>';container.innerHTML=html;
+    
+    // Bind video selection
+    container.querySelectorAll('.video-thumb-item').forEach(item=>{
+        item.addEventListener('click',function(){
+            selectedVideoIdx=parseInt(this.dataset.videoIdx);renderResources();
+        });
+    });
+    // Bind publish buttons
+    container.querySelectorAll('.publish-btn').forEach(btn=>{
+        btn.addEventListener('click',async function(){
+            const docId=this.dataset.doc,field=this.dataset.field;
+            await db.collection('lessonNotes').doc(docId).update({[field]:true,updatedAt:firebase.firestore.FieldValue.serverTimestamp()});
+            showToast('Published to students!','success');await loadTeachData();renderResources();
+        });
+    });
 }
-function selectVideo(idx){selectedVideoIdx=idx;renderResources();}
-async function publishItem(docId,field){await db.collection('lessonNotes').doc(docId).update({[field]:true,updatedAt:firebase.firestore.FieldValue.serverTimestamp()});showToast('Published to students!','success');await loadTeachData();renderResources();}
 
 // ============================================
 // VIRTUAL CLASSES
@@ -574,89 +566,206 @@ async function publishItem(docId,field){await db.collection('lessonNotes').doc(d
 function setupVCListener(){
     if(unsubVC)unsubVC();
     if(!currentUser)return;
-    unsubVC=db.collection('virtualClasses').where('teacherId','==',currentUser.uid).where('classId','==',currentClass||'').orderBy('date','asc').orderBy('time','asc').onSnapshot(snap=>renderVC(snap));
+    unsubVC=db.collection('virtualClasses')
+        .where('teacherId','==',currentUser.uid)
+        .where('classId','==',currentClass||'')
+        .orderBy('date','asc').orderBy('time','asc')
+        .onSnapshot(snap=>renderVC(snap));
 }
+
 function renderVC(snap){
     const c=document.getElementById('virtualClassesList');
     if(snap.empty){c.innerHTML='<div class="empty-state"><i class="fas fa-video-slash"></i><h3>No upcoming classes</h3></div>';return;}
     const now=new Date();let html='<div class="resource-grid">';let hasUpcoming=false;
-    snap.forEach(d=>{const v=d.data();const dt=new Date(`${v.date}T${v.time}`);if(dt<now)return;hasUpcoming=true;html+=`<div class="resource-card"><h4><i class="fas fa-video"></i> ${v.subject||currentSubject} — Week ${v.week||currentWeek}</h4><p><strong>Platform:</strong> ${v.platform}<br><strong>Date:</strong> ${v.date}<br><strong>Time:</strong> ${v.time}<br><strong>Duration:</strong> ${v.duration} min</p><div style="margin-top:auto;"><a href="${v.link||'#'}" target="_blank" rel="noopener" class="btn btn-primary">Join</a></div></div>`;});
+    snap.forEach(d=>{
+        const v=d.data();const dt=new Date(`${v.date}T${v.time}`);if(dt<now)return;hasUpcoming=true;
+        html+=`<div class="resource-card"><h4><i class="fas fa-video"></i> ${v.subject||currentSubject} — Week ${v.week||currentWeek}</h4><p><strong>Platform:</strong> ${v.platform}<br><strong>Date:</strong> ${v.date}<br><strong>Time:</strong> ${v.time}<br><strong>Duration:</strong> ${v.duration} min</p><div style="margin-top:auto;"><a href="${v.link||'#'}" target="_blank" rel="noopener" class="btn btn-primary">Join</a></div></div>`;
+    });
     html+='</div>';c.innerHTML=hasUpcoming?html:'<div class="empty-state"><i class="fas fa-video-slash"></i><h3>No upcoming classes</h3></div>';
 }
-function openVirtualClassModal(){if(!currentSubject||!currentWeek)return showToast('Select subject and week first','warning');document.getElementById('vcDate').valueAsDate=new Date();document.getElementById('vcModal').classList.add('active');}
-function closeVCModal(){document.getElementById('vcModal').classList.remove('active');}
-document.getElementById('vcPlatform').addEventListener('change',e=>{document.getElementById('vcCustomGroup').style.display=e.target.value==='custom'?'block':'none';});
-document.getElementById('vcForm').addEventListener('submit',async e=>{
+
+// ============================================
+// AUTH
+// ============================================
+auth.onAuthStateChanged(async user=>{
+    // Guest check
+    const params=new URLSearchParams(window.location.search);
+    const guestId=params.get('guest');
+    if(guestId){await handleGuestAccess(guestId);return;}
+    
+    if(!user){window.location.href='teacher-login.html';return;}
+    try{
+        const doc=await db.collection('users').doc(user.uid).get();
+        if(!doc.exists||doc.data().role!=='teacher'){await auth.signOut();window.location.href='index.html';return;}
+        currentUser=user;userData=doc.data();
+        allClasses=userData.classesTeaching||(userData.classTeaching?[userData.classTeaching]:[]);
+        currentClass=allClasses[0]||null;
+        subjects=userData.subjects||[];
+        
+        const pic=document.getElementById('profilePic');
+        if(userData.photoURL)pic.innerHTML=`<img src="${userData.photoURL}" alt="Profile">`;
+        else pic.textContent=(userData.firstName?.[0]||'T')+(userData.surname?.[0]||'E');
+        document.getElementById('profileName').textContent=userData.firstName||'Teacher';
+        
+        // Populate class selector
+        const cs=document.getElementById('classSelect');cs.innerHTML='';
+        allClasses.forEach(c=>{const o=document.createElement('option');o.value=c;o.textContent=c;cs.appendChild(o);});
+        if(currentClass)cs.value=currentClass;
+        cs.addEventListener('change',function(){currentClass=this.value;if(currentClass)loadTeachData();});
+        
+        // Populate subject selector
+        const ss=document.getElementById('subjectSelect');ss.innerHTML='<option value="">Select Subject</option>';
+        subjects.forEach(s=>{const o=document.createElement('option');o.value=s;o.textContent=s;ss.appendChild(o);});
+        ss.addEventListener('change',onSubjectChange);
+        
+        // Week selector
+        document.getElementById('weekSelect').addEventListener('change',onWeekChange);
+        
+        setupReadingToggles();
+        if(currentClass)await loadTeachData();
+        setupVCListener();
+    }catch(e){console.error('Auth error:',e);window.location.href='teacher-login.html';}
+});
+
+// Logout
+document.getElementById('logoutBtn').addEventListener('click',async()=>{
+    if(unsubVC)unsubVC();
+    await auth.signOut();window.location.href='index.html';
+});
+
+// ============================================
+// BUTTON BINDINGS
+// ============================================
+document.getElementById('teachModeBtn').addEventListener('click',toggleTeachMode);
+document.getElementById('virtualClassBtn').addEventListener('click',function(){
+    if(!currentSubject||!currentWeek)return showToast('Select subject and week first','warning');
+    document.getElementById('vcDate').valueAsDate=new Date();
+    document.getElementById('vcModal').classList.add('active');
+});
+document.getElementById('guestInviteBtn').addEventListener('click',function(){
+    if(!currentSubject||!currentWeek)return showToast('Select subject and week first','warning');
+    document.getElementById('guestModal').classList.add('active');
+});
+document.getElementById('studentViewBtn').addEventListener('click',function(){
+    if(!currentSubject||!currentWeek)return showToast('Select subject and week first','warning');
+    window.open(`student-classroom.html?class=${encodeURIComponent(currentClass||'')}&subject=${encodeURIComponent(currentSubject)}&week=${currentWeek}`,'_blank','noopener');
+});
+document.getElementById('printBtn').addEventListener('click',function(){window.print();});
+
+// ============================================
+// VIRTUAL CLASS MODAL
+// ============================================
+document.getElementById('vcModalClose').addEventListener('click',function(){document.getElementById('vcModal').classList.remove('active');});
+document.getElementById('vcCancelBtn').addEventListener('click',function(){document.getElementById('vcModal').classList.remove('active');});
+document.getElementById('vcPlatform').addEventListener('change',function(){
+    document.getElementById('vcCustomGroup').style.display=this.value==='custom'?'block':'none';
+});
+document.getElementById('vcForm').addEventListener('submit',async function(e){
     e.preventDefault();
     const platform=document.getElementById('vcPlatform').value;
     let link='';const date=document.getElementById('vcDate').value,time=document.getElementById('vcTime').value,duration=parseInt(document.getElementById('vcDuration').value);
     if(platform==='custom'){link=document.getElementById('vcCustomLink').value;if(!link)return showToast('Enter a link','warning');}
-    else{const id=Math.random().toString(36).substring(2,10);const m={zoom:`https://zoom.us/j/${id}`,`google-meet`:`https://meet.google.com/${id}`,jitsi:`https://meet.jit.si/${id}`};link=m[platform];}
+    else{const id=Math.random().toString(36).substring(2,10);const m={zoom:`https://zoom.us/j/${id}`,'google-meet':`https://meet.google.com/${id}`,jitsi:`https://meet.jit.si/${id}`};link=m[platform];}
     await db.collection('virtualClasses').add({teacherId:currentUser.uid,classId:currentClass,subject:currentSubject,week:currentWeek,platform,link,date,time,duration,createdAt:firebase.firestore.FieldValue.serverTimestamp(),status:'scheduled'});
     await logAudit('VC_CREATED',`${platform} class for ${currentSubject} Week ${currentWeek}`);
-    showToast('Virtual class created!','success');closeVCModal();document.getElementById('vcForm').reset();
+    showToast('Virtual class created!','success');
+    document.getElementById('vcModal').classList.remove('active');
+    this.reset();
 });
 
 // ============================================
-// GUEST ACCESS
+// GUEST MODAL
 // ============================================
-function openGuestModal(){if(!currentSubject||!currentWeek)return showToast('Select subject and week first','warning');document.getElementById('guestModal').classList.add('active');}
-function closeGuestModal(){document.getElementById('guestModal').classList.remove('active');document.getElementById('guestLinkBox').classList.remove('show');}
-document.getElementById('guestForm').addEventListener('submit',async e=>{
+document.getElementById('guestModalClose').addEventListener('click',function(){
+    document.getElementById('guestModal').classList.remove('active');
+    document.getElementById('guestLinkBox').classList.remove('show');
+});
+document.getElementById('guestCancelBtn').addEventListener('click',function(){
+    document.getElementById('guestModal').classList.remove('active');
+    document.getElementById('guestLinkBox').classList.remove('show');
+});
+document.getElementById('guestForm').addEventListener('submit',async function(e){
     e.preventDefault();
-    const name=document.getElementById('guestName').value.trim(),purpose=document.getElementById('guestPurpose').value.trim(),expiry=parseInt(document.getElementById('guestExpiry').value);
+    const name=document.getElementById('guestName').value.trim();
+    const purpose=document.getElementById('guestPurpose').value.trim();
+    const expiry=parseInt(document.getElementById('guestExpiry').value);
     if(!name||!purpose)return;
     const guestId=Math.random().toString(36).substring(2,14);
     const expiresAt=new Date(Date.now()+expiry*3600000);
-    await db.collection('guestAccess').add({guestId,guestName:name,purpose,teacherId:currentUser.uid,teacherName:`${userData.firstName||''} ${userData.surname||''}`.trim(),classId:currentClass,subject:currentSubject,week:currentWeek,expiresAt:firebase.firestore.Timestamp.fromDate(expiresAt),createdAt:firebase.firestore.FieldValue.serverTimestamp(),used:false});
+    await db.collection('guestAccess').add({
+        guestId,guestName:name,purpose,teacherId:currentUser.uid,
+        teacherName:`${userData.firstName||''} ${userData.surname||''}`.trim(),
+        classId:currentClass,subject:currentSubject,week:currentWeek,
+        expiresAt:firebase.firestore.Timestamp.fromDate(expiresAt),
+        createdAt:firebase.firestore.FieldValue.serverTimestamp(),used:false
+    });
     await logAudit('GUEST_INVITED',`${name} for ${purpose}`);
     const link=`${window.location.origin}${window.location.pathname}?guest=${guestId}&class=${encodeURIComponent(currentClass)}`;
-    document.getElementById('guestLinkText').textContent=link;document.getElementById('guestLinkBox').classList.add('show');
+    document.getElementById('guestLinkText').textContent=link;
+    document.getElementById('guestLinkBox').classList.add('show');
 });
-function copyGuestLink(){const text=document.getElementById('guestLinkText').textContent;navigator.clipboard.writeText(text).then(()=>showToast('Link copied!','success')).catch(()=>showToast('Failed to copy','error'));}
+document.getElementById('copyGuestLinkBtn').addEventListener('click',function(){
+    const text=document.getElementById('guestLinkText').textContent;
+    navigator.clipboard.writeText(text).then(()=>showToast('Link copied!','success')).catch(()=>showToast('Failed to copy','error'));
+});
 
+// ============================================
+// GUEST ACCESS HANDLER
+// ============================================
 async function handleGuestAccess(guestId){
     try{
         const snap=await db.collection('guestAccess').where('guestId','==',guestId).limit(1).get();
-        if(snap.empty){showToast('Invalid guest link','error');return;}
+        if(snap.empty){showToast('Invalid guest link','error',10000);return;}
         const g=snap.docs[0].data();
-        if(g.expiresAt.toDate()<new Date()){showToast('Guest link has expired','error');return;}
+        if(g.expiresAt.toDate()<new Date()){showToast('Guest link has expired','error',10000);return;}
         currentClass=g.classId;currentSubject=g.subject;currentWeek=g.week;
         document.getElementById('classSelect').innerHTML=`<option>${g.classId}</option>`;
         document.getElementById('subjectSelect').innerHTML=`<option>${g.subject}</option>`;
         document.getElementById('weekSelect').innerHTML=`<option>Week ${g.week}</option>`;
         document.getElementById('profileName').textContent=`Guest: ${g.guestName}`;
         document.getElementById('profilePic').textContent=g.guestName.charAt(0).toUpperCase();
-        document.getElementById('guestLinkBox').classList.add('show');
-        document.getElementById('guestLinkText').textContent=`Logged in as guest: ${g.guestName} — ${g.purpose}`;
+        document.getElementById('resourceTitle').textContent=`${g.subject} — Week ${g.week} (Guest: ${g.guestName})`;
         await db.collection('guestAccess').doc(snap.docs[0].id).update({used:true});
-        await logAudit('GUEST_JOINED',`${g.guestName} joined for ${g.purpose}`);
+        await db.collection('auditLogs').add({
+            userId:'guest_'+guestId,userName:g.guestName,userRole:'guest',
+            action:'GUEST_JOINED',description:`${g.guestName} joined for ${g.purpose}`,
+            timestamp:firebase.firestore.FieldValue.serverTimestamp()
+        });
         const lnSnap=await db.collection('lessonNotes').where('teacherId','==',g.teacherId).where('classId','==',g.classId).get();
         lessonNotesMap={};lnSnap.forEach(d=>{const dd=d.data();lessonNotesMap[`${dd.subject}_${dd.week}`]={id:d.id,...dd};});
         renderResources();
-    }catch(e){console.error('Guest error:',e);showToast('Error loading guest access','error');}
+        setupReadingToggles();
+    }catch(e){console.error('Guest error:',e);showToast('Error loading guest access','error',10000);}
 }
 
-// ============================================
-// STUDENT VIEW
-// ============================================
-function previewAsStudent(){
-    if(!currentSubject||!currentWeek)return showToast('Select subject and week first','warning');
-    const url=`my-student-class.html?class=${encodeURIComponent(currentClass||'')}`;
-    window.open(url,'_blank','noopener');
-}
+// Keyboard shortcuts
+document.addEventListener('keydown',function(e){
+    if((e.ctrlKey||e.metaKey)&&e.key==='t'){e.preventDefault();toggleTeachMode();}
+    if(e.key==='Escape'&&teachActive){e.preventDefault();closeTeachMode();}
+    if(teachActive&&e.key==='ArrowLeft'){
+        if(teachModes.lessonNote==='book')flipBookPage('lessonNote',-1);
+        if(teachModes.teachingProcess==='book')flipBookPage('teachingProcess',-1);
+    }
+    if(teachActive&&e.key==='ArrowRight'){
+        if(teachModes.lessonNote==='book')flipBookPage('lessonNote',1);
+        if(teachModes.teachingProcess==='book')flipBookPage('teachingProcess',1);
+    }
+});
+
+// Close modals on overlay click
+document.getElementById('vcModal').addEventListener('click',function(e){if(e.target===this)this.classList.remove('active');});
+document.getElementById('guestModal').addEventListener('click',function(e){if(e.target===this){this.classList.remove('active');document.getElementById('guestLinkBox').classList.remove('show');}});
+document.getElementById('teachOverlay').addEventListener('click',closeTeachMode);
 
 // Expose to window
-window.toggleTeachMode=toggleTeachMode;window.toggleTeachPanel=toggleTeachPanel;
-window.flipBookPage=flipBookPage;window.setReadingMode=setReadingMode;
-window.selectVideo=selectVideo;window.publishItem=publishItem;
-window.openImagePopup=openImagePopup;window.closeImagePopup=closeImagePopup;
-window.openVirtualClassModal=openVirtualClassModal;window.closeVCModal=closeVCModal;
-window.openGuestModal=openGuestModal;window.closeGuestModal=closeGuestModal;
-window.copyGuestLink=copyGuestLink;window.previewAsStudent=previewAsStudent;
-window.onSubjectChange=onSubjectChange;window.onWeekChange=onWeekChange;
+window.toggleTeachMode=toggleTeachMode;
+window.toggleTeachPanel=toggleTeachPanel;
+window.flipBookPage=flipBookPage;
+window.openImagePopup=openImagePopup;
+window.closeImagePopup=closeImagePopup;
+window.setReadingMode=setReadingMode;
 
-console.log('🎓 Teacher Teach Mode ready');
+console.log('🎓 Teacher Teach Mode — Fully Functional');
 </script>
 </body>
 </html>
