@@ -73,7 +73,6 @@
             overflow-x: hidden; 
         }
 
-        /* Ambient background effects */
         .bg-logo { 
             position: fixed; top: 50%; left: 50%; 
             transform: translate(-50%, -50%); 
@@ -101,7 +100,6 @@
             100% { transform: translate(50px,30px) scale(1.15); } 
         }
 
-        /* Navigation */
         .top-nav { 
             position: sticky; top: 0; z-index: 100; 
             background: var(--bg-surface); backdrop-filter: blur(20px); 
@@ -120,7 +118,6 @@
         }
         .nav-btn:hover { background: var(--hover-bg); border-color: var(--accent); color: var(--accent); }
 
-        /* Profile */
         .profile-dropdown { position: relative; cursor: pointer; }
         .profile-trigger { 
             display: flex; align-items: center; gap: 0.5rem; 
@@ -154,7 +151,6 @@
         .dropdown-item:hover { background: var(--hover-bg); color: var(--accent); }
         .dropdown-item.danger:hover { background: var(--danger-bg); color: var(--danger-text); }
 
-        /* Theme Toggle */
         .theme-toggle { 
             display: flex; align-items: center; gap: 0.3rem; 
             background: var(--card-bg); border: 1px solid var(--border); 
@@ -162,14 +158,12 @@
             cursor: pointer; font-size: 0.8rem; color: var(--text-secondary); 
         }
         
-        /* Points Badge */
         .points-badge { 
             background: linear-gradient(135deg, var(--gradient-start), var(--gradient-end)); 
             color: white; padding: 0.4rem 1rem; border-radius: 2rem; 
             font-weight: 700; font-size: 0.85rem; display: flex; align-items: center; gap: 0.3rem; 
         }
         
-        /* Notification Bell */
         .notif-btn { 
             position: relative; background: transparent; border: 1px solid var(--border); 
             border-radius: 50%; width: 40px; height: 40px; display: flex; 
@@ -199,16 +193,13 @@
         .notif-item.unread { border-left: 3px solid var(--accent); }
         .notif-time { font-size: 0.7rem; color: var(--text-secondary); margin-top: 0.3rem; }
 
-        /* Auto-save indicator */
         .auto-save-indicator { font-size: 0.7rem; display: flex; align-items: center; gap: 0.2rem; white-space: nowrap; }
         .auto-save-indicator.saved { color: var(--success-text); }
         .auto-save-indicator.saving { color: var(--warning-text); }
         .auto-save-indicator.error { color: var(--danger-text); }
 
-        /* Main Container */
         .main-container { max-width: 1600px; margin: 0 auto; padding: 1rem; position: relative; z-index: 5; }
 
-        /* Stats Grid */
         .stats-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(160px, 1fr)); gap: 0.8rem; margin-bottom: 1rem; }
         .stat-card { 
             background: var(--card-bg); backdrop-filter: blur(12px); 
@@ -225,7 +216,6 @@
         .stat-info .stat-value { font-size: 1.3rem; font-weight: 700; }
         .stat-info .stat-label { font-size: 0.75rem; color: var(--text-secondary); }
 
-        /* Workspace Tabs */
         .workspace-tabs { 
             display: flex; gap: 0.3rem; margin-bottom: 1rem; 
             background: var(--card-bg); backdrop-filter: blur(8px); 
@@ -246,7 +236,6 @@
         .workspace-panel { display: none; }
         .workspace-panel.active { display: block; animation: fadeIn 0.3s; }
 
-        /* Cards */
         .card { 
             background: var(--card-bg); backdrop-filter: blur(12px); 
             border: 1px solid var(--border); border-radius: 1.2rem; 
@@ -260,7 +249,6 @@
         }
         .card-header h3 { font-size: 1.1rem; font-weight: 600; display: flex; align-items: center; gap: 0.5rem; }
 
-        /* Buttons */
         .btn { 
             padding: 0.55rem 1.2rem; border: none; border-radius: 2rem; 
             font-weight: 500; font-size: 0.8rem; cursor: pointer; transition: 0.2s; 
@@ -277,7 +265,6 @@
         .btn-co-plan { background: var(--co-plan-purple); color: white; }
         .btn-co-plan:hover { background: #7c3aed; }
 
-        /* Status Badges */
         .status-badge { display: inline-block; padding: 0.2rem 0.8rem; border-radius: 2rem; font-weight: 600; font-size: 0.75rem; }
         .status-approved { background: var(--success-bg); color: var(--success-text); }
         .status-pending { background: var(--warning-bg); color: var(--warning-text); }
@@ -285,14 +272,12 @@
         .status-draft { background: var(--hover-bg); color: var(--text-secondary); }
         .status-published { background: rgba(139,92,246,0.15); color: #8b5cf6; }
 
-        /* Tables */
         .table-responsive { overflow-x: auto; margin-bottom: 1rem; }
         table { width: 100%; border-collapse: collapse; min-width: 600px; }
         th, td { border: 1px solid var(--border); padding: 0.6rem 0.7rem; text-align: left; font-size: 0.85rem; }
         th { background: var(--hover-bg); font-weight: 600; color: var(--text-secondary); }
         tr:hover td { background: var(--hover-bg); }
         
-        /* Form Inputs */
         input, select, textarea { 
             width: 100%; padding: 0.5rem 0.7rem; border: 1px solid var(--border); 
             border-radius: 0.7rem; background: var(--input-bg); color: var(--text-primary); 
@@ -303,7 +288,6 @@
         }
         textarea { resize: vertical; min-height: 120px; }
 
-        /* Sub-tabs */
         .sub-tabs { display: flex; gap: 0.3rem; margin-bottom: 1rem; flex-wrap: wrap; }
         .sub-tab { 
             padding: 0.45rem 1.1rem; border-radius: 2rem; font-weight: 500; 
@@ -318,7 +302,6 @@
             padding: 0.1rem 0.4rem; border-radius: 1rem; margin-left: 0.3rem; 
         }
 
-        /* Subject Grid */
         .subject-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(240px, 1fr)); gap: 0.8rem; margin-bottom: 1rem; }
         .subject-card { 
             background: var(--card-bg); backdrop-filter: blur(8px); 
@@ -329,11 +312,9 @@
         .subject-card.active { border: 2px solid var(--accent); box-shadow: 0 0 20px -5px var(--accent); }
         .subject-card h3 { font-size: 1rem; margin-bottom: 0.3rem; padding-right: 2rem; }
         
-        /* Progress Bar */
         .progress-mini { height: 6px; background: var(--border); border-radius: 3px; margin-top: 0.5rem; overflow: hidden; }
         .progress-mini-fill { height: 100%; background: linear-gradient(90deg, var(--gradient-start), var(--gradient-end)); border-radius: 3px; transition: width 0.5s; }
 
-        /* Week Tabs */
         .week-tabs { display: flex; gap: 0.5rem; margin-bottom: 1rem; overflow-x: auto; flex-wrap: wrap; }
         .week-tab { 
             padding: 0.5rem 1.2rem; border-radius: 2rem; font-weight: 500; 
@@ -345,7 +326,6 @@
         .week-tab.completed { border-color: var(--success-text); }
         .week-tab.pending-approval { border-color: var(--warning-text); }
 
-        /* Editor */
         .editor-container { 
             background: var(--card-bg); backdrop-filter: blur(8px); 
             border: 1px solid var(--border); border-radius: 1.2rem; 
@@ -355,7 +335,6 @@
         .ql-editor { min-height: 350px; font-size: 14px; line-height: 1.7; color: var(--text-primary); }
         .ql-toolbar { border: none !important; border-bottom: 1px solid var(--border) !important; background: var(--toolbar-bg); }
 
-        /* Co-Planning Styles */
         .co-plan-active {
             border: 3px solid var(--co-plan-purple) !important;
             box-shadow: 0 0 30px -10px var(--co-plan-purple) !important;
@@ -388,7 +367,6 @@
             font-weight: 600;
         }
 
-        /* Locked Card - Updated for individual sections */
         .card.locked { background: var(--locked-bg); border-color: var(--locked-border); position: relative; opacity: 0.85; }
         .card.locked .ql-editor, .card.locked .ql-toolbar { pointer-events: none; opacity: 0.6; }
         .card.locked input:not(#handwritingPrompt), .card.locked textarea, .card.locked button:not(.edit-section-btn):not(.publish-student-btn):not(#generateHandwritingBtn) { pointer-events: none; opacity: 0.6; }
@@ -398,7 +376,6 @@
         .card.locked #generateHandwritingBtn { pointer-events: auto; opacity: 1; z-index: 11; }
         .card.locked #handwritingPrompt { pointer-events: auto; opacity: 1; }
 
-        /* Curriculum Analysis Box */
         .curriculum-analysis-box {
             background: var(--co-plan-purple-bg);
             border: 2px solid var(--co-plan-purple);
@@ -412,7 +389,6 @@
         .curriculum-analysis-box .fail { color: var(--danger-text); }
         .curriculum-analysis-box .warning { color: var(--warning-text); }
 
-        /* Offline Indicator */
         .offline-indicator {
             position: fixed;
             bottom: 1.5rem;
@@ -445,17 +421,14 @@
             font-weight: 700;
         }
 
-        /* Video Preview Embed */
         .video-preview-container { position: relative; margin-top: 0.5rem; display: none; }
         .video-preview-container.active { display: block; }
         .video-preview-container iframe { width: 100%; height: 315px; border-radius: 0.8rem; border: 1px solid var(--border); }
         .video-preview-close { position: absolute; top: -10px; right: -10px; background: var(--danger-text); color: white; border: none; border-radius: 50%; width: 28px; height: 28px; cursor: pointer; font-size: 0.8rem; display: flex; align-items: center; justify-content: center; z-index: 5; }
 
-        /* AI Image Debug */
         .ai-debug-box { background: var(--info-bg); border-left: 4px solid var(--accent); padding: 0.8rem; border-radius: 0.8rem; margin-top: 0.5rem; font-size: 0.75rem; display: none; max-height: 200px; overflow-y: auto; word-break: break-all; }
         .ai-debug-box.visible { display: block; }
 
-        /* Admin Feedback Box */
         .admin-feedback-box { 
             background: var(--info-bg); border-left: 4px solid var(--accent); 
             padding: 1rem; border-radius: 1rem; margin-bottom: 1rem; display: none; 
@@ -463,14 +436,12 @@
         .admin-feedback-box.visible { display: block; }
         .admin-feedback-box .rating { color: var(--accent-glow); font-size: 1.2rem; }
         
-        /* AI Review Box */
         .ai-review-box { 
             background: var(--success-bg); border-left: 4px solid var(--success-text); 
             padding: 0.8rem; border-radius: 1rem; margin-top: 1rem; display: none; font-size: 0.85rem; 
         }
         .ai-review-box.visible { display: block; }
 
-        /* Modals */
         .modal-overlay { 
             position: fixed; top: 0; left: 0; width: 100%; height: 100%; 
             background: var(--overlay-bg); backdrop-filter: blur(6px); 
@@ -486,7 +457,6 @@
         .modal-close { cursor: pointer; font-size: 1.3rem; color: var(--text-secondary); transition: 0.2s; }
         .modal-close:hover { color: var(--danger-text); }
 
-        /* Teacher List for Co-Planning */
         .teacher-list-item {
             display: flex;
             justify-content: space-between;
@@ -514,7 +484,6 @@
             color: var(--text-secondary);
         }
 
-        /* Weekly Report */
         .weekly-report {
             background: var(--card-bg);
             border: 1px solid var(--border);
@@ -538,7 +507,6 @@
             border-bottom: none;
         }
 
-        /* Search input for co-planning */
         .search-input {
             width: 100%;
             padding: 0.6rem 1rem;
@@ -555,7 +523,6 @@
             box-shadow: 0 0 0 3px var(--co-plan-purple-bg);
         }
 
-        /* Toast Notifications */
         .toast-container { position: fixed; top: 1rem; right: 1rem; z-index: 5000; display: flex; flex-direction: column; gap: 0.5rem; }
         .toast { 
             background: var(--toast-bg); border-radius: 1rem; padding: 0.8rem 1.2rem; 
@@ -569,7 +536,6 @@
         .toast-icon.warning { color: var(--warning-text); }
         .toast-icon.info { color: var(--info-text); }
 
-        /* Responsive */
         @media (max-width: 768px) {
             .top-nav { flex-direction: column; align-items: stretch; }
             .nav-left, .nav-right { justify-content: center; }
@@ -580,7 +546,6 @@
             .sub-tabs { justify-content: center; }
         }
 
-        /* Modal Enhancements */
         .modal-overlay {
             position: fixed; top: 0; left: 0; width: 100%; height: 100%;
             background: rgba(0,0,0,0.75); backdrop-filter: blur(6px);
@@ -620,7 +585,6 @@
         .badge-warning { background: var(--warning-bg); color: var(--warning-text); }
         .badge-danger { background: var(--danger-bg); color: var(--danger-text); }
 
-        /* AI Chat Messages */
         .ai-message { margin:0.4rem 0; padding:0.6rem 1rem; border-radius:1rem; max-width:85%; word-wrap:break-word; }
         .ai-message.user { background:var(--assistant-user-bg); color:white; margin-left:auto; }
         .ai-message.assistant { background:var(--assistant-bot-bg); border:1px solid var(--border); }
@@ -628,82 +592,76 @@
     </style>
 </head>
 <body>
-    <!-- Ambient Background -->
-    <img src="https://res.cloudinary.com/dda7kpir8/image/upload/q_auto/f_auto/v1781038310/ChatGPT_Image_Jun_9_2026_09_25_06_AM_elnine.png" alt="" class="bg-logo" aria-hidden="true">
-    <div class="orb orb-1"></div><div class="orb orb-2"></div>
-    
-    <!-- Toast Container -->
-    <div class="toast-container" id="toastContainer"></div>
+<!-- Ambient Background -->
+<img src="https://res.cloudinary.com/dda7kpir8/image/upload/q_auto/f_auto/v1781038310/ChatGPT_Image_Jun_9_2026_09_25_06_AM_elnine.png" alt="" class="bg-logo" aria-hidden="true">
+<div class="orb orb-1"></div><div class="orb orb-2"></div>
 
-    <!-- Offline Indicator -->
-    <div class="offline-indicator" id="offlineIndicator">
-        <i class="fas fa-wifi-slash"></i>
-        <span>Offline</span>
-        <span class="sync-count" id="syncCount">0</span>
+<!-- Toast Container -->
+<div class="toast-container" id="toastContainer"></div>
+
+<!-- Offline Indicator -->
+<div class="offline-indicator" id="offlineIndicator">
+    <i class="fas fa-wifi-slash"></i>
+    <span>Offline</span>
+    <span class="sync-count" id="syncCount">0</span>
+</div>
+
+<!-- Top Navigation -->
+<div class="top-nav">
+    <div class="nav-left">
+        <a href="teacher-dashboard.html" class="nav-btn"><i class="fas fa-arrow-left"></i> Dashboard</a>
+        <select id="classSelector" class="nav-btn" style="width:auto; padding:0.5rem 1rem; background:var(--card-bg); color:var(--text-primary); border:1px solid var(--border); border-radius:2rem; font-size:0.85rem;"></select>
+        <span class="points-badge" id="pointsDisplay">⭐ 0 pts</span>
+        <button class="nav-btn" onclick="openPermissionModal()">
+            <i class="fas fa-envelope-open-text"></i> Permission
+        </button>
+        <button class="nav-btn" onclick="openMyRequestsModal()">
+            <i class="fas fa-list-check"></i> My Requests
+        </button>
     </div>
-
-    <!-- Top Navigation -->
-    <div class="top-nav">
-        <div class="nav-left">
-            <a href="teacher-dashboard.html" class="nav-btn"><i class="fas fa-arrow-left"></i> Dashboard</a>
-            <select id="classSelector" class="nav-btn" style="width:auto; padding:0.5rem 1rem; background:var(--card-bg); color:var(--text-primary); border:1px solid var(--border); border-radius:2rem; font-size:0.85rem;"></select>
-            <span class="points-badge" id="pointsDisplay">⭐ 0 pts</span>
-            <button class="nav-btn" onclick="openPermissionModal()">
-                <i class="fas fa-envelope-open-text"></i> Permission
-            </button>
-            <button class="nav-btn" onclick="openMyRequestsModal()">
-                <i class="fas fa-list-check"></i> My Requests
-            </button>
+    <div class="nav-right">
+        <div class="notif-btn" onclick="toggleNotifications()" title="Notifications">
+            <i class="fas fa-bell"></i>
+            <span class="notif-dot" id="notifDot"></span>
         </div>
-        <div class="nav-right">
-            <!-- Notification Bell -->
-            <div class="notif-btn" onclick="toggleNotifications()" title="Notifications">
-                <i class="fas fa-bell"></i>
-                <span class="notif-dot" id="notifDot"></span>
+        <div class="notif-dropdown" id="notifDropdown"></div>
+        
+        <div class="auto-save-indicator saved" id="autoSaveIndicator">
+            <i class="fas fa-check-circle"></i> <span>Saved</span>
+        </div>
+        
+        <button class="nav-btn" onclick="printLessonNote()" title="Print"><i class="fas fa-print"></i> Print</button>
+        
+        <div class="theme-toggle" id="themeToggle"><i class="fas fa-sun"></i><span>Light</span></div>
+        
+        <div class="profile-dropdown">
+            <div class="profile-trigger">
+                <span class="profile-name" id="profileName">Teacher</span>
+                <div class="profile-pic" id="profilePic">T</div>
             </div>
-            <div class="notif-dropdown" id="notifDropdown"></div>
-            
-            <!-- Auto-save Indicator -->
-            <div class="auto-save-indicator saved" id="autoSaveIndicator">
-                <i class="fas fa-check-circle"></i> <span>Saved</span>
-            </div>
-            
-            <!-- Print -->
-            <button class="nav-btn" onclick="printLessonNote()" title="Print"><i class="fas fa-print"></i> Print</button>
-            
-            <!-- Theme Toggle -->
-            <div class="theme-toggle" id="themeToggle"><i class="fas fa-sun"></i><span>Light</span></div>
-            
-            <!-- Profile -->
-            <div class="profile-dropdown">
-                <div class="profile-trigger">
-                    <span class="profile-name" id="profileName">Teacher</span>
-                    <div class="profile-pic" id="profilePic">T</div>
-                </div>
-                <div class="dropdown-menu">
-                    <div class="dropdown-item" id="profileLink"><i class="fas fa-user"></i> My Profile</div>
-                    <div class="dropdown-item" onclick="window.location.href='teacher-class-hub.html'"><i class="fas fa-users"></i> Class Hub</div>
-                    <div class="dropdown-item danger" id="logoutBtn"><i class="fas fa-sign-out-alt"></i> Logout</div>
-                </div>
+            <div class="dropdown-menu">
+                <div class="dropdown-item" id="profileLink"><i class="fas fa-user"></i> My Profile</div>
+                <div class="dropdown-item" onclick="window.location.href='teacher-class-hub.html'"><i class="fas fa-users"></i> Class Hub</div>
+                <div class="dropdown-item danger" id="logoutBtn"><i class="fas fa-sign-out-alt"></i> Logout</div>
             </div>
         </div>
     </div>
+</div>
 
-    <!-- Main Content -->
-    <div class="main-container">
-        <!-- Stats Dashboard -->
-        <div class="stats-grid" id="weeklyStats">
-            <div class="stat-card"><div class="stat-icon blue"><i class="fas fa-book"></i></div><div class="stat-info"><div class="stat-value" id="statLessons">0</div><div class="stat-label">Lessons Planned</div></div></div>
-            <div class="stat-card"><div class="stat-icon yellow"><i class="fas fa-clock"></i></div><div class="stat-info"><div class="stat-value" id="statPending">0</div><div class="stat-label">Pending Approval</div></div></div>
-            <div class="stat-card"><div class="stat-icon green"><i class="fas fa-check-circle"></i></div><div class="stat-info"><div class="stat-value" id="statApproved">0</div><div class="stat-label">Approved</div></div></div>
-            <div class="stat-card"><div class="stat-icon purple"><i class="fas fa-calendar-check"></i></div><div class="stat-info"><div class="stat-value" id="statReports">0</div><div class="stat-label">Reports</div></div></div>
-            <div class="stat-card"><div class="stat-icon yellow"><i class="fas fa-coins"></i></div><div class="stat-info"><div class="stat-value" id="statPoints">0</div><div class="stat-label">Points Earned</div></div></div>
-            <div class="stat-card"><div class="stat-icon green"><i class="fas fa-star"></i></div><div class="stat-info"><div class="stat-value" id="statStars">0</div><div class="stat-label">Star Rating</div></div></div>
-        </div>
-            <!-- Workspace Tab Navigation -->
-    <div class="workspace-tabs" id="workspaceTabs">
-        <!-- Dynamically rendered -->
+<!-- Main Content -->
+<div class="main-container">
+    <!-- Stats Dashboard -->
+    <div class="stats-grid" id="weeklyStats">
+        <div class="stat-card"><div class="stat-icon blue"><i class="fas fa-book"></i></div><div class="stat-info"><div class="stat-value" id="statLessons">0</div><div class="stat-label">Lessons Planned</div></div></div>
+        <div class="stat-card"><div class="stat-icon yellow"><i class="fas fa-clock"></i></div><div class="stat-info"><div class="stat-value" id="statPending">0</div><div class="stat-label">Pending Approval</div></div></div>
+        <div class="stat-card"><div class="stat-icon green"><i class="fas fa-check-circle"></i></div><div class="stat-info"><div class="stat-value" id="statApproved">0</div><div class="stat-label">Approved</div></div></div>
+        <div class="stat-card"><div class="stat-icon purple"><i class="fas fa-calendar-check"></i></div><div class="stat-info"><div class="stat-value" id="statReports">0</div><div class="stat-label">Reports</div></div></div>
+        <div class="stat-card"><div class="stat-icon yellow"><i class="fas fa-coins"></i></div><div class="stat-info"><div class="stat-value" id="statPoints">0</div><div class="stat-label">Points Earned</div></div></div>
+        <div class="stat-card"><div class="stat-icon green"><i class="fas fa-star"></i></div><div class="stat-info"><div class="stat-value" id="statStars">0</div><div class="stat-label">Star Rating</div></div></div>
     </div>
+
+    <!-- Workspace Tab Navigation -->
+    <div class="workspace-tabs" id="workspaceTabs"></div>
 
     <!-- PANEL 1: TIMETABLE -->
     <div class="workspace-panel active" id="panel-timetable">
@@ -721,7 +679,6 @@
                     <button class="btn btn-outline" id="aiGenerateTimetableBtn"><i class="fas fa-robot"></i> AI Generate</button>
                 </div>
             </div>
-            <!-- Timetable Sub-tabs -->
             <div class="sub-tabs" id="tt-tabs">
                 <div class="sub-tab active" data-tt="draft">📝 Draft</div>
                 <div class="sub-tab" data-tt="pending">⏳ Pending</div>
@@ -730,7 +687,6 @@
                 <div class="sub-tab" data-tt="rejected">❌ Rejected</div>
             </div>
             
-            <!-- Draft Section -->
             <div id="tt-draft" class="card" style="display:block;">
                 <div class="card-header">
                     <div><span id="draftTypeLabel" class="status-badge status-draft">Academic</span></div>
@@ -749,14 +705,12 @@
                 </div>
             </div>
             
-            <!-- Pending Section -->
             <div id="tt-pending" class="card" style="display:none;">
                 <div class="card-header"><h3>⏳ Pending Submission</h3></div>
                 <div class="table-responsive"><table><thead id="pendingTableHeader"></thead><tbody id="pendingBody"></tbody></table></div>
                 <button class="btn btn-warning" id="editPendingBtn" style="margin-top:1rem;">Move Back to Draft</button>
             </div>
             
-            <!-- Approved Section -->
             <div id="tt-approved" class="card" style="display:none;">
                 <div class="card-header"><h3>✅ Approved Timetables</h3></div>
                 <select id="approvedTypeSelect" style="margin-bottom:1rem;width:auto;"></select>
@@ -767,13 +721,11 @@
                 </div>
             </div>
             
-            <!-- Published Section -->
             <div id="tt-published" class="card" style="display:none;">
                 <h3>📤 Published Timetables</h3>
                 <div id="publishedTimetablesList">Loading...</div>
             </div>
             
-            <!-- Rejected Section -->
             <div id="tt-rejected" class="card" style="display:none;">
                 <div class="card-header"><h3>❌ Rejected Submission</h3></div>
                 <div id="rejectedFeedback" class="admin-feedback-box"></div>
@@ -785,7 +737,6 @@
 
     <!-- PANEL 2: LESSON NOTES -->
     <div class="workspace-panel" id="panel-lessonNotes">
-        <!-- Lesson Note Sub-tabs -->
         <div class="sub-tabs" id="ln-subtabs">
             <div class="sub-tab active" data-ln="syllabus">📋 Syllabus</div>
             <div class="sub-tab" data-ln="drafts">📝 Drafts</div>
@@ -795,7 +746,6 @@
             <div class="sub-tab" data-ln="library">📚 Library</div>
         </div>
         
-        <!-- Syllabus Tab -->
         <div id="ln-syllabus" style="display:block;">
             <h2>Your Subjects</h2>
             <div class="subject-grid" id="subjectGrid"></div>
@@ -825,13 +775,11 @@
             </div>
         </div>
         
-        <!-- Drafts Tab -->
         <div id="ln-drafts" style="display:none;">
             <h3>Select Subject</h3>
             <div class="subject-grid" id="draftSubjectGrid"></div>
             <div id="draftWeekList" class="week-tabs"></div>
             <div id="draftEditorSection" style="display:none;">
-                <!-- Co-Planning Status Bar -->
                 <div class="co-plan-status-bar" id="coPlanStatusBar" style="display:none;">
                     <div>
                         <span class="co-plan-badge"><i class="fas fa-handshake"></i> Co-Planning Active</span>
@@ -840,14 +788,12 @@
                     <button class="btn btn-danger btn-sm" id="endCoPlanBtn"><i class="fas fa-times"></i> End Session</button>
                 </div>
 
-                <!-- Admin Feedback Box -->
                 <div class="admin-feedback-box" id="adminFeedbackBox">
                     <strong><i class="fas fa-comment-dots"></i> Admin Feedback:</strong>
                     <div id="adminFeedbackText"></div>
                     <div class="rating" id="adminRatingDisplay"></div>
                 </div>
                 
-                <!-- Lesson Note Card -->
                 <div class="card" id="lessonNoteCard">
                     <div class="card-header">
                         <div style="display:flex;align-items:center;gap:0.8rem;flex-wrap:wrap;">
@@ -876,16 +822,13 @@
                     <div class="editor-container" id="editorContainer"><div id="editor"></div></div>
                 </div>
                 
-                <!-- Curriculum Analysis Box -->
                 <div class="curriculum-analysis-box" id="curriculumAnalysisBox">
                     <h4><i class="fas fa-check-double"></i> Curriculum Analysis Results</h4>
                     <div id="curriculumAnalysisContent"></div>
                 </div>
                 
-                <!-- AI Review Box -->
                 <div class="ai-review-box" id="aiReviewBox"></div>
                 
-                <!-- Post-Approval Sections -->
                 <div id="postApprovalSections" style="display:none;">
                     <div id="createOthersBtnContainer" style="margin-bottom:1rem; display:none;">
                         <button class="btn btn-outline" id="createOthersBtn">
@@ -898,7 +841,6 @@
                             <button class="btn btn-success" id="pushToTeachBtn" style="display:none;">Push to Teach</button>
                         </div>
 
-                        <!-- Teaching Process -->
                         <div class="card" id="teachingProcessCard">
                             <div class="card-header">
                                 <div>
@@ -917,7 +859,6 @@
                             <button class="btn btn-success" id="moveToTeachBtn">Move to Teach</button>
                         </div>
 
-                        <!-- Student Resources -->
                         <div class="card" id="studentResourceSection">
                             <div class="card-header">
                                 <div>
@@ -935,7 +876,6 @@
                             <button class="btn btn-primary" id="saveStudentResourceBtn">Save</button>
                         </div>
 
-                        <!-- Handwriting & Visual Notes -->
                         <div class="card" id="handwritingSection">
                             <div class="card-header">
                                 <h3><i class="fas fa-paint-brush"></i> Handwriting & Visual Notes</h3>
@@ -957,7 +897,6 @@
                             <div class="ai-debug-box" id="aiImageDebug"></div>
                         </div>
 
-                        <!-- Video Links -->
                         <div class="card" id="videoSection">
                             <div class="card-header">
                                 <h3><i class="fas fa-video"></i> Video Links</h3>
@@ -985,26 +924,22 @@
             </div>
         </div>
         
-        <!-- Templates Tab -->
         <div id="ln-templates" style="display:none;">
             <h2><i class="fas fa-file-alt"></i> School Templates</h2>
             <p style="color:var(--text-secondary);margin-bottom:1rem;">Browse public lesson templates shared by all teachers. Click "Use" to apply a template to your current editor.</p>
             <div id="templatesList">Loading templates...</div>
         </div>
         
-        <!-- Submitted Tab -->
         <div id="ln-submitted" style="display:none;">
             <h2>Submitted & Awaiting Approval</h2>
             <div id="submittedNotesList">Select a subject in the Drafts tab first.</div>
         </div>
         
-        <!-- Published Tab -->
         <div id="ln-published" style="display:none;">
             <h2>Published Content</h2>
             <div id="publishedNotesList">Select a subject.</div>
         </div>
         
-        <!-- Library Tab -->
         <div id="ln-library" style="display:none;">
             <h2>School Resource Library</h2>
             <div class="subject-grid" id="resourceLibraryGrid">Loading...</div>
@@ -1024,7 +959,6 @@
             <button class="btn btn-primary" id="submitReportBtn" style="margin-top:1rem;"><i class="fas fa-paper-plane"></i> Submit Report</button>
         </div>
         
-        <!-- Auto Weekly Teaching Report -->
         <div class="card">
             <div class="card-header">
                 <h3><i class="fas fa-calendar-week"></i> Weekly Teaching Report</h3>
@@ -1292,7 +1226,29 @@
             <h2>Templates</h2>
             <i class="fas fa-times modal-close" onclick="closeTemplatesModal()"></i>
         </div>
-    <script type="module">
+        <div id="templatesGrid">Loading...</div>
+    </div>
+</div>
+
+<div class="modal-overlay" id="deleteModal">
+    <div class="modal-content" style="text-align:center;">
+        <h3>Confirm Deletion</h3>
+        <p id="deleteMessage"></p>
+        <div style="display:flex;gap:0.5rem;justify-content:center;margin-top:1rem;">
+            <button class="btn btn-outline" onclick="closeDeleteModal()">Cancel</button>
+            <button class="btn btn-danger" id="confirmDeleteBtn">Delete</button>
+        </div>
+    </div>
+</div>
+
+<div class="modal-overlay" id="loadingOverlay">
+    <div style="color:white;text-align:center;">
+        <i class="fas fa-spinner fa-spin" style="font-size:2rem;"></i>
+        <h3>Processing...</h3>
+    </div>
+</div>
+    
+        <script type="module">
         import Groq from "groq-sdk";
         
         // ==================== FIREBASE CONFIGURATION ====================
@@ -1312,7 +1268,6 @@
         const remoteConfig = firebase.remoteConfig();
         remoteConfig.settings.minimumFetchIntervalMillis = 0;
 
-        // Enable offline persistence
         db.enablePersistence({ synchronizeTabs: true }).catch(err => {
             if (err.code === 'failed-precondition') {
                 console.warn('Multiple tabs open, offline persistence limited.');
@@ -1388,24 +1343,20 @@ Include Nigerian names, locations, naira (₦), and references to Nigerian textb
         let aiContextMode = 'general';
         let realtimeListeners = [];
 
-        // Role-based flags
         let isClassTeacher = false;
         let isSubjectTeacher = false;
         let classTeacherFor = [];
         let subjectClassMap = {};
         let isClassTeacherForCurrentClass = false;
 
-        // Timetable state
         let draftId = null, draftData = [], draftType = 'academic';
         let pendingId = null, pendingData = [];
         let approvedList = [], currentApprovedType = null;
         let rejectedId = null, rejectedData = [];
         let currentApprovedTimetableId = null;
 
-        // Section edit state
         let sectionEditState = { lessonNote: false, teachingProcess: false, studentResource: false, handwriting: false, video: false };
 
-        // Co-Planning state
         let selectedCoPlanTeacher = null;
         let coPlanSessionId = null;
         let coPlanUnsubscribe = null;
@@ -1481,7 +1432,6 @@ Include Nigerian names, locations, naira (₦), and references to Nigerian textb
             }
         }
 
-        // Online/Offline event listeners
         window.addEventListener('online', () => {
             isOnline = true;
             updateOfflineIndicator();
@@ -1790,7 +1740,6 @@ Include Nigerian names, locations, naira (₦), and references to Nigerian textb
             `;
         }
 
-        // Debug panel toggle
         document.getElementById('debugToggleBtn').addEventListener('click', () => {
             const panel = document.getElementById('debugPanel');
             const isVisible = panel.style.display === 'block';
@@ -1807,7 +1756,6 @@ Include Nigerian names, locations, naira (₦), and references to Nigerian textb
             showToast('Debug', 'Debug info refreshed. Check console (F12) for full data.', 'info');
         });
 
-        // Auto-refresh debug panel when it's open
         setInterval(() => {
             const panel = document.getElementById('debugPanel');
             if (panel && panel.style.display === 'block') {
@@ -1941,7 +1889,6 @@ Include Nigerian names, locations, naira (₦), and references to Nigerian textb
             }).join('');
         }
 
-        // Notification click handled via event delegation
         document.addEventListener('click', async (e) => {
             const notifItem = e.target.closest('[data-notif-id]');
             if (notifItem) {
@@ -1964,7 +1911,6 @@ Include Nigerian names, locations, naira (₦), and references to Nigerian textb
             loadNotifications();
         };
         
-        // Close notification dropdown when clicking outside
         document.addEventListener('click', (e) => {
             const notifBtn = document.querySelector('.notif-btn');
             const notifDropdown = document.getElementById('notifDropdown');
@@ -2033,1472 +1979,1460 @@ Include Nigerian names, locations, naira (₦), and references to Nigerian textb
                     else if (panel === 'attendance') loadAttendance();
                 });
             });
-// ==================== AUTHENTICATION ====================
-auth.onAuthStateChanged(async user => {
-    if (!user) { 
-        window.location.href = 'teacher-login.html'; 
-        return; 
-    }
-    
-    const doc = await db.collection('users').doc(user.uid).get();
-    if (!doc.exists || doc.data().role !== 'teacher') { 
-        await auth.signOut(); 
-        window.location.href = 'index.html'; 
-        return; 
-    }
-    
-    currentUser = user; 
-    userData = doc.data();
-
-    // Single role assignment block
-    isClassTeacher = userData.teacherType === 'classTeacher' || userData.teacherType === 'both';
-    isSubjectTeacher = userData.teacherType === 'subjectTeacher' || userData.teacherType === 'both';
-    classTeacherFor = userData.classTeacherFor || [];
-    subjectClassMap = userData.subjectClassMap || {};
-
-    allAssignedClasses = userData.classesTeaching || (userData.classTeaching ? [userData.classTeaching] : []);
-    currentClass = userData.classTeaching || allAssignedClasses[0] || null;
-
-    if (isSubjectTeacher && !isClassTeacher) {
-        const classSubjects = subjectClassMap[currentClass] || [];
-        subjects = classSubjects.length ? classSubjects : (userData.subjects || []);
-    } else {
-        subjects = userData.subjects || [];
-    }
-
-    isClassTeacherForCurrentClass = classTeacherFor.includes(currentClass);
-    
-    const profilePic = document.getElementById('profilePic');
-    if (userData.photoURL) { 
-        profilePic.innerHTML = `<img src="${userData.photoURL}" style="width:100%;height:100%;object-fit:cover;border-radius:50%;" alt="Profile">`; 
-    } else { 
-        profilePic.textContent = (userData.firstName?.[0]||'T') + (userData.surname?.[0]||'E'); 
-    }
-    document.getElementById('profileName').textContent = userData.firstName || 'Teacher';
-    
-    updatePointsDisplay();
-    populateClassSelector();
-    renderWorkspaceTabs(isClassTeacherForCurrentClass, isSubjectTeacher);
-    renderSubjectGrid();
-    await loadAllLessonNotes();
-    const today = new Date();
-    const yyyy = today.getFullYear();
-    const mm = String(today.getMonth() + 1).padStart(2, '0');
-    const dd = String(today.getDate()).padStart(2, '0');
-    const dateInput = document.getElementById('reportDate');
-    if (dateInput) dateInput.value = `${yyyy}-${mm}-${dd}`;
-    
-    if (currentClass) await loadAllTimetableData();
-    loadMyReports();
-    updateWeeklyStats();
-    loadNotifications();
-    setupRealtimeListeners();
-    loadOfflineQueue();
-    
-    try {
-        await remoteConfig.fetchAndActivate();
-        const groqKey = remoteConfig.getString('groq_api_key');
-        if (groqKey) { 
-            window.groq = new Groq({ apiKey: groqKey, dangerouslyAllowBrowser: true }); 
-        } else { 
-            window.groq = null; 
         }
-    } catch (e) { 
-        window.groq = null; 
-    }
-});
-
-document.getElementById('logoutBtn').addEventListener('click', async () => {
-    realtimeListeners.forEach(unsub => unsub());
-    realtimeListeners = [];
-    await auth.signOut();
-    window.location.href = 'index.html';
-});
-
-document.getElementById('profileLink').addEventListener('click', () => {
-    window.location.href = 'teacher-profile.html';
-});
-
-// ==================== REAL-TIME LISTENERS ====================
-function setupRealtimeListeners() {
-    realtimeListeners.forEach(unsub => unsub());
-    realtimeListeners = [];
-    
-    if (!currentUser) return;
-    
-    const unsub1 = db.collection('lessonNotes')
-        .where('teacherId', '==', currentUser.uid)
-        .onSnapshot(snap => {
-            snap.docChanges().forEach(change => {
-                if (change.type === 'modified') {
-                    const data = change.doc.data();
-                    const oldData = lessonNotesMap[`${data.subject}_${data.week}`];
-                    
-                    if (oldData && oldData.status !== data.status) {
-                        if (data.status === 'approved') {
-                            showToast('Approved! 🎉', 
-                                `${data.subject} Week ${data.week} was approved! ${data.adminRating ? 'Rating: ' + data.adminRating + '/5' : ''}`,
-                                'success', 6000);
-                            logAudit('LESSON_NOTE_APPROVED', `${data.subject} Week ${data.week} - Rating: ${data.adminRating || 'N/A'}`);
-                        } else if (data.status === 'rejected') {
-                            showToast('Rejected', 
-                                `${data.subject} Week ${data.week} was rejected. Check feedback.`,
-                                'warning', 6000);
-                            logAudit('LESSON_NOTE_REJECTED', `${data.subject} Week ${data.week} - Feedback: ${data.adminFeedback || 'N/A'}`);
-                        }
-                    }
-                }
-            });
-            loadAllLessonNotes();
-        });
-    realtimeListeners.push(unsub1);
-    
-    const unsub2 = db.collection('syllabus')
-        .where('teacherId', '==', currentUser.uid)
-        .onSnapshot(snap => {
-            snap.docChanges().forEach(change => {
-                if (change.type === 'modified') {
-                    const data = change.doc.data();
-                    const oldData = syllabusMap[data.subject];
-                    
-                    if (oldData && oldData.status !== data.status) {
-                        if (data.status === 'approved') {
-                            showToast('Syllabus Approved! 🎉', 
-                                `${data.subject} syllabus was approved!`,
-                                'success', 6000);
-                            logAudit('SYLLABUS_APPROVED', `${data.subject} syllabus`);
-                            const pubBtn = document.getElementById('publishSyllabusBtn');
-                            if (pubBtn) pubBtn.style.display = 'inline-flex';
-                        } else if (data.status === 'rejected') {
-                            showToast('Syllabus Rejected', 
-                                `${data.subject} syllabus was rejected. Check feedback.`,
-                                'warning', 6000);
-                            logAudit('SYLLABUS_REJECTED', `${data.subject} syllabus`);
-                        }
-                        syllabusMap[data.subject] = { id: change.doc.id, ...data };
-                        renderSubjectGrid();
-                    }
-                }
-            });
-        });
-    realtimeListeners.push(unsub2);
-    
-    const unsub3 = db.collection('timetableProposals')
-        .where('teacherId', '==', currentUser.uid)
-        .onSnapshot(snap => {
-            snap.docChanges().forEach(change => {
-                if (change.type === 'modified') {
-                    const data = change.doc.data();
-                    if (data.status === 'approved') {
-                        showToast('Timetable Approved! 🎉', 
-                            `Your ${data.type} timetable was approved!`,
-                            'success', 6000);
-                        logAudit('TIMETABLE_APPROVED', `${data.type} timetable`);
-                    } else if (data.status === 'rejected') {
-                        showToast('Timetable Rejected', 
-                            `Your ${data.type} timetable was rejected.`,
-                            'warning', 6000);
-                        logAudit('TIMETABLE_REJECTED', `${data.type} timetable`);
-                    }
-                    loadAllTimetableData();
-                }
-            });
-        });
-    realtimeListeners.push(unsub3);
-    
-    // Co-Planning listener
-    const unsub4 = db.collection('coplanSessions')
-        .where('teacher1', '==', currentUser.uid)
-        .onSnapshot(snap => {
-            snap.docChanges().forEach(change => {
-                if (change.type === 'added' || change.type === 'modified') {
-                    const data = change.doc.data();
-                    if (data.active) {
-                        showCoPlanStatus(data);
-                    }
-                }
-            });
-        });
-    realtimeListeners.push(unsub4);
-}
-
-document.getElementById('panel-timetable').classList.add('active');
-
-// ==================== TIMETABLE FUNCTIONS ====================
-function getEmptyPeriod(t) {
-    switch(t) {
-        case 'academic': return {startTime:'08:00',endTime:'08:40',monday:'',tuesday:'',wednesday:'',thursday:'',friday:''};
-        case 'hairstyle': return {startTime:'Week 1',monday:'',tuesday:''};
-        case 'test': case 'exam': return {startTime:'',endTime:'',monday:'',tuesday:'',wednesday:''};
-        default: return {};
-    }
-}
-
-function getTHeaders(t) {
-    switch(t) {
-        case 'academic': return ['Start','End','Monday','Tuesday','Wednesday','Thursday','Friday',''];
-        case 'hairstyle': return ['Week','Hairstyle','Description',''];
-        case 'test': case 'exam': return ['Date','Time','Subject','Venue','Duration',''];
-        default: return [];
-    }
-}
-
-function renderDraftTable() {
-    document.getElementById('draftTypeLabel').textContent = draftType.charAt(0).toUpperCase()+draftType.slice(1);
-    document.getElementById('draftTableHeader').innerHTML = '<tr>'+getTHeaders(draftType).map(h=>`<th>${h}</th>`).join('')+'</tr>';
-    let h='';
-    draftData.forEach((p,i)=>{
-        h+='<tr>';
-        if(draftType==='academic'){
-            h+=`<td><input type="time" value="${escapeAttr(p.startTime||'')}" data-i="${i}" data-f="startTime"></td>`;
-            h+=`<td><input type="time" value="${escapeAttr(p.endTime||'')}" data-i="${i}" data-f="endTime"></td>`;
-            h+=`<td><input type="text" value="${escapeAttr(p.monday||'')}" data-i="${i}" data-f="monday" placeholder="Subject"></td>`;
-            h+=`<td><input type="text" value="${escapeAttr(p.tuesday||'')}" data-i="${i}" data-f="tuesday" placeholder="Subject"></td>`;
-            h+=`<td><input type="text" value="${escapeAttr(p.wednesday||'')}" data-i="${i}" data-f="wednesday" placeholder="Subject"></td>`;
-            h+=`<td><input type="text" value="${escapeAttr(p.thursday||'')}" data-i="${i}" data-f="thursday" placeholder="Subject"></td>`;
-            h+=`<td><input type="text" value="${escapeAttr(p.friday||'')}" data-i="${i}" data-f="friday" placeholder="Subject"></td>`;
-        } else if(draftType==='hairstyle'){
-            h+=`<td><input type="text" value="${escapeAttr(p.startTime||'')}" data-i="${i}" data-f="startTime" placeholder="Week 1"></td>`;
-            h+=`<td><input type="text" value="${escapeAttr(p.monday||'')}" data-i="${i}" data-f="monday" placeholder="Style name"></td>`;
-            h+=`<td><input type="text" value="${escapeAttr(p.tuesday||'')}" data-i="${i}" data-f="tuesday" placeholder="Description"></td>`;
-        } else {
-            h+=`<td><input type="text" value="${escapeAttr(p.startTime||'')}" data-i="${i}" data-f="startTime" placeholder="Date"></td>`;
-            h+=`<td><input type="text" value="${escapeAttr(p.endTime||'')}" data-i="${i}" data-f="endTime" placeholder="Time"></td>`;
-            h+=`<td><input type="text" value="${escapeAttr(p.monday||'')}" data-i="${i}" data-f="monday" placeholder="Subject"></td>`;
-            h+=`<td><input type="text" value="${escapeAttr(p.tuesday||'')}" data-i="${i}" data-f="tuesday" placeholder="Venue"></td>`;
-            h+=`<td><input type="text" value="${escapeAttr(p.wednesday||'')}" data-i="${i}" data-f="wednesday" placeholder="Duration"></td>`;
-        }
-        h+='<td><button class="btn btn-danger btn-sm" onclick="deleteTTRow('+i+')"><i class="fas fa-trash"></i></button></td></tr>';
-    });
-    document.getElementById('draftBody').innerHTML = h;
-    document.querySelectorAll('#draftBody input').forEach(inp=>inp.addEventListener('input',function(){
-        const i=parseInt(this.dataset.i),f=this.dataset.f;
-        if(draftData[i]) draftData[i][f]=this.value;
-        setAutoSaveStatus('unsaved');
-    }));
-}
-
-window.deleteTTRow = i => { 
-    draftData.splice(i, 1); 
-    renderDraftTable(); 
-};
-
-async function loadAllTimetableData() {
-    if (!currentClass) return;
-    
-    let ds;
-    try {
-        ds = await db.collection('timetableProposals')
-            .where('classId', '==', currentClass)
-            .where('teacherId', '==', currentUser.uid)
-            .where('status', '==', 'draft')
-            .orderBy('updatedAt', 'desc').limit(1).get();
-    } catch (e) {
-        if (e.code === 'failed-precondition') {
-            showIndexError('timetableProposals', [
-                {field:'classId',order:'ASCENDING'},
-                {field:'teacherId',order:'ASCENDING'},
-                {field:'status',order:'ASCENDING'},
-                {field:'updatedAt',order:'DESCENDING'}
-            ], e);
-        }
-        ds = { empty: true, docs: [] };
-    }
-    
-    if (!ds.empty) { 
-        const d = ds.docs[0]; 
-        draftId = d.id; 
-        draftData = d.data().periods || []; 
-        draftType = d.data().type || 'academic'; 
-    } else { 
-        draftId = null; 
-        draftData = [getEmptyPeriod('academic')]; 
-        draftType = 'academic'; 
-    }
-    
-    let ps;
-    try {
-        ps = await db.collection('timetableProposals')
-            .where('classId', '==', currentClass)
-            .where('teacherId', '==', currentUser.uid)
-            .where('status', '==', 'pending')
-            .orderBy('submittedAt', 'desc').limit(1).get();
-    } catch (e) {
-        if (e.code === 'failed-precondition') {
-            showIndexError('timetableProposals', [
-                {field:'classId',order:'ASCENDING'},
-                {field:'teacherId',order:'ASCENDING'},
-                {field:'status',order:'ASCENDING'},
-                {field:'submittedAt',order:'DESCENDING'}
-            ], e);
-        }
-        ps = { empty: true, docs: [] };
-    }
-    
-    if (!ps.empty) { 
-        const d = ps.docs[0]; 
-        pendingId = d.id; 
-        pendingData = d.data().periods || []; 
-    } else { 
-        pendingId = null; 
-        pendingData = []; 
-    }
-    
-    approvedList = [];
-
-    const asPublished = await db.collection('timetables')
-        .where('classId', '==', currentClass)
-        .where('published', '==', true)
-        .get();
-    asPublished.forEach(d => approvedList.push({ 
-        type: d.data().type || 'academic', 
-        data: d.data(), 
-        id: d.id,
-        source: 'timetables'
-    }));
-
-    const asApproved = await db.collection('timetableProposals')
-        .where('classId', '==', currentClass)
-        .where('teacherId', '==', currentUser.uid)
-        .where('status', '==', 'approved')
-        .get();
-    asApproved.forEach(d => approvedList.push({ 
-        type: d.data().type || 'academic', 
-        data: d.data(), 
-        id: d.id,
-        source: 'proposals'
-    }));
-    
-    let rs;
-    try {
-        rs = await db.collection('timetableProposals')
-            .where('classId', '==', currentClass)
-            .where('teacherId', '==', currentUser.uid)
-            .where('status', '==', 'rejected')
-            .orderBy('submittedAt', 'desc').limit(1).get();
-    } catch (e) {
-        if (e.code === 'failed-precondition') {
-            showIndexError('timetableProposals', [
-                {field:'classId',order:'ASCENDING'},
-                {field:'teacherId',order:'ASCENDING'},
-                {field:'status',order:'ASCENDING'},
-                {field:'submittedAt',order:'DESCENDING'}
-            ], e);
-        }
-        rs = { empty: true, docs: [] };
-    }
-    
-    if (!rs.empty) { 
-        const d = rs.docs[0]; 
-        rejectedId = d.id; 
-        rejectedData = d.data().periods || []; 
-    } else { 
-        rejectedId = null; 
-        rejectedData = []; 
-    }
-    
-    renderDraftTable(); 
-    document.getElementById('deleteDraftBtn').style.display = draftId ? 'inline-block' : 'none';
-    document.getElementById('sendToAdminBtn').style.display = draftId ? 'inline-block' : 'none';
-    document.getElementById('timetableType').value = draftType;
-    loadPublishedTimetables();
-    
-    if (pendingId) {
-        document.getElementById('pendingTableHeader').innerHTML = '<tr>' + getTHeaders(draftType).map(h => `<th>${h}</th>`).join('') + '</tr>';
-        document.getElementById('pendingBody').innerHTML = pendingData.map(p => {
-            let row = '<tr>';
-            row += `<td>${escapeHtml(p.startTime || '')}</td><td>${escapeHtml(p.endTime || '')}</td>`;
-            ['monday','tuesday','wednesday','thursday','friday'].forEach(d => {
-                if (draftType === 'academic' || ['monday','tuesday','wednesday'].includes(d))
-                    row += `<td>${escapeHtml(p[d] || '')}</td>`;
-            });
-            row += '</tr>';
-            return row;
-        }).join('');
-    }
-}
-
-async function loadPublishedTimetables() {
-    if (!currentClass) return;
-    
-    const snap1 = await db.collection('timetables')
-        .where('classId', '==', currentClass)
-        .where('published', '==', true).get();
-    
-    const snap2 = await db.collection('timetableProposals')
-        .where('classId', '==', currentClass)
-        .where('teacherId', '==', currentUser.uid)
-        .where('status', '==', 'approved').get();
-    
-    const allPublished = [];
-    snap1.forEach(d => allPublished.push({ id: d.id, ...d.data(), source: 'published' }));
-    snap2.forEach(d => allPublished.push({ id: d.id, ...d.data(), source: 'approved' }));
-    
-    const seen = new Set();
-    const unique = allPublished.filter(t => {
-        const key = t.type + '_' + t.classId;
-        if (seen.has(key)) return false;
-        seen.add(key);
-        return true;
-    });
-    
-    const list = document.getElementById('publishedTimetablesList');
-    if (unique.length === 0) { 
-        list.innerHTML = '<p style="color:var(--text-secondary);">No published timetables yet.</p>'; 
-        return; 
-    }
-    list.innerHTML = unique.map(t => {
-        return `<div class="card"><p><strong>${t.type ? t.type.charAt(0).toUpperCase() + t.type.slice(1) : 'Academic'}</strong> Timetable — ${t.source === 'published' ? '📤 Published' : '✅ Approved'}</p></div>`;
-    }).join('');
-}
-
-document.querySelectorAll('#tt-tabs .sub-tab').forEach(t => t.addEventListener('click', () => { 
-    document.querySelectorAll('#tt-tabs .sub-tab').forEach(x => x.classList.remove('active')); 
-    t.classList.add('active'); 
-    ['draft', 'pending', 'approved', 'published', 'rejected'].forEach(k => 
-        document.getElementById('tt-' + k).style.display = k === t.dataset.tt ? 'block' : 'none'
-    ); 
-    if (currentClass) loadAllTimetableData(); 
-}));
-
-document.getElementById('timetableType').addEventListener('change', (e) => {
-    draftType = e.target.value;
-    draftData = [getEmptyPeriod(draftType)];
-    renderDraftTable();
-});
-
-document.getElementById('createNewTimetableBtn').addEventListener('click', async () => { 
-    draftType = document.getElementById('timetableType').value || 'academic';
-    draftData = [getEmptyPeriod(draftType)]; 
-    const d = { 
-        classId: currentClass, 
-        teacherId: currentUser.uid,
-        teacherName: `${userData?.firstName||''} ${userData?.surname||''}`.trim(),
-        periods: draftData, 
-        type: draftType, 
-        status: 'draft', 
-        updatedAt: firebase.firestore.FieldValue.serverTimestamp() 
-    }; 
-    
-    if (!isOnline) {
-        queueOfflineOperation({ type: 'add', collection: 'timetableProposals', data: d });
-        showToast('Queued', 'Timetable draft queued for sync', 'warning');
-        return;
-    }
-    
-    const r = await db.collection('timetableProposals').add(d); 
-    draftId = r.id; 
-    renderDraftTable(); 
-    document.getElementById('deleteDraftBtn').style.display = 'inline-block'; 
-    document.getElementById('sendToAdminBtn').style.display = 'inline-block';
-    showToast('Created', 'New timetable draft created', 'success'); 
-});
-
-document.getElementById('addTimetableRowBtn').addEventListener('click', () => { 
-    draftData.push(getEmptyPeriod(draftType)); 
-    renderDraftTable(); 
-});
-
-document.getElementById('saveDraftBtn').addEventListener('click', async (e) => {
-    e.preventDefault();
-    setAutoSaveStatus('saving');
-    const btn = document.getElementById('saveDraftBtn');
-    const origHTML = btn.innerHTML;
-    btn.disabled = true;
-    btn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Saving...';
-
-    const d = { 
-        classId: currentClass, 
-        teacherId: currentUser.uid,
-        teacherName: `${userData?.firstName||''} ${userData?.surname||''}`.trim(),
-        periods: draftData, 
-        type: draftType, 
-        status: 'draft', 
-        updatedAt: firebase.firestore.FieldValue.serverTimestamp() 
-    }; 
-    
-    try {
-        if (!isOnline) {
-            queueOfflineOperation({ 
-                type: draftId ? 'update' : 'add', 
-                collection: 'timetableProposals', 
-                docId: draftId,
-                data: d 
-            });
-            setAutoSaveStatus('saved');
-            showToast('Queued', 'Draft queued for sync', 'warning');
-            btn.disabled = false;
-            btn.innerHTML = origHTML;
-            return;
-        }
-        
-        if (draftId) await db.collection('timetableProposals').doc(draftId).update(d); 
-        else { const r = await db.collection('timetableProposals').add(d); draftId = r.id; } 
-        document.getElementById('deleteDraftBtn').style.display = 'inline-block'; 
-        document.getElementById('sendToAdminBtn').style.display = 'inline-block';
-        setAutoSaveStatus('saved');
-        showToast('Saved', 'Draft saved successfully', 'success'); 
-    } catch(e) {
-        setAutoSaveStatus('error');
-        showToast('Error', 'Failed to save draft', 'error');
-    } finally {
-        btn.disabled = false;
-        btn.innerHTML = origHTML;
-    }
-});
-
-document.getElementById('submitTimetableBtn').addEventListener('click', async (e) => {
-    e.preventDefault();
-    const btn = document.getElementById('submitTimetableBtn');
-    const origHTML = btn.innerHTML;
-    btn.disabled = true;
-    btn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Submitting...';
-    showLoading();
-
-    const d = { 
-        classId: currentClass, 
-        teacherId: currentUser.uid,
-        teacherName: `${userData?.firstName||''} ${userData?.surname||''}`.trim(),
-        periods: draftData, 
-        type: draftType, 
-        status: 'pending', 
-        submittedAt: firebase.firestore.FieldValue.serverTimestamp() 
-    }; 
-    
-    try {
-        if (!isOnline) {
-            queueOfflineOperation({ 
-                type: draftId ? 'update' : 'add', 
-                collection: 'timetableProposals', 
-                docId: draftId,
-                data: d 
-            });
-            showToast('Queued', 'Submission queued for sync', 'warning');
-            btn.disabled = false;
-            btn.innerHTML = origHTML;
-            hideLoading();
-            return;
-        }
-        
-        if (draftId) await db.collection('timetableProposals').doc(draftId).update(d); 
-        else { const r = await db.collection('timetableProposals').add(d); draftId = r.id; } 
-        await loadAllTimetableData(); 
-        await addPoints(2, 'Timetable submitted for approval'); 
-        await logAudit('TIMETABLE_SUBMITTED', `${draftType} timetable for ${currentClass}`);
-        setAutoSaveStatus('saved');
-        showToast('Submitted', 'Timetable sent for approval', 'success'); 
-    } catch(e) {
-        showToast('Error', 'Failed to submit timetable', 'error');
-    } finally {
-        btn.disabled = false;
-        btn.innerHTML = origHTML;
-        hideLoading();
-    }
-});
-
-document.getElementById('deleteDraftBtn').addEventListener('click', () => { 
-    openDeleteModal('Are you sure you want to delete this timetable draft?', async () => { 
-        if (!draftId) return; 
-        
-        if (!isOnline) {
-            queueOfflineOperation({ type: 'delete', collection: 'timetableProposals', docId: draftId });
-            draftId = null; 
-            draftData = [getEmptyPeriod('academic')]; 
-            renderDraftTable(); 
-            document.getElementById('deleteDraftBtn').style.display = 'none'; 
-            closeDeleteModal(); 
-            showToast('Queued', 'Deletion queued for sync', 'warning');
-            return;
-        }
-        
-        await db.collection('timetableProposals').doc(draftId).delete(); 
-        draftId = null; 
-        draftData = [getEmptyPeriod('academic')]; 
-        renderDraftTable(); 
-        document.getElementById('deleteDraftBtn').style.display = 'none'; 
-        closeDeleteModal(); 
-        showToast('Deleted', 'Draft deleted', 'success'); 
-    }); 
-});
-
-document.getElementById('editPendingBtn').addEventListener('click', async () => { 
-    if (!pendingId) return; 
-    
-    if (!isOnline) {
-        queueOfflineOperation({ type: 'update', collection: 'timetableProposals', docId: pendingId, data: { status: 'draft' } });
-        showToast('Queued', 'Move back to draft queued', 'warning');
-        return;
-    }
-    
-    await db.collection('timetableProposals').doc(pendingId).update({ status: 'draft' }); 
-    await loadAllTimetableData(); 
-    showToast('Moved', 'Moved back to draft', 'info'); 
-});
-
-function renderApprovedTimetableList() {
-    const select = document.getElementById('approvedTypeSelect');
-    select.innerHTML = '';
-    const types = [...new Set(approvedList.map(a => a.type))];
-    types.forEach(t => { 
-        const o = document.createElement('option'); 
-        o.value = t; 
-        o.textContent = t.charAt(0).toUpperCase() + t.slice(1); 
-        select.appendChild(o); 
-    });
-    if (types.length) {
-        currentApprovedType = types[0];
-        select.value = currentApprovedType;
-        renderApprovedTable(currentApprovedType);
-        select.addEventListener('change', e => { 
-            currentApprovedType = e.target.value; 
-            renderApprovedTable(currentApprovedType); 
-        });
-    }
-}
-
-function renderApprovedTable(type) {
-    const entry = approvedList.find(a => a.type === type);
-    if (!entry) { 
-        document.getElementById('approvedBody').innerHTML = '<tr><td colspan="7">No approved timetables of this type.</td></tr>'; 
-        return; 
-    }
-    const periods = entry.data.periods || [];
-    document.getElementById('approvedTableHeader').innerHTML = '<tr>' + getTHeaders(type).map(h => `<th>${h}</th>`).join('') + '</tr>';
-    let html = '';
-    periods.forEach((p) => {
-        html += '<tr>';
-        html += `<td>${escapeHtml(p.startTime || '')}</td><td>${escapeHtml(p.endTime || '')}</td>`;
-        ['monday', 'tuesday', 'wednesday', 'thursday', 'friday'].forEach(d => { 
-            if (type === 'academic' || (['hairstyle','test','exam'].includes(type) && ['monday','tuesday','wednesday'].includes(d))) 
-                html += `<td>${escapeHtml(p[d] || '')}</td>`; 
-        });
-        html += '</tr>';
-    });
-    document.getElementById('approvedBody').innerHTML = html;
-    currentApprovedTimetableId = entry.id;
-}
-
-document.getElementById('publishTimetableBtn').addEventListener('click', async () => {
-    if (!currentApprovedTimetableId) return;
-    
-    if (!isOnline) {
-        queueOfflineOperation({ type: 'update', collection: 'timetables', docId: currentApprovedTimetableId, data: { published: true } });
-        showToast('Queued', 'Publish queued for sync', 'warning');
-        return;
-    }
-    
-    await db.collection('timetables').doc(currentApprovedTimetableId).update({ published: true });
-    await loadAllTimetableData();
-    await addPoints(2, 'Timetable published');
-    await logAudit('TIMETABLE_PUBLISHED', `Timetable published for ${currentClass}`);
-    showToast('Published', 'Timetable published to students', 'success');
-});
-
-document.getElementById('editApprovedBtn').addEventListener('click', async () => {
-    if (!currentApprovedTimetableId) return;
-    const doc = await db.collection('timetables').doc(currentApprovedTimetableId).get();
-    if (!doc.exists) return;
-    const d = doc.data();
-    draftType = d.type || 'academic';
-    draftData = JSON.parse(JSON.stringify(d.periods || []));
-    const newDraft = { 
-        classId: currentClass, 
-        teacherId: currentUser.uid,
-        teacherName: `${userData?.firstName||''} ${userData?.surname||''}`.trim(),
-        periods: draftData, 
-        type: draftType, 
-        status: 'draft', 
-        updatedAt: firebase.firestore.FieldValue.serverTimestamp() 
-    };
-    
-    if (!isOnline) {
-        queueOfflineOperation({ type: 'add', collection: 'timetableProposals', data: newDraft });
-        showToast('Queued', 'New draft from approved timetable queued', 'warning');
-        return;
-    }
-    
-    const ref = await db.collection('timetableProposals').add(newDraft);
-    draftId = ref.id;
-    renderDraftTable();
-    document.getElementById('deleteDraftBtn').style.display = 'inline-block';
-    document.getElementById('sendToAdminBtn').style.display = 'inline-block';
-    document.querySelector('#tt-tabs .sub-tab[data-tt="draft"]').click();
-    showToast('Draft Created', 'New draft created from approved timetable', 'success');
-});
-
-function renderRejectedTable() {
-    if (!rejectedId) { 
-        document.getElementById('rejectedBody').innerHTML = '<tr><td colspan="7">No rejected submissions.</td></tr>'; 
-        return; 
-    }
-    document.getElementById('rejectedTableHeader').innerHTML = '<tr>' + getTHeaders(draftType).map(h => `<th>${h}</th>`).join('') + '</tr>';
-    let html = '';
-    rejectedData.forEach((p) => {
-        html += '<tr>';
-        html += `<td>${escapeHtml(p.startTime || '')}</td><td>${escapeHtml(p.endTime || '')}</td>`;
-        ['monday', 'tuesday', 'wednesday', 'thursday', 'friday'].forEach(d => { 
-            if (draftType === 'academic' || ['monday', 'tuesday', 'wednesday'].includes(d)) 
-                html += `<td>${escapeHtml(p[d] || '')}</td>`; 
-        });
-        html += '</tr>';
-    });
-    document.getElementById('rejectedBody').innerHTML = html;
-}
-
-document.getElementById('editRejectedBtn').addEventListener('click', async () => {
-    if (!rejectedId) return;
-    
-    if (!isOnline) {
-        queueOfflineOperation({ type: 'update', collection: 'timetableProposals', docId: rejectedId, data: { status: 'draft' } });
-        showToast('Queued', 'Move to draft queued', 'warning');
-        return;
-    }
-    
-    await db.collection('timetableProposals').doc(rejectedId).update({ status: 'draft' });
-    await loadAllTimetableData();
-    showToast('Moved', 'Moved back to draft for editing', 'info');
-});
-
-// ==================== AI TIMETABLE GENERATION ====================
-document.getElementById('aiGenerateTimetableBtn').addEventListener('click', async () => {
-    if (!window.groq) return showToast('Error', 'AI service not available', 'error');
-    if (!currentClass) return showToast('Error', 'Select a class first', 'error');
-    
-    const btn = document.getElementById('aiGenerateTimetableBtn');
-    const origHTML = btn.innerHTML;
-    btn.disabled = true;
-    btn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Generating...';
-    
-    const type = document.getElementById('timetableType').value || 'academic';
-    
-    try {
-        const prompt = `Generate a ${type} timetable for ${currentClass} class in a Nigerian school.
-        ${type === 'academic' ? 'Use school hours 8:00 AM to 2:30 PM, include subjects like Mathematics, English, Science, Social Studies, Art, Physical Education, and others appropriate for the class level.' : ''}
-        ${type === 'hairstyle' ? 'Create a 6-week hairstyle timetable with style names and descriptions.' : ''}
-        ${type === 'test' || type === 'exam' ? 'Create a test/exam timetable with dates, times, subjects, venues, and durations.' : ''}
-        Return ONLY valid JSON array of periods with appropriate fields for the timetable type.`;
-        
-        const result = await window.groq.chat.completions.create({
-            messages: [
-                { role: 'system', content: 'You are a timetable generator. Return ONLY valid JSON array.' },
-                { role: 'user', content: prompt }
-            ],
-            model: 'llama-3.3-70b-versatile',
-            temperature: 0.5,
-            max_tokens: 2000
-        });
-        
-        let jsonStr = result.choices[0].message.content;
-        jsonStr = jsonStr.replace(/```json|```/g, '').trim();
-        const generated = JSON.parse(jsonStr);
-        
-        if (Array.isArray(generated) && generated.length) {
-            draftData = generated;
-            renderDraftTable();
-            showToast('Generated', `AI generated ${generated.length} timetable entries. Review and save.`, 'success');
-        } else {
-            showToast('Error', 'AI returned invalid data', 'error');
-        }
-    } catch(err) {
-        showToast('Error', err.message || 'Failed to generate timetable', 'error');
-    } finally {
-        btn.disabled = false;
-        btn.innerHTML = origHTML;
-    }
-});
-
-// ==================== SEND TO ADMIN ====================
-document.getElementById('sendToAdminBtn').addEventListener('click', async () => {
-    if (!draftId || !draftData.length) return showToast('Error', 'No draft to send', 'error');
-    
-    const btn = document.getElementById('sendToAdminBtn');
-    const origHTML = btn.innerHTML;
-    btn.disabled = true;
-    btn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Sending...';
-    
-    try {
-        const data = {
-            classId: currentClass,
-            teacherId: currentUser.uid,
-            teacherName: `${userData?.firstName||''} ${userData?.surname||''}`.trim(),
-            periods: draftData,
-            type: draftType,
-            sentToAdmin: true,
-            sentAt: firebase.firestore.FieldValue.serverTimestamp()
-        };
-        
-        if (!isOnline) {
-            queueOfflineOperation({ type: 'add', collection: 'adminTimetables', data });
-            showToast('Queued', 'Timetable queued for admin', 'warning');
-            btn.disabled = false;
-            btn.innerHTML = origHTML;
-            return;
-        }
-        
-        await db.collection('adminTimetables').add(data);
-        await logAudit('TIMETABLE_SENT_TO_ADMIN', `${draftType} timetable for ${currentClass}`);
-        showToast('Sent', 'Timetable sent to admin for weekly attendance review', 'success');
-    } catch(err) {
-        showToast('Error', 'Failed to send: ' + err.message, 'error');
-    } finally {
-        btn.disabled = false;
-        btn.innerHTML = origHTML;
-    }
-});
-
-// ==================== SYLLABUS FUNCTIONS ====================
-function renderSubjectGrid() {
-    const grid = document.getElementById('subjectGrid');
-    if (!subjects.length) { 
-        grid.innerHTML = '<p style="color:var(--text-secondary);">No subjects yet. Click "Add Subject" to get started.</p>'; 
-        return; 
-    }
-    grid.innerHTML = subjects.map(sub => {
-        const s = syllabusMap[sub] || { weeks: [], status: 'draft' };
-        const totalWeeks = s.weeks?.length || 0;
-        const completedWeeks = Object.values(lessonNotesMap).filter(n => 
-            n.subject === sub && (n.status === 'approved' || n.teachable)
-        ).length;
-        const pct = totalWeeks > 0 ? Math.round((completedWeeks / totalWeeks) * 100) : 0;
-        const btn = s.status === 'approved' ? 
-            `<button class="btn btn-primary btn-sm create-ln-btn" data-subject="${escapeAttr(sub)}" style="cursor:pointer;">Create Lesson Note</button>` : '';
-        
-        return `
-            <div class="subject-card" onclick="selectSubject('${escapeAttr(sub)}', this)">
-                <h3>${escapeHtml(sub)}</h3>
-                <p style="color:var(--text-secondary);">${totalWeeks} weeks (${completedWeeks} completed)</p>
-                <div class="progress-mini">
-                    <div class="progress-mini-fill" style="width:${pct}%"></div>
-                </div>
-                <span class="status-badge status-${s.status || 'draft'}">${s.status || 'draft'}</span>
-                <button class="btn btn-danger btn-sm delete-subject-btn" data-subject="${escapeAttr(sub)}" style="position:absolute;top:0.5rem;right:0.5rem;padding:0.2rem 0.5rem;font-size:0.65rem;" title="Delete subject"><i class="fas fa-trash"></i></button>
-                ${btn}
-            </div>
-        `;
-    }).join('');
-}
-
-window.selectSubject = async (subject, card) => {
-    currentSubject = subject;
-    document.querySelectorAll('#subjectGrid .subject-card').forEach(c => c.classList.remove('active')); 
-    if (card) card.classList.add('active');
-    document.getElementById('syllabusSection').style.display = 'block';
-    document.getElementById('currentSubjectTitle').textContent = `${subject} Syllabus`;
-    
-    let s;
-    try {
-        s = await db.collection('syllabus')
-            .where('teacherId', '==', currentUser.uid)
-            .where('subject', '==', subject)
-            .orderBy('submittedAt', 'desc').limit(1).get();
-    } catch (e) {
-        if (e.code === 'failed-precondition') {
-            showIndexError('syllabus', [
-                {field:'teacherId',order:'ASCENDING'},
-                {field:'subject',order:'ASCENDING'},
-                {field:'submittedAt',order:'DESCENDING'}
-            ], e);
-        }
-        s = { empty: true, docs: [] };
-    }
-    
-    if (!s.empty) { 
-        const d = s.docs[0]; 
-        syllabusMap[subject] = { id: d.id, ...d.data() }; 
-        renderSyllabusTable(d.data().weeks || []); 
-        updateSyllabusStatus(d.data().status);
-        if (d.data().status === 'approved') {
-            document.getElementById('publishSyllabusBtn').style.display = 'inline-flex';
-        } else {
-            document.getElementById('publishSyllabusBtn').style.display = 'none';
-        }
-    } else { 
-        syllabusMap[subject] = { weeks: [], status: 'draft' }; 
-        renderSyllabusTable([]); 
-        updateSyllabusStatus('draft');
-        document.getElementById('publishSyllabusBtn').style.display = 'none';
-    }
-    renderSubjectGrid();
-};
-
-function renderSyllabusTable(weeks) {
-    if (!weeks || !weeks.length) weeks = [{ week: 1, topic: '', objectives: '' }];
-    document.getElementById('syllabusBody').innerHTML = weeks.map((w, i) => `
-        <tr>
-            <td><input type="number" value="${w.week}" data-i="${i}" data-f="week" min="1"></td>
-            <td><input type="text" value="${escapeAttr(w.topic || '')}" data-i="${i}" data-f="topic" placeholder="Enter topic"></td>
-            <td><input type="text" value="${escapeAttr(w.objectives || '')}" data-i="${i}" data-f="objectives" placeholder="Learning objectives"></td>
-            <td><button class="btn btn-danger btn-sm" onclick="deleteSW(${i})"><i class="fas fa-trash"></i></button></td>
-        </tr>
-    `).join('');
-    
-    document.querySelectorAll('#syllabusBody input').forEach(inp => inp.addEventListener('input', function () { 
-        const i = parseInt(this.dataset.i), f = this.dataset.f; 
-        if (!syllabusMap[currentSubject].weeks[i]) syllabusMap[currentSubject].weeks[i] = {}; 
-        syllabusMap[currentSubject].weeks[i][f] = this.value; 
-    }));
-}
-
-window.deleteSW = i => { 
-    syllabusMap[currentSubject].weeks.splice(i, 1); 
-    renderSyllabusTable(syllabusMap[currentSubject].weeks); 
-};
-
-function updateSyllabusStatus(s) { 
-    const el = document.getElementById('syllabusStatus'); 
-    el.textContent = s; 
-    el.className = `status-badge status-${s}`; 
-}
-
-document.getElementById('addWeekBtn').addEventListener('click', () => { 
-    if (!syllabusMap[currentSubject]) syllabusMap[currentSubject] = { weeks: [] }; 
-    const last = syllabusMap[currentSubject].weeks.length ? 
-        syllabusMap[currentSubject].weeks[syllabusMap[currentSubject].weeks.length - 1].week : 0; 
-    syllabusMap[currentSubject].weeks.push({ week: last + 1, topic: '', objectives: '' }); 
-    renderSyllabusTable(syllabusMap[currentSubject].weeks); 
-});
-
-document.getElementById('saveSyllabusBtn').addEventListener('click', async () => { 
-    const weeks = syllabusMap[currentSubject]?.weeks; 
-    if (!weeks?.length) return showToast('Error', 'Add at least one week', 'error'); 
-    const d = { 
-        teacherId: currentUser.uid,
-        teacherName: `${userData?.firstName||''} ${userData?.surname||''}`.trim(),
-        subject: currentSubject, 
-        classId: currentClass, 
-        weeks, 
-        status: 'draft', 
-        updatedAt: firebase.firestore.FieldValue.serverTimestamp() 
-    }; 
-    
-    if (!isOnline) {
-        queueOfflineOperation({ 
-            type: syllabusMap[currentSubject].id ? 'update' : 'add', 
-            collection: 'syllabus', 
-            docId: syllabusMap[currentSubject].id,
-            data: d 
-        });
-        showToast('Queued', 'Syllabus draft queued for sync', 'warning');
-        renderSubjectGrid();
-        return;
-    }
-    
-    if (syllabusMap[currentSubject].id) await db.collection('syllabus').doc(syllabusMap[currentSubject].id).update(d); 
-    else { const r = await db.collection('syllabus').add(d); syllabusMap[currentSubject].id = r.id; } 
-    renderSubjectGrid(); 
-    showToast('Saved', 'Syllabus draft saved', 'success'); 
-});
-
-document.getElementById('submitSyllabusBtn').addEventListener('click', async (e) => {
-    e.preventDefault();
-    if (!currentSubject) {
-        return showToast('Error', 'Please select a subject first', 'error');
-    }
-    if (!syllabusMap[currentSubject]) {
-        syllabusMap[currentSubject] = { weeks: [], status: 'draft' };
-    }
-    const weeks = syllabusMap[currentSubject]?.weeks;
-    if (!weeks?.length) return showToast('Error', 'Add at least one week', 'error');
-
-    const btn = document.getElementById('submitSyllabusBtn');
-    const origHTML = btn.innerHTML;
-    btn.disabled = true;
-    btn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Submitting...';
-    showLoading();
-
-    try {
-        const d = {
-            teacherId: currentUser.uid,
-            teacherName: `${userData?.firstName||''} ${userData?.surname||''}`.trim(),
-            subject: currentSubject,
-            classId: currentClass,
-            weeks,
-            status: 'pending',
-            submittedAt: firebase.firestore.FieldValue.serverTimestamp()
-        };
-        
-        if (!isOnline) {
-            queueOfflineOperation({ 
-                type: syllabusMap[currentSubject].id ? 'update' : 'add', 
-                collection: 'syllabus', 
-                docId: syllabusMap[currentSubject].id,
-                data: d 
-            });
-            updateSyllabusStatus('pending');
-            showToast('Queued', 'Syllabus submission queued for sync', 'warning');
-            btn.disabled = false;
-            btn.innerHTML = origHTML;
-            hideLoading();
-            return;
-        }
-        
-        if (syllabusMap[currentSubject].id) {
-            await db.collection('syllabus').doc(syllabusMap[currentSubject].id).update(d);
-        } else {
-            const r = await db.collection('syllabus').add(d);
-            syllabusMap[currentSubject].id = r.id;
-        }
-        updateSyllabusStatus('pending');
-        await addPoints(2, 'Syllabus submitted for approval');
-        await logAudit('SYLLABUS_SUBMITTED', `${currentSubject} syllabus for ${currentClass}`);
-        showToast('Submitted', 'Syllabus submitted for approval', 'success');
-    } catch (err) {
-        console.error('Syllabus submit error:', err);
-        showToast('Error', err.message || 'Failed to submit syllabus', 'error');
-    } finally {
-        btn.disabled = false;
-        btn.innerHTML = origHTML;
-        hideLoading();
-    }
-});
-
-// ==================== SYLLABUS PUBLISHING ====================
-document.getElementById('publishSyllabusBtn').addEventListener('click', async () => {
-    if (!currentSubject || !syllabusMap[currentSubject]) {
-        return showToast('Error', 'No syllabus to publish', 'error');
-    }
-    
-    const s = syllabusMap[currentSubject];
-    if (s.status !== 'approved') {
-        return showToast('Error', 'Syllabus must be approved first', 'warning');
-    }
-    
-    const btn = document.getElementById('publishSyllabusBtn');
-    const origHTML = btn.innerHTML;
-    btn.disabled = true;
-    btn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Publishing...';
-    
-    try {
-        const publishData = {
-            teacherId: currentUser.uid,
-            teacherName: `${userData?.firstName||''} ${userData?.surname||''}`.trim(),
-            subject: currentSubject,
-            classId: currentClass,
-            weeks: s.weeks,
-            publishedAt: firebase.firestore.FieldValue.serverTimestamp()
-        };
-        
-        if (!isOnline) {
-            queueOfflineOperation({ type: 'add', collection: 'publishedSyllabi', data: publishData });
-            showToast('Queued', 'Syllabus publish queued for sync', 'warning');
-            btn.disabled = false;
-            btn.innerHTML = origHTML;
-            return;
-        }
-        
-        await db.collection('publishedSyllabi').add(publishData);
-        await addPoints(3, 'Syllabus published');
-        await logAudit('SYLLABUS_PUBLISHED', `${currentSubject} syllabus for ${currentClass}`);
-        showToast('Published', 'Syllabus published to students and copied to Teach!', 'success');
-    } catch(err) {
-        showToast('Error', 'Failed to publish: ' + err.message, 'error');
-    } finally {
-        btn.disabled = false;
-        btn.innerHTML = origHTML;
-    }
-});
-
-// ==================== BULK WEEK OPERATIONS ====================
-document.getElementById('bulkWeekBtn').addEventListener('click', async () => {
-    if (!currentSubject) return showToast('Error', 'Select a subject first', 'error');
-    document.getElementById('bulkSubject').value = currentSubject;
-    
-    const select = document.getElementById('bulkTemplateSelect');
-    select.innerHTML = '<option value="">None — Blank drafts</option>';
-    
-    try {
-        const snap = await db.collection('lessonTemplates')
-            .where('subject', '==', currentSubject)
-            .where('isPublic', '==', true)
-            .orderBy('createdAt', 'desc')
-            .limit(20)
-            .get();
-        
-        snap.forEach(d => {
-            const data = d.data();
-            select.innerHTML += `<option value="${d.id}">Week ${data.week}: ${data.topic || 'Untitled'}</option>`;
-        });
-    } catch(e) {
-        console.warn('Could not load templates:', e);
-    }
-    
-    document.getElementById('bulkWeekModal').classList.add('active');
-});
-
-function closeBulkWeekModal() {
-    document.getElementById('bulkWeekModal').classList.remove('active');
-}
-window.closeBulkWeekModal = closeBulkWeekModal;
-
-document.getElementById('executeBulkWeekBtn').addEventListener('click', async () => {
-    const subject = document.getElementById('bulkSubject').value;
-    const start = parseInt(document.getElementById('bulkStartWeek').value) || 1;
-    const end = parseInt(document.getElementById('bulkEndWeek').value) || 6;
-    const templateId = document.getElementById('bulkTemplateSelect').value;
-    
-    if (start > end) return showToast('Error', 'Start week must be less than end week', 'error');
-    
-    const btn = document.getElementById('executeBulkWeekBtn');
-    const origHTML = btn.innerHTML;
-    btn.disabled = true;
-    btn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Creating...';
-    showLoading();
-    
-    let templateData = null;
-    if (templateId) {
-        try {
-            const doc = await db.collection('lessonTemplates').doc(templateId).get();
-            if (doc.exists) templateData = doc.data();
-        } catch(e) { console.warn('Template load error:', e); }
-    }
-    
-    let created = 0;
-    let skipped = 0;
-    
-    for (let week = start; week <= end; week++) {
-        const key = `${subject}_${week}`;
-        const existing = lessonNotesMap[key];
-        
-        if (existing && (existing.status === 'approved' || existing.status === 'pending')) {
-            skipped++;
-            continue;
-        }
-        
-        const topic = syllabusMap[subject]?.weeks?.find(w => w.week == week)?.topic || `Week ${week}`;
-        let lessonNote = templateData?.lessonNote || `<h2>LESSON NOTE</h2>
-            <p><strong>Subject:</strong> ${subject} &nbsp;&nbsp; <strong>Class:</strong> ${currentClass || '___'}</p>
-            <p><strong>Week:</strong> ${week} &nbsp;&nbsp; <strong>Topic:</strong> ${topic}</p>
-            <p><strong>Duration:</strong> 40 minutes</p>
-            <h3>Instructional Materials:</h3><ul><li>...</li></ul>
-            <h3>Objectives:</h3><ol><li>...</li></ol>
-            <h3>Content / Presentation:</h3><p>...</p>
-            <h3>Evaluation:</h3><ol><li>...</li></ol>
-            <h3>Assignment:</h3><ol><li>...</li></ol>`;
-        
-        const d = {
-            teacherId: currentUser.uid,
-            teacherName: `${userData?.firstName||''} ${userData?.surname||''}`.trim(),
-            subject: subject,
-            week: week,
-            topic: topic,
-            lessonNote: lessonNote,
-            classId: currentClass,
-            status: 'draft',
-            createdAt: firebase.firestore.FieldValue.serverTimestamp(),
-            updatedAt: firebase.firestore.FieldValue.serverTimestamp()
-        };
-        
-        try {
-            if (!isOnline) {
-                queueOfflineOperation({ type: 'add', collection: 'lessonNotes', data: d });
-                created++;
-            } else {
-                const ref = await db.collection('lessonNotes').add(d);
-                lessonNotesMap[key] = { id: ref.id, ...d };
-                created++;
+                // ==================== AUTHENTICATION ====================
+        auth.onAuthStateChanged(async user => {
+            if (!user) { 
+                window.location.href = 'teacher-login.html'; 
+                return; 
             }
-        } catch(e) {
-            console.error('Bulk create error:', e);
-        }
-    }
-    
-    await loadAllLessonNotes();
-    loadDraftSubjects();
-    hideLoading();
-    btn.disabled = false;
-    btn.innerHTML = origHTML;
-    closeBulkWeekModal();
-    
-    showToast('Bulk Complete', `Created ${created} drafts${skipped > 0 ? `, skipped ${skipped} already approved/pending` : ''}`, 'success');
-});
+            
+            const doc = await db.collection('users').doc(user.uid).get();
+            if (!doc.exists || doc.data().role !== 'teacher') { 
+                await auth.signOut(); 
+                window.location.href = 'index.html'; 
+                return; 
+            }
+            
+            currentUser = user; 
+            userData = doc.data();
 
-// ==================== DRAFTS TAB FUNCTIONS ====================
-function loadDraftSubjects() {
-    const grid = document.getElementById('draftSubjectGrid');
-    grid.innerHTML = subjects.map(sub => { 
-        const drafts = Object.values(lessonNotesMap).filter(n => 
-            n.subject === sub && (!n.status || n.status === 'draft')
-        ).length; 
-        return `
-            <div class="subject-card" onclick="selectDraftSubject(event, '${escapeAttr(sub)}')">
-                <h3>${escapeHtml(sub)}</h3>
-                <p style="color:var(--text-secondary);">${drafts} draft${drafts !== 1 ? 's' : ''}</p>
-            </div>
-        `;
-    }).join('');
-}
+            isClassTeacher = userData.teacherType === 'classTeacher' || userData.teacherType === 'both';
+            isSubjectTeacher = userData.teacherType === 'subjectTeacher' || userData.teacherType === 'both';
+            classTeacherFor = userData.classTeacherFor || [];
+            subjectClassMap = userData.subjectClassMap || {};
 
-window.selectDraftSubject = (e, subject) => {
-    if (e) e.target.closest('.subject-card').classList.add('active');
-    currentSubjectDraft = subject;
-    document.getElementById('draftDebug').textContent = `Subject: ${subject} | Week: not set`;
-    document.getElementById('draftDebug').style.background = 'var(--warning-bg)';
-    document.getElementById('draftDebug').style.color = 'var(--warning-text)';
+            allAssignedClasses = userData.classesTeaching || (userData.classTeaching ? [userData.classTeaching] : []);
+            currentClass = userData.classTeaching || allAssignedClasses[0] || null;
 
-    const allNotes = Object.values(lessonNotesMap).filter(n => n.subject === subject);
-    const syllabusWeeks = syllabusMap[subject]?.weeks || [];
-    const draftWeeks = syllabusWeeks.filter(w => {
-        if (!w.week && w.week !== 0) return false;
-        const note = allNotes.find(n => n.week == w.week);
-        return !note || note.status === 'draft' || note.status === 'approved' || !note.status;
-    });
+            if (isSubjectTeacher && !isClassTeacher) {
+                const classSubjects = subjectClassMap[currentClass] || [];
+                subjects = classSubjects.length ? classSubjects : (userData.subjects || []);
+            } else {
+                subjects = userData.subjects || [];
+            }
 
-    if (!draftWeeks.length) {
-        document.getElementById('draftWeekList').innerHTML = '<p style="color:var(--danger-text);">No weeks found. Please add weeks in the Syllabus tab.</p>';
-    } else {
-        document.getElementById('draftWeekList').innerHTML = draftWeeks.map(wk => {
-            const note = allNotes.find(n => n.week == wk.week);
-            let statusClass = '';
-            if (note?.status === 'approved') statusClass = 'completed';
-            else if (note?.status === 'pending') statusClass = 'pending-approval';
-            return `<div class="week-tab ${statusClass}" onclick="selectDraftWeek(event, ${wk.week})">
-                Week ${wk.week}: ${escapeHtml(wk.topic || 'No topic')}
-            </div>`;
-        }).join('');
-    }
-    document.getElementById('draftEditorSection').style.display = 'none';
-};
+            isClassTeacherForCurrentClass = classTeacherFor.includes(currentClass);
+            
+            const profilePic = document.getElementById('profilePic');
+            if (userData.photoURL) { 
+                profilePic.innerHTML = `<img src="${userData.photoURL}" style="width:100%;height:100%;object-fit:cover;border-radius:50%;" alt="Profile">`; 
+            } else { 
+                profilePic.textContent = (userData.firstName?.[0]||'T') + (userData.surname?.[0]||'E'); 
+            }
+            document.getElementById('profileName').textContent = userData.firstName || 'Teacher';
+            
+            updatePointsDisplay();
+            populateClassSelector();
+            renderWorkspaceTabs(isClassTeacherForCurrentClass, isSubjectTeacher);
+            renderSubjectGrid();
+            await loadAllLessonNotes();
+            const today = new Date();
+            const yyyy = today.getFullYear();
+            const mm = String(today.getMonth() + 1).padStart(2, '0');
+            const dd = String(today.getDate()).padStart(2, '0');
+            const dateInput = document.getElementById('reportDate');
+            if (dateInput) dateInput.value = `${yyyy}-${mm}-${dd}`;
+            
+            if (currentClass) await loadAllTimetableData();
+            loadMyReports();
+            updateWeeklyStats();
+            loadNotifications();
+            setupRealtimeListeners();
+            loadOfflineQueue();
+            
+            try {
+                await remoteConfig.fetchAndActivate();
+                const groqKey = remoteConfig.getString('groq_api_key');
+                if (groqKey) { 
+                    window.groq = new Groq({ apiKey: groqKey, dangerouslyAllowBrowser: true }); 
+                } else { 
+                    window.groq = null; 
+                }
+            } catch (e) { 
+                window.groq = null; 
+            }
+        });
 
-window.selectDraftWeek = (e, week) => {
-    if (e) {
-        document.querySelectorAll('#draftWeekList .week-tab').forEach(t => t.classList.remove('active'));
-        e.target.classList.add('active');
-    }
-    const safeWeek = (week !== undefined && week !== null) ? week : null;
-    currentWeekDraft = safeWeek;
-
-    const badge = document.getElementById('draftDebug');
-    badge.textContent = `Subject: ${currentSubjectDraft} | Week: ${safeWeek !== null ? safeWeek : '???'}`;
-    badge.style.background = safeWeek !== null ? 'var(--success-bg)' : 'var(--danger-bg)';
-    badge.style.color = safeWeek !== null ? 'var(--success-text)' : 'var(--danger-text)';
-
-    if (!currentSubjectDraft || safeWeek === null) {
-        return showToast('Error', 'Cannot open editor – subject or week missing.', 'error');
-    }
-
-    const key = `${currentSubjectDraft}_${safeWeek}`;
-    const note = lessonNotesMap[key] || {};
-
-    if (note.status && note.status !== 'draft' && note.status !== 'approved') {
-        showToast('Info', 'This week is not available for editing.', 'warning');
-        document.getElementById('draftEditorSection').style.display = 'none';
-        return;
-    }
-
-    document.getElementById('draftEditorSection').style.display = 'block';
-    document.getElementById('editorTitle').textContent = `Week ${safeWeek} – ${currentSubjectDraft}`;
-    quill.root.innerHTML = note.lessonNote || '';
-
-    lessonNoteApproved = note.status === 'approved';
-
-    sectionEditState = { lessonNote: false, teachingProcess: false, studentResource: false, handwriting: false, video: false };
-
-    if (lessonNoteApproved) {
-        document.getElementById('postApprovalSections').style.display = 'block';
-        document.getElementById('createOthersBtnContainer').style.display = 'block';
-        document.getElementById('additionalResources').style.display = 'block';
-        document.getElementById('studentResourceSection').style.display = 'block';
-        document.getElementById('handwritingSection').style.display = 'block';
-        document.getElementById('teachingProcessCard').style.display = 'block';
-        document.getElementById('submitEditorBtn').style.display = 'none';
-        document.getElementById('pushToTeachBtn').style.display = !note.teachable ? 'inline-block' : 'none';
-        
-        lockAllSections(true);
-        document.getElementById('editLessonNoteBtn').style.display = 'inline-flex';
-        document.getElementById('editTPBtn').style.display = 'inline-flex';
-        document.getElementById('editResourceBtn').style.display = 'inline-flex';
-        document.getElementById('editHandwritingBtn').style.display = 'inline-flex';
-        document.getElementById('editVideoBtn').style.display = 'inline-flex';
-        document.getElementById('publishTPBtn').style.display = 'inline-flex';
-        document.getElementById('publishResourceBtn').style.display = 'inline-flex';
-        document.getElementById('publishHandwritingBtn').style.display = 'inline-flex';
-        document.getElementById('publishVideoBtn').style.display = 'inline-flex';
-    } else {
-        document.getElementById('postApprovalSections').style.display = 'none';
-        document.getElementById('createOthersBtnContainer').style.display = 'none';
-        document.getElementById('additionalResources').style.display = 'none';
-        document.getElementById('submitEditorBtn').style.display = 'inline-block';
-        document.getElementById('pushToTeachBtn').style.display = 'none';
-        lockAllSections(false);
-        hideAllEditPublishButtons();
-    }
-
-    contentMerged = !!(note.lessonNote);
-    document.getElementById('deleteLessonNoteBtn').style.display = note.id ? 'inline-flex' : 'none';
-
-    studentQuill.root.innerHTML = note.studentResource || '';
-    teachingProcessQuill.root.innerHTML = note.teachingProcess || '';
-    videoLinks = note.videoLinks || [];
-    renderVideoList();
-    handwritingImages = note.handwritingImages || [];
-    renderHandwritingImages();
-    displayAdminFeedback(note);
-
-    quill.update();
-    studentQuill.update();
-    teachingProcessQuill.update();
-
-    setTimeout(() => {
-        if (quill) quill.update();
-        if (studentQuill) studentQuill.update();
-        if (teachingProcessQuill) teachingProcessQuill.update();
-    }, 50);
-
-    const lessonNoteCard = document.getElementById('lessonNoteCard');
-    if (lessonNoteApproved) {
-        lessonNoteCard.classList.add('locked');
-    } else {
-        lessonNoteCard.classList.remove('locked');
-    }
-    
-    document.getElementById('coPlanBadge').style.display = 'none';
-    document.getElementById('coPlanStatusBar').style.display = 'none';
-};
-
-function displayAdminFeedback(note) {
-    const box = document.getElementById('adminFeedbackBox');
-    const ratingDisplay = document.getElementById('adminRatingDisplay');
-    
-    if (note.adminRating || note.adminFeedback) { 
-        box.classList.add('visible'); 
-        document.getElementById('adminFeedbackText').innerHTML = note.adminFeedback ? 
-            `<i class="fas fa-comment"></i> ${escapeHtml(note.adminFeedback)}` : '';
-        ratingDisplay.innerHTML = note.adminRating ? 
-            `Rating: ${'★'.repeat(note.adminRating)}${'☆'.repeat(5 - note.adminRating)} (${note.adminRating}/5)` : '';
-    } else { 
-        box.classList.remove('visible'); 
-    }
-}
-
-// ==================== TEMPLATES TAB ====================
-async function loadTemplatesTab() {
-    const container = document.getElementById('templatesList');
-    container.innerHTML = '<p>Loading templates...</p>';
-    
-    try {
-        const snap = await db.collection('lessonTemplates')
-            .where('isPublic', '==', true)
-            .orderBy('createdAt', 'desc')
-            .limit(50)
-            .get();
-        
-        if (snap.empty) {
-            container.innerHTML = '<p style="color:var(--text-secondary);">No public templates available yet. Save a lesson note as a template to share.</p>';
-            return;
-        }
-        
-        container.innerHTML = snap.docs.map(d => {
-            const data = d.data();
-            return `
-                <div class="card" style="margin-bottom:0.8rem;">
-                    <div style="display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:0.5rem;">
-                        <div>
-                            <strong>${escapeHtml(data.subject)}</strong> — Week ${data.week}
-                            <span style="color:var(--text-secondary);font-size:0.8rem;">${escapeHtml(data.topic || 'Untitled')}</span>
-                            <div style="font-size:0.75rem;color:var(--text-secondary);">By ${escapeHtml(data.teacherName || 'Unknown')}</div>
-                        </div>
-                        <button class="btn btn-primary btn-sm use-template-btn" data-id="${escapeAttr(d.id)}">
-                            <i class="fas fa-file-import"></i> Use
-                        </button>
-                    </div>
-                </div>
-            `;
-        }).join('');
-    } catch(e) {
-        container.innerHTML = '<p style="color:var(--danger-text);">Error loading templates. Please try again.</p>';
-        console.error('Templates load error:', e);
-    }
-}
-
-// Template use handler via event delegation
-document.addEventListener('click', async (e) => {
-    const useBtn = e.target.closest('.use-template-btn');
-    if (!useBtn) return;
-    
-    const id = useBtn.dataset.id;
-    try {
-        const doc = await db.collection('lessonTemplates').doc(id).get();
-        if (!doc.exists) return showToast('Error', 'Template not found', 'error');
-        const data = doc.data();
-        
-        if (!currentSubjectDraft || !currentWeekDraft) {
-            return showToast('Error', 'Select a subject and week first in Drafts tab', 'warning');
-        }
-        
-        if (data.lessonNote) {
-            quill.root.innerHTML = data.lessonNote;
-            showToast('Applied', 'Template applied to editor', 'success');
-        } else {
-            showToast('Error', 'Template has no content', 'error');
-        }
-    } catch(err) {
-        showToast('Error', 'Failed to load template', 'error');
-    }
-});
-
-// ==================== CURRICULUM ENHANCEMENT ANALYSIS ====================
-document.getElementById('curriculumCheckBtn').addEventListener('click', async () => {
-    if (!window.groq) return showToast('Error', 'AI service not available', 'error');
-    
-    const content = quill.root.innerHTML;
-    const text = quill.getText();
-    if (!text.trim()) return showToast('Error', 'Write lesson note content first', 'warning');
-    
-    const btn = document.getElementById('curriculumCheckBtn');
-    const origHTML = btn.innerHTML;
-    btn.disabled = true;
-    btn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Analyzing...';
-    
-    const box = document.getElementById('curriculumAnalysisBox');
-    const contentDiv = document.getElementById('curriculumAnalysisContent');
-    box.classList.remove('visible');
-    
-    try {
-        const prompt = `Analyze this lesson note against NERDC curriculum standards. Check:
-        1. Are objectives measurable and specific?
-        2. Does content match the stated topic?
-        3. Is language age-appropriate for the class level?
-        4. Is there a complete evaluation section?
-        5. Is there an assignment section?
-        
-        Return a detailed analysis with specific issues and improvements.
-        Format: Return as HTML with <span class="pass">✅</span> for good items and <span class="fail">❌</span> for issues.
-        
-        Lesson note content:
-        ${text.substring(0, 4000)}`;
-        
-        const result = await window.groq.chat.completions.create({
-            messages: [
-                { role: 'system', content: 'You are a curriculum expert for Nigerian NERDC standards. Provide detailed, actionable feedback.' },
-                { role: 'user', content: prompt }
-            ],
-            model: 'llama-3.3-70b-versatile',
-            temperature: 0.3,
-            max_tokens: 1500
+        document.getElementById('logoutBtn').addEventListener('click', async () => {
+            realtimeListeners.forEach(unsub => unsub());
+            realtimeListeners = [];
+            await auth.signOut();
+            window.location.href = 'index.html';
         });
         
-        const analysis = result.choices[0].message.content;
-        contentDiv.innerHTML = analysis;
-        box.classList.add('visible');
+        document.getElementById('profileLink').addEventListener('click', () => {
+            window.location.href = 'teacher-profile.html';
+        });
+
+        // ==================== REAL-TIME LISTENERS ====================
+        function setupRealtimeListeners() {
+            realtimeListeners.forEach(unsub => unsub());
+            realtimeListeners = [];
+            
+            if (!currentUser) return;
+            
+            const unsub1 = db.collection('lessonNotes')
+                .where('teacherId', '==', currentUser.uid)
+                .onSnapshot(snap => {
+                    snap.docChanges().forEach(change => {
+                        if (change.type === 'modified') {
+                            const data = change.doc.data();
+                            const oldData = lessonNotesMap[`${data.subject}_${data.week}`];
+                            
+                            if (oldData && oldData.status !== data.status) {
+                                if (data.status === 'approved') {
+                                    showToast('Approved! 🎉', 
+                                        `${data.subject} Week ${data.week} was approved! ${data.adminRating ? 'Rating: ' + data.adminRating + '/5' : ''}`,
+                                        'success', 6000);
+                                    logAudit('LESSON_NOTE_APPROVED', `${data.subject} Week ${data.week} - Rating: ${data.adminRating || 'N/A'}`);
+                                } else if (data.status === 'rejected') {
+                                    showToast('Rejected', 
+                                        `${data.subject} Week ${data.week} was rejected. Check feedback.`,
+                                        'warning', 6000);
+                                    logAudit('LESSON_NOTE_REJECTED', `${data.subject} Week ${data.week} - Feedback: ${data.adminFeedback || 'N/A'}`);
+                                }
+                            }
+                        }
+                    });
+                    loadAllLessonNotes();
+                });
+            realtimeListeners.push(unsub1);
+            
+            const unsub2 = db.collection('syllabus')
+                .where('teacherId', '==', currentUser.uid)
+                .onSnapshot(snap => {
+                    snap.docChanges().forEach(change => {
+                        if (change.type === 'modified') {
+                            const data = change.doc.data();
+                            const oldData = syllabusMap[data.subject];
+                            
+                            if (oldData && oldData.status !== data.status) {
+                                if (data.status === 'approved') {
+                                    showToast('Syllabus Approved! 🎉', 
+                                        `${data.subject} syllabus was approved!`,
+                                        'success', 6000);
+                                    logAudit('SYLLABUS_APPROVED', `${data.subject} syllabus`);
+                                    const pubBtn = document.getElementById('publishSyllabusBtn');
+                                    if (pubBtn) pubBtn.style.display = 'inline-flex';
+                                } else if (data.status === 'rejected') {
+                                    showToast('Syllabus Rejected', 
+                                        `${data.subject} syllabus was rejected. Check feedback.`,
+                                        'warning', 6000);
+                                    logAudit('SYLLABUS_REJECTED', `${data.subject} syllabus`);
+                                }
+                                syllabusMap[data.subject] = { id: change.doc.id, ...data };
+                                renderSubjectGrid();
+                            }
+                        }
+                    });
+                });
+            realtimeListeners.push(unsub2);
+            
+            const unsub3 = db.collection('timetableProposals')
+                .where('teacherId', '==', currentUser.uid)
+                .onSnapshot(snap => {
+                    snap.docChanges().forEach(change => {
+                        if (change.type === 'modified') {
+                            const data = change.doc.data();
+                            if (data.status === 'approved') {
+                                showToast('Timetable Approved! 🎉', 
+                                    `Your ${data.type} timetable was approved!`,
+                                    'success', 6000);
+                                logAudit('TIMETABLE_APPROVED', `${data.type} timetable`);
+                            } else if (data.status === 'rejected') {
+                                showToast('Timetable Rejected', 
+                                    `Your ${data.type} timetable was rejected.`,
+                                    'warning', 6000);
+                                logAudit('TIMETABLE_REJECTED', `${data.type} timetable`);
+                            }
+                            loadAllTimetableData();
+                        }
+                    });
+                });
+            realtimeListeners.push(unsub3);
+            
+            const unsub4 = db.collection('coplanSessions')
+                .where('teacher1', '==', currentUser.uid)
+                .onSnapshot(snap => {
+                    snap.docChanges().forEach(change => {
+                        if (change.type === 'added' || change.type === 'modified') {
+                            const data = change.doc.data();
+                            if (data.active) {
+                                showCoPlanStatus(data);
+                            }
+                        }
+                    });
+                });
+            realtimeListeners.push(unsub4);
+        }
+
+        document.getElementById('panel-timetable').classList.add('active');
+
+        // ==================== TIMETABLE FUNCTIONS ====================
+        function getEmptyPeriod(t) {
+            switch(t) {
+                case 'academic': return {startTime:'08:00',endTime:'08:40',monday:'',tuesday:'',wednesday:'',thursday:'',friday:''};
+                case 'hairstyle': return {startTime:'Week 1',monday:'',tuesday:''};
+                case 'test': case 'exam': return {startTime:'',endTime:'',monday:'',tuesday:'',wednesday:''};
+                default: return {};
+            }
+        }
         
+        function getTHeaders(t) {
+            switch(t) {
+                case 'academic': return ['Start','End','Monday','Tuesday','Wednesday','Thursday','Friday',''];
+                case 'hairstyle': return ['Week','Hairstyle','Description',''];
+                case 'test': case 'exam': return ['Date','Time','Subject','Venue','Duration',''];
+                default: return [];
+            }
+        }
+        
+        function renderDraftTable() {
+            document.getElementById('draftTypeLabel').textContent = draftType.charAt(0).toUpperCase()+draftType.slice(1);
+            document.getElementById('draftTableHeader').innerHTML = '<tr>'+getTHeaders(draftType).map(h=>`<th>${h}</th>`).join('')+'</tr>';
+            let h='';
+            draftData.forEach((p,i)=>{
+                h+='<tr>';
+                if(draftType==='academic'){
+                    h+=`<td><input type="time" value="${escapeAttr(p.startTime||'')}" data-i="${i}" data-f="startTime"></td>`;
+                    h+=`<td><input type="time" value="${escapeAttr(p.endTime||'')}" data-i="${i}" data-f="endTime"></td>`;
+                    h+=`<td><input type="text" value="${escapeAttr(p.monday||'')}" data-i="${i}" data-f="monday" placeholder="Subject"></td>`;
+                    h+=`<td><input type="text" value="${escapeAttr(p.tuesday||'')}" data-i="${i}" data-f="tuesday" placeholder="Subject"></td>`;
+                    h+=`<td><input type="text" value="${escapeAttr(p.wednesday||'')}" data-i="${i}" data-f="wednesday" placeholder="Subject"></td>`;
+                    h+=`<td><input type="text" value="${escapeAttr(p.thursday||'')}" data-i="${i}" data-f="thursday" placeholder="Subject"></td>`;
+                    h+=`<td><input type="text" value="${escapeAttr(p.friday||'')}" data-i="${i}" data-f="friday" placeholder="Subject"></td>`;
+                } else if(draftType==='hairstyle'){
+                    h+=`<td><input type="text" value="${escapeAttr(p.startTime||'')}" data-i="${i}" data-f="startTime" placeholder="Week 1"></td>`;
+                    h+=`<td><input type="text" value="${escapeAttr(p.monday||'')}" data-i="${i}" data-f="monday" placeholder="Style name"></td>`;
+                    h+=`<td><input type="text" value="${escapeAttr(p.tuesday||'')}" data-i="${i}" data-f="tuesday" placeholder="Description"></td>`;
+                } else {
+                    h+=`<td><input type="text" value="${escapeAttr(p.startTime||'')}" data-i="${i}" data-f="startTime" placeholder="Date"></td>`;
+                    h+=`<td><input type="text" value="${escapeAttr(p.endTime||'')}" data-i="${i}" data-f="endTime" placeholder="Time"></td>`;
+                    h+=`<td><input type="text" value="${escapeAttr(p.monday||'')}" data-i="${i}" data-f="monday" placeholder="Subject"></td>`;
+                    h+=`<td><input type="text" value="${escapeAttr(p.tuesday||'')}" data-i="${i}" data-f="tuesday" placeholder="Venue"></td>`;
+                    h+=`<td><input type="text" value="${escapeAttr(p.wednesday||'')}" data-i="${i}" data-f="wednesday" placeholder="Duration"></td>`;
+                }
+                h+='<td><button class="btn btn-danger btn-sm" onclick="deleteTTRow('+i+')"><i class="fas fa-trash"></i></button></td></tr>';
+            });
+            document.getElementById('draftBody').innerHTML = h;
+            document.querySelectorAll('#draftBody input').forEach(inp=>inp.addEventListener('input',function(){
+                const i=parseInt(this.dataset.i),f=this.dataset.f;
+                if(draftData[i]) draftData[i][f]=this.value;
+                setAutoSaveStatus('unsaved');
+            }));
+        }
+        
+        window.deleteTTRow = i => { 
+            draftData.splice(i, 1); 
+            renderDraftTable(); 
+        };
+        
+        async function loadAllTimetableData() {
+            if (!currentClass) return;
+            
+            let ds;
+            try {
+                ds = await db.collection('timetableProposals')
+                    .where('classId', '==', currentClass)
+                    .where('teacherId', '==', currentUser.uid)
+                    .where('status', '==', 'draft')
+                    .orderBy('updatedAt', 'desc').limit(1).get();
+            } catch (e) {
+                if (e.code === 'failed-precondition') {
+                    showIndexError('timetableProposals', [
+                        {field:'classId',order:'ASCENDING'},
+                        {field:'teacherId',order:'ASCENDING'},
+                        {field:'status',order:'ASCENDING'},
+                        {field:'updatedAt',order:'DESCENDING'}
+                    ], e);
+                }
+                ds = { empty: true, docs: [] };
+            }
+            
+            if (!ds.empty) { 
+                const d = ds.docs[0]; 
+                draftId = d.id; 
+                draftData = d.data().periods || []; 
+                draftType = d.data().type || 'academic'; 
+            } else { 
+                draftId = null; 
+                draftData = [getEmptyPeriod('academic')]; 
+                draftType = 'academic'; 
+            }
+            
+            let ps;
+            try {
+                ps = await db.collection('timetableProposals')
+                    .where('classId', '==', currentClass)
+                    .where('teacherId', '==', currentUser.uid)
+                    .where('status', '==', 'pending')
+                    .orderBy('submittedAt', 'desc').limit(1).get();
+            } catch (e) {
+                if (e.code === 'failed-precondition') {
+                    showIndexError('timetableProposals', [
+                        {field:'classId',order:'ASCENDING'},
+                        {field:'teacherId',order:'ASCENDING'},
+                        {field:'status',order:'ASCENDING'},
+                        {field:'submittedAt',order:'DESCENDING'}
+                    ], e);
+                }
+                ps = { empty: true, docs: [] };
+            }
+            
+            if (!ps.empty) { 
+                const d = ps.docs[0]; 
+                pendingId = d.id; 
+                pendingData = d.data().periods || []; 
+            } else { 
+                pendingId = null; 
+                pendingData = []; 
+            }
+            
+            approvedList = [];
 
-<div class="modal-overlay" id="deleteModal">
-    <div class="modal-content" style="text-align:center;">
-        <h3>Confirm Deletion</h3>
-        <p id="deleteMessage"></p>
-        <div style="display:flex;gap:0.5rem;justify-content:center;margin-top:1rem;">
-            <button class="btn btn-outline" onclick="closeDeleteModal()">Cancel</button>
-            <button class="btn btn-danger" id="confirmDeleteBtn">Delete</button>
-        </div>
-    </div>
-</div>
+            const asPublished = await db.collection('timetables')
+                .where('classId', '==', currentClass)
+                .where('published', '==', true)
+                .get();
+            asPublished.forEach(d => approvedList.push({ 
+                type: d.data().type || 'academic', 
+                data: d.data(), 
+                id: d.id,
+                source: 'timetables'
+            }));
 
-<div class="modal-overlay" id="loadingOverlay">
-    <div style="color:white;text-align:center;">
-        <i class="fas fa-spinner fa-spin" style="font-size:2rem;"></i>
-        <h3>Processing...</h3>
-    </div>
-    </div>
+            const asApproved = await db.collection('timetableProposals')
+                .where('classId', '==', currentClass)
+                .where('teacherId', '==', currentUser.uid)
+                .where('status', '==', 'approved')
+                .get();
+            asApproved.forEach(d => approvedList.push({ 
+                type: d.data().type || 'academic', 
+                data: d.data(), 
+                id: d.id,
+                source: 'proposals'
+            }));
+            
+            let rs;
+            try {
+                rs = await db.collection('timetableProposals')
+                    .where('classId', '==', currentClass)
+                    .where('teacherId', '==', currentUser.uid)
+                    .where('status', '==', 'rejected')
+                    .orderBy('submittedAt', 'desc').limit(1).get();
+            } catch (e) {
+                if (e.code === 'failed-precondition') {
+                    showIndexError('timetableProposals', [
+                        {field:'classId',order:'ASCENDING'},
+                        {field:'teacherId',order:'ASCENDING'},
+                        {field:'status',order:'ASCENDING'},
+                        {field:'submittedAt',order:'DESCENDING'}
+                    ], e);
+                }
+                rs = { empty: true, docs: [] };
+            }
+            
+            if (!rs.empty) { 
+                const d = rs.docs[0]; 
+                rejectedId = d.id; 
+                rejectedData = d.data().periods || []; 
+            } else { 
+                rejectedId = null; 
+                rejectedData = []; 
+            }
+            
+            renderDraftTable(); 
+            document.getElementById('deleteDraftBtn').style.display = draftId ? 'inline-block' : 'none';
+            document.getElementById('sendToAdminBtn').style.display = draftId ? 'inline-block' : 'none';
+            document.getElementById('timetableType').value = draftType;
+            loadPublishedTimetables();
+            
+            if (pendingId) {
+                document.getElementById('pendingTableHeader').innerHTML = '<tr>' + getTHeaders(draftType).map(h => `<th>${h}</th>`).join('') + '</tr>';
+                document.getElementById('pendingBody').innerHTML = pendingData.map(p => {
+                    let row = '<tr>';
+                    row += `<td>${escapeHtml(p.startTime || '')}</td><td>${escapeHtml(p.endTime || '')}</td>`;
+                    ['monday','tuesday','wednesday','thursday','friday'].forEach(d => {
+                        if (draftType === 'academic' || ['monday','tuesday','wednesday'].includes(d))
+                            row += `<td>${escapeHtml(p[d] || '')}</td>`;
+                    });
+                    row += '</tr>';
+                    return row;
+                }).join('');
+            }
+        }
+        
+        async function loadPublishedTimetables() {
+            if (!currentClass) return;
+            
+            const snap1 = await db.collection('timetables')
+                .where('classId', '==', currentClass)
+                .where('published', '==', true).get();
+            
+            const snap2 = await db.collection('timetableProposals')
+                .where('classId', '==', currentClass)
+                .where('teacherId', '==', currentUser.uid)
+                .where('status', '==', 'approved').get();
+            
+            const allPublished = [];
+            snap1.forEach(d => allPublished.push({ id: d.id, ...d.data(), source: 'published' }));
+            snap2.forEach(d => allPublished.push({ id: d.id, ...d.data(), source: 'approved' }));
+            
+            const seen = new Set();
+            const unique = allPublished.filter(t => {
+                const key = t.type + '_' + t.classId;
+                if (seen.has(key)) return false;
+                seen.add(key);
+                return true;
+            });
+            
+            const list = document.getElementById('publishedTimetablesList');
+            if (unique.length === 0) { 
+                list.innerHTML = '<p style="color:var(--text-secondary);">No published timetables yet.</p>'; 
+                return; 
+            }
+            list.innerHTML = unique.map(t => {
+                return `<div class="card"><p><strong>${t.type ? t.type.charAt(0).toUpperCase() + t.type.slice(1) : 'Academic'}</strong> Timetable — ${t.source === 'published' ? '📤 Published' : '✅ Approved'}</p></div>`;
+            }).join('');
+        }
+        
+        document.querySelectorAll('#tt-tabs .sub-tab').forEach(t => t.addEventListener('click', () => { 
+            document.querySelectorAll('#tt-tabs .sub-tab').forEach(x => x.classList.remove('active')); 
+            t.classList.add('active'); 
+            ['draft', 'pending', 'approved', 'published', 'rejected'].forEach(k => 
+                document.getElementById('tt-' + k).style.display = k === t.dataset.tt ? 'block' : 'none'
+            ); 
+            if (currentClass) loadAllTimetableData(); 
+        }));
+        
+        document.getElementById('timetableType').addEventListener('change', (e) => {
+            draftType = e.target.value;
+            draftData = [getEmptyPeriod(draftType)];
+            renderDraftTable();
+        });
+        
+        document.getElementById('createNewTimetableBtn').addEventListener('click', async () => { 
+            draftType = document.getElementById('timetableType').value || 'academic';
+            draftData = [getEmptyPeriod(draftType)]; 
+            const d = { 
+                classId: currentClass, 
+                teacherId: currentUser.uid,
+                teacherName: `${userData?.firstName||''} ${userData?.surname||''}`.trim(),
+                periods: draftData, 
+                type: draftType, 
+                status: 'draft', 
+                updatedAt: firebase.firestore.FieldValue.serverTimestamp() 
+            }; 
+            
+            if (!isOnline) {
+                queueOfflineOperation({ type: 'add', collection: 'timetableProposals', data: d });
+                showToast('Queued', 'Timetable draft queued for sync', 'warning');
+                return;
+            }
+            
+            const r = await db.collection('timetableProposals').add(d); 
+            draftId = r.id; 
+            renderDraftTable(); 
+            document.getElementById('deleteDraftBtn').style.display = 'inline-block'; 
+            document.getElementById('sendToAdminBtn').style.display = 'inline-block';
+            showToast('Created', 'New timetable draft created', 'success'); 
+        });
+        
+        document.getElementById('addTimetableRowBtn').addEventListener('click', () => { 
+            draftData.push(getEmptyPeriod(draftType)); 
+            renderDraftTable(); 
+        });
+        
+        document.getElementById('saveDraftBtn').addEventListener('click', async (e) => {
+            e.preventDefault();
+            setAutoSaveStatus('saving');
+            const btn = document.getElementById('saveDraftBtn');
+            const origHTML = btn.innerHTML;
+            btn.disabled = true;
+            btn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Saving...';
+
+            const d = { 
+                classId: currentClass, 
+                teacherId: currentUser.uid,
+                teacherName: `${userData?.firstName||''} ${userData?.surname||''}`.trim(),
+                periods: draftData, 
+                type: draftType, 
+                status: 'draft', 
+                updatedAt: firebase.firestore.FieldValue.serverTimestamp() 
+            }; 
+            
+            try {
+                if (!isOnline) {
+                    queueOfflineOperation({ 
+                        type: draftId ? 'update' : 'add', 
+                        collection: 'timetableProposals', 
+                        docId: draftId,
+                        data: d 
+                    });
+                    setAutoSaveStatus('saved');
+                    showToast('Queued', 'Draft queued for sync', 'warning');
+                    btn.disabled = false;
+                    btn.innerHTML = origHTML;
+                    return;
+                }
+                
+                if (draftId) await db.collection('timetableProposals').doc(draftId).update(d); 
+                else { const r = await db.collection('timetableProposals').add(d); draftId = r.id; } 
+                document.getElementById('deleteDraftBtn').style.display = 'inline-block'; 
+                document.getElementById('sendToAdminBtn').style.display = 'inline-block';
+                setAutoSaveStatus('saved');
+                showToast('Saved', 'Draft saved successfully', 'success'); 
+            } catch(e) {
+                setAutoSaveStatus('error');
+                showToast('Error', 'Failed to save draft', 'error');
+            } finally {
+                btn.disabled = false;
+                btn.innerHTML = origHTML;
+            }
+        });
+        
+        document.getElementById('submitTimetableBtn').addEventListener('click', async (e) => {
+            e.preventDefault();
+            const btn = document.getElementById('submitTimetableBtn');
+            const origHTML = btn.innerHTML;
+            btn.disabled = true;
+            btn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Submitting...';
+            showLoading();
+
+            const d = { 
+                classId: currentClass, 
+                teacherId: currentUser.uid,
+                teacherName: `${userData?.firstName||''} ${userData?.surname||''}`.trim(),
+                periods: draftData, 
+                type: draftType, 
+                status: 'pending', 
+                submittedAt: firebase.firestore.FieldValue.serverTimestamp() 
+            }; 
+            
+            try {
+                if (!isOnline) {
+                    queueOfflineOperation({ 
+                        type: draftId ? 'update' : 'add', 
+                        collection: 'timetableProposals', 
+                        docId: draftId,
+                        data: d 
+                    });
+                    showToast('Queued', 'Submission queued for sync', 'warning');
+                    btn.disabled = false;
+                    btn.innerHTML = origHTML;
+                    hideLoading();
+                    return;
+                }
+                
+                if (draftId) await db.collection('timetableProposals').doc(draftId).update(d); 
+                else { const r = await db.collection('timetableProposals').add(d); draftId = r.id; } 
+                await loadAllTimetableData(); 
+                await addPoints(2, 'Timetable submitted for approval'); 
+                await logAudit('TIMETABLE_SUBMITTED', `${draftType} timetable for ${currentClass}`);
+                setAutoSaveStatus('saved');
+                showToast('Submitted', 'Timetable sent for approval', 'success'); 
+            } catch(e) {
+                showToast('Error', 'Failed to submit timetable', 'error');
+            } finally {
+                btn.disabled = false;
+                btn.innerHTML = origHTML;
+                hideLoading();
+            }
+        });
+        
+        document.getElementById('deleteDraftBtn').addEventListener('click', () => { 
+            openDeleteModal('Are you sure you want to delete this timetable draft?', async () => { 
+                if (!draftId) return; 
+                
+                if (!isOnline) {
+                    queueOfflineOperation({ type: 'delete', collection: 'timetableProposals', docId: draftId });
+                    draftId = null; 
+                    draftData = [getEmptyPeriod('academic')]; 
+                    renderDraftTable(); 
+                    document.getElementById('deleteDraftBtn').style.display = 'none'; 
+                    closeDeleteModal(); 
+                    showToast('Queued', 'Deletion queued for sync', 'warning');
+                    return;
+                }
+                
+                await db.collection('timetableProposals').doc(draftId).delete(); 
+                draftId = null; 
+                draftData = [getEmptyPeriod('academic')]; 
+                renderDraftTable(); 
+                document.getElementById('deleteDraftBtn').style.display = 'none'; 
+                closeDeleteModal(); 
+                showToast('Deleted', 'Draft deleted', 'success'); 
+            }); 
+        });
+        
+        document.getElementById('editPendingBtn').addEventListener('click', async () => { 
+            if (!pendingId) return; 
+            
+            if (!isOnline) {
+                queueOfflineOperation({ type: 'update', collection: 'timetableProposals', docId: pendingId, data: { status: 'draft' } });
+                showToast('Queued', 'Move back to draft queued', 'warning');
+                return;
+            }
+            
+            await db.collection('timetableProposals').doc(pendingId).update({ status: 'draft' }); 
+            await loadAllTimetableData(); 
+            showToast('Moved', 'Moved back to draft', 'info'); 
+        });
+
+        function renderApprovedTimetableList() {
+            const select = document.getElementById('approvedTypeSelect');
+            select.innerHTML = '';
+            const types = [...new Set(approvedList.map(a => a.type))];
+            types.forEach(t => { 
+                const o = document.createElement('option'); 
+                o.value = t; 
+                o.textContent = t.charAt(0).toUpperCase() + t.slice(1); 
+                select.appendChild(o); 
+            });
+            if (types.length) {
+                currentApprovedType = types[0];
+                select.value = currentApprovedType;
+                renderApprovedTable(currentApprovedType);
+                select.addEventListener('change', e => { 
+                    currentApprovedType = e.target.value; 
+                    renderApprovedTable(currentApprovedType); 
+                });
+            }
+        }
+        
+        function renderApprovedTable(type) {
+            const entry = approvedList.find(a => a.type === type);
+            if (!entry) { 
+                document.getElementById('approvedBody').innerHTML = '<tr><td colspan="7">No approved timetables of this type.</td></tr>'; 
+                return; 
+            }
+            const periods = entry.data.periods || [];
+            document.getElementById('approvedTableHeader').innerHTML = '<tr>' + getTHeaders(type).map(h => `<th>${h}</th>`).join('') + '</tr>';
+            let html = '';
+            periods.forEach((p) => {
+                html += '<tr>';
+                html += `<td>${escapeHtml(p.startTime || '')}</td><td>${escapeHtml(p.endTime || '')}</td>`;
+                ['monday', 'tuesday', 'wednesday', 'thursday', 'friday'].forEach(d => { 
+                    if (type === 'academic' || (['hairstyle','test','exam'].includes(type) && ['monday','tuesday','wednesday'].includes(d))) 
+                        html += `<td>${escapeHtml(p[d] || '')}</td>`; 
+                });
+                html += '</tr>';
+            });
+            document.getElementById('approvedBody').innerHTML = html;
+            currentApprovedTimetableId = entry.id;
+        }
+        
+        document.getElementById('publishTimetableBtn').addEventListener('click', async () => {
+            if (!currentApprovedTimetableId) return;
+            
+            if (!isOnline) {
+                queueOfflineOperation({ type: 'update', collection: 'timetables', docId: currentApprovedTimetableId, data: { published: true } });
+                showToast('Queued', 'Publish queued for sync', 'warning');
+                return;
+            }
+            
+            await db.collection('timetables').doc(currentApprovedTimetableId).update({ published: true });
+            await loadAllTimetableData();
+            await addPoints(2, 'Timetable published');
+            await logAudit('TIMETABLE_PUBLISHED', `Timetable published for ${currentClass}`);
+            showToast('Published', 'Timetable published to students', 'success');
+        });
+        
+        document.getElementById('editApprovedBtn').addEventListener('click', async () => {
+            if (!currentApprovedTimetableId) return;
+            const doc = await db.collection('timetables').doc(currentApprovedTimetableId).get();
+            if (!doc.exists) return;
+            const d = doc.data();
+            draftType = d.type || 'academic';
+            draftData = JSON.parse(JSON.stringify(d.periods || []));
+            const newDraft = { 
+                classId: currentClass, 
+                teacherId: currentUser.uid,
+                teacherName: `${userData?.firstName||''} ${userData?.surname||''}`.trim(),
+                periods: draftData, 
+                type: draftType, 
+                status: 'draft', 
+                updatedAt: firebase.firestore.FieldValue.serverTimestamp() 
+            };
+            
+            if (!isOnline) {
+                queueOfflineOperation({ type: 'add', collection: 'timetableProposals', data: newDraft });
+                showToast('Queued', 'New draft from approved timetable queued', 'warning');
+                return;
+            }
+            
+            const ref = await db.collection('timetableProposals').add(newDraft);
+            draftId = ref.id;
+            renderDraftTable();
+            document.getElementById('deleteDraftBtn').style.display = 'inline-block';
+            document.getElementById('sendToAdminBtn').style.display = 'inline-block';
+            document.querySelector('#tt-tabs .sub-tab[data-tt="draft"]').click();
+            showToast('Draft Created', 'New draft created from approved timetable', 'success');
+        });
+
+        function renderRejectedTable() {
+            if (!rejectedId) { 
+                document.getElementById('rejectedBody').innerHTML = '<tr><td colspan="7">No rejected submissions.</td></tr>'; 
+                return; 
+            }
+            document.getElementById('rejectedTableHeader').innerHTML = '<tr>' + getTHeaders(draftType).map(h => `<th>${h}</th>`).join('') + '</tr>';
+            let html = '';
+            rejectedData.forEach((p) => {
+                html += '<tr>';
+                html += `<td>${escapeHtml(p.startTime || '')}</td><td>${escapeHtml(p.endTime || '')}</td>`;
+                ['monday', 'tuesday', 'wednesday', 'thursday', 'friday'].forEach(d => { 
+                    if (draftType === 'academic' || ['monday', 'tuesday', 'wednesday'].includes(d)) 
+                        html += `<td>${escapeHtml(p[d] || '')}</td>`; 
+                });
+                html += '</tr>';
+            });
+            document.getElementById('rejectedBody').innerHTML = html;
+        }
+        
+        document.getElementById('editRejectedBtn').addEventListener('click', async () => {
+            if (!rejectedId) return;
+            
+            if (!isOnline) {
+                queueOfflineOperation({ type: 'update', collection: 'timetableProposals', docId: rejectedId, data: { status: 'draft' } });
+                showToast('Queued', 'Move to draft queued', 'warning');
+                return;
+            }
+            
+            await db.collection('timetableProposals').doc(rejectedId).update({ status: 'draft' });
+            await loadAllTimetableData();
+            showToast('Moved', 'Moved back to draft for editing', 'info');
+        });
+
+        // ==================== AI TIMETABLE GENERATION ====================
+        document.getElementById('aiGenerateTimetableBtn').addEventListener('click', async () => {
+            if (!window.groq) return showToast('Error', 'AI service not available', 'error');
+            if (!currentClass) return showToast('Error', 'Select a class first', 'error');
+            
+            const btn = document.getElementById('aiGenerateTimetableBtn');
+            const origHTML = btn.innerHTML;
+            btn.disabled = true;
+            btn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Generating...';
+            
+            const type = document.getElementById('timetableType').value || 'academic';
+            
+            try {
+                const prompt = `Generate a ${type} timetable for ${currentClass} class in a Nigerian school.
+                ${type === 'academic' ? 'Use school hours 8:00 AM to 2:30 PM, include subjects like Mathematics, English, Science, Social Studies, Art, Physical Education, and others appropriate for the class level.' : ''}
+                ${type === 'hairstyle' ? 'Create a 6-week hairstyle timetable with style names and descriptions.' : ''}
+                ${type === 'test' || type === 'exam' ? 'Create a test/exam timetable with dates, times, subjects, venues, and durations.' : ''}
+                Return ONLY valid JSON array of periods with appropriate fields for the timetable type.`;
+                
+                const result = await window.groq.chat.completions.create({
+                    messages: [
+                        { role: 'system', content: 'You are a timetable generator. Return ONLY valid JSON array.' },
+                        { role: 'user', content: prompt }
+                    ],
+                    model: 'llama-3.3-70b-versatile',
+                    temperature: 0.5,
+                    max_tokens: 2000
+                });
+                
+                let jsonStr = result.choices[0].message.content;
+                jsonStr = jsonStr.replace(/```json|```/g, '').trim();
+                const generated = JSON.parse(jsonStr);
+                
+                if (Array.isArray(generated) && generated.length) {
+                    draftData = generated;
+                    renderDraftTable();
+                    showToast('Generated', `AI generated ${generated.length} timetable entries. Review and save.`, 'success');
+                } else {
+                    showToast('Error', 'AI returned invalid data', 'error');
+                }
+            } catch(err) {
+                showToast('Error', err.message || 'Failed to generate timetable', 'error');
+            } finally {
+                btn.disabled = false;
+                btn.innerHTML = origHTML;
+            }
+        });
+
+        // ==================== SEND TO ADMIN ====================
+        document.getElementById('sendToAdminBtn').addEventListener('click', async () => {
+            if (!draftId || !draftData.length) return showToast('Error', 'No draft to send', 'error');
+            
+            const btn = document.getElementById('sendToAdminBtn');
+            const origHTML = btn.innerHTML;
+            btn.disabled = true;
+            btn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Sending...';
+            
+            try {
+                const data = {
+                    classId: currentClass,
+                    teacherId: currentUser.uid,
+                    teacherName: `${userData?.firstName||''} ${userData?.surname||''}`.trim(),
+                    periods: draftData,
+                    type: draftType,
+                    sentToAdmin: true,
+                    sentAt: firebase.firestore.FieldValue.serverTimestamp()
+                };
+                
+                if (!isOnline) {
+                    queueOfflineOperation({ type: 'add', collection: 'adminTimetables', data });
+                    showToast('Queued', 'Timetable queued for admin', 'warning');
+                    btn.disabled = false;
+                    btn.innerHTML = origHTML;
+                    return;
+                }
+                
+                await db.collection('adminTimetables').add(data);
+                await logAudit('TIMETABLE_SENT_TO_ADMIN', `${draftType} timetable for ${currentClass}`);
+                showToast('Sent', 'Timetable sent to admin for weekly attendance review', 'success');
+            } catch(err) {
+                showToast('Error', 'Failed to send: ' + err.message, 'error');
+            } finally {
+                btn.disabled = false;
+                btn.innerHTML = origHTML;
+            }
+        });
+
+        // ==================== SYLLABUS FUNCTIONS ====================
+        function renderSubjectGrid() {
+            const grid = document.getElementById('subjectGrid');
+            if (!subjects.length) { 
+                grid.innerHTML = '<p style="color:var(--text-secondary);">No subjects yet. Click "Add Subject" to get started.</p>'; 
+                return; 
+            }
+            grid.innerHTML = subjects.map(sub => {
+                const s = syllabusMap[sub] || { weeks: [], status: 'draft' };
+                const totalWeeks = s.weeks?.length || 0;
+                const completedWeeks = Object.values(lessonNotesMap).filter(n => 
+                    n.subject === sub && (n.status === 'approved' || n.teachable)
+                ).length;
+                const pct = totalWeeks > 0 ? Math.round((completedWeeks / totalWeeks) * 100) : 0;
+                const btn = s.status === 'approved' ? 
+                    `<button class="btn btn-primary btn-sm create-ln-btn" data-subject="${escapeAttr(sub)}" style="cursor:pointer;">Create Lesson Note</button>` : '';
+                
+                return `
+                    <div class="subject-card" onclick="selectSubject('${escapeAttr(sub)}', this)">
+                        <h3>${escapeHtml(sub)}</h3>
+                        <p style="color:var(--text-secondary);">${totalWeeks} weeks (${completedWeeks} completed)</p>
+                        <div class="progress-mini">
+                            <div class="progress-mini-fill" style="width:${pct}%"></div>
+                        </div>
+                        <span class="status-badge status-${s.status || 'draft'}">${s.status || 'draft'}</span>
+                        <button class="btn btn-danger btn-sm delete-subject-btn" data-subject="${escapeAttr(sub)}" style="position:absolute;top:0.5rem;right:0.5rem;padding:0.2rem 0.5rem;font-size:0.65rem;" title="Delete subject"><i class="fas fa-trash"></i></button>
+                        ${btn}
+                    </div>
+                `;
+            }).join('');
+        }
+        
+        window.selectSubject = async (subject, card) => {
+            currentSubject = subject;
+            document.querySelectorAll('#subjectGrid .subject-card').forEach(c => c.classList.remove('active')); 
+            if (card) card.classList.add('active');
+            document.getElementById('syllabusSection').style.display = 'block';
+            document.getElementById('currentSubjectTitle').textContent = `${subject} Syllabus`;
+            
+            let s;
+            try {
+                s = await db.collection('syllabus')
+                    .where('teacherId', '==', currentUser.uid)
+                    .where('subject', '==', subject)
+                    .orderBy('submittedAt', 'desc').limit(1).get();
+            } catch (e) {
+                if (e.code === 'failed-precondition') {
+                    showIndexError('syllabus', [
+                        {field:'teacherId',order:'ASCENDING'},
+                        {field:'subject',order:'ASCENDING'},
+                        {field:'submittedAt',order:'DESCENDING'}
+                    ], e);
+                }
+                s = { empty: true, docs: [] };
+            }
+            
+            if (!s.empty) { 
+                const d = s.docs[0]; 
+                syllabusMap[subject] = { id: d.id, ...d.data() }; 
+                renderSyllabusTable(d.data().weeks || []); 
+                updateSyllabusStatus(d.data().status);
+                if (d.data().status === 'approved') {
+                    document.getElementById('publishSyllabusBtn').style.display = 'inline-flex';
+                } else {
+                    document.getElementById('publishSyllabusBtn').style.display = 'none';
+                }
+            } else { 
+                syllabusMap[subject] = { weeks: [], status: 'draft' }; 
+                renderSyllabusTable([]); 
+                updateSyllabusStatus('draft');
+                document.getElementById('publishSyllabusBtn').style.display = 'none';
+            }
+            renderSubjectGrid();
+        };
+        
+        function renderSyllabusTable(weeks) {
+            if (!weeks || !weeks.length) weeks = [{ week: 1, topic: '', objectives: '' }];
+            document.getElementById('syllabusBody').innerHTML = weeks.map((w, i) => `
+                <tr>
+                    <td><input type="number" value="${w.week}" data-i="${i}" data-f="week" min="1"></td>
+                    <td><input type="text" value="${escapeAttr(w.topic || '')}" data-i="${i}" data-f="topic" placeholder="Enter topic"></td>
+                    <td><input type="text" value="${escapeAttr(w.objectives || '')}" data-i="${i}" data-f="objectives" placeholder="Learning objectives"></td>
+                    <td><button class="btn btn-danger btn-sm" onclick="deleteSW(${i})"><i class="fas fa-trash"></i></button></td>
+                </tr>
+            `).join('');
+            
+            document.querySelectorAll('#syllabusBody input').forEach(inp => inp.addEventListener('input', function () { 
+                const i = parseInt(this.dataset.i), f = this.dataset.f; 
+                if (!syllabusMap[currentSubject].weeks[i]) syllabusMap[currentSubject].weeks[i] = {}; 
+                syllabusMap[currentSubject].weeks[i][f] = this.value; 
+            }));
+        }
+        
+        window.deleteSW = i => { 
+            syllabusMap[currentSubject].weeks.splice(i, 1); 
+            renderSyllabusTable(syllabusMap[currentSubject].weeks); 
+        };
+        
+        function updateSyllabusStatus(s) { 
+            const el = document.getElementById('syllabusStatus'); 
+            el.textContent = s; 
+            el.className = `status-badge status-${s}`; 
+        }
+        
+        document.getElementById('addWeekBtn').addEventListener('click', () => { 
+            if (!syllabusMap[currentSubject]) syllabusMap[currentSubject] = { weeks: [] }; 
+            const last = syllabusMap[currentSubject].weeks.length ? 
+                syllabusMap[currentSubject].weeks[syllabusMap[currentSubject].weeks.length - 1].week : 0; 
+            syllabusMap[currentSubject].weeks.push({ week: last + 1, topic: '', objectives: '' }); 
+            renderSyllabusTable(syllabusMap[currentSubject].weeks); 
+        });
+        
+        document.getElementById('saveSyllabusBtn').addEventListener('click', async () => { 
+            const weeks = syllabusMap[currentSubject]?.weeks; 
+            if (!weeks?.length) return showToast('Error', 'Add at least one week', 'error'); 
+            const d = { 
+                teacherId: currentUser.uid,
+                teacherName: `${userData?.firstName||''} ${userData?.surname||''}`.trim(),
+                subject: currentSubject, 
+                classId: currentClass, 
+                weeks, 
+                status: 'draft', 
+                updatedAt: firebase.firestore.FieldValue.serverTimestamp() 
+            }; 
+            
+            if (!isOnline) {
+                queueOfflineOperation({ 
+                    type: syllabusMap[currentSubject].id ? 'update' : 'add', 
+                    collection: 'syllabus', 
+                    docId: syllabusMap[currentSubject].id,
+                    data: d 
+                });
+                showToast('Queued', 'Syllabus draft queued for sync', 'warning');
+                renderSubjectGrid();
+                return;
+            }
+            
+            if (syllabusMap[currentSubject].id) await db.collection('syllabus').doc(syllabusMap[currentSubject].id).update(d); 
+            else { const r = await db.collection('syllabus').add(d); syllabusMap[currentSubject].id = r.id; } 
+            renderSubjectGrid(); 
+            showToast('Saved', 'Syllabus draft saved', 'success'); 
+        });
+        
+        document.getElementById('submitSyllabusBtn').addEventListener('click', async (e) => {
+            e.preventDefault();
+            if (!currentSubject) {
+                return showToast('Error', 'Please select a subject first', 'error');
+            }
+            if (!syllabusMap[currentSubject]) {
+                syllabusMap[currentSubject] = { weeks: [], status: 'draft' };
+            }
+            const weeks = syllabusMap[currentSubject]?.weeks;
+            if (!weeks?.length) return showToast('Error', 'Add at least one week', 'error');
+
+            const btn = document.getElementById('submitSyllabusBtn');
+            const origHTML = btn.innerHTML;
+            btn.disabled = true;
+            btn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Submitting...';
+            showLoading();
+
+            try {
+                const d = {
+                    teacherId: currentUser.uid,
+                    teacherName: `${userData?.firstName||''} ${userData?.surname||''}`.trim(),
+                    subject: currentSubject,
+                    classId: currentClass,
+                    weeks,
+                    status: 'pending',
+                    submittedAt: firebase.firestore.FieldValue.serverTimestamp()
+                };
+                
+                if (!isOnline) {
+                    queueOfflineOperation({ 
+                        type: syllabusMap[currentSubject].id ? 'update' : 'add', 
+                        collection: 'syllabus', 
+                        docId: syllabusMap[currentSubject].id,
+                        data: d 
+                    });
+                    updateSyllabusStatus('pending');
+                    showToast('Queued', 'Syllabus submission queued for sync', 'warning');
+                    btn.disabled = false;
+                    btn.innerHTML = origHTML;
+                    hideLoading();
+                    return;
+                }
+                
+                if (syllabusMap[currentSubject].id) {
+                    await db.collection('syllabus').doc(syllabusMap[currentSubject].id).update(d);
+                } else {
+                    const r = await db.collection('syllabus').add(d);
+                    syllabusMap[currentSubject].id = r.id;
+                }
+                updateSyllabusStatus('pending');
+                await addPoints(2, 'Syllabus submitted for approval');
+                await logAudit('SYLLABUS_SUBMITTED', `${currentSubject} syllabus for ${currentClass}`);
+                showToast('Submitted', 'Syllabus submitted for approval', 'success');
+            } catch (err) {
+                console.error('Syllabus submit error:', err);
+                showToast('Error', err.message || 'Failed to submit syllabus', 'error');
+            } finally {
+                btn.disabled = false;
+                btn.innerHTML = origHTML;
+                hideLoading();
+            }
+        });
+
+        // ==================== SYLLABUS PUBLISHING ====================
+        document.getElementById('publishSyllabusBtn').addEventListener('click', async () => {
+            if (!currentSubject || !syllabusMap[currentSubject]) {
+                return showToast('Error', 'No syllabus to publish', 'error');
+            }
+            
+            const s = syllabusMap[currentSubject];
+            if (s.status !== 'approved') {
+                return showToast('Error', 'Syllabus must be approved first', 'warning');
+            }
+            
+            const btn = document.getElementById('publishSyllabusBtn');
+            const origHTML = btn.innerHTML;
+            btn.disabled = true;
+            btn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Publishing...';
+            
+            try {
+                const publishData = {
+                    teacherId: currentUser.uid,
+                    teacherName: `${userData?.firstName||''} ${userData?.surname||''}`.trim(),
+                    subject: currentSubject,
+                    classId: currentClass,
+                    weeks: s.weeks,
+                    publishedAt: firebase.firestore.FieldValue.serverTimestamp()
+                };
+                
+                if (!isOnline) {
+                    queueOfflineOperation({ type: 'add', collection: 'publishedSyllabi', data: publishData });
+                    showToast('Queued', 'Syllabus publish queued for sync', 'warning');
+                    btn.disabled = false;
+                    btn.innerHTML = origHTML;
+                    return;
+                }
+                
+                await db.collection('publishedSyllabi').add(publishData);
+                await addPoints(3, 'Syllabus published');
+                await logAudit('SYLLABUS_PUBLISHED', `${currentSubject} syllabus for ${currentClass}`);
+                showToast('Published', 'Syllabus published to students and copied to Teach!', 'success');
+            } catch(err) {
+                showToast('Error', 'Failed to publish: ' + err.message, 'error');
+            } finally {
+                btn.disabled = false;
+                btn.innerHTML = origHTML;
+            }
+        });
+
+        // ==================== BULK WEEK OPERATIONS ====================
+        document.getElementById('bulkWeekBtn').addEventListener('click', async () => {
+            if (!currentSubject) return showToast('Error', 'Select a subject first', 'error');
+            document.getElementById('bulkSubject').value = currentSubject;
+            
+            const select = document.getElementById('bulkTemplateSelect');
+            select.innerHTML = '<option value="">None — Blank drafts</option>';
+            
+            try {
+                const snap = await db.collection('lessonTemplates')
+                    .where('subject', '==', currentSubject)
+                    .where('isPublic', '==', true)
+                    .orderBy('createdAt', 'desc')
+                    .limit(20)
+                    .get();
+                
+                snap.forEach(d => {
+                    const data = d.data();
+                    select.innerHTML += `<option value="${d.id}">Week ${data.week}: ${data.topic || 'Untitled'}</option>`;
+                });
+            } catch(e) {
+                console.warn('Could not load templates:', e);
+            }
+            
+            document.getElementById('bulkWeekModal').classList.add('active');
+        });
+
+        function closeBulkWeekModal() {
+            document.getElementById('bulkWeekModal').classList.remove('active');
+        }
+        window.closeBulkWeekModal = closeBulkWeekModal;
+
+        document.getElementById('executeBulkWeekBtn').addEventListener('click', async () => {
+            const subject = document.getElementById('bulkSubject').value;
+            const start = parseInt(document.getElementById('bulkStartWeek').value) || 1;
+            const end = parseInt(document.getElementById('bulkEndWeek').value) || 6;
+            const templateId = document.getElementById('bulkTemplateSelect').value;
+            
+            if (start > end) return showToast('Error', 'Start week must be less than end week', 'error');
+            
+            const btn = document.getElementById('executeBulkWeekBtn');
+            const origHTML = btn.innerHTML;
+            btn.disabled = true;
+            btn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Creating...';
+            showLoading();
+            
+            let templateData = null;
+            if (templateId) {
+                try {
+                    const doc = await db.collection('lessonTemplates').doc(templateId).get();
+                    if (doc.exists) templateData = doc.data();
+                } catch(e) { console.warn('Template load error:', e); }
+            }
+            
+            let created = 0;
+            let skipped = 0;
+            
+            for (let week = start; week <= end; week++) {
+                const key = `${subject}_${week}`;
+                const existing = lessonNotesMap[key];
+                
+                if (existing && (existing.status === 'approved' || existing.status === 'pending')) {
+                    skipped++;
+                    continue;
+                }
+                
+                const topic = syllabusMap[subject]?.weeks?.find(w => w.week == week)?.topic || `Week ${week}`;
+                let lessonNote = templateData?.lessonNote || `<h2>LESSON NOTE</h2>
+                    <p><strong>Subject:</strong> ${subject} &nbsp;&nbsp; <strong>Class:</strong> ${currentClass || '___'}</p>
+                    <p><strong>Week:</strong> ${week} &nbsp;&nbsp; <strong>Topic:</strong> ${topic}</p>
+                    <p><strong>Duration:</strong> 40 minutes</p>
+                    <h3>Instructional Materials:</h3><ul><li>...</li></ul>
+                    <h3>Objectives:</h3><ol><li>...</li></ol>
+                    <h3>Content / Presentation:</h3><p>...</p>
+                    <h3>Evaluation:</h3><ol><li>...</li></ol>
+                    <h3>Assignment:</h3><ol><li>...</li></ol>`;
+                
+                const d = {
+                    teacherId: currentUser.uid,
+                    teacherName: `${userData?.firstName||''} ${userData?.surname||''}`.trim(),
+                    subject: subject,
+                    week: week,
+                    topic: topic,
+                    lessonNote: lessonNote,
+                    classId: currentClass,
+                    status: 'draft',
+                    createdAt: firebase.firestore.FieldValue.serverTimestamp(),
+                    updatedAt: firebase.firestore.FieldValue.serverTimestamp()
+                };
+                
+                try {
+                    if (!isOnline) {
+                        queueOfflineOperation({ type: 'add', collection: 'lessonNotes', data: d });
+                        created++;
+                    } else {
+                        const ref = await db.collection('lessonNotes').add(d);
+                        lessonNotesMap[key] = { id: ref.id, ...d };
+                        created++;
+                    }
+                } catch(e) {
+                    console.error('Bulk create error:', e);
+                }
+            }
+            
+            await loadAllLessonNotes();
+            loadDraftSubjects();
+            hideLoading();
+            btn.disabled = false;
+            btn.innerHTML = origHTML;
+            closeBulkWeekModal();
+            
+            showToast('Bulk Complete', `Created ${created} drafts${skipped > 0 ? `, skipped ${skipped} already approved/pending` : ''}`, 'success');
+        });
+
+        // ==================== DRAFTS TAB FUNCTIONS ====================
+        function loadDraftSubjects() {
+            const grid = document.getElementById('draftSubjectGrid');
+            grid.innerHTML = subjects.map(sub => { 
+                const drafts = Object.values(lessonNotesMap).filter(n => 
+                    n.subject === sub && (!n.status || n.status === 'draft')
+                ).length; 
+                return `
+                    <div class="subject-card" onclick="selectDraftSubject(event, '${escapeAttr(sub)}')">
+                        <h3>${escapeHtml(sub)}</h3>
+                        <p style="color:var(--text-secondary);">${drafts} draft${drafts !== 1 ? 's' : ''}</p>
+                    </div>
+                `;
+            }).join('');
+        }
+        
+        window.selectDraftSubject = (e, subject) => {
+            if (e) e.target.closest('.subject-card').classList.add('active');
+            currentSubjectDraft = subject;
+            document.getElementById('draftDebug').textContent = `Subject: ${subject} | Week: not set`;
+            document.getElementById('draftDebug').style.background = 'var(--warning-bg)';
+            document.getElementById('draftDebug').style.color = 'var(--warning-text)';
+
+            const allNotes = Object.values(lessonNotesMap).filter(n => n.subject === subject);
+            const syllabusWeeks = syllabusMap[subject]?.weeks || [];
+            const draftWeeks = syllabusWeeks.filter(w => {
+                if (!w.week && w.week !== 0) return false;
+                const note = allNotes.find(n => n.week == w.week);
+                return !note || note.status === 'draft' || note.status === 'approved' || !note.status;
+            });
+
+            if (!draftWeeks.length) {
+                document.getElementById('draftWeekList').innerHTML = '<p style="color:var(--danger-text);">No weeks found. Please add weeks in the Syllabus tab.</p>';
+            } else {
+                document.getElementById('draftWeekList').innerHTML = draftWeeks.map(wk => {
+                    const note = allNotes.find(n => n.week == wk.week);
+                    let statusClass = '';
+                    if (note?.status === 'approved') statusClass = 'completed';
+                    else if (note?.status === 'pending') statusClass = 'pending-approval';
+                    return `<div class="week-tab ${statusClass}" onclick="selectDraftWeek(event, ${wk.week})">
+                        Week ${wk.week}: ${escapeHtml(wk.topic || 'No topic')}
+                    </div>`;
+                }).join('');
+            }
+            document.getElementById('draftEditorSection').style.display = 'none';
+        };
+        
+        window.selectDraftWeek = (e, week) => {
+            if (e) {
+                document.querySelectorAll('#draftWeekList .week-tab').forEach(t => t.classList.remove('active'));
+                e.target.classList.add('active');
+            }
+            const safeWeek = (week !== undefined && week !== null) ? week : null;
+            currentWeekDraft = safeWeek;
+
+            const badge = document.getElementById('draftDebug');
+            badge.textContent = `Subject: ${currentSubjectDraft} | Week: ${safeWeek !== null ? safeWeek : '???'}`;
+            badge.style.background = safeWeek !== null ? 'var(--success-bg)' : 'var(--danger-bg)';
+            badge.style.color = safeWeek !== null ? 'var(--success-text)' : 'var(--danger-text)';
+
+            if (!currentSubjectDraft || safeWeek === null) {
+                return showToast('Error', 'Cannot open editor – subject or week missing.', 'error');
+            }
+
+            const key = `${currentSubjectDraft}_${safeWeek}`;
+            const note = lessonNotesMap[key] || {};
+
+            if (note.status && note.status !== 'draft' && note.status !== 'approved') {
+                showToast('Info', 'This week is not available for editing.', 'warning');
+                document.getElementById('draftEditorSection').style.display = 'none';
+                return;
+            }
+
+            document.getElementById('draftEditorSection').style.display = 'block';
+            document.getElementById('editorTitle').textContent = `Week ${safeWeek} – ${currentSubjectDraft}`;
+            quill.root.innerHTML = note.lessonNote || '';
+
+            lessonNoteApproved = note.status === 'approved';
+
+            sectionEditState = { lessonNote: false, teachingProcess: false, studentResource: false, handwriting: false, video: false };
+
+            if (lessonNoteApproved) {
+                document.getElementById('postApprovalSections').style.display = 'block';
+                document.getElementById('createOthersBtnContainer').style.display = 'block';
+                document.getElementById('additionalResources').style.display = 'block';
+                document.getElementById('studentResourceSection').style.display = 'block';
+                document.getElementById('handwritingSection').style.display = 'block';
+                document.getElementById('teachingProcessCard').style.display = 'block';
+                document.getElementById('submitEditorBtn').style.display = 'none';
+                document.getElementById('pushToTeachBtn').style.display = !note.teachable ? 'inline-block' : 'none';
+                
+                lockAllSections(true);
+                document.getElementById('editLessonNoteBtn').style.display = 'inline-flex';
+                document.getElementById('editTPBtn').style.display = 'inline-flex';
+                document.getElementById('editResourceBtn').style.display = 'inline-flex';
+                document.getElementById('editHandwritingBtn').style.display = 'inline-flex';
+                document.getElementById('editVideoBtn').style.display = 'inline-flex';
+                document.getElementById('publishTPBtn').style.display = 'inline-flex';
+                document.getElementById('publishResourceBtn').style.display = 'inline-flex';
+                document.getElementById('publishHandwritingBtn').style.display = 'inline-flex';
+                document.getElementById('publishVideoBtn').style.display = 'inline-flex';
+            } else {
+                document.getElementById('postApprovalSections').style.display = 'none';
+                document.getElementById('createOthersBtnContainer').style.display = 'none';
+                document.getElementById('additionalResources').style.display = 'none';
+                document.getElementById('submitEditorBtn').style.display = 'inline-block';
+                document.getElementById('pushToTeachBtn').style.display = 'none';
+                lockAllSections(false);
+                hideAllEditPublishButtons();
+            }
+
+            contentMerged = !!(note.lessonNote);
+            document.getElementById('deleteLessonNoteBtn').style.display = note.id ? 'inline-flex' : 'none';
+
+            studentQuill.root.innerHTML = note.studentResource || '';
+            teachingProcessQuill.root.innerHTML = note.teachingProcess || '';
+            videoLinks = note.videoLinks || [];
+            renderVideoList();
+            handwritingImages = note.handwritingImages || [];
+            renderHandwritingImages();
+            displayAdminFeedback(note);
+
+            quill.update();
+            studentQuill.update();
+            teachingProcessQuill.update();
+
+            setTimeout(() => {
+                if (quill) quill.update();
+                if (studentQuill) studentQuill.update();
+                if (teachingProcessQuill) teachingProcessQuill.update();
+            }, 50);
+
+            const lessonNoteCard = document.getElementById('lessonNoteCard');
+            if (lessonNoteApproved) {
+                lessonNoteCard.classList.add('locked');
+            } else {
+                lessonNoteCard.classList.remove('locked');
+            }
+            
+            document.getElementById('coPlanBadge').style.display = 'none';
+            document.getElementById('coPlanStatusBar').style.display = 'none';
+        };
+        
+        function displayAdminFeedback(note) {
+            const box = document.getElementById('adminFeedbackBox');
+            const ratingDisplay = document.getElementById('adminRatingDisplay');
+            
+            if (note.adminRating || note.adminFeedback) { 
+                box.classList.add('visible'); 
+                document.getElementById('adminFeedbackText').innerHTML = note.adminFeedback ? 
+                    `<i class="fas fa-comment"></i> ${escapeHtml(note.adminFeedback)}` : '';
+                ratingDisplay.innerHTML = note.adminRating ? 
+                    `Rating: ${'★'.repeat(note.adminRating)}${'☆'.repeat(5 - note.adminRating)} (${note.adminRating}/5)` : '';
+            } else { 
+                box.classList.remove('visible'); 
+            }
+        }
+
+        // ==================== TEMPLATES TAB ====================
+        async function loadTemplatesTab() {
+            const container = document.getElementById('templatesList');
+            container.innerHTML = '<p>Loading templates...</p>';
+            
+            try {
+                const snap = await db.collection('lessonTemplates')
+                    .where('isPublic', '==', true)
+                    .orderBy('createdAt', 'desc')
+                    .limit(50)
+                    .get();
+                
+                if (snap.empty) {
+                    container.innerHTML = '<p style="color:var(--text-secondary);">No public templates available yet. Save a lesson note as a template to share.</p>';
+                    return;
+                }
+                
+                container.innerHTML = snap.docs.map(d => {
+                    const data = d.data();
+                    return `
+                        <div class="card" style="margin-bottom:0.8rem;">
+                            <div style="display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:0.5rem;">
+                                <div>
+                                    <strong>${escapeHtml(data.subject)}</strong> — Week ${data.week}
+                                    <span style="color:var(--text-secondary);font-size:0.8rem;">${escapeHtml(data.topic || 'Untitled')}</span>
+                                    <div style="font-size:0.75rem;color:var(--text-secondary);">By ${escapeHtml(data.teacherName || 'Unknown')}</div>
+                                </div>
+                                <button class="btn btn-primary btn-sm use-template-btn" data-id="${escapeAttr(d.id)}">
+                                    <i class="fas fa-file-import"></i> Use
+                                </button>
+                            </div>
+                        </div>
+                    `;
+                }).join('');
+            } catch(e) {
+                container.innerHTML = '<p style="color:var(--danger-text);">Error loading templates. Please try again.</p>';
+                console.error('Templates load error:', e);
+            }
+        }
+
+        document.addEventListener('click', async (e) => {
+            const useBtn = e.target.closest('.use-template-btn');
+            if (!useBtn) return;
+            
+            const id = useBtn.dataset.id;
+            try {
+                const doc = await db.collection('lessonTemplates').doc(id).get();
+                if (!doc.exists) return showToast('Error', 'Template not found', 'error');
+                const data = doc.data();
+                
+                if (!currentSubjectDraft || !currentWeekDraft) {
+                    return showToast('Error', 'Select a subject and week first in Drafts tab', 'warning');
+                }
+                
+                if (data.lessonNote) {
+                    quill.root.innerHTML = data.lessonNote;
+                    showToast('Applied', 'Template applied to editor', 'success');
+                } else {
+                    showToast('Error', 'Template has no content', 'error');
+                }
+            } catch(err) {
+                showToast('Error', 'Failed to load template', 'error');
+            }
+        });
+
+        // ==================== CURRICULUM ENHANCEMENT ANALYSIS ====================
+        document.getElementById('curriculumCheckBtn').addEventListener('click', async () => {
+            if (!window.groq) return showToast('Error', 'AI service not available', 'error');
+            
+            const content = quill.root.innerHTML;
+            const text = quill.getText();
+            if (!text.trim()) return showToast('Error', 'Write lesson note content first', 'warning');
+            
+            const btn = document.getElementById('curriculumCheckBtn');
+            const origHTML = btn.innerHTML;
+            btn.disabled = true;
+            btn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Analyzing...';
+            
+            const box = document.getElementById('curriculumAnalysisBox');
+            const contentDiv = document.getElementById('curriculumAnalysisContent');
+            box.classList.remove('visible');
+            
+            try {
+                const prompt = `Analyze this lesson note against NERDC curriculum standards. Check:
+                1. Are objectives measurable and specific?
+                2. Does content match the stated topic?
+                3. Is language age-appropriate for the class level?
+                4. Is there a complete evaluation section?
+                5. Is there an assignment section?
+                
+                Return a detailed analysis with specific issues and improvements.
+                Format: Return as HTML with <span class="pass">✅</span> for good items and <span class="fail">❌</span> for issues.
+                
+                Lesson note content:
+                ${text.substring(0, 4000)}`;
+                
+                const result = await window.groq.chat.completions.create({
+                    messages: [
+                        { role: 'system', content: 'You are a curriculum expert for Nigerian NERDC standards. Provide detailed, actionable feedback.' },
+                        { role: 'user', content: prompt }
+                    ],
+                    model: 'llama-3.3-70b-versatile',
+                    temperature: 0.3,
+                    max_tokens: 1500
+                });
+                
+                const analysis = result.choices[0].message.content;
+                contentDiv.innerHTML = analysis;
+                box.classList.add('visible');
+                showToast('Analysis Complete', 'Curriculum check results displayed below', 'success');
+            } catch(err) {
+                showToast('Error', err.message || 'Analysis failed', 'error');
+            } finally {
+                btn.disabled = false;
+                btn.innerHTML = origHTML;
+            }
+        });
+
         // ==================== CO-PLANNING SYSTEM ====================
         document.getElementById('coPlanToggleBtn').addEventListener('click', () => {
             if (coPlanSessionId) {
@@ -3716,7 +3650,6 @@ document.getElementById('curriculumCheckBtn').addEventListener('click', async ()
             }
         }
 
-        // Auto-save co-planning content
         quill.on('text-change', function() {
             if (coPlanSessionId && currentUser) {
                 clearTimeout(quill._coPlanTimer);
@@ -4032,7 +3965,6 @@ Return the entire lesson note in plain text with clear headings. Do NOT use HTML
             }
         });
 
-        // DELETE LESSON NOTE BUTTON
         document.getElementById('deleteLessonNoteBtn').addEventListener('click', async () => {
             if (!currentSubjectDraft || !currentWeekDraft) return;
             const key = `${currentSubjectDraft}_${currentWeekDraft}`;
@@ -5989,4 +5921,4 @@ Return the entire lesson note in plain text with clear headings. Do NOT use HTML
         console.log('🗑️ Removed: Assignments and Question Bank panels');
     </script>
 </body>
-</html>
+</html>    
