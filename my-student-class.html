@@ -48,11 +48,7 @@
             --subject-bg: rgba(200,150,62,0.12); --subject-text: #D4AF37;
         }
 
-        body {
-            font-family: 'Inter', sans-serif; background: var(--bg-primary); color: var(--text-primary);
-            min-height: 100vh; display: flex; position: relative; overflow-x: hidden; transition: background 0.3s, color 0.3s;
-        }
-
+        body { font-family: 'Inter', sans-serif; background: var(--bg-primary); color: var(--text-primary); min-height: 100vh; display: flex; position: relative; overflow-x: hidden; transition: background 0.3s, color 0.3s; }
         .bg-logo { position: fixed; top: 50%; left: 50%; transform: translate(-50%, -50%); width: 400px; max-width: 70vw; opacity: 0.03; pointer-events: none; z-index: 0; animation: breathe 6s ease-in-out infinite; }
         @keyframes breathe { 0%, 100% { transform: translate(-50%, -50%) scale(1); opacity: 0.03; } 50% { transform: translate(-50%, -50%) scale(1.06); opacity: 0.06; } }
         .orb { position: fixed; border-radius: 50%; filter: blur(80px); pointer-events: none; z-index: 0; animation: float 25s infinite alternate; }
@@ -77,7 +73,6 @@
         .sidebar .toggle-btn { margin-top: auto; display: flex; justify-content: flex-end; padding: 0.8rem 0.5rem; cursor: pointer; color: var(--text-secondary); font-size: 1.1rem; transition: all 0.2s; }
         .sidebar .toggle-btn:hover { color: var(--accent); }
 
-        /* Main Content */
         .main-content { flex: 1; margin-left: 260px; padding: 1.5rem; transition: margin-left 0.3s; max-width: calc(100vw - 260px); position: relative; z-index: 5; }
         .main-content.expanded { margin-left: 85px; max-width: calc(100vw - 85px); }
 
@@ -95,6 +90,7 @@
         @keyframes fadeIn { from { opacity: 0; transform: translateY(-10px); } to { opacity: 1; transform: translateY(0); } }
         .dropdown-item { padding: 0.6rem 1rem; color: var(--text-primary); border-radius: 0.8rem; display: flex; align-items: center; gap: 0.6rem; font-size: 0.85rem; cursor: pointer; transition: all 0.2s; }
         .dropdown-item:hover { background: var(--hover-bg); color: var(--accent); }
+        .dropdown-item.danger:hover { background: var(--danger-bg); color: var(--danger-text); }
 
         /* Tab Navigation */
         .tab-navigation { display: flex; gap: 0.5rem; margin-bottom: 1.5rem; background: var(--card-bg); backdrop-filter: blur(12px); -webkit-backdrop-filter: blur(12px); border: 1px solid var(--border); border-radius: 1.5rem; padding: 0.4rem; overflow-x: auto; box-shadow: var(--shadow); }
@@ -156,7 +152,8 @@
         .classmates-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(250px, 1fr)); gap: 0.8rem; }
         .classmate-card { background: var(--hover-bg); border: 1px solid var(--border); border-radius: 1rem; padding: 1rem; display: flex; align-items: center; gap: 0.8rem; transition: all 0.2s; }
         .classmate-card:hover { border-color: var(--accent); transform: translateY(-2px); box-shadow: var(--shadow); }
-        .classmate-avatar { width: 45px; height: 45px; border-radius: 50%; background: linear-gradient(135deg, var(--gradient-start), var(--gradient-end)); display: flex; align-items: center; justify-content: center; color: white; font-weight: 700; font-size: 1rem; flex-shrink: 0; }
+        .classmate-avatar { width: 45px; height: 45px; border-radius: 50%; background: linear-gradient(135deg, var(--gradient-start), var(--gradient-end)); display: flex; align-items: center; justify-content: center; color: white; font-weight: 700; font-size: 1rem; flex-shrink: 0; overflow: hidden; }
+        .classmate-avatar img { width: 100%; height: 100%; object-fit: cover; border-radius: 50%; }
         .classmate-info { flex: 1; min-width: 0; }
         .classmate-info .name { font-weight: 600; font-size: 0.9rem; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
         .classmate-info .id { font-size: 0.7rem; color: var(--text-muted); font-family: 'Space Grotesk', monospace; }
@@ -171,8 +168,9 @@
         .teacher-card .teacher-name { font-weight: 700; font-size: 0.95rem; color: var(--text-primary); }
         .teacher-card .teacher-role { font-size: 0.7rem; color: var(--accent); text-transform: uppercase; letter-spacing: 0.5px; margin-bottom: 0.3rem; }
         .teacher-card .teacher-detail { font-size: 0.78rem; color: var(--text-muted); margin-top: 0.15rem; }
+        .teacher-card .private-info { font-size: 0.7rem; color: var(--text-muted); font-style: italic; }
 
-        /* Subject teachers grouped */
+        /* Subject teachers */
         .subject-group { margin-bottom: 1.2rem; }
         .subject-group h4 { font-size: 0.95rem; font-weight: 700; color: var(--accent); margin-bottom: 0.5rem; display: flex; align-items: center; gap: 0.5rem; }
         .subject-teacher-row { display: flex; align-items: center; gap: 0.8rem; padding: 0.6rem 1rem; background: var(--hover-bg); border-radius: 0.8rem; margin-bottom: 0.4rem; flex-wrap: wrap; }
@@ -185,7 +183,7 @@
         .announcement-card .date { font-size: 0.7rem; color: var(--text-muted); margin-bottom: 0.5rem; }
         .announcement-card p { font-size: 0.85rem; color: var(--text-secondary); line-height: 1.5; }
 
-        /* Attendance Summary */
+        /* Attendance */
         .attendance-summary { display: grid; grid-template-columns: repeat(3, 1fr); gap: 1rem; margin-bottom: 1.5rem; }
         .att-summary-card { background: var(--card-bg); border: 1px solid var(--border); border-radius: 1rem; padding: 1.2rem; text-align: center; }
         .att-summary-card.present { border-left: 4px solid var(--success-text); }
@@ -208,13 +206,13 @@
         .syllabus-week { padding: 0.4rem 0; border-bottom: 1px solid var(--border-light); font-size: 0.8rem; }
         .syllabus-week:last-child { border-bottom: none; }
 
-        /* Empty State */
+        /* Empty */
         .empty-state { text-align: center; padding: 3rem; color: var(--text-muted); }
         .empty-state i { font-size: 3rem; margin-bottom: 1rem; opacity: 0.4; display: block; }
         .empty-state h3 { font-size: 1.1rem; margin-bottom: 0.5rem; color: var(--text-secondary); }
         .empty-state p { font-size: 0.85rem; }
 
-        /* Search */
+        /* Search & Filter */
         .search-box { position: relative; margin-bottom: 1rem; }
         .search-box input { width: 100%; padding: 0.7rem 1rem 0.7rem 2.5rem; background: var(--input-bg); border: 2px solid var(--input-border); border-radius: 2rem; color: var(--text-primary); font-family: inherit; font-size: 0.9rem; outline: none; transition: border-color 0.2s; }
         .search-box input:focus { border-color: var(--accent); }
@@ -239,6 +237,16 @@
         .loading-spinner { display: inline-block; width: 18px; height: 18px; border: 3px solid rgba(255,255,255,0.3); border-top: 3px solid white; border-radius: 50%; animation: spin 0.8s linear infinite; }
         @keyframes spin { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }
 
+        /* Toast */
+        .toast-container { position: fixed; top: 1rem; right: 1rem; z-index: 5000; display: flex; flex-direction: column; gap: 0.5rem; pointer-events: none; }
+        .toast { background: var(--card-bg); backdrop-filter: blur(16px); -webkit-backdrop-filter: blur(16px); border: 1px solid var(--border); border-radius: 1rem; padding: 0.9rem 1.2rem; min-width: 300px; box-shadow: var(--shadow-lg); display: flex; align-items: flex-start; gap: 0.7rem; animation: toastIn 0.3s ease-out; pointer-events: auto; font-size: 0.85rem; }
+        .toast.removing { animation: toastOut 0.3s ease-in forwards; }
+        @keyframes toastIn { from{transform:translateX(120%);opacity:0} to{transform:translateX(0);opacity:1} }
+        @keyframes toastOut { from{transform:translateX(0);opacity:1} to{transform:translateX(120%);opacity:0} }
+
+        /* Star rating for teachers */
+        .star-rating-sm { display: inline-flex; gap: 0.1rem; color: var(--accent); font-size: 0.8rem; }
+
         @media (max-width: 768px) {
             .sidebar { width: 85px; }
             .sidebar .logo-area h2, .sidebar .nav-item span { display: none; }
@@ -260,6 +268,7 @@
 <body>
     <img src="https://res.cloudinary.com/dda7kpir8/image/upload/q_auto/f_auto/v1781038310/ChatGPT_Image_Jun_9_2026_09_25_06_AM_elnine.png" alt="" class="bg-logo" aria-hidden="true">
     <div class="orb orb-1"></div><div class="orb orb-2"></div>
+    <div class="toast-container" id="toastContainer"></div>
 
     <!-- SIDEBAR -->
     <div class="sidebar" id="sidebar">
@@ -296,7 +305,7 @@
             </div>
         </div>
 
-        <!-- STATS ROW -->
+        <!-- STATS -->
         <div class="stats-row" id="statsRow">
             <div class="stat-card"><div class="stat-icon"><i class="fas fa-users"></i></div><div class="val" id="statClassmates">0</div><div class="lbl">Classmates</div></div>
             <div class="stat-card"><div class="stat-icon"><i class="fas fa-check-circle"></i></div><div class="val" id="statAttendance">0%</div><div class="lbl">Attendance Rate</div></div>
@@ -304,7 +313,7 @@
             <div class="stat-card"><div class="stat-icon"><i class="fas fa-bullhorn"></i></div><div class="val" id="statAnnouncements">0</div><div class="lbl">Announcements</div></div>
         </div>
 
-        <!-- TAB NAVIGATION -->
+        <!-- TABS -->
         <div class="tab-navigation" id="tabNavigation">
             <button class="tab-btn active" data-tab="info"><i class="fas fa-info-circle"></i> Class Info</button>
             <button class="tab-btn" data-tab="announcements"><i class="fas fa-bullhorn"></i> Announcements</button>
@@ -318,74 +327,44 @@
         <div class="tab-content active" id="tab-info">
             <div class="card">
                 <div class="card-header"><h3><i class="fas fa-school"></i> Class Information</h3><span class="badge badge-info" id="classNameBadge">Loading...</span></div>
-                <div class="info-grid" id="classInfoGrid"><div class="empty-state"><i class="fas fa-spinner fa-spin"></i><p>Loading class information...</p></div></div>
+                <div class="info-grid" id="classInfoGrid"><div class="empty-state"><i class="fas fa-spinner fa-spin"></i><p>Loading...</p></div></div>
             </div>
-            
-            <!-- Class Teachers -->
-            <div class="card" id="classTeachersCard">
-                <div class="card-header"><h3><i class="fas fa-user-tie"></i> Class Teachers</h3><span id="classTeacherCount" style="font-size:0.8rem;color:var(--text-muted);"></span></div>
-                <div id="classTeachersList"><div class="empty-state"><i class="fas fa-spinner fa-spin"></i><p>Loading...</p></div></div>
-            </div>
-
-            <!-- Subject Teachers -->
-            <div class="card" id="subjectTeachersCard">
-                <div class="card-header"><h3><i class="fas fa-book"></i> Subject Teachers</h3><span id="subjectTeacherCount" style="font-size:0.8rem;color:var(--text-muted);"></span></div>
-                <div id="subjectTeachersList"><div class="empty-state"><i class="fas fa-spinner fa-spin"></i><p>Loading...</p></div></div>
-            </div>
-
-            <!-- Prefects -->
-            <div class="card" id="prefectsCard">
-                <div class="card-header"><h3><i class="fas fa-crown"></i> Class Prefects</h3></div>
-                <div id="prefectsList"><div class="empty-state"><i class="fas fa-spinner fa-spin"></i><p>Loading...</p></div></div>
-            </div>
+            <div class="card"><div class="card-header"><h3><i class="fas fa-user-tie"></i> Class Teachers</h3><span id="classTeacherCount" style="font-size:0.8rem;color:var(--text-muted);"></span></div><div id="classTeachersList"><div class="empty-state"><i class="fas fa-spinner fa-spin"></i><p>Loading...</p></div></div></div>
+            <div class="card"><div class="card-header"><h3><i class="fas fa-book"></i> Subject Teachers</h3><span id="subjectTeacherCount" style="font-size:0.8rem;color:var(--text-muted);"></span></div><div id="subjectTeachersList"><div class="empty-state"><i class="fas fa-spinner fa-spin"></i><p>Loading...</p></div></div></div>
+            <div class="card"><div class="card-header"><h3><i class="fas fa-crown"></i> Class Prefects</h3></div><div id="prefectsList"><div class="empty-state"><i class="fas fa-spinner fa-spin"></i><p>Loading...</p></div></div></div>
         </div>
 
         <!-- TAB 2: ANNOUNCEMENTS -->
         <div class="tab-content" id="tab-announcements">
-            <div class="card">
-                <div class="card-header"><h3><i class="fas fa-bullhorn"></i> Class Announcements</h3><span id="announcementCount" style="font-size:0.8rem;color:var(--text-muted);">0 announcements</span></div>
-                <div id="announcementsList" class="announcement-grid"><div class="empty-state" style="grid-column:1/-1;"><i class="fas fa-spinner fa-spin"></i><p>Loading announcements...</p></div></div>
-            </div>
+            <div class="card"><div class="card-header"><h3><i class="fas fa-bullhorn"></i> Class Announcements</h3><span id="announcementCount" style="font-size:0.8rem;color:var(--text-muted);">0 announcements</span></div><div id="announcementsList" class="announcement-grid"><div class="empty-state" style="grid-column:1/-1;"><i class="fas fa-spinner fa-spin"></i><p>Loading...</p></div></div></div>
         </div>
 
         <!-- TAB 3: CLASSMATES -->
         <div class="tab-content" id="tab-classmates">
-            <div class="card">
-                <div class="card-header"><h3><i class="fas fa-users"></i> My Classmates</h3><span id="classmateCount" style="font-size:0.8rem;color:var(--text-muted);">0 students</span></div>
-                <div class="search-box"><i class="fas fa-search"></i><input type="text" id="classmateSearch" placeholder="Search classmates by name or ID..." oninput="filterClassmates()"></div>
-                <div id="classmatesList" class="classmates-grid"><div class="empty-state" style="grid-column:1/-1;"><i class="fas fa-spinner fa-spin"></i><p>Loading classmates...</p></div></div>
-            </div>
+            <div class="card"><div class="card-header"><h3><i class="fas fa-users"></i> My Classmates</h3><span id="classmateCount" style="font-size:0.8rem;color:var(--text-muted);">0 students</span></div>
+            <div class="search-box"><i class="fas fa-search"></i><input type="text" id="classmateSearch" placeholder="Search classmates by name or ID..." oninput="filterClassmates()"></div>
+            <div id="classmatesList" class="classmates-grid"><div class="empty-state" style="grid-column:1/-1;"><i class="fas fa-spinner fa-spin"></i><p>Loading...</p></div></div></div>
         </div>
 
-        <!-- TAB 4: MY ATTENDANCE -->
+        <!-- TAB 4: ATTENDANCE -->
         <div class="tab-content" id="tab-attendance">
             <div class="attendance-summary" id="attendanceSummary">
                 <div class="att-summary-card present"><div class="stat-icon" style="font-size:1.5rem;color:var(--success-text);">✅</div><div class="val" id="attPresent" style="color:var(--success-text);font-size:1.8rem;">0</div><div class="lbl">Days Present</div></div>
                 <div class="att-summary-card absent"><div class="stat-icon" style="font-size:1.5rem;color:var(--danger-text);">❌</div><div class="val" id="attAbsent" style="color:var(--danger-text);font-size:1.8rem;">0</div><div class="lbl">Days Absent</div></div>
                 <div class="att-summary-card rate"><div class="stat-icon" style="font-size:1.5rem;color:var(--accent);">📊</div><div class="val" id="attRate" style="color:var(--accent);font-size:1.8rem;">0%</div><div class="lbl">Attendance Rate</div></div>
             </div>
-
-            <div class="card" id="absenceRequestCard">
-                <div class="card-header"><h3><i class="fas fa-envelope-open-text"></i> Absence Requests & Explanations</h3><button class="btn btn-primary btn-sm" onclick="openAbsenceRequestModal()"><i class="fas fa-plus"></i> New Request</button></div>
-                <div id="absenceRequestsList"><div class="empty-state"><i class="fas fa-spinner fa-spin"></i><p>Loading requests...</p></div></div>
-            </div>
-
-            <div class="card">
-                <div class="card-header"><h3><i class="fas fa-list-ul"></i> Attendance Record</h3><div class="filter-row"><select id="attMonthFilter" onchange="renderAttendanceTable()"><option value="all">All Months</option></select><select id="attSessionFilter" onchange="renderAttendanceTable()"><option value="all">All Sessions</option><option value="morning">Morning</option><option value="afternoon">Afternoon</option></select></div></div>
-                <div class="table-responsive"><table><thead><tr><th>Date</th><th>Session</th><th>Status</th><th>Remark</th><th>Recorded By</th><th>Actions</th></tr></thead><tbody id="attendanceBody"><tr><td colspan="6"><div class="empty-state"><i class="fas fa-spinner fa-spin"></i><p>Loading...</p></div></td></tr></tbody></table></div>
-            </div>
+            <div class="card"><div class="card-header"><h3><i class="fas fa-envelope-open-text"></i> Absence Requests & Explanations</h3><button class="btn btn-primary btn-sm" onclick="openAbsenceRequestModal()"><i class="fas fa-plus"></i> New Request</button></div><div id="absenceRequestsList"><div class="empty-state"><i class="fas fa-spinner fa-spin"></i><p>Loading...</p></div></div></div>
+            <div class="card"><div class="card-header"><h3><i class="fas fa-list-ul"></i> Attendance Record</h3><div class="filter-row"><select id="attMonthFilter" onchange="renderAttendanceTable()"><option value="all">All Months</option></select><select id="attSessionFilter" onchange="renderAttendanceTable()"><option value="all">All Sessions</option><option value="morning">Morning</option><option value="afternoon">Afternoon</option></select></div></div><div class="table-responsive"><table><thead><tr><th>Date</th><th>Session</th><th>Status</th><th>Remark</th><th>Recorded By</th><th>Actions</th></tr></thead><tbody id="attendanceBody"><tr><td colspan="6"><div class="empty-state"><i class="fas fa-spinner fa-spin"></i><p>Loading...</p></div></td></tr></tbody></table></div></div>
         </div>
 
         <!-- TAB 5: TIMETABLE -->
         <div class="tab-content" id="tab-timetable">
-            <div class="card"><div class="card-header"><h3><i class="fas fa-calendar-alt"></i> Class Timetable</h3></div>
-            <div id="timetableContent"><div class="empty-state"><i class="fas fa-spinner fa-spin"></i><p>Loading timetable...</p></div></div></div>
+            <div class="card"><div class="card-header"><h3><i class="fas fa-calendar-alt"></i> Class Timetable</h3></div><div id="timetableContent"><div class="empty-state"><i class="fas fa-spinner fa-spin"></i><p>Loading...</p></div></div></div>
         </div>
 
         <!-- TAB 6: SYLLABUS -->
         <div class="tab-content" id="tab-syllabus">
-            <div class="card"><div class="card-header"><h3><i class="fas fa-book-open"></i> Approved Syllabus</h3></div>
-            <div id="syllabusContent"><div class="empty-state"><i class="fas fa-spinner fa-spin"></i><p>Loading syllabus...</p></div></div></div>
+            <div class="card"><div class="card-header"><h3><i class="fas fa-book-open"></i> Approved Syllabus</h3></div><div id="syllabusContent"><div class="empty-state"><i class="fas fa-spinner fa-spin"></i><p>Loading...</p></div></div></div>
         </div>
     </div>
 
@@ -402,16 +381,13 @@
             <div class="form-group"><label>Reason *</label><textarea id="absenceReason" class="form-control" rows="4" required placeholder="Explain the reason for your absence..."></textarea></div>
             <div class="form-group"><label>Supporting Document (optional)</label><input type="text" id="absenceDocument" class="form-control" placeholder="Link to document or reference number"></div>
             <div style="background:var(--info-bg);border-left:4px solid var(--accent);padding:0.8rem;border-radius:0.8rem;margin-bottom:1rem;font-size:0.8rem;color:var(--info-text);"><i class="fas fa-info-circle"></i> <strong>Note:</strong> Your request will be sent to your class teachers for review.</div>
-            <div style="display:flex;gap:0.5rem;justify-content:flex-end;">
-                <button class="btn btn-outline" onclick="closeAbsenceRequestModal()"><i class="fas fa-times"></i> Cancel</button>
-                <button class="btn btn-primary" id="submitAbsenceBtn"><i class="fas fa-paper-plane"></i> Submit Request</button>
-            </div>
+            <div style="display:flex;gap:0.5rem;justify-content:flex-end;"><button class="btn btn-outline" onclick="closeAbsenceRequestModal()"><i class="fas fa-times"></i> Cancel</button><button class="btn btn-primary" id="submitAbsenceBtn"><i class="fas fa-paper-plane"></i> Submit Request</button></div>
         </div>
     </div>
 
     <script>
         // ============================================
-        // FIREBASE CONFIGURATION
+        // FIREBASE CONFIG
         // ============================================
         const firebaseConfig = {
             apiKey: "AIzaSyADXHEiaSQ146QsGsaOCElARtpwrLE8svs",
@@ -427,629 +403,327 @@
         const db = firebase.firestore();
 
         // ============================================
-        // DOM REFS & STATE
+        // STATE
         // ============================================
-        const sidebar = document.getElementById('sidebar');
-        const mainContent = document.getElementById('mainContent');
-        const html = document.documentElement;
-        const themeToggle = document.getElementById('themeToggle');
-
-        let currentUser = null;
-        let userData = null;
-        let studentClass = null;
-        let allClassmates = [];
-        let classTeachers = [];
-        let subjectTeachers = [];
-        let allAttendance = [];
-        let allAnnouncements = [];
-        let classTimetable = null;
-        let allSyllabi = [];
-        let absenceRequests = [];
+        let currentUser = null, userData = null, studentClass = null;
+        let allClassmates = [], classTeachers = [], subjectTeachers = [];
+        let allAttendance = [], allAnnouncements = [], classTimetable = null, allSyllabi = [], absenceRequests = [];
         let unsubscribers = {};
 
         // ============================================
         // UTILITIES
         // ============================================
-        function escapeHtml(s) {
-            const d = document.createElement('div');
-            d.textContent = s || '';
-            return d.innerHTML;
+        function escapeHtml(s) { const d = document.createElement('div'); d.textContent = s || ''; return d.innerHTML; }
+        function formatDate(dv) {
+            if (!dv) return '—';
+            if (dv.toDate) return dv.toDate().toLocaleDateString('en-GB', { weekday: 'short', day: 'numeric', month: 'short', year: 'numeric' });
+            const d = new Date(dv); return isNaN(d.getTime()) ? String(dv) : d.toLocaleDateString('en-GB', { weekday: 'short', day: 'numeric', month: 'short', year: 'numeric' });
         }
-
-        function formatDate(dateValue) {
-            if (!dateValue) return '—';
-            if (dateValue.toDate && typeof dateValue.toDate === 'function') {
-                return dateValue.toDate().toLocaleDateString('en-GB', { weekday: 'short', day: 'numeric', month: 'short', year: 'numeric' });
-            }
-            const date = new Date(dateValue);
-            if (isNaN(date.getTime())) return String(dateValue);
-            return date.toLocaleDateString('en-GB', { weekday: 'short', day: 'numeric', month: 'short', year: 'numeric' });
+        function showToast(title, msg, type = 'info') {
+            const icons = { success: 'fa-check-circle', error: 'fa-exclamation-circle', warning: 'fa-exclamation-triangle', info: 'fa-info-circle' };
+            const toast = document.createElement('div'); toast.className = 'toast';
+            toast.innerHTML = `<i class="fas ${icons[type]}" style="color:var(--${type==='success'?'success':type==='error'?'danger':type==='warning'?'warning':'info'}-text);font-size:1.1rem;"></i><div><strong>${escapeHtml(title)}</strong><br><span style="font-size:0.8rem;color:var(--text-secondary);">${escapeHtml(msg)}</span></div>`;
+            document.getElementById('toastContainer').appendChild(toast);
+            setTimeout(() => { toast.classList.add('removing'); setTimeout(() => toast.remove(), 300); }, 4000);
         }
 
         // ============================================
         // SIDEBAR & THEME
         // ============================================
+        const sidebar = document.getElementById('sidebar'), mainContent = document.getElementById('mainContent');
         document.getElementById('sidebarToggle').addEventListener('click', () => {
-            sidebar.classList.toggle('collapsed');
-            mainContent.classList.toggle('expanded');
+            sidebar.classList.toggle('collapsed'); mainContent.classList.toggle('expanded');
             const icon = document.getElementById('sidebarToggle').querySelector('i');
-            icon.classList.toggle('fa-chevron-left');
-            icon.classList.toggle('fa-chevron-right');
+            icon.classList.toggle('fa-chevron-left'); icon.classList.toggle('fa-chevron-right');
         });
-
+        const html = document.documentElement, themeToggle = document.getElementById('themeToggle');
         const savedTheme = localStorage.getItem('judah-theme') || 'dark';
         html.setAttribute('data-theme', savedTheme);
         themeToggle.querySelector('span').textContent = savedTheme === 'dark' ? 'Light' : 'Dark';
         themeToggle.addEventListener('click', () => {
             const next = html.getAttribute('data-theme') === 'dark' ? 'light' : 'dark';
-            html.setAttribute('data-theme', next);
-            localStorage.setItem('judah-theme', next);
+            html.setAttribute('data-theme', next); localStorage.setItem('judah-theme', next);
             themeToggle.querySelector('span').textContent = next === 'dark' ? 'Light' : 'Dark';
         });
 
         // ============================================
-        // TAB NAVIGATION
+        // TABS
         // ============================================
         document.getElementById('tabNavigation').addEventListener('click', (e) => {
-            const btn = e.target.closest('.tab-btn');
-            if (!btn) return;
+            const btn = e.target.closest('.tab-btn'); if (!btn) return;
             document.querySelectorAll('#tabNavigation .tab-btn').forEach(b => b.classList.remove('active'));
             btn.classList.add('active');
             document.querySelectorAll('.tab-content').forEach(t => t.classList.remove('active'));
-            const tabContent = document.getElementById('tab-' + btn.dataset.tab);
-            if (tabContent) tabContent.classList.add('active');
+            const tc = document.getElementById('tab-' + btn.dataset.tab); if (tc) tc.classList.add('active');
+            const tab = btn.dataset.tab;
+            if (tab === 'announcements') renderAnnouncements();
+            else if (tab === 'classmates') renderClassmatesList(allClassmates);
+            else if (tab === 'attendance') refreshAttendanceTab();
+            else if (tab === 'timetable') renderTimetable();
+            else if (tab === 'syllabus') renderSyllabus();
         });
 
         // ============================================
         // REAL-TIME LISTENERS
         // ============================================
-        function startRealTimeListeners() {
+        function startListeners() {
             if (!studentClass || !currentUser) return;
-
-            // Announcements
             if (unsubscribers['announcements']) unsubscribers['announcements']();
-            unsubscribers['announcements'] = db.collection('classAnnouncements')
-                .where('classId', '==', studentClass)
-                .orderBy('createdAt', 'desc')
-                .onSnapshot(snap => {
-                    allAnnouncements = [];
-                    snap.forEach(d => allAnnouncements.push({ id: d.id, ...d.data() }));
-                    updateStats();
-                    if (document.getElementById('tab-announcements').classList.contains('active')) renderAnnouncements();
-                });
-
-            // Attendance
+            unsubscribers['announcements'] = db.collection('classAnnouncements').where('classId', '==', studentClass).orderBy('createdAt', 'desc').onSnapshot(snap => { allAnnouncements = []; snap.forEach(d => allAnnouncements.push({ id: d.id, ...d.data() })); updateStats(); });
             if (unsubscribers['attendance']) unsubscribers['attendance']();
-            unsubscribers['attendance'] = db.collection('attendance')
-                .where('studentId', '==', currentUser.uid)
-                .orderBy('date', 'desc')
-                .onSnapshot(snap => {
-                    allAttendance = [];
-                    snap.forEach(d => allAttendance.push({ id: d.id, ...d.data() }));
-                    updateStats();
-                    if (document.getElementById('tab-attendance').classList.contains('active')) refreshAttendanceTab();
-                });
-
-            // Timetable
+            unsubscribers['attendance'] = db.collection('attendance').where('studentId', '==', currentUser.uid).orderBy('date', 'desc').onSnapshot(snap => { allAttendance = []; snap.forEach(d => allAttendance.push({ id: d.id, ...d.data() })); updateStats(); });
             if (unsubscribers['timetable']) unsubscribers['timetable']();
-            unsubscribers['timetable'] = db.collection('timetables')
-                .where('classId', '==', studentClass)
-                .where('published', '==', true)
-                .limit(1)
-                .onSnapshot(snap => {
-                    classTimetable = null;
-                    snap.forEach(d => classTimetable = { id: d.id, ...d.data() });
-                    updateStats();
-                });
-
-            // Syllabus
+            unsubscribers['timetable'] = db.collection('timetables').where('classId', '==', studentClass).where('published', '==', true).limit(1).onSnapshot(snap => { classTimetable = null; snap.forEach(d => classTimetable = { id: d.id, ...d.data() }); });
             if (unsubscribers['syllabus']) unsubscribers['syllabus']();
-            unsubscribers['syllabus'] = db.collection('syllabus')
-                .where('classId', '==', studentClass)
-                .where('status', '==', 'approved')
-                .onSnapshot(snap => {
-                    allSyllabi = [];
-                    snap.forEach(d => allSyllabi.push({ id: d.id, ...d.data() }));
-                });
-
-            // Absence requests
-            if (unsubscribers['absenceRequests']) unsubscribers['absenceRequests']();
-            unsubscribers['absenceRequests'] = db.collection('pendingActions')
-                .where('studentId', '==', currentUser.uid)
-                .where('actionType', 'in', ['absence_request', 'absence_explanation'])
-                .orderBy('requestedAt', 'desc')
-                .onSnapshot(snap => {
-                    absenceRequests = [];
-                    snap.forEach(d => absenceRequests.push({ id: d.id, ...d.data() }));
-                });
+            unsubscribers['syllabus'] = db.collection('syllabus').where('classId', '==', studentClass).where('status', '==', 'approved').onSnapshot(snap => { allSyllabi = []; snap.forEach(d => allSyllabi.push({ id: d.id, ...d.data() })); });
+            if (unsubscribers['absence']) unsubscribers['absence']();
+            unsubscribers['absence'] = db.collection('pendingActions').where('studentId', '==', currentUser.uid).where('actionType', 'in', ['absence_request', 'absence_explanation']).orderBy('requestedAt', 'desc').onSnapshot(snap => { absenceRequests = []; snap.forEach(d => absenceRequests.push({ id: d.id, ...d.data() })); });
         }
 
-        function refreshAttendanceTab() {
-            updateAttendanceSummary();
-            populateMonthFilter();
-            renderAttendanceTable();
-            renderAbsenceRequests();
-        }
+        function refreshAttendanceTab() { updateAttendanceSummary(); populateMonthFilter(); renderAttendanceTable(); renderAbsenceRequests(); }
 
         // ============================================
-        // LOAD ALL CLASS DATA
+        // LOAD DATA
         // ============================================
         async function loadClassData() {
             if (!studentClass) return;
             try {
-                // Classmates
-                const classmatesSnap = await db.collection('users')
-                    .where('role', '==', 'student')
-                    .where('class', '==', studentClass)
-                    .where('approved', '==', true)
-                    .get();
-                allClassmates = [];
-                classmatesSnap.forEach(doc => {
-                    const data = doc.data();
-                    if (!data.suspended) allClassmates.push({ id: doc.id, ...data });
-                });
-                allClassmates.sort((a, b) => `${a.surname || ''}${a.firstName || ''}`.localeCompare(`${b.surname || ''}${b.firstName || ''}`));
+                const cs = await db.collection('users').where('role', '==', 'student').where('class', '==', studentClass).where('approved', '==', true).get();
+                allClassmates = []; cs.forEach(d => { const dd = d.data(); if (!dd.suspended) allClassmates.push({ id: d.id, ...dd }); });
+                allClassmates.sort((a, b) => `${a.surname||''}${a.firstName||''}`.localeCompare(`${b.surname||''}${b.firstName||''}`));
 
-                // Class Teachers (MULTIPLE via classTeacherFor array)
-                const ctSnap = await db.collection('users')
-                    .where('role', '==', 'teacher')
-                    .where('classTeacherFor', 'array-contains', studentClass)
-                    .where('approved', '==', true)
-                    .get();
-                classTeachers = [];
-                ctSnap.forEach(doc => classTeachers.push({ id: doc.id, ...doc.data() }));
+                const ct = await db.collection('users').where('role', '==', 'teacher').where('classTeacherFor', 'array-contains', studentClass).where('approved', '==', true).get();
+                classTeachers = []; ct.forEach(d => classTeachers.push({ id: d.id, ...d.data() }));
 
-                // Subject Teachers (MULTIPLE via subjectClassMap)
-                const allTeachersSnap = await db.collection('users')
-                    .where('role', '==', 'teacher')
-                    .where('approved', '==', true)
-                    .get();
-                subjectTeachers = [];
-                const subjectMap = {}; // { 'Mathematics': [{id, name, email, phone}], ... }
-                allTeachersSnap.forEach(doc => {
-                    const data = doc.data();
-                    const map = data.subjectClassMap || {};
-                    if (map[studentClass] && map[studentClass].length > 0) {
-                        const teacherInfo = {
-                            id: doc.id,
-                            firstName: data.firstName,
-                            surname: data.surname,
-                            email: data.email,
-                            phone: data.phone,
-                            photoURL: data.photoURL
-                        };
-                        map[studentClass].forEach(sub => {
-                            if (!subjectMap[sub]) subjectMap[sub] = [];
-                            subjectMap[sub].push(teacherInfo);
-                        });
+                const at = await db.collection('users').where('role', '==', 'teacher').where('approved', '==', true).get();
+                subjectTeachers = []; const sm = {};
+                at.forEach(d => {
+                    const dd = d.data(); const map = dd.subjectClassMap || {};
+                    if (map[studentClass] && map[studentClass].length) {
+                        const ti = { id: d.id, firstName: dd.firstName, surname: dd.surname, email: dd.email, phone: dd.phone, photoURL: dd.photoURL, publicProfile: dd.publicProfile || {}, starRating: Math.min(5, Math.floor((dd.points || 0) / 100)), points: dd.points || 0, qualifications: dd.qualifications };
+                        map[studentClass].forEach(sub => { if (!sm[sub]) sm[sub] = []; sm[sub].push(ti); });
                     }
                 });
-                // Convert to sorted array
-                for (const [subject, teachers] of Object.entries(subjectMap)) {
-                    subjectTeachers.push({ subject, teachers });
-                }
+                for (const [sub, teachers] of Object.entries(sm)) { subjectTeachers.push({ subject: sub, teachers }); }
                 subjectTeachers.sort((a, b) => a.subject.localeCompare(b.subject));
 
-                // Update UI
-                updateStats();
-                renderClassInfo();
-                renderClassTeachers();
-                renderSubjectTeachers();
-                renderPrefects();
-                renderClassmatesList(allClassmates);
-                document.getElementById('classmateCount').textContent = `${allClassmates.length} student(s)`;
-
-                // Start real-time listeners
-                startRealTimeListeners();
-
-                console.log(`📚 Class loaded: ${allClassmates.length} classmates, ${classTeachers.length} class teachers, ${subjectTeachers.length} subject groups`);
-            } catch (e) {
-                console.error('Load class data error:', e);
-            }
+                updateStats(); renderClassInfo(); renderClassTeachers(); renderSubjectTeachers(); renderPrefects();
+                renderClassmatesList(allClassmates); document.getElementById('classmateCount').textContent = `${allClassmates.length} student(s)`;
+                startListeners();
+                console.log(`📚 Class: ${allClassmates.length} classmates, ${classTeachers.length} CTs, ${subjectTeachers.length} subs`);
+            } catch (e) { console.error('Load error:', e); }
         }
 
         function updateStats() {
             document.getElementById('statClassmates').textContent = allClassmates.length;
             document.getElementById('statAnnouncements').textContent = allAnnouncements.length;
-            document.getElementById('statTeachers').textContent = classTeachers.length + 
-                new Set(subjectTeachers.flatMap(st => st.teachers.map(t => t.id))).size;
-
-            if (allAttendance.length > 0) {
-                const presentCount = allAttendance.filter(a => a.status === 'present').length;
-                const rate = Math.round((presentCount / allAttendance.length) * 100);
-                document.getElementById('statAttendance').textContent = rate + '%';
-            } else {
-                document.getElementById('statAttendance').textContent = '—';
-            }
+            document.getElementById('statTeachers').textContent = classTeachers.length + new Set(subjectTeachers.flatMap(st => st.teachers.map(t => t.id))).size;
+            if (allAttendance.length) {
+                const pc = allAttendance.filter(a => a.status === 'present').length;
+                document.getElementById('statAttendance').textContent = Math.round((pc / allAttendance.length) * 100) + '%';
+            } else document.getElementById('statAttendance').textContent = '—';
         }
 
         // ============================================
-        // TAB 1: CLASS INFORMATION
+        // CLASS INFO
         // ============================================
         function renderClassInfo() {
             document.getElementById('classNameBadge').textContent = studentClass?.toUpperCase() || 'Unknown';
             document.getElementById('classSubtitle').textContent = `Class ${studentClass?.toUpperCase() || ''} — Stay connected`;
-
             document.getElementById('classInfoGrid').innerHTML = `
                 <div class="info-item"><div class="info-icon"><i class="fas fa-door-open"></i></div><div><div class="info-label">Class Name</div><div class="info-value">${escapeHtml(studentClass?.toUpperCase() || 'Not Assigned')}</div></div></div>
                 <div class="info-item"><div class="info-icon"><i class="fas fa-users"></i></div><div><div class="info-label">Total Students</div><div class="info-value">${allClassmates.length} classmates</div></div></div>
                 <div class="info-item"><div class="info-icon"><i class="fas fa-chalkboard-teacher"></i></div><div><div class="info-label">Class Teachers</div><div class="info-value">${classTeachers.length} teacher(s)</div></div></div>
                 <div class="info-item"><div class="info-icon"><i class="fas fa-book"></i></div><div><div class="info-label">Subject Teachers</div><div class="info-value">${subjectTeachers.length} subject(s) covered</div></div></div>
                 <div class="info-item"><div class="info-icon"><i class="fas fa-crown"></i></div><div><div class="info-label">Prefects</div><div class="info-value">${allClassmates.filter(s => s.prefect).length} appointed</div></div></div>
-                <div class="info-item"><div class="info-icon"><i class="fas fa-graduation-cap"></i></div><div><div class="info-label">Your Student ID</div><div class="info-value" style="font-family:'Space Grotesk',monospace;">${userData?.userId || '—'}</div></div></div>
-            `;
+                <div class="info-item"><div class="info-icon"><i class="fas fa-graduation-cap"></i></div><div><div class="info-label">Your Student ID</div><div class="info-value" style="font-family:'Space Grotesk',monospace;">${userData?.userId || '—'}</div></div></div>`;
         }
 
         function renderClassTeachers() {
-            const container = document.getElementById('classTeachersList');
+            const c = document.getElementById('classTeachersList');
             document.getElementById('classTeacherCount').textContent = `${classTeachers.length} teacher(s)`;
-
-            if (!classTeachers.length) {
-                container.innerHTML = '<div class="empty-state"><i class="fas fa-user-slash"></i><h3>No Class Teachers Assigned</h3><p>No class teachers have been assigned to your class yet.</p></div>';
-                return;
-            }
-
-            container.innerHTML = `<div class="teacher-grid">${classTeachers.map(t => {
-                const name = `${t.firstName || ''} ${t.surname || ''}`.trim();
-                const initials = (t.firstName?.[0] || '') + (t.surname?.[0] || '');
-                return `
-                    <div class="teacher-card">
-                        <div class="teacher-avatar">${t.photoURL ? `<img src="${t.photoURL}" alt="${escapeHtml(name)}">` : initials}</div>
-                        <div class="teacher-info">
-                            <div class="teacher-role"><i class="fas fa-user-tie"></i> Class Teacher</div>
-                            <div class="teacher-name">${escapeHtml(name)}</div>
-                            ${t.email ? `<div class="teacher-detail"><i class="fas fa-envelope"></i> ${escapeHtml(t.email)}</div>` : ''}
-                            ${t.phone ? `<div class="teacher-detail"><i class="fas fa-phone"></i> ${escapeHtml(t.phone)}</div>` : ''}
-                        </div>
-                    </div>`;
-            }).join('')}</div>`;
+            if (!classTeachers.length) { c.innerHTML = '<div class="empty-state"><i class="fas fa-user-slash"></i><h3>No Class Teachers</h3></div>'; return; }
+            c.innerHTML = `<div class="teacher-grid">${classTeachers.map(t => renderTeacherCard(t, 'Class Teacher')).join('')}</div>`;
         }
 
         function renderSubjectTeachers() {
-            const container = document.getElementById('subjectTeachersList');
-            const uniqueTeacherCount = new Set(subjectTeachers.flatMap(st => st.teachers.map(t => t.id))).size;
-            document.getElementById('subjectTeacherCount').textContent = `${uniqueTeacherCount} teacher(s) across ${subjectTeachers.length} subject(s)`;
+            const c = document.getElementById('subjectTeachersList');
+            const unique = new Set(subjectTeachers.flatMap(st => st.teachers.map(t => t.id))).size;
+            document.getElementById('subjectTeacherCount').textContent = `${unique} teacher(s) across ${subjectTeachers.length} subject(s)`;
+            if (!subjectTeachers.length) { c.innerHTML = '<div class="empty-state"><i class="fas fa-book"></i><h3>No Subject Teachers</h3></div>'; return; }
+            c.innerHTML = subjectTeachers.map(st => `
+                <div class="subject-group"><h4><span class="badge badge-subject">${escapeHtml(st.subject)}</span></h4>
+                ${st.teachers.map(t => {
+                    const pub = t.publicProfile || {};
+                    const name = `${t.firstName||''} ${t.surname||''}`.trim();
+                    const initials = (t.firstName?.[0]||'') + (t.surname?.[0]||'');
+                    let details = '';
+                    if (pub.email === true && t.email) details += `<span style="font-size:0.7rem;color:var(--text-muted);margin-left:0.5rem;"><i class="fas fa-envelope"></i> ${escapeHtml(t.email)}</span>`;
+                    if (pub.phone === true && t.phone) details += `<span style="font-size:0.7rem;color:var(--text-muted);margin-left:0.5rem;"><i class="fas fa-phone"></i> ${escapeHtml(t.phone)}</span>`;
+                    if (pub.rating !== false && t.starRating > 0) details += `<span class="star-rating-sm" style="margin-left:0.5rem;">${'★'.repeat(t.starRating)}${'☆'.repeat(5-t.starRating)}</span>`;
+                    return `<div class="subject-teacher-row"><div style="width:35px;height:35px;border-radius:50%;background:linear-gradient(135deg,var(--gradient-start),var(--gradient-end));display:flex;align-items:center;justify-content:center;color:white;font-size:0.7rem;font-weight:700;flex-shrink:0;overflow:hidden;">${t.photoURL && pub.photo !== false ? `<img src="${t.photoURL}" style="width:100%;height:100%;object-fit:cover;">` : initials}</div><div><strong style="font-size:0.85rem;">${pub.name !== false ? escapeHtml(name) : 'Teacher'}</strong>${details}</div></div>`;
+                }).join('')}</div>`).join('');
+        }
 
-            if (!subjectTeachers.length) {
-                container.innerHTML = '<div class="empty-state"><i class="fas fa-book"></i><h3>No Subject Teachers</h3><p>No subject teachers have been assigned to your class yet.</p></div>';
-                return;
-            }
-
-            container.innerHTML = subjectTeachers.map(st => `
-                <div class="subject-group">
-                    <h4><span class="badge badge-subject">${escapeHtml(st.subject)}</span></h4>
-                    ${st.teachers.map(t => {
-                        const name = `${t.firstName || ''} ${t.surname || ''}`.trim();
-                        const initials = (t.firstName?.[0] || '') + (t.surname?.[0] || '');
-                        return `
-                            <div class="subject-teacher-row">
-                                <div style="width:35px;height:35px;border-radius:50%;background:linear-gradient(135deg,var(--gradient-start),var(--gradient-end));display:flex;align-items:center;justify-content:center;color:white;font-size:0.7rem;font-weight:700;flex-shrink:0;">${initials}</div>
-                                <div>
-                                    <strong style="font-size:0.85rem;">${escapeHtml(name)}</strong>
-                                    ${t.email ? `<span style="font-size:0.7rem;color:var(--text-muted);margin-left:0.5rem;"><i class="fas fa-envelope"></i> ${escapeHtml(t.email)}</span>` : ''}
-                                </div>
-                            </div>`;
-                    }).join('')}
+        function renderTeacherCard(t, role) {
+            const pub = t.publicProfile || {};
+            const name = `${t.firstName||''} ${t.surname||''}`.trim();
+            const initials = (t.firstName?.[0]||'') + (t.surname?.[0]||'');
+            let details = '';
+            if (pub.email === true && t.email) details += `<div class="teacher-detail"><i class="fas fa-envelope"></i> ${escapeHtml(t.email)}</div>`;
+            if (pub.phone === true && t.phone) details += `<div class="teacher-detail"><i class="fas fa-phone"></i> ${escapeHtml(t.phone)}</div>`;
+            if (pub.rating !== false && t.points > 0) details += `<div class="teacher-detail"><span class="star-rating-sm">${'★'.repeat(Math.min(5,Math.floor((t.points||0)/100)))}${'☆'.repeat(5-Math.min(5,Math.floor((t.points||0)/100)))}</span> ${(t.points||0)} pts</div>`;
+            if (pub.qualifications !== false && t.qualifications) details += `<div class="teacher-detail"><i class="fas fa-graduation-cap"></i> ${escapeHtml(t.qualifications)}</div>`;
+            if (!details && pub.email !== true && pub.phone !== true) details = '<div class="private-info"><i class="fas fa-lock"></i> Contact info private</div>';
+            return `<div class="teacher-card">
+                <div class="teacher-avatar">${t.photoURL && pub.photo !== false ? `<img src="${t.photoURL}" alt="${escapeHtml(name)}">` : initials}</div>
+                <div class="teacher-info">
+                    <div class="teacher-role"><i class="fas fa-user-tie"></i> ${role}</div>
+                    <div class="teacher-name">${pub.name !== false ? escapeHtml(name) : 'Teacher'}</div>
+                    ${details}
                 </div>
-            `).join('');
+            </div>`;
         }
 
         function renderPrefects() {
             const prefects = allClassmates.filter(s => s.prefect);
-            const container = document.getElementById('prefectsList');
-            if (!prefects.length) {
-                container.innerHTML = '<div class="empty-state"><i class="fas fa-crown" style="opacity:0.3;"></i><h3>No Prefects Appointed</h3><p>No class prefects have been appointed yet.</p></div>';
-                return;
-            }
-            container.innerHTML = `<div class="classmates-grid">${prefects.map(s => {
-                const name = `${s.firstName || ''} ${s.surname || ''}`.trim();
-                const initials = (s.firstName?.[0] || '') + (s.surname?.[0] || '');
-                return `<div class="classmate-card"><div class="classmate-avatar">${s.photoURL ? `<img src="${s.photoURL}" style="width:100%;height:100%;object-fit:cover;border-radius:50%;">` : initials}</div><div class="classmate-info"><div class="name">${escapeHtml(name)}</div><div style="display:flex;gap:0.4rem;align-items:center;flex-wrap:wrap;"><span class="badge badge-prefect"><i class="fas fa-crown"></i> ${escapeHtml(s.prefect)}</span></div></div></div>`;
+            const c = document.getElementById('prefectsList');
+            if (!prefects.length) { c.innerHTML = '<div class="empty-state"><i class="fas fa-crown" style="opacity:0.3;"></i><h3>No Prefects</h3></div>'; return; }
+            c.innerHTML = `<div class="classmates-grid">${prefects.map(s => {
+                const name = `${s.firstName||''} ${s.surname||''}`.trim();
+                const ini = (s.firstName?.[0]||'') + (s.surname?.[0]||'');
+                return `<div class="classmate-card"><div class="classmate-avatar">${s.photoURL ? `<img src="${s.photoURL}">` : ini}</div><div class="classmate-info"><div class="name">${escapeHtml(name)}</div><span class="badge badge-prefect"><i class="fas fa-crown"></i> ${escapeHtml(s.prefect)}</span></div></div>`;
             }).join('')}</div>`;
         }
 
         // ============================================
-        // TAB 2: ANNOUNCEMENTS
+        // ANNOUNCEMENTS
         // ============================================
         function renderAnnouncements() {
-            const container = document.getElementById('announcementsList');
+            const c = document.getElementById('announcementsList');
             document.getElementById('announcementCount').textContent = `${allAnnouncements.length} announcement(s)`;
-            if (!allAnnouncements.length) {
-                container.innerHTML = '<div class="empty-state" style="grid-column:1/-1;"><i class="fas fa-bullhorn"></i><h3>No Announcements Yet</h3><p>Your class teacher hasn\'t posted any announcements.</p></div>';
-                return;
-            }
-            container.innerHTML = allAnnouncements.map(a => {
-                const dateStr = a.createdAt?.toDate ? a.createdAt.toDate().toLocaleDateString('en-GB', { day: 'numeric', month: 'short', year: 'numeric', hour: '2-digit', minute: '2-digit' }) : 'Unknown';
-                return `<div class="announcement-card"><h4>${escapeHtml(a.title || 'Untitled')}</h4><div class="date"><i class="fas fa-calendar"></i> ${dateStr} · <i class="fas fa-user"></i> ${escapeHtml(a.teacherName || 'Teacher')}</div><p>${escapeHtml(a.content || '')}</p></div>`;
-            }).join('');
+            if (!allAnnouncements.length) { c.innerHTML = '<div class="empty-state" style="grid-column:1/-1;"><i class="fas fa-bullhorn"></i><h3>No Announcements</h3></div>'; return; }
+            c.innerHTML = allAnnouncements.map(a => `<div class="announcement-card"><h4>${escapeHtml(a.title||'Untitled')}</h4><div class="date"><i class="fas fa-calendar"></i> ${a.createdAt?.toDate?.().toLocaleDateString('en-GB',{day:'numeric',month:'short',year:'numeric',hour:'2-digit',minute:'2-digit'})||'Unknown'} · <i class="fas fa-user"></i> ${escapeHtml(a.teacherName||'Teacher')}</div><p>${escapeHtml(a.content||'')}</p></div>`).join('');
         }
 
         // ============================================
-        // TAB 3: CLASSMATES
+        // CLASSMATES
         // ============================================
         function renderClassmatesList(list) {
-            const container = document.getElementById('classmatesList');
-            if (!list.length) {
-                container.innerHTML = '<div class="empty-state" style="grid-column:1/-1;"><i class="fas fa-user-slash"></i><h3>No classmates found</h3><p>Try adjusting your search.</p></div>';
-                return;
-            }
-            container.innerHTML = list.map(s => {
-                const name = `${s.firstName || ''} ${s.surname || ''}`.trim();
-                const initials = (s.firstName?.[0] || '') + (s.surname?.[0] || '');
-                const isYou = s.id === currentUser.uid;
-                return `<div class="classmate-card" style="${isYou ? 'border-color:var(--accent);border-width:2px;' : ''}"><div class="classmate-avatar">${s.photoURL ? `<img src="${s.photoURL}" style="width:100%;height:100%;object-fit:cover;border-radius:50%;">` : initials}</div><div class="classmate-info"><div class="name">${escapeHtml(name)}${isYou ? '<span style="font-size:0.7rem;color:var(--accent);margin-left:0.3rem;">(You)</span>' : ''}</div><div style="display:flex;gap:0.4rem;align-items:center;flex-wrap:wrap;margin-top:0.2rem;"><span class="id">${s.userId || '—'}</span>${s.prefect ? `<span class="badge badge-prefect"><i class="fas fa-crown"></i> ${escapeHtml(s.prefect)}</span>` : ''}</div></div></div>`;
+            const c = document.getElementById('classmatesList');
+            if (!list.length) { c.innerHTML = '<div class="empty-state" style="grid-column:1/-1;"><i class="fas fa-user-slash"></i><h3>No classmates</h3></div>'; return; }
+            c.innerHTML = list.map(s => {
+                const name = `${s.firstName||''} ${s.surname||''}`.trim();
+                const ini = (s.firstName?.[0]||'') + (s.surname?.[0]||'');
+                return `<div class="classmate-card" style="${s.id===currentUser.uid?'border-color:var(--accent);border-width:2px;':''}"><div class="classmate-avatar">${s.photoURL?`<img src="${s.photoURL}">`:ini}</div><div class="classmate-info"><div class="name">${escapeHtml(name)}${s.id===currentUser.uid?'<span style="font-size:0.7rem;color:var(--accent);margin-left:0.3rem;">(You)</span>':''}</div><div style="display:flex;gap:0.4rem;align-items:center;flex-wrap:wrap;margin-top:0.2rem;"><span class="id">${s.userId||'—'}</span>${s.prefect?`<span class="badge badge-prefect"><i class="fas fa-crown"></i> ${escapeHtml(s.prefect)}</span>`:''}</div></div></div>`;
             }).join('');
         }
-
-        function filterClassmates() {
-            const search = document.getElementById('classmateSearch').value.toLowerCase().trim();
-            if (!search) { renderClassmatesList(allClassmates); return; }
-            const filtered = allClassmates.filter(s => {
-                const name = `${s.firstName || ''} ${s.surname || ''}`.toLowerCase();
-                const id = (s.userId || '').toLowerCase();
-                return name.includes(search) || id.includes(search);
-            });
-            renderClassmatesList(filtered);
-        }
-        window.filterClassmates = filterClassmates;
+        window.filterClassmates = () => {
+            const s = document.getElementById('classmateSearch').value.toLowerCase().trim();
+            if (!s) { renderClassmatesList(allClassmates); return; }
+            renderClassmatesList(allClassmates.filter(x => `${x.firstName||''} ${x.surname||''}`.toLowerCase().includes(s) || (x.userId||'').toLowerCase().includes(s)));
+        };
 
         // ============================================
-        // TAB 4: MY ATTENDANCE
+        // ATTENDANCE
         // ============================================
         function updateAttendanceSummary() {
-            const presentCount = allAttendance.filter(a => a.status === 'present').length;
-            const absentCount = allAttendance.filter(a => a.status === 'absent').length;
-            const rate = allAttendance.length > 0 ? Math.round((presentCount / allAttendance.length) * 100) : 0;
-            document.getElementById('attPresent').textContent = presentCount;
-            document.getElementById('attAbsent').textContent = absentCount;
-            document.getElementById('attRate').textContent = rate + '%';
+            const p = allAttendance.filter(a => a.status === 'present').length;
+            const ab = allAttendance.filter(a => a.status === 'absent').length;
+            document.getElementById('attPresent').textContent = p;
+            document.getElementById('attAbsent').textContent = ab;
+            document.getElementById('attRate').textContent = allAttendance.length ? Math.round((p/allAttendance.length)*100)+'%' : '0%';
         }
-
         function populateMonthFilter() {
-            const months = new Set();
-            allAttendance.forEach(a => {
-                if (a.date) {
-                    const d = a.date.toDate ? a.date.toDate() : new Date(a.date);
-                    const monthKey = `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, '0')}`;
-                    const monthLabel = d.toLocaleDateString('en-US', { month: 'long', year: 'numeric' });
-                    months.add(JSON.stringify({ key: monthKey, label: monthLabel }));
-                }
-            });
-            const monthFilter = document.getElementById('attMonthFilter');
-            monthFilter.innerHTML = '<option value="all">All Months</option>';
-            [...months].map(JSON.parse).sort((a, b) => b.key.localeCompare(a.key)).forEach(m => {
-                monthFilter.innerHTML += `<option value="${m.key}">${m.label}</option>`;
-            });
+            const ms = new Set();
+            allAttendance.forEach(a => { if(a.date){ const d=a.date.toDate?new Date(a.date.toDate()):new Date(a.date); ms.add(JSON.stringify({k:`${d.getFullYear()}-${String(d.getMonth()+1).padStart(2,'0')}`,l:d.toLocaleDateString('en-US',{month:'long',year:'numeric'})})); } });
+            const mf = document.getElementById('attMonthFilter'); mf.innerHTML = '<option value="all">All Months</option>';
+            [...ms].map(JSON.parse).sort((a,b)=>b.k.localeCompare(a.k)).forEach(m => mf.innerHTML += `<option value="${m.k}">${m.l}</option>`);
         }
-
         function renderAttendanceTable() {
-            const monthFilter = document.getElementById('attMonthFilter').value;
-            const sessionFilter = document.getElementById('attSessionFilter').value;
-            const tbody = document.getElementById('attendanceBody');
-            let filtered = [...allAttendance];
-            if (monthFilter !== 'all') {
-                filtered = filtered.filter(a => {
-                    if (!a.date) return false;
-                    const d = a.date.toDate ? a.date.toDate() : new Date(a.date);
-                    const key = `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, '0')}`;
-                    return key === monthFilter;
-                });
-            }
-            if (sessionFilter !== 'all') filtered = filtered.filter(a => a.session === sessionFilter);
-            if (!filtered.length) {
-                tbody.innerHTML = '<tr><td colspan="6"><div class="empty-state"><i class="fas fa-calendar-check"></i><h3>No records found</h3></div></td></tr>';
-                return;
-            }
-            tbody.innerHTML = filtered.map(a => {
-                const dateStr = a.date ? formatDate(a.date) : '—';
-                const sessionLabel = a.session === 'morning' ? '🌅 Morning' : '🌤 Afternoon';
-                const statusBadge = a.status === 'present' ? 'badge-present' : 'badge-absent';
-                const statusIcon = a.status === 'present' ? 'fa-check-circle' : 'fa-times-circle';
-                const hasExplanation = absenceRequests.some(req => req.details?.absenceDate === a.date && req.actionType === 'absence_explanation');
-                return `<tr><td>${dateStr}</td><td>${sessionLabel}</td><td><span class="badge ${statusBadge}"><i class="fas ${statusIcon}"></i> ${a.status === 'present' ? 'Present' : 'Absent'}</span></td><td>${escapeHtml(a.remark || '—')}</td><td>${escapeHtml(a.teacherName || '—')}</td><td>${a.status === 'absent' && !hasExplanation ? `<button class="btn btn-outline btn-sm" onclick="explainAbsence('${a.date}', '${a.session || ''}')"><i class="fas fa-envelope"></i> Explain</button>` : a.status === 'absent' ? '<span class="badge badge-info" style="font-size:0.65rem;"><i class="fas fa-check"></i> Explained</span>' : '—'}</td></tr>`;
+            const mf = document.getElementById('attMonthFilter').value, sf = document.getElementById('attSessionFilter').value;
+            let f = [...allAttendance];
+            if (mf !== 'all') f = f.filter(a => { if(!a.date) return false; const d = a.date.toDate?new Date(a.date.toDate()):new Date(a.date); return `${d.getFullYear()}-${String(d.getMonth()+1).padStart(2,'0')}` === mf; });
+            if (sf !== 'all') f = f.filter(a => a.session === sf);
+            const tb = document.getElementById('attendanceBody');
+            if (!f.length) { tb.innerHTML = '<tr><td colspan="6"><div class="empty-state"><i class="fas fa-calendar-check"></i><h3>No records</h3></div></td></tr>'; return; }
+            tb.innerHTML = f.map(a => {
+                const hasEx = absenceRequests.some(r => r.details?.absenceDate === a.date && r.actionType === 'absence_explanation');
+                return `<tr><td>${formatDate(a.date)}</td><td>${a.session==='morning'?'🌅 Morning':'🌤 Afternoon'}</td><td><span class="badge ${a.status==='present'?'badge-present':'badge-absent'}"><i class="fas ${a.status==='present'?'fa-check-circle':'fa-times-circle'}"></i> ${a.status==='present'?'Present':'Absent'}</span></td><td>${escapeHtml(a.remark||'—')}</td><td>${escapeHtml(a.teacherName||'—')}</td><td>${a.status==='absent'&&!hasEx?`<button class="btn btn-outline btn-sm" onclick="explainAbsence('${a.date}','${a.session||''}')"><i class="fas fa-envelope"></i> Explain</button>`:a.status==='absent'?'<span class="badge badge-info" style="font-size:0.65rem;"><i class="fas fa-check"></i> Explained</span>':'—'}</td></tr>`;
             }).join('');
         }
-        window.renderAttendanceTable = renderAttendanceTable;
-
         function renderAbsenceRequests() {
-            const container = document.getElementById('absenceRequestsList');
-            if (!absenceRequests.length) {
-                container.innerHTML = '<div class="empty-state"><i class="fas fa-envelope-open"></i><h3>No Absence Requests</h3><p>You haven\'t submitted any absence requests or explanations yet.</p></div>';
-                return;
-            }
-            container.innerHTML = absenceRequests.map(req => {
-                const statusClass = req.status === 'approved' ? 'badge-approved' : req.status === 'rejected' ? 'badge-rejected' : 'badge-pending';
-                const statusIcon = req.status === 'approved' ? 'fa-check-circle' : req.status === 'rejected' ? 'fa-times-circle' : 'fa-clock';
-                const typeLabel = req.actionType === 'absence_request' ? 'Upcoming Request' : 'Past Explanation';
-                const dateStr = req.requestedAt?.toDate ? req.requestedAt.toDate().toLocaleDateString('en-GB', { day: 'numeric', month: 'short', year: 'numeric' }) : 'Unknown';
-                return `<div class="card" style="padding:1rem; margin-bottom:0.75rem;"><div style="display:flex;justify-content:space-between;align-items:flex-start;gap:1rem;flex-wrap:wrap;"><div style="flex:1;min-width:200px;"><div style="display:flex;gap:0.5rem;align-items:center;flex-wrap:wrap;margin-bottom:0.3rem;"><span class="badge badge-info">${typeLabel}</span><span class="badge ${statusClass}"><i class="fas ${statusIcon}"></i> ${req.status?.toUpperCase() || 'PENDING'}</span></div><p style="font-size:0.85rem;margin:0.3rem 0;"><strong>Date:</strong> ${escapeHtml(req.details?.absenceDate || '—')}<br><strong>Session:</strong> ${escapeHtml(req.details?.session || '—')}</p><p style="font-size:0.85rem;color:var(--text-secondary);margin:0.3rem 0;"><strong>Reason:</strong> ${escapeHtml(req.details?.reason || 'No reason provided')}</p>${req.details?.document ? `<p style="font-size:0.8rem;"><strong>Doc Ref:</strong> ${escapeHtml(req.details.document)}</p>` : ''}${req.adminNote ? `<p style="font-size:0.8rem;color:var(--accent);margin-top:0.3rem;"><strong>Response:</strong> ${escapeHtml(req.adminNote)}</p>` : ''}</div><small style="color:var(--text-muted);">Submitted: ${dateStr}</small></div></div>`;
+            const c = document.getElementById('absenceRequestsList');
+            if (!absenceRequests.length) { c.innerHTML = '<div class="empty-state"><i class="fas fa-envelope-open"></i><h3>No Requests</h3></div>'; return; }
+            c.innerHTML = absenceRequests.map(r => {
+                const sc = r.status==='approved'?'badge-approved':r.status==='rejected'?'badge-rejected':'badge-pending';
+                const si = r.status==='approved'?'fa-check-circle':r.status==='rejected'?'fa-times-circle':'fa-clock';
+                return `<div class="card" style="padding:1rem;margin-bottom:0.75rem;"><div style="display:flex;justify-content:space-between;align-items:flex-start;gap:1rem;flex-wrap:wrap;"><div style="flex:1;min-width:200px;"><div style="display:flex;gap:0.5rem;align-items:center;flex-wrap:wrap;margin-bottom:0.3rem;"><span class="badge badge-info">${r.actionType==='absence_request'?'Upcoming':'Past'}</span><span class="badge ${sc}"><i class="fas ${si}"></i> ${r.status?.toUpperCase()||'PENDING'}</span></div><p style="font-size:0.85rem;margin:0.3rem 0;"><strong>Date:</strong> ${escapeHtml(r.details?.absenceDate||'—')}<br><strong>Session:</strong> ${escapeHtml(r.details?.session||'—')}</p><p style="font-size:0.85rem;color:var(--text-secondary);"><strong>Reason:</strong> ${escapeHtml(r.details?.reason||'—')}</p>${r.adminNote?`<p style="font-size:0.8rem;color:var(--accent);"><strong>Response:</strong> ${escapeHtml(r.adminNote)}</p>`:''}</div><small style="color:var(--text-muted);">${r.requestedAt?.toDate?.().toLocaleDateString('en-GB',{day:'numeric',month:'short',year:'numeric'})||'Unknown'}</small></div></div>`;
             }).join('');
         }
 
         // ============================================
         // ABSENCE MODAL
         // ============================================
-        function updateAbsenceModalTitle() {
-            document.getElementById('absenceModalTitle').textContent = document.getElementById('absenceType').value === 'upcoming' ? 'Request Upcoming Absence' : 'Explain Past Absence';
-        }
-        window.updateAbsenceModalTitle = updateAbsenceModalTitle;
-
-        function openAbsenceRequestModal() {
-            document.getElementById('absenceDate').valueAsDate = new Date();
-            document.getElementById('absenceType').value = 'upcoming';
-            document.getElementById('absenceSession').value = 'morning';
-            document.getElementById('absenceReason').value = '';
-            document.getElementById('absenceDocument').value = '';
-            updateAbsenceModalTitle();
-            document.getElementById('absenceRequestModal').classList.add('active');
-        }
-        window.openAbsenceRequestModal = openAbsenceRequestModal;
-
-        function closeAbsenceRequestModal() { document.getElementById('absenceRequestModal').classList.remove('active'); }
-        window.closeAbsenceRequestModal = closeAbsenceRequestModal;
-
-        function explainAbsence(date, session) {
-            document.getElementById('absenceDate').value = date;
-            document.getElementById('absenceType').value = 'past';
-            document.getElementById('absenceSession').value = session || 'morning';
-            document.getElementById('absenceReason').value = '';
-            document.getElementById('absenceDocument').value = '';
-            updateAbsenceModalTitle();
-            document.getElementById('absenceRequestModal').classList.add('active');
-        }
-        window.explainAbsence = explainAbsence;
-
+        window.updateAbsenceModalTitle = () => document.getElementById('absenceModalTitle').textContent = document.getElementById('absenceType').value === 'upcoming' ? 'Request Upcoming Absence' : 'Explain Past Absence';
+        window.openAbsenceRequestModal = () => { document.getElementById('absenceDate').valueAsDate = new Date(); document.getElementById('absenceType').value = 'upcoming'; document.getElementById('absenceSession').value = 'morning'; document.getElementById('absenceReason').value = ''; document.getElementById('absenceDocument').value = ''; updateAbsenceModalTitle(); document.getElementById('absenceRequestModal').classList.add('active'); };
+        window.closeAbsenceRequestModal = () => document.getElementById('absenceRequestModal').classList.remove('active');
+        window.explainAbsence = (date, session) => { document.getElementById('absenceDate').value = date; document.getElementById('absenceType').value = 'past'; document.getElementById('absenceSession').value = session || 'morning'; document.getElementById('absenceReason').value = ''; document.getElementById('absenceDocument').value = ''; updateAbsenceModalTitle(); document.getElementById('absenceRequestModal').classList.add('active'); };
         document.getElementById('absenceRequestModal').addEventListener('click', function(e) { if (e.target === this) closeAbsenceRequestModal(); });
         document.addEventListener('keydown', function(e) { if (e.key === 'Escape') closeAbsenceRequestModal(); });
-
         document.getElementById('submitAbsenceBtn').addEventListener('click', async () => {
-            const date = document.getElementById('absenceDate').value;
-            const type = document.getElementById('absenceType').value;
-            const session = document.getElementById('absenceSession').value;
-            const reason = document.getElementById('absenceReason').value.trim();
-            const doc = document.getElementById('absenceDocument').value.trim();
-            if (!date) return alert('Please select a date.');
-            if (!reason) return alert('Please provide a reason.');
-
-            const actionType = type === 'upcoming' ? 'absence_request' : 'absence_explanation';
-            if (!confirm(`Submit ${type === 'upcoming' ? 'upcoming absence request' : 'past absence explanation'} for ${date}?`)) return;
-
-            const btn = document.getElementById('submitAbsenceBtn');
-            btn.disabled = true;
-            btn.innerHTML = '<span class="loading-spinner"></span> Submitting...';
-
+            const date = document.getElementById('absenceDate').value, type = document.getElementById('absenceType').value, session = document.getElementById('absenceSession').value, reason = document.getElementById('absenceReason').value.trim(), doc = document.getElementById('absenceDocument').value.trim();
+            if (!date) return alert('Please select a date.'); if (!reason) return alert('Please provide a reason.');
+            if (!confirm(`Submit ${type==='upcoming'?'upcoming absence request':'past absence explanation'} for ${date}?`)) return;
+            const btn = document.getElementById('submitAbsenceBtn'); btn.disabled = true; btn.innerHTML = '<span class="loading-spinner"></span> Submitting...';
             try {
-                // Send to ALL class teachers
-                const teacherIds = classTeachers.map(t => t.id);
-                await db.collection('pendingActions').add({
-                    teacherId: teacherIds[0] || '',
-                    teacherIds: teacherIds,
-                    studentId: currentUser.uid,
-                    studentName: `${userData?.firstName || ''} ${userData?.surname || ''}`.trim(),
-                    actionType,
-                    classId: studentClass,
-                    details: { absenceDate: date, session, reason, document: doc || null },
-                    status: 'pending',
-                    requestedAt: firebase.firestore.FieldValue.serverTimestamp()
-                });
-                closeAbsenceRequestModal();
-                alert('Your request has been submitted for review.');
-            } catch (e) {
-                console.error('Submit error:', e);
-                alert('Error: ' + e.message);
-            } finally {
-                btn.disabled = false;
-                btn.innerHTML = '<i class="fas fa-paper-plane"></i> Submit Request';
-            }
+                await db.collection('pendingActions').add({ teacherId: classTeachers[0]?.id || '', teacherIds: classTeachers.map(t => t.id), studentId: currentUser.uid, studentName: `${userData?.firstName||''} ${userData?.surname||''}`.trim(), actionType: type==='upcoming'?'absence_request':'absence_explanation', classId: studentClass, details: { absenceDate: date, session, reason, document: doc || null }, status: 'pending', requestedAt: firebase.firestore.FieldValue.serverTimestamp() });
+                closeAbsenceRequestModal(); alert('Request submitted.');
+            } catch (e) { alert('Error: ' + e.message); }
+            finally { btn.disabled = false; btn.innerHTML = '<i class="fas fa-paper-plane"></i> Submit Request'; }
         });
 
         // ============================================
-        // TAB 5: TIMETABLE
+        // TIMETABLE
         // ============================================
         function renderTimetable() {
-            const container = document.getElementById('timetableContent');
-            if (!classTimetable) {
-                container.innerHTML = '<div class="empty-state"><i class="fas fa-calendar-alt"></i><h3>No Timetable Available</h3><p>A timetable hasn\'t been created for your class yet.</p></div>';
-                return;
-            }
-
-            const periods = classTimetable.periods || [];
-            if (!periods.length) {
-                container.innerHTML = '<div class="empty-state"><i class="fas fa-calendar-alt"></i><h3>Empty Timetable</h3><p>No periods have been defined.</p></div>';
-                return;
-            }
-
-            const days = ['monday', 'tuesday', 'wednesday', 'thursday', 'friday'];
-            const dayLabels = ['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday'];
-
-            container.innerHTML = `<div class="timetable-grid">${days.map((day, i) => {
-                const dayPeriods = periods.filter(p => p[day]);
-                return `<div class="timetable-day"><div class="day-header">${dayLabels[i]}</div>${dayPeriods.length ? dayPeriods.map(p => `<div class="period"><div class="subject">${escapeHtml(p[day] || '—')}</div><div class="time">${escapeHtml(p.startTime || '')} - ${escapeHtml(p.endTime || '')}</div><div class="teacher">${escapeHtml(classTimetable.teacherName || '')}</div></div>`).join('') : '<div class="period"><div class="subject" style="color:var(--text-muted);">No classes</div></div>'}</div>`;
+            const c = document.getElementById('timetableContent');
+            if (!classTimetable || !classTimetable.periods?.length) { c.innerHTML = '<div class="empty-state"><i class="fas fa-calendar-alt"></i><h3>No Timetable</h3></div>'; return; }
+            const days = ['monday','tuesday','wednesday','thursday','friday'], dl = ['Monday','Tuesday','Wednesday','Thursday','Friday'];
+            c.innerHTML = `<div class="timetable-grid">${days.map((d,i) => {
+                const dp = classTimetable.periods.filter(p => p[d]);
+                return `<div class="timetable-day"><div class="day-header">${dl[i]}</div>${dp.length?dp.map(p=>`<div class="period"><div class="subject">${escapeHtml(p[d]||'—')}</div><div class="time">${escapeHtml(p.startTime||'')} - ${escapeHtml(p.endTime||'')}</div><div class="teacher">${escapeHtml(classTimetable.teacherName||'')}</div></div>`).join(''):'<div class="period"><div class="subject" style="color:var(--text-muted);">No classes</div></div>'}</div>`;
             }).join('')}</div>`;
         }
 
         // ============================================
-        // TAB 6: SYLLABUS
+        // SYLLABUS
         // ============================================
         function renderSyllabus() {
-            const container = document.getElementById('syllabusContent');
-            if (!allSyllabi.length) {
-                container.innerHTML = '<div class="empty-state"><i class="fas fa-book-open"></i><h3>No Syllabus Available</h3><p>No approved syllabus has been published for your class yet.</p></div>';
-                return;
-            }
-            container.innerHTML = `<div class="syllabus-grid">${allSyllabi.map(s => `
-                <div class="syllabus-card">
-                    <h4><i class="fas fa-book"></i> ${escapeHtml(s.subject || 'Untitled')}</h4>
-                    <p style="font-size:0.8rem;color:var(--text-muted);margin-bottom:0.5rem;">Teacher: ${escapeHtml(s.teacherName || 'Unknown')} · ${s.weeks?.length || 0} weeks</p>
-                    ${(s.weeks || []).map(w => `<div class="syllabus-week"><strong>Week ${w.week}:</strong> ${escapeHtml(w.topic || '—')}</div>`).join('')}
-                </div>
-            `).join('')}</div>`;
+            const c = document.getElementById('syllabusContent');
+            if (!allSyllabi.length) { c.innerHTML = '<div class="empty-state"><i class="fas fa-book-open"></i><h3>No Syllabus</h3></div>'; return; }
+            c.innerHTML = `<div class="syllabus-grid">${allSyllabi.map(s => `<div class="syllabus-card"><h4><i class="fas fa-book"></i> ${escapeHtml(s.subject||'Untitled')}</h4><p style="font-size:0.8rem;color:var(--text-muted);margin-bottom:0.5rem;">${escapeHtml(s.teacherName||'Unknown')} · ${s.weeks?.length||0} weeks</p>${(s.weeks||[]).map(w=>`<div class="syllabus-week"><strong>Week ${w.week}:</strong> ${escapeHtml(w.topic||'—')}</div>`).join('')}</div>`).join('')}</div>`;
         }
 
         // ============================================
-        // TAB CONTENT LOADING (on switch)
+        // AUTH
         // ============================================
-        // Override tab switching to render content
-        const originalTabHandler = document.getElementById('tabNavigation').onclick;
-        document.getElementById('tabNavigation').addEventListener('click', (e) => {
-            const btn = e.target.closest('.tab-btn');
-            if (!btn) return;
-            const tab = btn.dataset.tab;
-            setTimeout(() => {
-                if (tab === 'announcements') renderAnnouncements();
-                else if (tab === 'classmates') renderClassmatesList(allClassmates);
-                else if (tab === 'attendance') refreshAttendanceTab();
-                else if (tab === 'timetable') renderTimetable();
-                else if (tab === 'syllabus') renderSyllabus();
-            }, 100);
-        });
-
-        // ============================================
-        // AUTHENTICATION
-        // ============================================
-        auth.onAuthStateChanged(async (user) => {
+        auth.onAuthStateChanged(async user => {
             if (!user) { window.location.href = 'student-login.html'; return; }
             try {
-                const doc = await db.collection('users').doc(user.uid).get();
-                if (!doc.exists || doc.data().role !== 'student') {
-                    await auth.signOut();
-                    window.location.href = 'index.html';
-                    return;
-                }
-                currentUser = user;
-                userData = doc.data();
-                studentClass = userData.class;
-
+                const d = await db.collection('users').doc(user.uid).get();
+                if (!d.exists || d.data().role !== 'student') { await auth.signOut(); window.location.href = 'index.html'; return; }
+                currentUser = user; userData = d.data(); studentClass = userData.class;
                 const pic = document.getElementById('profilePic');
-                if (userData.photoURL) {
-                    pic.innerHTML = `<img src="${userData.photoURL}" alt="Profile">`;
-                } else {
-                    pic.textContent = (userData.firstName?.[0] || 'S') + (userData.surname?.[0] || 'T');
-                }
-
-                if (!studentClass) {
-                    document.getElementById('classSubtitle').textContent = 'You have not been assigned to a class yet';
-                    document.getElementById('classInfoGrid').innerHTML = '<div class="empty-state" style="grid-column:1/-1;"><i class="fas fa-exclamation-triangle"></i><h3>No Class Assigned</h3><p>Please contact the school administration to be assigned to a class.</p></div>';
-                    return;
-                }
-
+                if (userData.photoURL) pic.innerHTML = `<img src="${userData.photoURL}" alt="Profile" style="width:100%;height:100%;object-fit:cover;border-radius:50%;">`;
+                else pic.textContent = (userData.firstName?.[0]||'S') + (userData.surname?.[0]||'T');
+                if (!studentClass) { document.getElementById('classSubtitle').textContent = 'No class assigned'; return; }
                 await loadClassData();
-                console.log('🏫 My Class initialized for:', studentClass);
-            } catch (e) {
-                console.error('Auth error:', e);
-                window.location.href = 'student-login.html';
-            }
+            } catch (e) { console.error('Auth error:', e); window.location.href = 'student-login.html'; }
         });
-
-        document.getElementById('logoutBtn').addEventListener('click', async () => {
-            Object.values(unsubscribers).forEach(u => u());
-            await auth.signOut();
-            window.location.href = 'index.html';
-        });
-
+        document.getElementById('logoutBtn').addEventListener('click', () => { Object.values(unsubscribers).forEach(u => u()); auth.signOut().then(() => window.location.href = 'index.html'); });
         window.addEventListener('beforeunload', () => Object.values(unsubscribers).forEach(u => u()));
-
-        console.log('📚 Student Class Hub ready — Multi-Teacher Edition');
+        console.log('📚 Student My Class ready — Privacy-Respecting Edition');
     </script>
 </body>
 </html>
