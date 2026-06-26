@@ -11,77 +11,43 @@
     <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-firestore-compat.js"></script>
     <style>
         * { margin: 0; padding: 0; box-sizing: border-box; }
-        
+
         :root[data-theme="light"] {
-            --bg-primary: #f0f5fa;
-            --bg-secondary: #e2e8f0;
-            --text-primary: #0b1e33;
-            --text-secondary: #2c3e50;
-            --text-muted: #64748b;
-            --accent: #0A2540;
-            --accent-glow: #C8963E;
-            --accent-light: rgba(10,37,64,0.1);
-            --border: rgba(0,0,0,0.08);
-            --border-light: rgba(0,0,0,0.05);
-            --card-bg: rgba(255,255,255,0.75);
-            --card-bg-solid: #ffffff;
-            --hover-bg: rgba(255,255,255,0.95);
-            --hover-bg-alt: rgba(10,37,64,0.05);
+            --bg-primary: #f0f5fa; --bg-secondary: #e2e8f0; --text-primary: #0b1e33;
+            --text-secondary: #2c3e50; --text-muted: #64748b; --accent: #0A2540;
+            --accent-glow: #C8963E; --accent-light: rgba(10,37,64,0.1);
+            --border: rgba(0,0,0,0.08); --border-light: rgba(0,0,0,0.05);
+            --card-bg: rgba(255,255,255,0.75); --card-bg-solid: #ffffff;
+            --hover-bg: rgba(255,255,255,0.95); --hover-bg-alt: rgba(10,37,64,0.05);
             --shadow: 0 4px 20px -5px rgba(0,0,0,0.08);
             --shadow-lg: 0 8px 30px -5px rgba(0,0,0,0.12);
-            --input-bg: #ffffff;
-            --input-border: #e2e8f0;
-            --success-bg: rgba(34,197,94,0.12);
-            --success-text: #16a34a;
-            --success-border: rgba(34,197,94,0.3);
-            --warning-bg: rgba(245,158,11,0.12);
-            --warning-text: #b45309;
-            --warning-border: rgba(245,158,11,0.3);
-            --danger-bg: rgba(239,68,68,0.12);
-            --danger-text: #b91c1c;
-            --danger-border: rgba(239,68,68,0.3);
-            --info-bg: rgba(10,37,64,0.08);
-            --info-text: #0A2540;
-            --info-border: rgba(10,37,64,0.2);
-            --gradient-start: #0A2540;
-            --gradient-end: #C8963E;
+            --input-bg: #ffffff; --input-border: #e2e8f0;
+            --success-bg: rgba(34,197,94,0.12); --success-text: #16a34a; --success-border: rgba(34,197,94,0.3);
+            --warning-bg: rgba(245,158,11,0.12); --warning-text: #b45309; --warning-border: rgba(245,158,11,0.3);
+            --danger-bg: rgba(239,68,68,0.12); --danger-text: #b91c1c; --danger-border: rgba(239,68,68,0.3);
+            --info-bg: rgba(10,37,64,0.08); --info-text: #0A2540; --info-border: rgba(10,37,64,0.2);
+            --gradient-start: #0A2540; --gradient-end: #C8963E;
             --overlay-bg: rgba(0,0,0,0.5);
+            --context-bar-bg: rgba(255,255,255,0.9);
         }
-        
+
         :root[data-theme="dark"] {
-            --bg-primary: #0a0f1e;
-            --bg-secondary: #111827;
-            --text-primary: #f0f4fa;
-            --text-secondary: #a0b3d9;
-            --text-muted: #64748b;
-            --accent: #C8963E;
-            --accent-glow: #D4AF37;
-            --accent-light: rgba(200,150,62,0.15);
-            --border: rgba(255,255,255,0.08);
-            --border-light: rgba(255,255,255,0.05);
-            --card-bg: rgba(15,23,42,0.75);
-            --card-bg-solid: #0f172a;
-            --hover-bg: rgba(30,41,59,0.9);
-            --hover-bg-alt: rgba(200,150,62,0.08);
+            --bg-primary: #0a0f1e; --bg-secondary: #111827; --text-primary: #f0f4fa;
+            --text-secondary: #a0b3d9; --text-muted: #64748b; --accent: #C8963E;
+            --accent-glow: #D4AF37; --accent-light: rgba(200,150,62,0.15);
+            --border: rgba(255,255,255,0.08); --border-light: rgba(255,255,255,0.05);
+            --card-bg: rgba(15,23,42,0.75); --card-bg-solid: #0f172a;
+            --hover-bg: rgba(30,41,59,0.9); --hover-bg-alt: rgba(200,150,62,0.08);
             --shadow: 0 4px 20px -5px rgba(0,0,0,0.4);
             --shadow-lg: 0 8px 30px -5px rgba(0,0,0,0.5);
-            --input-bg: rgba(30,41,59,0.9);
-            --input-border: rgba(255,255,255,0.1);
-            --success-bg: rgba(34,197,94,0.15);
-            --success-text: #4ade80;
-            --success-border: rgba(34,197,94,0.3);
-            --warning-bg: rgba(245,158,11,0.15);
-            --warning-text: #fbbf24;
-            --warning-border: rgba(245,158,11,0.3);
-            --danger-bg: rgba(239,68,68,0.15);
-            --danger-text: #f87171;
-            --danger-border: rgba(239,68,68,0.3);
-            --info-bg: rgba(200,150,62,0.12);
-            --info-text: #D4AF37;
-            --info-border: rgba(200,150,62,0.25);
-            --gradient-start: #0A2540;
-            --gradient-end: #C8963E;
+            --input-bg: rgba(30,41,59,0.9); --input-border: rgba(255,255,255,0.1);
+            --success-bg: rgba(34,197,94,0.15); --success-text: #4ade80; --success-border: rgba(34,197,94,0.3);
+            --warning-bg: rgba(245,158,11,0.15); --warning-text: #fbbf24; --warning-border: rgba(245,158,11,0.3);
+            --danger-bg: rgba(239,68,68,0.15); --danger-text: #f87171; --danger-border: rgba(239,68,68,0.3);
+            --info-bg: rgba(200,150,62,0.12); --info-text: #D4AF37; --info-border: rgba(200,150,62,0.25);
+            --gradient-start: #0A2540; --gradient-end: #C8963E;
             --overlay-bg: rgba(0,0,0,0.85);
+            --context-bar-bg: rgba(15,23,42,0.9);
         }
 
         body {
@@ -93,276 +59,152 @@
             overflow-x: hidden;
             transition: background 0.3s, color 0.3s;
         }
-        
+
         .bg-logo {
-            position: fixed;
-            top: 50%;
-            left: 50%;
-            transform: translate(-50%, -50%);
-            width: 400px;
-            max-width: 70vw;
-            opacity: 0.03;
-            pointer-events: none;
-            z-index: 0;
+            position: fixed; top: 50%; left: 50%; transform: translate(-50%, -50%);
+            width: 400px; max-width: 70vw; opacity: 0.03; pointer-events: none; z-index: 0;
             animation: breathe 6s ease-in-out infinite;
         }
         @keyframes breathe {
             0%, 100% { transform: translate(-50%, -50%) scale(1); opacity: 0.03; }
             50% { transform: translate(-50%, -50%) scale(1.06); opacity: 0.06; }
         }
-        
+
         .orb {
-            position: fixed;
-            width: 250px;
-            height: 250px;
-            border-radius: 50%;
-            filter: blur(80px);
-            pointer-events: none;
-            z-index: 0;
+            position: fixed; width: 250px; height: 250px; border-radius: 50%;
+            filter: blur(80px); pointer-events: none; z-index: 0;
             animation: float 25s infinite alternate;
         }
-        .orb-1 {
-            top: -100px;
-            left: -100px;
-            background: radial-gradient(circle at 30% 30%, rgba(10,37,64,0.12), transparent 70%);
-        }
-        .orb-2 {
-            bottom: -150px;
-            right: -50px;
-            width: 350px;
-            height: 350px;
-            background: radial-gradient(circle at 70% 70%, rgba(200,150,62,0.12), transparent);
-            animation-duration: 30s;
-        }
+        .orb-1 { top: -100px; left: -100px; background: radial-gradient(circle at 30% 30%, rgba(10,37,64,0.12), transparent 70%); }
+        .orb-2 { bottom: -150px; right: -50px; width: 350px; height: 350px; background: radial-gradient(circle at 70% 70%, rgba(200,150,62,0.12), transparent); animation-duration: 30s; }
         @keyframes float {
             0% { transform: translate(0, 0) scale(1); }
             100% { transform: translate(40px, 30px) scale(1.15); }
         }
 
         .main-container {
-            max-width: 1500px;
-            margin: 0 auto;
-            padding: 1.5rem;
-            position: relative;
-            z-index: 5;
+            max-width: 1500px; margin: 0 auto; padding: 1.5rem; position: relative; z-index: 5;
         }
 
         /* Top Nav */
         .top-nav {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            padding: 1rem 1.5rem;
-            background: var(--card-bg);
-            backdrop-filter: blur(20px);
-            -webkit-backdrop-filter: blur(20px);
-            border: 1px solid var(--border);
-            border-radius: 1.5rem;
-            margin-bottom: 1.5rem;
-            box-shadow: var(--shadow-lg);
-            flex-wrap: wrap;
-            gap: 1rem;
+            display: flex; justify-content: space-between; align-items: center;
+            padding: 1rem 1.5rem; background: var(--card-bg);
+            backdrop-filter: blur(20px); -webkit-backdrop-filter: blur(20px);
+            border: 1px solid var(--border); border-radius: 1.5rem;
+            margin-bottom: 1rem; box-shadow: var(--shadow-lg); flex-wrap: wrap; gap: 1rem;
         }
-        .nav-left {
-            display: flex;
-            align-items: center;
-            gap: 1.5rem;
-            flex-wrap: wrap;
-        }
-        .nav-logo {
-            display: flex;
-            align-items: center;
-            gap: 0.75rem;
-        }
-        .nav-logo img {
-            width: 38px;
-            height: 38px;
-            object-fit: contain;
-            flex-shrink: 0;
-        }
+        .nav-left { display: flex; align-items: center; gap: 1.5rem; flex-wrap: wrap; }
+        .nav-logo { display: flex; align-items: center; gap: 0.75rem; }
+        .nav-logo img { width: 38px; height: 38px; object-fit: contain; flex-shrink: 0; }
         .nav-logo h2 {
-            font-family: 'Playfair Display', serif;
-            font-size: 1.3rem;
-            font-weight: 700;
-            white-space: nowrap;
-            color: var(--accent);
-            line-height: 1.2;
+            font-family: 'Playfair Display', serif; font-size: 1.3rem; font-weight: 700;
+            white-space: nowrap; color: var(--accent); line-height: 1.2;
         }
-        .nav-logo h2 span {
-            display: block;
-            font-size: 0.6rem;
-            letter-spacing: 1.5px;
-            color: var(--accent-glow);
-        }
-        .nav-links {
-            display: flex;
-            gap: 0.75rem;
-            align-items: center;
-        }
+        .nav-logo h2 span { display: block; font-size: 0.6rem; letter-spacing: 1.5px; color: var(--accent-glow); }
+        .nav-links { display: flex; gap: 0.75rem; align-items: center; }
         .nav-link {
-            padding: 0.6rem 1.2rem;
-            border-radius: 0.75rem;
-            color: var(--text-secondary);
-            text-decoration: none;
-            font-weight: 500;
-            font-size: 0.9rem;
-            transition: all 0.2s;
-            display: flex;
-            align-items: center;
-            gap: 0.5rem;
-            border: 1px solid transparent;
+            padding: 0.6rem 1.2rem; border-radius: 0.75rem; color: var(--text-secondary);
+            text-decoration: none; font-weight: 500; font-size: 0.9rem; transition: all 0.2s;
+            display: flex; align-items: center; gap: 0.5rem; border: 1px solid transparent;
         }
-        .nav-link:hover {
-            background: var(--hover-bg);
-            color: var(--accent);
-            border-color: var(--border);
-        }
-        .nav-right {
-            display: flex;
-            align-items: center;
-            gap: 1rem;
-        }
+        .nav-link:hover { background: var(--hover-bg); color: var(--accent); border-color: var(--border); }
+        .nav-right { display: flex; align-items: center; gap: 1rem; }
         .theme-toggle {
-            background: var(--hover-bg);
-            border: 1px solid var(--border);
-            border-radius: 2rem;
-            padding: 0.5rem 1rem;
-            display: flex;
-            align-items: center;
-            gap: 0.5rem;
-            cursor: pointer;
-            font-size: 0.85rem;
-            font-weight: 500;
-            color: var(--text-primary);
-            transition: all 0.2s;
+            background: var(--hover-bg); border: 1px solid var(--border); border-radius: 2rem;
+            padding: 0.5rem 1rem; display: flex; align-items: center; gap: 0.5rem;
+            cursor: pointer; font-size: 0.85rem; font-weight: 500; color: var(--text-primary); transition: all 0.2s;
         }
-        .theme-toggle:hover {
-            border-color: var(--accent);
-        }
-        .profile-dropdown {
-            position: relative;
-            cursor: pointer;
-        }
+        .theme-toggle:hover { border-color: var(--accent); }
+        .profile-dropdown { position: relative; cursor: pointer; }
         .profile-trigger {
-            display: flex;
-            align-items: center;
-            gap: 0.8rem;
-            background: var(--hover-bg);
-            border: 1px solid var(--border);
-            border-radius: 2rem;
-            padding: 0.3rem 0.3rem 0.3rem 1rem;
-            transition: all 0.2s;
+            display: flex; align-items: center; gap: 0.8rem; background: var(--hover-bg);
+            border: 1px solid var(--border); border-radius: 2rem; padding: 0.3rem 0.3rem 0.3rem 1rem; transition: all 0.2s;
         }
-        .profile-trigger:hover {
-            border-color: var(--accent);
-        }
-        .profile-name {
-            font-weight: 600;
-            color: var(--text-primary);
-            font-size: 0.85rem;
-        }
+        .profile-trigger:hover { border-color: var(--accent); }
+        .profile-name { font-weight: 600; color: var(--text-primary); font-size: 0.85rem; }
         .profile-pic {
-            width: 38px;
-            height: 38px;
-            border-radius: 50%;
+            width: 38px; height: 38px; border-radius: 50%;
             background: linear-gradient(135deg, var(--gradient-start), var(--gradient-end));
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            color: white;
-            font-weight: 600;
-            font-size: 0.9rem;
-            overflow: hidden;
-            box-shadow: 0 4px 12px rgba(200,150,62,0.3);
+            display: flex; align-items: center; justify-content: center; color: white;
+            font-weight: 600; font-size: 0.9rem; overflow: hidden; box-shadow: 0 4px 12px rgba(200,150,62,0.3);
         }
-        .profile-pic img {
-            width: 100%;
-            height: 100%;
-            object-fit: cover;
-            border-radius: 50%;
-        }
+        .profile-pic img { width: 100%; height: 100%; object-fit: cover; border-radius: 50%; }
         .dropdown-menu {
-            position: absolute;
-            right: 0;
-            top: 55px;
-            background: var(--card-bg-solid);
-            border: 1px solid var(--border);
-            border-radius: 1rem;
-            padding: 0.5rem;
-            min-width: 200px;
-            display: none;
-            z-index: 1000;
-            box-shadow: var(--shadow-lg);
+            position: absolute; right: 0; top: 55px; background: var(--card-bg-solid);
+            border: 1px solid var(--border); border-radius: 1rem; padding: 0.5rem;
+            min-width: 200px; display: none; z-index: 1000; box-shadow: var(--shadow-lg);
         }
-        .profile-dropdown:hover .dropdown-menu {
-            display: block;
-            animation: fadeIn 0.2s;
-        }
+        .profile-dropdown:hover .dropdown-menu { display: block; animation: fadeIn 0.2s; }
         @keyframes fadeIn {
             from { opacity: 0; transform: translateY(-10px); }
             to { opacity: 1; transform: translateY(0); }
         }
         .dropdown-item {
-            padding: 0.75rem 1rem;
-            color: var(--text-primary);
-            border-radius: 0.75rem;
-            display: flex;
-            align-items: center;
-            gap: 0.75rem;
-            transition: 0.2s;
-            cursor: pointer;
+            padding: 0.75rem 1rem; color: var(--text-primary); border-radius: 0.75rem;
+            display: flex; align-items: center; gap: 0.75rem; transition: 0.2s; cursor: pointer;
         }
-        .dropdown-item:hover {
-            background: var(--hover-bg);
-            color: var(--accent);
+        .dropdown-item:hover { background: var(--hover-bg); color: var(--accent); }
+
+        /* Global Class Context Bar */
+        .context-bar {
+            display: flex; align-items: center; gap: 1rem; flex-wrap: wrap;
+            background: var(--context-bar-bg); backdrop-filter: blur(16px); -webkit-backdrop-filter: blur(16px);
+            border: 1px solid var(--border); border-radius: 1.25rem;
+            padding: 0.8rem 1.25rem; margin-bottom: 1.25rem; box-shadow: var(--shadow);
+        }
+        .context-bar .context-label {
+            font-weight: 700; font-size: 0.85rem; color: var(--text-secondary);
+            display: flex; align-items: center; gap: 0.4rem; white-space: nowrap;
+        }
+        .context-bar .context-label i { color: var(--accent); }
+        .class-select {
+            padding: 0.5rem 2rem 0.5rem 1rem; border: 2px solid var(--border);
+            border-radius: 0.75rem; background: var(--input-bg); color: var(--text-primary);
+            font-weight: 600; font-size: 0.9rem; cursor: pointer; font-family: inherit;
+            appearance: none; -webkit-appearance: none;
+            background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 12 12'%3E%3Cpath fill='%2364748b' d='M6 8L1 3h10z'/%3E%3C/svg%3E");
+            background-repeat: no-repeat; background-position: right 0.8rem center;
+            transition: border-color 0.2s; min-width: 180px;
+        }
+        .class-select:focus { outline: none; border-color: var(--accent); }
+        .all-toggle {
+            display: flex; align-items: center; gap: 0.5rem; cursor: pointer;
+            padding: 0.5rem 1rem; border-radius: 0.75rem; font-weight: 600; font-size: 0.85rem;
+            border: 2px solid var(--border); background: var(--input-bg); color: var(--text-secondary);
+            transition: all 0.2s; user-select: none; white-space: nowrap;
+        }
+        .all-toggle.active {
+            background: var(--accent-light); border-color: var(--accent); color: var(--accent);
+        }
+        .all-toggle:hover { border-color: var(--accent); }
+        .all-toggle input { display: none; }
+        .class-badge-inline {
+            font-size: 0.7rem; padding: 0.15rem 0.5rem; border-radius: 1rem;
+            background: var(--info-bg); color: var(--info-text); font-weight: 600;
+            display: inline-block; margin-left: 0.3rem;
         }
 
         /* Tab Navigation */
         .tab-navigation {
-            display: flex;
-            gap: 0.5rem;
-            margin-bottom: 1.5rem;
-            background: var(--card-bg);
-            border: 1px solid var(--border);
-            border-radius: 1.5rem;
-            padding: 0.4rem;
-            overflow-x: auto;
-            box-shadow: var(--shadow);
-            backdrop-filter: blur(12px);
-            -webkit-backdrop-filter: blur(12px);
+            display: flex; gap: 0.5rem; margin-bottom: 1.5rem; background: var(--card-bg);
+            border: 1px solid var(--border); border-radius: 1.5rem; padding: 0.4rem;
+            overflow-x: auto; box-shadow: var(--shadow);
+            backdrop-filter: blur(12px); -webkit-backdrop-filter: blur(12px);
         }
         .tab-btn {
-            padding: 0.8rem 1.5rem;
-            border-radius: 1.25rem;
-            border: none;
-            background: transparent;
-            color: var(--text-secondary);
-            cursor: pointer;
-            font-weight: 600;
-            font-size: 0.9rem;
-            transition: all 0.3s;
-            white-space: nowrap;
-            display: flex;
-            align-items: center;
-            gap: 0.5rem;
-            font-family: inherit;
+            padding: 0.8rem 1.5rem; border-radius: 1.25rem; border: none;
+            background: transparent; color: var(--text-secondary); cursor: pointer;
+            font-weight: 600; font-size: 0.9rem; transition: all 0.3s; white-space: nowrap;
+            display: flex; align-items: center; gap: 0.5rem; font-family: inherit;
         }
-        .tab-btn:hover {
-            background: var(--hover-bg);
-            color: var(--accent);
-        }
+        .tab-btn:hover { background: var(--hover-bg); color: var(--accent); }
         .tab-btn.active {
             background: linear-gradient(135deg, var(--gradient-start), var(--gradient-end));
-            color: white;
-            box-shadow: 0 4px 12px rgba(200,150,62,0.3);
+            color: white; box-shadow: 0 4px 12px rgba(200,150,62,0.3);
         }
-        .tab-content {
-            display: none;
-            animation: fadeSlideIn 0.4s ease;
-        }
-        .tab-content.active {
-            display: block;
-        }
+        .tab-content { display: none; animation: fadeSlideIn 0.4s ease; }
+        .tab-content.active { display: block; }
         @keyframes fadeSlideIn {
             from { opacity: 0; transform: translateY(10px); }
             to { opacity: 1; transform: translateY(0); }
@@ -370,286 +212,101 @@
 
         /* Cards */
         .card {
-            background: var(--card-bg);
-            backdrop-filter: blur(12px);
-            -webkit-backdrop-filter: blur(12px);
-            border: 1px solid var(--border);
-            border-radius: 1.5rem;
-            padding: 1.5rem;
-            box-shadow: var(--shadow);
-            margin-bottom: 1.5rem;
+            background: var(--card-bg); backdrop-filter: blur(12px); -webkit-backdrop-filter: blur(12px);
+            border: 1px solid var(--border); border-radius: 1.5rem; padding: 1.5rem;
+            box-shadow: var(--shadow); margin-bottom: 1.5rem;
         }
         .card-header {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            margin-bottom: 1.5rem;
-            flex-wrap: wrap;
-            gap: 1rem;
-            padding-bottom: 1rem;
-            border-bottom: 1px solid var(--border);
+            display: flex; justify-content: space-between; align-items: center;
+            margin-bottom: 1.5rem; flex-wrap: wrap; gap: 1rem;
+            padding-bottom: 1rem; border-bottom: 1px solid var(--border);
         }
-        .card-header h3 {
-            font-size: 1.2rem;
-            font-weight: 700;
-            display: flex;
-            align-items: center;
-            gap: 0.5rem;
-            color: var(--text-primary);
-        }
+        .card-header h3 { font-size: 1.2rem; font-weight: 700; display: flex; align-items: center; gap: 0.5rem; color: var(--text-primary); }
 
         /* Stats Grid */
         .stats-grid {
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(160px, 1fr));
-            gap: 1rem;
-            margin-bottom: 1.5rem;
+            display: grid; grid-template-columns: repeat(auto-fit, minmax(160px, 1fr));
+            gap: 1rem; margin-bottom: 1.5rem;
         }
         .stat-card {
-            background: var(--card-bg);
-            backdrop-filter: blur(12px);
-            -webkit-backdrop-filter: blur(12px);
-            border: 1px solid var(--border);
-            border-radius: 1.5rem;
-            padding: 1.25rem;
-            text-align: center;
-            transition: all 0.3s;
-            position: relative;
-            overflow: hidden;
+            background: var(--card-bg); backdrop-filter: blur(12px); -webkit-backdrop-filter: blur(12px);
+            border: 1px solid var(--border); border-radius: 1.5rem; padding: 1.25rem;
+            text-align: center; transition: all 0.3s; position: relative; overflow: hidden;
         }
         .stat-card::before {
-            content: '';
-            position: absolute;
-            top: 0;
-            left: 0;
-            right: 0;
-            height: 3px;
+            content: ''; position: absolute; top: 0; left: 0; right: 0; height: 3px;
             background: linear-gradient(90deg, var(--gradient-start), var(--gradient-end));
         }
-        .stat-card:hover {
-            transform: translateY(-3px);
-            box-shadow: var(--shadow-lg);
-        }
-        .stat-card h3 {
-            font-size: 2rem;
-            font-weight: 800;
-            font-family: 'Space Grotesk', monospace;
-            color: var(--accent);
-        }
-        .stat-card p {
-            font-size: 0.8rem;
-            color: var(--text-muted);
-            margin-top: 0.25rem;
-            text-transform: uppercase;
-            letter-spacing: 0.5px;
-        }
+        .stat-card:hover { transform: translateY(-3px); box-shadow: var(--shadow-lg); }
+        .stat-card h3 { font-size: 2rem; font-weight: 800; font-family: 'Space Grotesk', monospace; color: var(--accent); }
+        .stat-card p { font-size: 0.8rem; color: var(--text-muted); margin-top: 0.25rem; text-transform: uppercase; letter-spacing: 0.5px; }
 
         /* Form Elements */
-        .form-group {
-            margin-bottom: 1.25rem;
-        }
-        .form-group label {
-            display: block;
-            margin-bottom: 0.5rem;
-            color: var(--text-secondary);
-            font-weight: 600;
-            font-size: 0.9rem;
-        }
+        .form-group { margin-bottom: 1.25rem; }
+        .form-group label { display: block; margin-bottom: 0.5rem; color: var(--text-secondary); font-weight: 600; font-size: 0.9rem; }
         .form-control {
-            width: 100%;
-            padding: 0.75rem 1rem;
-            background: var(--input-bg);
-            border: 2px solid var(--input-border);
-            border-radius: 1rem;
-            color: var(--text-primary);
-            font-size: 0.95rem;
-            font-family: inherit;
-            transition: border-color 0.2s;
-            outline: none;
+            width: 100%; padding: 0.75rem 1rem; background: var(--input-bg);
+            border: 2px solid var(--input-border); border-radius: 1rem; color: var(--text-primary);
+            font-size: 0.95rem; font-family: inherit; transition: border-color 0.2s; outline: none;
         }
-        .form-control:focus {
-            border-color: var(--accent);
-            box-shadow: 0 0 15px rgba(200,150,62,0.15);
-        }
-        textarea.form-control {
-            min-height: 100px;
-            resize: vertical;
-        }
+        .form-control:focus { border-color: var(--accent); box-shadow: 0 0 15px rgba(200,150,62,0.15); }
+        textarea.form-control { min-height: 100px; resize: vertical; }
+        .search-input { width: 100%; max-width: 350px; }
 
         /* Table */
-        .table-responsive {
-            overflow-x: auto;
-            border-radius: 1rem;
-        }
-        table {
-            width: 100%;
-            border-collapse: collapse;
-        }
-        th, td {
-            padding: 0.75rem;
-            text-align: left;
-            border-bottom: 1px solid var(--border);
-            font-size: 0.85rem;
-        }
-        th {
-            background: var(--hover-bg);
-            font-weight: 700;
-            color: var(--text-muted);
-            text-transform: uppercase;
-            font-size: 0.7rem;
-            letter-spacing: 0.5px;
-            white-space: nowrap;
-        }
-        tr:hover td {
-            background: var(--hover-bg-alt);
-        }
+        .table-responsive { overflow-x: auto; border-radius: 1rem; }
+        table { width: 100%; border-collapse: collapse; }
+        th, td { padding: 0.75rem; text-align: left; border-bottom: 1px solid var(--border); font-size: 0.85rem; }
+        th { background: var(--hover-bg); font-weight: 700; color: var(--text-muted); text-transform: uppercase; font-size: 0.7rem; letter-spacing: 0.5px; white-space: nowrap; }
+        tr:hover td { background: var(--hover-bg-alt); }
 
         /* Badges */
         .badge {
-            padding: 0.25rem 0.8rem;
-            border-radius: 2rem;
-            font-size: 0.7rem;
-            font-weight: 700;
-            display: inline-flex;
-            align-items: center;
-            gap: 0.3rem;
-            text-transform: uppercase;
-            letter-spacing: 0.5px;
+            padding: 0.25rem 0.8rem; border-radius: 2rem; font-size: 0.7rem; font-weight: 700;
+            display: inline-flex; align-items: center; gap: 0.3rem;
+            text-transform: uppercase; letter-spacing: 0.5px;
         }
-        .badge-active {
-            background: var(--success-bg);
-            color: var(--success-text);
-            border: 1px solid var(--success-border);
-        }
-        .badge-suspended {
-            background: var(--danger-bg);
-            color: var(--danger-text);
-            border: 1px solid var(--danger-border);
-        }
-        .badge-pending {
-            background: var(--warning-bg);
-            color: var(--warning-text);
-            border: 1px solid var(--warning-border);
-        }
-        .badge-approved {
-            background: var(--success-bg);
-            color: var(--success-text);
-            border: 1px solid var(--success-border);
-        }
-        .badge-rejected {
-            background: var(--danger-bg);
-            color: var(--danger-text);
-            border: 1px solid var(--danger-border);
-        }
+        .badge-active { background: var(--success-bg); color: var(--success-text); border: 1px solid var(--success-border); }
+        .badge-suspended { background: var(--danger-bg); color: var(--danger-text); border: 1px solid var(--danger-border); }
+        .badge-pending { background: var(--warning-bg); color: var(--warning-text); border: 1px solid var(--warning-border); }
+        .badge-approved { background: var(--success-bg); color: var(--success-text); border: 1px solid var(--success-border); }
+        .badge-rejected { background: var(--danger-bg); color: var(--danger-text); border: 1px solid var(--danger-border); }
 
         /* Buttons */
         .btn {
-            padding: 0.55rem 1.3rem;
-            border: none;
-            border-radius: 0.75rem;
-            font-weight: 600;
-            cursor: pointer;
-            transition: all 0.25s cubic-bezier(0.4, 0, 0.2, 1);
-            font-size: 0.85rem;
-            display: inline-flex;
-            align-items: center;
-            gap: 0.4rem;
-            font-family: inherit;
-            text-decoration: none;
-            letter-spacing: 0.3px;
+            padding: 0.55rem 1.3rem; border: none; border-radius: 0.75rem;
+            font-weight: 600; cursor: pointer; transition: all 0.25s cubic-bezier(0.4, 0, 0.2, 1);
+            font-size: 0.85rem; display: inline-flex; align-items: center; gap: 0.4rem;
+            font-family: inherit; text-decoration: none; letter-spacing: 0.3px;
         }
-        .btn-primary {
-            background: linear-gradient(135deg, var(--gradient-start), var(--gradient-end));
-            color: white;
-            box-shadow: 0 4px 12px rgba(200,150,62,0.3);
-        }
-        .btn-primary:hover {
-            box-shadow: 0 6px 20px rgba(200,150,62,0.5);
-            transform: translateY(-2px);
-        }
-        .btn-outline {
-            background: transparent;
-            border: 2px solid var(--border);
-            color: var(--text-primary);
-        }
-        .btn-outline:hover {
-            background: var(--hover-bg);
-            border-color: var(--accent);
-            transform: translateY(-1px);
-        }
-        .btn-success {
-            background: var(--success-text);
-            color: white;
-        }
-        .btn-danger {
-            background: var(--danger-text);
-            color: white;
-        }
-        .btn-sm {
-            padding: 0.35rem 0.9rem;
-            font-size: 0.75rem;
-        }
-        .btn:disabled {
-            opacity: 0.5;
-            cursor: not-allowed;
-            transform: none !important;
-        }
-        .btn:active:not(:disabled) {
-            transform: scale(0.97) !important;
-        }
-        .btn-group {
-            display: flex;
-            gap: 0.5rem;
-            flex-wrap: wrap;
-        }
+        .btn-primary { background: linear-gradient(135deg, var(--gradient-start), var(--gradient-end)); color: white; box-shadow: 0 4px 12px rgba(200,150,62,0.3); }
+        .btn-primary:hover { box-shadow: 0 6px 20px rgba(200,150,62,0.5); transform: translateY(-2px); }
+        .btn-outline { background: transparent; border: 2px solid var(--border); color: var(--text-primary); }
+        .btn-outline:hover { background: var(--hover-bg); border-color: var(--accent); transform: translateY(-1px); }
+        .btn-success { background: var(--success-text); color: white; }
+        .btn-danger { background: var(--danger-text); color: white; }
+        .btn-warning { background: var(--warning-text); color: #000; }
+        .btn-sm { padding: 0.35rem 0.9rem; font-size: 0.75rem; }
+        .btn:disabled { opacity: 0.5; cursor: not-allowed; transform: none !important; }
+        .btn:active:not(:disabled) { transform: scale(0.97) !important; }
+        .btn-group { display: flex; gap: 0.5rem; flex-wrap: wrap; }
 
         /* Empty State */
-        .empty-state {
-            text-align: center;
-            padding: 3rem;
-            color: var(--text-muted);
-        }
-        .empty-state i {
-            font-size: 3rem;
-            margin-bottom: 1rem;
-            opacity: 0.4;
-            display: block;
-        }
-        .empty-state h3 {
-            font-size: 1.2rem;
-            margin-bottom: 0.5rem;
-            color: var(--text-secondary);
-        }
+        .empty-state { text-align: center; padding: 3rem; color: var(--text-muted); }
+        .empty-state i { font-size: 3rem; margin-bottom: 1rem; opacity: 0.4; display: block; }
+        .empty-state h3 { font-size: 1.2rem; margin-bottom: 0.5rem; color: var(--text-secondary); }
 
         /* Modals */
         .modal-overlay {
-            position: fixed;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            background: var(--overlay-bg);
-            backdrop-filter: blur(8px);
-            -webkit-backdrop-filter: blur(8px);
-            display: none;
-            align-items: center;
-            justify-content: center;
-            z-index: 2000;
-            animation: fadeIn 0.3s;
+            position: fixed; top: 0; left: 0; width: 100%; height: 100%;
+            background: var(--overlay-bg); backdrop-filter: blur(8px); -webkit-backdrop-filter: blur(8px);
+            display: none; align-items: center; justify-content: center; z-index: 2000; animation: fadeIn 0.3s;
         }
-        .modal-overlay.active {
-            display: flex;
-        }
+        .modal-overlay.active { display: flex; }
         .modal-content {
-            background: var(--card-bg-solid);
-            border: 1px solid var(--border);
-            border-radius: 1.5rem;
-            padding: 1.5rem;
-            max-width: 500px;
-            width: 90%;
-            max-height: 80vh;
-            overflow-y: auto;
-            box-shadow: 0 20px 60px rgba(0,0,0,0.5);
+            background: var(--card-bg-solid); border: 1px solid var(--border);
+            border-radius: 1.5rem; padding: 1.5rem; max-width: 500px; width: 90%;
+            max-height: 80vh; overflow-y: auto; box-shadow: 0 20px 60px rgba(0,0,0,0.5);
             animation: slideUp 0.3s cubic-bezier(0.4, 0, 0.2, 1);
         }
         @keyframes slideUp {
@@ -659,36 +316,17 @@
 
         /* Toast Notifications */
         .toast-container {
-            position: fixed;
-            top: 1rem;
-            right: 1rem;
-            z-index: 5000;
-            display: flex;
-            flex-direction: column;
-            gap: 0.5rem;
+            position: fixed; top: 1rem; right: 1rem; z-index: 5000;
+            display: flex; flex-direction: column; gap: 0.5rem;
         }
         .toast {
-            background: var(--card-bg-solid);
-            border: 1px solid var(--border);
-            border-radius: 1rem;
-            padding: 0.9rem 1.2rem;
-            min-width: 300px;
-            max-width: 450px;
-            box-shadow: var(--shadow-lg);
-            display: flex;
-            align-items: flex-start;
-            gap: 0.7rem;
-            animation: slideInRight 0.3s cubic-bezier(0.4, 0, 0.2, 1);
-            font-size: 0.85rem;
+            background: var(--card-bg-solid); border: 1px solid var(--border);
+            border-radius: 1rem; padding: 0.9rem 1.2rem; min-width: 300px; max-width: 450px;
+            box-shadow: var(--shadow-lg); display: flex; align-items: flex-start; gap: 0.7rem;
+            animation: slideInRight 0.3s cubic-bezier(0.4, 0, 0.2, 1); font-size: 0.85rem;
         }
-        .toast.removing {
-            animation: slideOutRight 0.3s ease-in forwards;
-        }
-        .toast-icon {
-            font-size: 1.2rem;
-            margin-top: 2px;
-            flex-shrink: 0;
-        }
+        .toast.removing { animation: slideOutRight 0.3s ease-in forwards; }
+        .toast-icon { font-size: 1.2rem; margin-top: 2px; flex-shrink: 0; }
         .toast-icon.success { color: var(--success-text); }
         .toast-icon.error { color: var(--danger-text); }
         .toast-icon.warning { color: var(--warning-text); }
@@ -704,44 +342,34 @@
 
         /* Loading Spinner */
         .loading-spinner {
-            display: inline-block;
-            width: 18px;
-            height: 18px;
-            border: 3px solid rgba(255,255,255,0.3);
-            border-top: 3px solid white;
-            border-radius: 50%;
-            animation: spin 0.8s linear infinite;
+            display: inline-block; width: 18px; height: 18px;
+            border: 3px solid rgba(255,255,255,0.3); border-top: 3px solid white;
+            border-radius: 50%; animation: spin 0.8s linear infinite;
         }
-        @keyframes spin {
-            0% { transform: rotate(0deg); }
-            100% { transform: rotate(360deg); }
+        @keyframes spin { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }
+
+        /* Attendance bulk actions */
+        .att-bulk-actions { display: flex; gap: 0.5rem; margin-bottom: 1rem; flex-wrap: wrap; }
+
+        /* Class badge in table */
+        .class-tag {
+            display: inline-block; font-size: 0.65rem; padding: 0.1rem 0.5rem;
+            border-radius: 0.5rem; background: var(--info-bg); color: var(--info-text);
+            font-weight: 700; text-transform: uppercase; margin-left: 0.4rem;
         }
 
         /* Mobile Responsive */
         @media (max-width: 768px) {
-            .main-container {
-                padding: 0.75rem;
-            }
-            .top-nav {
-                flex-direction: column;
-                align-items: stretch;
-            }
-            .nav-left {
-                flex-direction: column;
-                align-items: flex-start;
-            }
-            .stats-grid {
-                grid-template-columns: repeat(2, 1fr);
-            }
-            .tab-btn {
-                padding: 0.6rem 1rem;
-                font-size: 0.8rem;
-            }
+            .main-container { padding: 0.75rem; }
+            .top-nav { flex-direction: column; align-items: stretch; }
+            .nav-left { flex-direction: column; align-items: flex-start; }
+            .stats-grid { grid-template-columns: repeat(2, 1fr); }
+            .tab-btn { padding: 0.6rem 1rem; font-size: 0.8rem; }
+            .context-bar { flex-direction: column; align-items: flex-start; gap: 0.6rem; }
+            .class-select { width: 100%; }
         }
         @media (max-width: 480px) {
-            .stats-grid {
-                grid-template-columns: 1fr;
-            }
+            .stats-grid { grid-template-columns: 1fr; }
         }
     </style>
 </head>
@@ -749,8 +377,7 @@
     <img src="https://res.cloudinary.com/dda7kpir8/image/upload/q_auto/f_auto/v1781038310/ChatGPT_Image_Jun_9_2026_09_25_06_AM_elnine.png" alt="" class="bg-logo" aria-hidden="true">
     <div class="orb orb-1"></div>
     <div class="orb orb-2"></div>
-    
-    <!-- Toast Container -->
+
     <div class="toast-container" id="toastContainer"></div>
 
     <div class="main-container">
@@ -762,12 +389,8 @@
                     <h2>Judah Wonders<span>Model School</span></h2>
                 </div>
                 <div class="nav-links">
-                    <a href="teacher-dashboard.html" class="nav-link">
-                        <i class="fas fa-arrow-left"></i> Dashboard
-                    </a>
-                    <a href="teacher-profile.html" class="nav-link">
-                        <i class="fas fa-user"></i> Profile
-                    </a>
+                    <a href="teacher-dashboard.html" class="nav-link"><i class="fas fa-arrow-left"></i> Dashboard</a>
+                    <a href="teacher-profile.html" class="nav-link"><i class="fas fa-user"></i> Profile</a>
                 </div>
             </div>
             <div class="nav-right">
@@ -780,33 +403,32 @@
                         <div class="profile-pic" id="profilePic">T</div>
                     </div>
                     <div class="dropdown-menu">
-                        <div class="dropdown-item" id="logoutBtn">
-                            <i class="fas fa-sign-out-alt"></i> Logout
-                        </div>
+                        <div class="dropdown-item" id="logoutBtn"><i class="fas fa-sign-out-alt"></i> Logout</div>
                     </div>
                 </div>
             </div>
         </div>
 
+        <!-- Global Class Context Bar -->
+        <div class="context-bar" id="contextBar">
+            <span class="context-label"><i class="fas fa-school"></i> Active Class:</span>
+            <select class="class-select" id="classFilterSelect">
+                <option value="all">📋 All My Classes</option>
+            </select>
+            <label class="all-toggle" id="allClassesToggle">
+                <input type="checkbox" id="allClassesCheckbox">
+                <i class="fas fa-layer-group"></i> Apply to ALL my classes
+            </label>
+            <span style="color:var(--text-muted);font-size:0.75rem;margin-left:auto;" id="contextSummary"></span>
+        </div>
+
         <!-- Tab Navigation -->
         <div class="tab-navigation" id="tabNavigation">
-            <button class="tab-btn active" data-tab="roster">
-                <i class="fas fa-users"></i> Class Roster
-            </button>
-            <button class="tab-btn" data-tab="approvals">
-                <i class="fas fa-user-check"></i> Student Approvals
-                <span class="badge badge-pending" id="approvalBadge" style="display:none;">0</span>
-            </button>
-            <button class="tab-btn" data-tab="attendance">
-                <i class="fas fa-fingerprint"></i> Attendance
-            </button>
-            <button class="tab-btn" data-tab="announcements">
-                <i class="fas fa-bullhorn"></i> Class Announcements
-            </button>
-            <button class="tab-btn" data-tab="actions">
-                <i class="fas fa-clock"></i> Action Requests
-                <span class="badge badge-pending" id="actionBadge" style="display:none;">0</span>
-            </button>
+            <button class="tab-btn active" data-tab="roster"><i class="fas fa-users"></i> Class Roster</button>
+            <button class="tab-btn" data-tab="approvals"><i class="fas fa-user-check"></i> Student Approvals <span class="badge badge-pending" id="approvalBadge" style="display:none;">0</span></button>
+            <button class="tab-btn" data-tab="attendance"><i class="fas fa-fingerprint"></i> Attendance</button>
+            <button class="tab-btn" data-tab="announcements"><i class="fas fa-bullhorn"></i> Class Announcements</button>
+            <button class="tab-btn" data-tab="actions"><i class="fas fa-clock"></i> Action Requests <span class="badge badge-pending" id="actionBadge" style="display:none;">0</span></button>
         </div>
 
         <!-- Tab 1: Class Roster -->
@@ -819,10 +441,11 @@
             </div>
             <div class="card">
                 <div class="card-header">
-                    <h3><i class="fas fa-users"></i> Class: <span id="rosterClassName">Loading...</span></h3>
-                    <button class="btn btn-outline btn-sm" onclick="loadAllStudents()">
-                        <i class="fas fa-sync-alt"></i> Refresh
-                    </button>
+                    <h3><i class="fas fa-users"></i> Class Roster</h3>
+                    <div class="btn-group">
+                        <input type="text" class="form-control search-input" id="rosterSearch" placeholder="🔍 Search name or ID..." oninput="renderRoster()" style="max-width:250px;">
+                        <button class="btn btn-outline btn-sm" onclick="loadAllStudents()"><i class="fas fa-sync-alt"></i> Refresh</button>
+                    </div>
                 </div>
                 <div class="table-responsive">
                     <table>
@@ -830,6 +453,7 @@
                             <tr>
                                 <th>Student</th>
                                 <th>Student ID</th>
+                                <th>Class</th>
                                 <th>Email</th>
                                 <th>Prefect</th>
                                 <th>Status</th>
@@ -837,7 +461,7 @@
                             </tr>
                         </thead>
                         <tbody id="rosterBody">
-                            <tr><td colspan="6"><div class="empty-state"><i class="fas fa-spinner fa-spin"></i><p>Loading...</p></div></td></tr>
+                            <tr><td colspan="7"><div class="empty-state"><i class="fas fa-spinner fa-spin"></i><p>Loading...</p></div></td></tr>
                         </tbody>
                     </table>
                 </div>
@@ -851,48 +475,34 @@
                     <h3><i class="fas fa-user-check"></i> Students Awaiting Approval</h3>
                     <span class="badge badge-pending" id="pendingApprovalCount">0 pending</span>
                 </div>
-                <div id="approvalsList">
-                    <div class="empty-state"><i class="fas fa-spinner fa-spin"></i><p>Loading...</p></div>
-                </div>
+                <div id="approvalsList"><div class="empty-state"><i class="fas fa-spinner fa-spin"></i><p>Loading...</p></div></div>
             </div>
         </div>
 
         <!-- Tab 3: Attendance -->
         <div class="tab-content" id="tab-attendance">
             <div class="card">
-                <div class="card-header">
-                    <h3><i class="fas fa-clipboard-list"></i> Take Attendance</h3>
-                </div>
+                <div class="card-header"><h3><i class="fas fa-clipboard-list"></i> Take Attendance</h3></div>
                 <div style="display:flex; gap:1rem; flex-wrap:wrap; align-items:flex-end;">
-                    <div class="form-group" style="margin:0;">
-                        <label>Date</label>
-                        <input type="date" id="attDate" class="form-control">
-                    </div>
-                    <div class="form-group" style="margin:0;">
-                        <label>Session</label>
+                    <div class="form-group" style="margin:0;"><label>Date</label><input type="date" id="attDate" class="form-control"></div>
+                    <div class="form-group" style="margin:0;"><label>Session</label>
                         <select id="attSession" class="form-control">
                             <option value="morning">Morning (8AM-12PM)</option>
                             <option value="afternoon">Afternoon (1PM-4PM)</option>
                         </select>
                     </div>
-                    <button class="btn btn-primary" id="attLoadBtn">
-                        <i class="fas fa-download"></i> Load Students
-                    </button>
-                    <button class="btn btn-success" id="attSaveBtn">
-                        <i class="fas fa-save"></i> Save Attendance
-                    </button>
+                    <button class="btn btn-primary" id="attLoadBtn"><i class="fas fa-download"></i> Load Students</button>
+                    <button class="btn btn-success" id="attSaveBtn"><i class="fas fa-save"></i> Save Attendance</button>
                 </div>
                 <div id="attTableCard" style="display:none; margin-top:1rem;">
+                    <div class="att-bulk-actions">
+                        <button class="btn btn-outline btn-sm" onclick="markAllAttendance('present')"><i class="fas fa-check-double"></i> Mark All Present</button>
+                        <button class="btn btn-outline btn-sm" onclick="markAllAttendance('absent')"><i class="fas fa-times"></i> Mark All Absent</button>
+                    </div>
                     <div class="table-responsive">
                         <table>
                             <thead>
-                                <tr>
-                                    <th>#</th>
-                                    <th>Student</th>
-                                    <th>Present</th>
-                                    <th>Absent</th>
-                                    <th>Remark</th>
-                                </tr>
+                                <tr><th>#</th><th>Student</th><th>Class</th><th>Present</th><th>Absent</th><th>Remark</th></tr>
                             </thead>
                             <tbody id="attTableBody"></tbody>
                         </table>
@@ -901,7 +511,7 @@
                 <div id="attEmpty" class="empty-state">
                     <i class="fas fa-calendar-check"></i>
                     <h3>Select date and session, then click Load Students</h3>
-                    <p>Only active students will appear.</p>
+                    <p>Only active students will appear based on your class selection above.</p>
                 </div>
             </div>
         </div>
@@ -909,35 +519,21 @@
         <!-- Tab 4: Class Announcements -->
         <div class="tab-content" id="tab-announcements">
             <div class="card">
-                <div class="card-header">
-                    <h3><i class="fas fa-plus-circle"></i> New Class Announcement</h3>
-                </div>
+                <div class="card-header"><h3><i class="fas fa-plus-circle"></i> New Class Announcement</h3></div>
                 <div class="form-group">
-                    <label>Class</label>
+                    <label>Target Class(es)</label>
                     <input type="text" id="annClassDisplay" class="form-control" readonly>
                 </div>
-                <div class="form-group">
-                    <label>Title *</label>
-                    <input type="text" id="annTitle" class="form-control" required placeholder="Announcement title...">
-                </div>
-                <div class="form-group">
-                    <label>Message *</label>
-                    <textarea id="annContent" class="form-control" required placeholder="Write your announcement..."></textarea>
-                </div>
-                <button class="btn btn-primary" id="annSubmitBtn">
-                    <i class="fas fa-paper-plane"></i> Post Announcement
-                </button>
+                <div class="form-group"><label>Title *</label><input type="text" id="annTitle" class="form-control" required placeholder="Announcement title..."></div>
+                <div class="form-group"><label>Message *</label><textarea id="annContent" class="form-control" required placeholder="Write your announcement..."></textarea></div>
+                <button class="btn btn-primary" id="annSubmitBtn"><i class="fas fa-paper-plane"></i> Post Announcement</button>
             </div>
             <div class="card">
                 <div class="card-header">
                     <h3><i class="fas fa-history"></i> My Class Announcements</h3>
-                    <button class="btn btn-outline btn-sm" onclick="loadAnnouncements()">
-                        <i class="fas fa-sync-alt"></i> Refresh
-                    </button>
+                    <button class="btn btn-outline btn-sm" onclick="loadAnnouncements()"><i class="fas fa-sync-alt"></i> Refresh</button>
                 </div>
-                <div id="announcementsList" class="empty-state">
-                    <i class="fas fa-spinner fa-spin"></i><p>Loading...</p>
-                </div>
+                <div id="announcementsList" class="empty-state"><i class="fas fa-spinner fa-spin"></i><p>Loading...</p></div>
             </div>
         </div>
 
@@ -946,13 +542,9 @@
             <div class="card">
                 <div class="card-header">
                     <h3><i class="fas fa-clock"></i> My Pending Action Requests</h3>
-                    <button class="btn btn-outline btn-sm" onclick="loadPendingActions()">
-                        <i class="fas fa-sync-alt"></i> Refresh
-                    </button>
+                    <button class="btn btn-outline btn-sm" onclick="loadPendingActions()"><i class="fas fa-sync-alt"></i> Refresh</button>
                 </div>
-                <div id="pendingActionsList">
-                    <div class="empty-state"><i class="fas fa-spinner fa-spin"></i><p>Loading...</p></div>
-                </div>
+                <div id="pendingActionsList"><div class="empty-state"><i class="fas fa-spinner fa-spin"></i><p>Loading...</p></div></div>
             </div>
         </div>
     </div>
@@ -965,20 +557,10 @@
                 <i class="fas fa-times" style="cursor:pointer;font-size:1.3rem;color:var(--text-secondary);padding:0.3rem;border-radius:0.5rem;" onclick="closeEditStudentModal()"></i>
             </div>
             <input type="hidden" id="editStudentId">
-            <div class="form-group">
-                <label>First Name</label>
-                <input type="text" id="editFirstName" class="form-control">
-            </div>
-            <div class="form-group">
-                <label>Surname</label>
-                <input type="text" id="editSurname" class="form-control">
-            </div>
-            <div class="form-group">
-                <label>Phone</label>
-                <input type="tel" id="editPhone" class="form-control">
-            </div>
-            <div class="form-group">
-                <label>Prefect Role</label>
+            <div class="form-group"><label>First Name</label><input type="text" id="editFirstName" class="form-control"></div>
+            <div class="form-group"><label>Surname</label><input type="text" id="editSurname" class="form-control"></div>
+            <div class="form-group"><label>Phone</label><input type="tel" id="editPhone" class="form-control"></div>
+            <div class="form-group"><label>Prefect Role</label>
                 <select id="editPrefect" class="form-control">
                     <option value="">None</option>
                     <option value="Head Boy">Head Boy</option>
@@ -988,20 +570,15 @@
                     <option value="Library Prefect">Library Prefect</option>
                 </select>
             </div>
-            <div class="form-group">
-                <label>Status</label>
+            <div class="form-group"><label>Status</label>
                 <select id="editStatus" class="form-control">
                     <option value="active">Active</option>
                     <option value="suspended">Suspended</option>
                 </select>
             </div>
             <div class="btn-group" style="justify-content:flex-end;margin-top:1rem;">
-                <button class="btn btn-outline" onclick="closeEditStudentModal()">
-                    <i class="fas fa-times"></i> Cancel
-                </button>
-                <button class="btn btn-primary" id="saveEditStudentBtn">
-                    <i class="fas fa-save"></i> Save Changes
-                </button>
+                <button class="btn btn-outline" onclick="closeEditStudentModal()"><i class="fas fa-times"></i> Cancel</button>
+                <button class="btn btn-primary" id="saveEditStudentBtn"><i class="fas fa-save"></i> Save Changes</button>
             </div>
         </div>
     </div>
@@ -1028,10 +605,12 @@
         // ============================================
         let currentUser = null;
         let userData = null;
-        let teacherClass = null;
+        let teacherClasses = [];           // All classes assigned by admin (classesTeaching array)
+        let activeClassFilter = 'all';    // 'all' or a specific class name
         let allStudents = [];
         let pendingStudents = [];
         let currentAttendance = {};
+        let pendingActionsUnsub = null;   // Real-time listener handle
 
         // ============================================
         // UTILITY FUNCTIONS
@@ -1083,6 +662,12 @@
             }
         }
 
+        // Returns the list of classes to query based on activeClassFilter
+        function getTargetClasses() {
+            if (activeClassFilter === 'all') return teacherClasses;
+            return [activeClassFilter];
+        }
+
         // ============================================
         // THEME MANAGEMENT
         // ============================================
@@ -1091,7 +676,7 @@
         const savedTheme = localStorage.getItem('judah-theme') || 'dark';
         html.setAttribute('data-theme', savedTheme);
         themeToggle.querySelector('span').textContent = savedTheme === 'dark' ? 'Light' : 'Dark';
-        
+
         themeToggle.addEventListener('click', () => {
             const next = html.getAttribute('data-theme') === 'dark' ? 'light' : 'dark';
             html.setAttribute('data-theme', next);
@@ -1100,26 +685,114 @@
         });
 
         // ============================================
+        // GLOBAL CLASS CONTEXT SELECTOR
+        // ============================================
+        function populateClassSelector() {
+            const select = document.getElementById('classFilterSelect');
+            select.innerHTML = '<option value="all">📋 All My Classes</option>';
+            teacherClasses.forEach(cls => {
+                const opt = document.createElement('option');
+                opt.value = cls;
+                opt.textContent = cls;
+                select.appendChild(opt);
+            });
+            select.value = activeClassFilter;
+            updateContextSummary();
+        }
+
+        function updateContextSummary() {
+            const targets = getTargetClasses();
+            const summary = document.getElementById('contextSummary');
+            if (activeClassFilter === 'all') {
+                summary.textContent = `${targets.length} class(es) active`;
+            } else {
+                summary.textContent = `Scoped to ${activeClassFilter}`;
+            }
+            // Update announcement display
+            document.getElementById('annClassDisplay').value = activeClassFilter === 'all'
+                ? teacherClasses.join(', ')
+                : activeClassFilter;
+        }
+
+        document.getElementById('classFilterSelect').addEventListener('change', function() {
+            activeClassFilter = this.value;
+            const allToggle = document.getElementById('allClassesToggle');
+            const allCheckbox = document.getElementById('allClassesCheckbox');
+            if (activeClassFilter === 'all') {
+                allToggle.classList.add('active');
+                allCheckbox.checked = true;
+            } else {
+                allToggle.classList.remove('active');
+                allCheckbox.checked = false;
+            }
+            updateContextSummary();
+            refreshCurrentTab();
+        });
+
+        document.getElementById('allClassesToggle').addEventListener('click', function() {
+            const checkbox = document.getElementById('allClassesCheckbox');
+            checkbox.checked = !checkbox.checked;
+            this.classList.toggle('active', checkbox.checked);
+            const select = document.getElementById('classFilterSelect');
+            if (checkbox.checked) {
+                select.value = 'all';
+                activeClassFilter = 'all';
+            } else {
+                // If unchecked, default to first class
+                activeClassFilter = teacherClasses[0] || 'all';
+                select.value = activeClassFilter;
+            }
+            updateContextSummary();
+            refreshCurrentTab();
+        });
+
+        function refreshCurrentTab() {
+            const activeTab = document.querySelector('.tab-content.active');
+            if (!activeTab) return;
+            const tabId = activeTab.id;
+            switch (tabId) {
+                case 'tab-roster':
+                    loadAllStudents();
+                    break;
+                case 'tab-approvals':
+                    loadPendingStudents();
+                    break;
+                case 'tab-attendance':
+                    // Reset attendance view
+                    document.getElementById('attTableCard').style.display = 'none';
+                    document.getElementById('attEmpty').style.display = 'block';
+                    break;
+                case 'tab-announcements':
+                    loadAnnouncements();
+                    break;
+                case 'tab-actions':
+                    loadPendingActions();
+                    break;
+            }
+        }
+
+        // ============================================
         // TAB NAVIGATION
         // ============================================
         document.getElementById('tabNavigation').addEventListener('click', (e) => {
             const btn = e.target.closest('.tab-btn');
             if (!btn) return;
-            
+
             document.querySelectorAll('#tabNavigation .tab-btn').forEach(b => b.classList.remove('active'));
             btn.classList.add('active');
-            
+
             document.querySelectorAll('.tab-content').forEach(t => t.classList.remove('active'));
             const tabContent = document.getElementById('tab-' + btn.dataset.tab);
             if (tabContent) tabContent.classList.add('active');
-            
-            // Load data for specific tabs
+
             const tab = btn.dataset.tab;
             if (tab === 'approvals') loadPendingStudents();
             else if (tab === 'announcements') loadAnnouncements();
             else if (tab === 'actions') loadPendingActions();
             else if (tab === 'attendance') {
                 document.getElementById('attDate').valueAsDate = new Date();
+                document.getElementById('attTableCard').style.display = 'none';
+                document.getElementById('attEmpty').style.display = 'block';
             }
         });
 
@@ -1127,34 +800,39 @@
         // LOAD ALL STUDENTS
         // ============================================
         async function loadAllStudents() {
-            if (!teacherClass) return;
-            
+            if (!teacherClasses.length) {
+                document.getElementById('rosterBody').innerHTML = '<tr><td colspan="7"><div class="empty-state"><i class="fas fa-exclamation-triangle"></i><h3>No classes assigned</h3><p>Contact admin to assign classes.</p></div></td></tr>';
+                return;
+            }
+
             try {
+                const targets = getTargetClasses();
+                // Firestore 'in' supports up to 10 values
                 const snap = await db.collection('users')
                     .where('role', '==', 'student')
-                    .where('class', '==', teacherClass)
+                    .where('class', 'in', targets)
                     .get();
-                
+
                 allStudents = [];
                 pendingStudents = [];
-                
+
                 snap.forEach(doc => {
                     const d = doc.data();
                     const obj = { id: doc.id, ...d };
                     allStudents.push(obj);
                     if (!d.approved) pendingStudents.push(obj);
                 });
-                
-                allStudents.sort((a, b) => 
+
+                allStudents.sort((a, b) =>
                     `${a.surname || ''}${a.firstName || ''}`.localeCompare(`${b.surname || ''}${b.firstName || ''}`)
                 );
-                
+
                 updateRosterStats();
                 renderRoster();
                 updateApprovalBadge();
             } catch (e) {
                 console.error('Load students error:', e);
-                showToast('Error', 'Failed to load students.', 'error');
+                showToast('Error', 'Failed to load students. Check internet connection.', 'error');
             }
         }
         window.loadAllStudents = loadAllStudents;
@@ -1167,44 +845,42 @@
         }
 
         function renderRoster() {
-            document.getElementById('rosterClassName').textContent = teacherClass?.toUpperCase() || 'Not Assigned';
+            const searchTerm = (document.getElementById('rosterSearch')?.value || '').toLowerCase();
+            let displayStudents = allStudents;
+            if (searchTerm) {
+                displayStudents = allStudents.filter(s => {
+                    const name = `${s.firstName || ''} ${s.surname || ''}`.toLowerCase();
+                    const id = (s.userId || '').toLowerCase();
+                    return name.includes(searchTerm) || id.includes(searchTerm);
+                });
+            }
+
             const tbody = document.getElementById('rosterBody');
-            
-            if (!allStudents.length) {
-                tbody.innerHTML = '<tr><td colspan="6"><div class="empty-state"><i class="fas fa-user-slash"></i><h3>No students in this class</h3></div></td></tr>';
+            if (!displayStudents.length) {
+                tbody.innerHTML = '<tr><td colspan="7"><div class="empty-state"><i class="fas fa-user-slash"></i><h3>No students found</h3><p>Try a different search or class filter.</p></div></td></tr>';
                 return;
             }
-            
-            tbody.innerHTML = allStudents.map(s => {
+
+            tbody.innerHTML = displayStudents.map(s => {
                 const name = `${s.firstName || ''} ${s.surname || ''}`.trim() || 'Unknown';
                 const status = s.suspended ? 'suspended' : 'active';
                 const statusBadge = s.suspended ? 'badge-suspended' : 'badge-active';
                 const approvedBadge = s.approved ? '' : ' <span class="badge badge-pending">Pending</span>';
-                
+
                 return `
                     <tr>
-                        <td>
-                            <strong>${escapeHtml(name)}</strong>
-                            ${approvedBadge}
-                        </td>
+                        <td><strong>${escapeHtml(name)}</strong>${approvedBadge}</td>
                         <td style="font-family:'Space Grotesk',monospace;font-size:0.8rem;">${s.userId || '—'}</td>
+                        <td><span class="class-tag">${escapeHtml(s.class || '—')}</span></td>
                         <td>${escapeHtml(s.email || '—')}</td>
                         <td>${s.prefect || '—'}</td>
                         <td><span class="badge ${statusBadge}">${status}</span></td>
                         <td>
                             <div class="btn-group">
-                                <button class="btn btn-outline btn-sm" onclick="editStudent('${s.id}')" title="Edit">
-                                    <i class="fas fa-edit"></i>
-                                </button>
-                                <button class="btn btn-outline btn-sm" onclick="requestAction('assign_prefect','${s.id}')" title="Assign Prefect">
-                                    <i class="fas fa-crown"></i>
-                                </button>
-                                <button class="btn btn-outline btn-sm" onclick="requestAction('${s.suspended ? 'activate' : 'suspend'}','${s.id}')" title="${s.suspended ? 'Activate' : 'Suspend'}">
-                                    <i class="fas ${s.suspended ? 'fa-play' : 'fa-pause'}"></i>
-                                </button>
-                                <button class="btn btn-outline btn-sm" style="color:var(--danger-text);" onclick="requestAction('delete','${s.id}')" title="Delete">
-                                    <i class="fas fa-trash"></i>
-                                </button>
+                                <button class="btn btn-outline btn-sm" onclick="editStudent('${s.id}')" title="Edit"><i class="fas fa-edit"></i></button>
+                                <button class="btn btn-outline btn-sm" onclick="requestAction('assign_prefect','${s.id}')" title="Assign Prefect"><i class="fas fa-crown"></i></button>
+                                <button class="btn btn-outline btn-sm" onclick="requestAction('${s.suspended ? 'activate' : 'suspend'}','${s.id}')" title="${s.suspended ? 'Activate' : 'Suspend'}"><i class="fas ${s.suspended ? 'fa-play' : 'fa-pause'}"></i></button>
+                                <button class="btn btn-outline btn-sm" style="color:var(--danger-text);" onclick="requestAction('delete','${s.id}')" title="Delete"><i class="fas fa-trash"></i></button>
                             </div>
                         </td>
                     </tr>`;
@@ -1217,10 +893,10 @@
         async function requestAction(actionType, studentId) {
             const student = allStudents.find(s => s.id === studentId);
             if (!student) return;
-            
+
             const name = `${student.firstName || ''} ${student.surname || ''}`.trim() || 'Unknown';
             let details = {};
-            
+
             if (actionType === 'assign_prefect') {
                 const role = prompt('Enter prefect role (e.g., Head Boy, Sports Prefect):');
                 if (!role) return;
@@ -1236,12 +912,6 @@
 
             if (!confirm(`Request to ${actionLabels[actionType] || actionType} "${name}"? The admin must approve this action.`)) return;
 
-            const btn = event.target.closest('.btn');
-            if (btn) {
-                btn.disabled = true;
-                btn.innerHTML = '<i class="fas fa-spinner fa-spin"></i>';
-            }
-
             try {
                 await db.collection('pendingActions').add({
                     teacherId: currentUser.uid,
@@ -1249,28 +919,18 @@
                     actionType,
                     studentId,
                     studentName: name,
-                    classId: teacherClass,
+                    classId: student.class || '',
                     details,
                     status: 'pending',
                     requestedAt: firebase.firestore.FieldValue.serverTimestamp()
                 });
-                
+
                 await logAudit('ACTION_REQUESTED', `Teacher requested ${actionType} for student ${name}`);
                 showToast('Request Sent', `Action request for "${name}" sent to admin for approval.`, 'success');
-                
-                // Refresh pending actions
                 loadPendingActions();
             } catch (e) {
                 console.error('Request error:', e);
                 showToast('Error', 'Failed to send request: ' + e.message, 'error');
-            } finally {
-                if (btn) {
-                    btn.disabled = false;
-                    btn.innerHTML = actionType === 'assign_prefect' ? '<i class="fas fa-crown"></i>' :
-                                    actionType === 'suspend' ? '<i class="fas fa-pause"></i>' :
-                                    actionType === 'activate' ? '<i class="fas fa-play"></i>' :
-                                    '<i class="fas fa-trash"></i>';
-                }
             }
         }
         window.requestAction = requestAction;
@@ -1281,7 +941,7 @@
         function editStudent(id) {
             const s = allStudents.find(x => x.id === id);
             if (!s) return;
-            
+
             document.getElementById('editStudentId').value = id;
             document.getElementById('editFirstName').value = s.firstName || '';
             document.getElementById('editSurname').value = s.surname || '';
@@ -1297,21 +957,17 @@
         }
         window.closeEditStudentModal = closeEditStudentModal;
 
-        // Close modal on overlay click
         document.getElementById('editStudentModal').addEventListener('click', function(e) {
             if (e.target === this) closeEditStudentModal();
         });
-
-        // Close modal on Escape
         document.addEventListener('keydown', function(e) {
             if (e.key === 'Escape') closeEditStudentModal();
         });
 
-        // Save edited student
         document.getElementById('saveEditStudentBtn').addEventListener('click', async () => {
             const id = document.getElementById('editStudentId').value;
             const btn = document.getElementById('saveEditStudentBtn');
-            
+
             const updates = {
                 firstName: document.getElementById('editFirstName').value.trim(),
                 surname: document.getElementById('editSurname').value.trim(),
@@ -1361,17 +1017,10 @@
 
         function renderApprovals() {
             const container = document.getElementById('approvalsList');
-            
             if (!pendingStudents.length) {
-                container.innerHTML = `
-                    <div class="empty-state">
-                        <i class="fas fa-check-circle" style="color:var(--success-text);"></i>
-                        <h3>All Caught Up!</h3>
-                        <p>No students are awaiting approval.</p>
-                    </div>`;
+                container.innerHTML = `<div class="empty-state"><i class="fas fa-check-circle" style="color:var(--success-text);"></i><h3>All Caught Up!</h3><p>No students are awaiting approval.</p></div>`;
                 return;
             }
-            
             container.innerHTML = pendingStudents.map(s => {
                 const name = `${s.firstName || ''} ${s.surname || ''}`.trim() || 'Unnamed';
                 return `
@@ -1379,16 +1028,12 @@
                         <div style="display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:0.5rem;">
                             <div>
                                 <strong>${escapeHtml(name)}</strong>
-                                <br>
-                                <small style="color:var(--text-muted);">${s.email || 'No email'} · ${s.phone || 'No phone'}</small>
+                                <span class="class-tag">${escapeHtml(s.class || '—')}</span>
+                                <br><small style="color:var(--text-muted);">${s.email || 'No email'} · ${s.phone || 'No phone'}</small>
                             </div>
                             <div class="btn-group">
-                                <button class="btn btn-primary btn-sm" onclick="approveStudent('${s.id}')">
-                                    <i class="fas fa-check"></i> Approve & Generate ID
-                                </button>
-                                <button class="btn btn-outline btn-sm" style="color:var(--danger-text);" onclick="rejectStudent('${s.id}')">
-                                    <i class="fas fa-times"></i> Reject
-                                </button>
+                                <button class="btn btn-primary btn-sm" onclick="approveStudent('${s.id}')"><i class="fas fa-check"></i> Approve & Generate ID</button>
+                                <button class="btn btn-outline btn-sm" style="color:var(--danger-text);" onclick="rejectStudent('${s.id}')"><i class="fas fa-times"></i> Reject</button>
                             </div>
                         </div>
                     </div>`;
@@ -1396,20 +1041,18 @@
         }
 
         async function loadPendingStudents() {
-            if (!teacherClass) return;
-            
+            if (!teacherClasses.length) return;
             try {
+                const targets = getTargetClasses();
                 const snap = await db.collection('users')
                     .where('role', '==', 'student')
-                    .where('class', '==', teacherClass)
+                    .where('class', 'in', targets)
                     .get();
-                
                 pendingStudents = [];
                 snap.forEach(doc => {
                     const d = doc.data();
                     if (!d.approved) pendingStudents.push({ id: doc.id, ...d });
                 });
-                
                 updateApprovalBadge();
                 renderApprovals();
             } catch (e) {
@@ -1417,11 +1060,9 @@
             }
         }
 
-        // ID Generation: JWSST + first3 of firstName + year + 5-digit serial
         async function generateUserId(firstName, year) {
             const prefix = 'JWSST' + firstName.substring(0, 3).toUpperCase();
             const counterRef = db.collection('counters').doc(`userId_${year}_${prefix}`);
-            
             const newNum = await db.runTransaction(async (transaction) => {
                 const doc = await transaction.get(counterRef);
                 let next = 1;
@@ -1429,32 +1070,26 @@
                 transaction.set(counterRef, { value: next }, { merge: true });
                 return next;
             });
-            
             return `${prefix}${year}${String(newNum).padStart(5, '0')}`;
         }
 
         async function approveStudent(id) {
             if (!confirm('Approve this student? A unique Student ID will be generated.')) return;
-            
             showToast('Processing', 'Approving student...', 'info');
-            
             try {
                 const userRef = db.collection('users').doc(id);
                 const doc = await userRef.get();
                 const data = doc.data();
                 const year = data.admissionYear || new Date().getFullYear();
                 const generatedId = await generateUserId(data.firstName || 'STU', year);
-                
                 await userRef.update({
                     approved: true,
                     userId: generatedId,
                     admissionYear: year,
                     updatedAt: firebase.firestore.FieldValue.serverTimestamp()
                 });
-                
                 await logAudit('APPROVE_STUDENT', `Student ${data.firstName} ${data.surname} assigned ID ${generatedId}`);
                 showToast('Approved!', `Student approved with ID: ${generatedId}`, 'success');
-                
                 await loadAllStudents();
                 await loadPendingStudents();
             } catch (e) {
@@ -1467,14 +1102,11 @@
         async function rejectStudent(id) {
             const student = pendingStudents.find(s => s.id === id);
             const name = student ? `${student.firstName || ''} ${student.surname || ''}`.trim() : 'Unknown';
-            
             if (!confirm(`Reject and delete "${name}"? This cannot be undone.`)) return;
-            
             try {
                 await db.collection('users').doc(id).delete();
                 await logAudit('REJECT_STUDENT', `Rejected student ${name}`);
                 showToast('Deleted', `"${name}" has been removed.`, 'success');
-                
                 await loadAllStudents();
                 await loadPendingStudents();
             } catch (e) {
@@ -1488,22 +1120,22 @@
         // ATTENDANCE
         // ============================================
         document.getElementById('attDate').valueAsDate = new Date();
-        
+
         document.getElementById('attLoadBtn').addEventListener('click', async () => {
             const date = document.getElementById('attDate').value;
             const session = document.getElementById('attSession').value;
-            
-            if (!date || !teacherClass) return;
-            
+            if (!date || !teacherClasses.length) return;
+
             const btn = document.getElementById('attLoadBtn');
             btn.disabled = true;
             btn.innerHTML = '<span class="loading-spinner"></span> Loading...';
-            
+
             try {
+                const targets = getTargetClasses();
                 const snap = await db.collection('attendance')
-                    .where('classId', '==', teacherClass)
+                    .where('classId', 'in', targets)
                     .get();
-                
+
                 currentAttendance = {};
                 snap.forEach(doc => {
                     const d = doc.data();
@@ -1512,37 +1144,25 @@
                         currentAttendance[d.studentId + '_remark'] = d.remark || '';
                     }
                 });
-                
+
                 const students = allStudents.filter(s => !s.suspended && s.approved);
                 const tbody = document.getElementById('attTableBody');
-                
+
                 if (!students.length) {
-                    tbody.innerHTML = '<tr><td colspan="5"><div class="empty-state"><p>No active students in this class.</p></div></td></tr>';
+                    tbody.innerHTML = '<tr><td colspan="6"><div class="empty-state"><p>No active students in selected class(es).</p></div></td></tr>';
                 } else {
                     tbody.innerHTML = students.map((s, i) => `
                         <tr>
                             <td>${i + 1}</td>
                             <td><strong>${escapeHtml(`${s.firstName || ''} ${s.surname || ''}`)}</strong></td>
-                            <td>
-                                <input type="radio" name="att_${s.id}" value="present" 
-                                       ${currentAttendance[s.id] === 'present' || !currentAttendance[s.id] ? 'checked' : ''} 
-                                       onchange="updateAttendance('${s.id}', 'present')">
-                            </td>
-                            <td>
-                                <input type="radio" name="att_${s.id}" value="absent" 
-                                       ${currentAttendance[s.id] === 'absent' ? 'checked' : ''} 
-                                       onchange="updateAttendance('${s.id}', 'absent')">
-                            </td>
-                            <td>
-                                <input type="text" class="form-control" id="attRemark_${s.id}" 
-                                       value="${escapeHtml(currentAttendance[s.id + '_remark'] || '')}" 
-                                       style="padding:0.4rem;font-size:0.8rem;" 
-                                       placeholder="Optional remark">
-                            </td>
+                            <td><span class="class-tag">${escapeHtml(s.class || '—')}</span></td>
+                            <td><input type="radio" name="att_${s.id}" value="present" ${currentAttendance[s.id] === 'present' || !currentAttendance[s.id] ? 'checked' : ''} onchange="updateAttendance('${s.id}', 'present')"></td>
+                            <td><input type="radio" name="att_${s.id}" value="absent" ${currentAttendance[s.id] === 'absent' ? 'checked' : ''} onchange="updateAttendance('${s.id}', 'absent')"></td>
+                            <td><input type="text" class="form-control" id="attRemark_${s.id}" value="${escapeHtml(currentAttendance[s.id + '_remark'] || '')}" style="padding:0.4rem;font-size:0.8rem;" placeholder="Optional remark"></td>
                         </tr>
                     `).join('');
                 }
-                
+
                 document.getElementById('attTableCard').style.display = 'block';
                 document.getElementById('attEmpty').style.display = 'none';
             } catch (e) {
@@ -1559,11 +1179,26 @@
         }
         window.updateAttendance = updateAttendance;
 
+        function markAllAttendance(status) {
+            const students = allStudents.filter(s => !s.suspended && s.approved);
+            students.forEach(s => {
+                currentAttendance[s.id] = status;
+                const presentRadio = document.querySelector(`input[name="att_${s.id}"][value="present"]`);
+                const absentRadio = document.querySelector(`input[name="att_${s.id}"][value="absent"]`);
+                if (presentRadio && absentRadio) {
+                    presentRadio.checked = (status === 'present');
+                    absentRadio.checked = (status === 'absent');
+                }
+            });
+            showToast('Applied', `Marked all ${students.length} students as ${status}.`, 'info');
+        }
+        window.markAllAttendance = markAllAttendance;
+
         document.getElementById('attSaveBtn').addEventListener('click', async () => {
             const date = document.getElementById('attDate').value;
             const session = document.getElementById('attSession').value;
             const students = allStudents.filter(s => !s.suspended && s.approved);
-            
+
             if (!students.length) {
                 showToast('No Students', 'No active students to record attendance for.', 'warning');
                 return;
@@ -1577,15 +1212,13 @@
 
             try {
                 const batch = db.batch();
-                
                 students.forEach(s => {
                     const status = currentAttendance[s.id] || 'present';
                     const remark = document.getElementById(`attRemark_${s.id}`)?.value || '';
-                    
                     batch.set(db.collection('attendance').doc(), {
                         studentId: s.id,
                         studentName: `${s.firstName || ''} ${s.surname || ''}`.trim(),
-                        classId: teacherClass,
+                        classId: s.class || '',
                         date,
                         session,
                         status,
@@ -1595,7 +1228,6 @@
                         recordedAt: firebase.firestore.FieldValue.serverTimestamp()
                     });
                 });
-                
                 await batch.commit();
                 await logAudit('ATTENDANCE_SAVED', `Date: ${date}, Session: ${session}, Students: ${students.length}`);
                 showToast('Saved!', `Attendance for ${students.length} student(s) recorded.`, 'success');
@@ -1612,48 +1244,39 @@
         // CLASS ANNOUNCEMENTS
         // ============================================
         async function loadAnnouncements() {
-            if (!teacherClass) return;
-            
-            document.getElementById('annClassDisplay').value = teacherClass;
+            if (!teacherClasses.length) return;
+            const targets = getTargetClasses();
             const container = document.getElementById('announcementsList');
             container.innerHTML = '<div class="empty-state"><i class="fas fa-spinner fa-spin"></i><p>Loading...</p></div>';
-            
+            container.style.display = 'block';
+
             try {
                 const snap = await db.collection('classAnnouncements')
-                    .where('classId', '==', teacherClass)
+                    .where('classId', 'in', targets)
                     .orderBy('createdAt', 'desc')
                     .get();
-                
+
                 if (snap.empty) {
-                    container.innerHTML = `
-                        <div class="empty-state">
-                            <i class="fas fa-bullhorn"></i>
-                            <h3>No Announcements Yet</h3>
-                            <p>Post your first class announcement above.</p>
-                        </div>`;
+                    container.innerHTML = `<div class="empty-state"><i class="fas fa-bullhorn"></i><h3>No Announcements Yet</h3><p>Post your first class announcement above.</p></div>`;
                     return;
                 }
-                
+
                 container.style.display = 'grid';
                 container.style.gridTemplateColumns = 'repeat(auto-fill, minmax(300px, 1fr))';
                 container.style.gap = '1rem';
                 container.innerHTML = snap.docs.map(doc => {
                     const a = doc.data();
                     const dateStr = a.createdAt?.toDate ? a.createdAt.toDate().toLocaleString() : 'Unknown date';
-                    
                     return `
                         <div class="card" style="padding:1rem;">
                             <div style="display:flex;justify-content:space-between;align-items:flex-start;gap:0.5rem;">
                                 <strong style="flex:1;">${escapeHtml(a.title || 'Untitled')}</strong>
-                                <button class="btn btn-outline btn-sm" style="color:var(--danger-text);flex-shrink:0;" 
-                                        onclick="deleteAnnouncement('${doc.id}')" title="Delete">
-                                    <i class="fas fa-trash"></i>
-                                </button>
+                                <button class="btn btn-outline btn-sm" style="color:var(--danger-text);flex-shrink:0;" onclick="deleteAnnouncement('${doc.id}')" title="Delete"><i class="fas fa-trash"></i></button>
                             </div>
+                            <span class="class-tag" style="margin:0.3rem 0;">${escapeHtml(a.classId || '—')}</span>
                             <small style="color:var(--text-muted);display:block;margin:0.3rem 0;">${dateStr}</small>
                             <p style="margin:0.5rem 0;font-size:0.85rem;line-height:1.5;">${escapeHtml(a.content || '')}</p>
-                        </div>
-                    `;
+                        </div>`;
                 }).join('');
             } catch (e) {
                 console.error('Load announcements error:', e);
@@ -1665,32 +1288,36 @@
         document.getElementById('annSubmitBtn').addEventListener('click', async () => {
             const title = document.getElementById('annTitle').value.trim();
             const content = document.getElementById('annContent').value.trim();
-            
             if (!title || !content) {
                 showToast('Required', 'Title and message are required.', 'warning');
                 return;
             }
 
+            const targets = getTargetClasses();
             const btn = document.getElementById('annSubmitBtn');
             btn.disabled = true;
             btn.innerHTML = '<span class="loading-spinner"></span> Posting...';
 
             try {
-                await db.collection('classAnnouncements').add({
-                    teacherId: currentUser.uid,
-                    teacherName: `${userData?.firstName || ''} ${userData?.surname || ''}`.trim(),
-                    classId: teacherClass,
-                    title,
-                    content,
-                    createdAt: firebase.firestore.FieldValue.serverTimestamp()
+                const batch = db.batch();
+                targets.forEach(cls => {
+                    const ref = db.collection('classAnnouncements').doc();
+                    batch.set(ref, {
+                        teacherId: currentUser.uid,
+                        teacherName: `${userData?.firstName || ''} ${userData?.surname || ''}`.trim(),
+                        classId: cls,
+                        title,
+                        content,
+                        createdAt: firebase.firestore.FieldValue.serverTimestamp()
+                    });
                 });
-                
-                await logAudit('CLASS_ANNOUNCEMENT', `Title: ${title}`);
-                
+                await batch.commit();
+                await logAudit('CLASS_ANNOUNCEMENT', `Title: ${title} | Classes: ${targets.join(', ')}`);
+
                 document.getElementById('annTitle').value = '';
                 document.getElementById('annContent').value = '';
-                
-                showToast('Posted!', 'Announcement published to your class.', 'success');
+
+                showToast('Posted!', `Announcement published to ${targets.length} class(es).`, 'success');
                 await loadAnnouncements();
             } catch (e) {
                 console.error('Post announcement error:', e);
@@ -1703,9 +1330,9 @@
 
         async function deleteAnnouncement(id) {
             if (!confirm('Delete this announcement?')) return;
-            
             try {
                 await db.collection('classAnnouncements').doc(id).delete();
+                await logAudit('DELETE_ANNOUNCEMENT', `Deleted announcement ${id}`);
                 showToast('Deleted', 'Announcement removed.', 'success');
                 await loadAnnouncements();
             } catch (e) {
@@ -1716,64 +1343,83 @@
         window.deleteAnnouncement = deleteAnnouncement;
 
         // ============================================
-        // PENDING ACTIONS
+        // PENDING ACTIONS (Real-time listener)
         // ============================================
-        async function loadPendingActions() {
+        function startPendingActionsListener() {
+            if (pendingActionsUnsub) pendingActionsUnsub();
             if (!currentUser) return;
-            
+            pendingActionsUnsub = db.collection('pendingActions')
+                .where('teacherId', '==', currentUser.uid)
+                .orderBy('requestedAt', 'desc')
+                .onSnapshot(snap => {
+                    renderPendingActionsFromSnapshot(snap);
+                    updateActionBadge(snap);
+                }, err => {
+                    console.error('Pending actions listener error:', err);
+                });
+        }
+
+        function updateActionBadge(snap) {
+            const badge = document.getElementById('actionBadge');
+            let pendingCount = 0;
+            snap.forEach(doc => {
+                if (doc.data().status === 'pending') pendingCount++;
+            });
+            if (pendingCount > 0) {
+                badge.style.display = 'inline-flex';
+                badge.textContent = pendingCount;
+            } else {
+                badge.style.display = 'none';
+            }
+        }
+
+        function renderPendingActionsFromSnapshot(snap) {
+            const container = document.getElementById('pendingActionsList');
+            if (snap.empty) {
+                container.innerHTML = `<div class="empty-state"><i class="fas fa-check-circle" style="color:var(--success-text);"></i><h3>No Pending Requests</h3><p>Action requests will appear here.</p></div>`;
+                return;
+            }
+            container.innerHTML = '';
+            snap.forEach(doc => {
+                const a = doc.data();
+                const statusClass = a.status === 'approved' ? 'badge-approved' :
+                                    a.status === 'rejected' ? 'badge-rejected' : 'badge-pending';
+                const statusIcon = a.status === 'approved' ? 'fa-check-circle' :
+                                   a.status === 'rejected' ? 'fa-times-circle' : 'fa-clock';
+                const dateStr = a.requestedAt?.toDate ? a.requestedAt.toDate().toLocaleString() : 'Unknown';
+
+                const card = document.createElement('div');
+                card.className = 'card';
+                card.style.cssText = 'padding:1rem; margin-bottom:0.75rem;';
+                card.innerHTML = `
+                    <div style="display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:0.5rem;">
+                        <div>
+                            <strong>${escapeHtml((a.actionType || '').replace(/_/g, ' ').toUpperCase())}</strong>
+                            <span style="margin-left:0.5rem;">for <strong>${escapeHtml(a.studentName || 'Unknown')}</strong></span>
+                            ${a.classId ? `<span class="class-tag">${escapeHtml(a.classId)}</span>` : ''}
+                            ${a.details?.prefectRole ? `<br><small>Role: ${escapeHtml(a.details.prefectRole)}</small>` : ''}
+                        </div>
+                        <span class="badge ${statusClass}"><i class="fas ${statusIcon}"></i> ${a.status || 'pending'}</span>
+                    </div>
+                    <small style="color:var(--text-muted);">Requested: ${dateStr}</small>
+                    ${a.adminNote ? `<br><small style="color:var(--text-secondary);"><strong>Admin:</strong> ${escapeHtml(a.adminNote)}</small>` : ''}
+                `;
+                container.appendChild(card);
+            });
+        }
+
+        async function loadPendingActions() {
+            // Fallback for non-real-time refresh
+            if (!currentUser) return;
             const container = document.getElementById('pendingActionsList');
             container.innerHTML = '<div class="empty-state"><i class="fas fa-spinner fa-spin"></i><p>Loading...</p></div>';
-            
             try {
                 const snap = await db.collection('pendingActions')
                     .where('teacherId', '==', currentUser.uid)
                     .orderBy('requestedAt', 'desc')
                     .get();
-                
-                // Update badge
-                const badge = document.getElementById('actionBadge');
-                const pendingCount = snap.docs.filter(d => d.data().status === 'pending').length;
-                if (pendingCount > 0) {
-                    badge.style.display = 'inline-flex';
-                    badge.textContent = pendingCount;
-                } else {
-                    badge.style.display = 'none';
-                }
-                
-                if (snap.empty) {
-                    container.innerHTML = `
-                        <div class="empty-state">
-                            <i class="fas fa-check-circle" style="color:var(--success-text);"></i>
-                            <h3>No Pending Requests</h3>
-                            <p>Action requests will appear here.</p>
-                        </div>`;
-                    return;
-                }
-                
-                container.innerHTML = snap.docs.map(doc => {
-                    const a = doc.data();
-                    const statusClass = a.status === 'approved' ? 'badge-approved' : 
-                                        a.status === 'rejected' ? 'badge-rejected' : 'badge-pending';
-                    const statusIcon = a.status === 'approved' ? 'fa-check-circle' : 
-                                       a.status === 'rejected' ? 'fa-times-circle' : 'fa-clock';
-                    const dateStr = a.requestedAt?.toDate ? a.requestedAt.toDate().toLocaleString() : 'Unknown';
-                    
-                    return `
-                        <div class="card" style="padding:1rem; margin-bottom:0.75rem;">
-                            <div style="display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:0.5rem;">
-                                <div>
-                                    <strong>${escapeHtml((a.actionType || '').replace(/_/g, ' ').toUpperCase())}</strong>
-                                    <span style="margin-left:0.5rem;">for <strong>${escapeHtml(a.studentName || 'Unknown')}</strong></span>
-                                    ${a.details?.prefectRole ? `<br><small>Role: ${escapeHtml(a.details.prefectRole)}</small>` : ''}
-                                </div>
-                                <span class="badge ${statusClass}">
-                                    <i class="fas ${statusIcon}"></i> ${a.status || 'pending'}
-                                </span>
-                            </div>
-                            <small style="color:var(--text-muted);">Requested: ${dateStr}</small>
-                        </div>
-                    `;
-                }).join('');
+                renderPendingActionsFromSnapshot(snap);
+                updateActionBadge(snap);
             } catch (e) {
                 console.error('Load actions error:', e);
                 container.innerHTML = '<div class="empty-state"><i class="fas fa-exclamation-triangle"></i><p>Failed to load.</p></div>';
@@ -1789,20 +1435,32 @@
                 window.location.href = 'teacher-login.html';
                 return;
             }
-            
+
             try {
                 const doc = await db.collection('users').doc(user.uid).get();
-                
                 if (!doc.exists || doc.data().role !== 'teacher') {
                     await auth.signOut();
                     window.location.href = 'index.html';
                     return;
                 }
-                
+
                 currentUser = user;
                 userData = doc.data();
-                teacherClass = userData.classTeaching;
-                
+
+                // Use classesTeaching array (admin-assigned), fallback to single classTeaching
+                teacherClasses = userData.classesTeaching || (userData.classTeaching ? [userData.classTeaching] : []);
+                if (!teacherClasses.length) {
+                    showToast('No Classes', 'You have not been assigned to any class. Contact the admin.', 'warning');
+                }
+
+                // Initialize activeClassFilter
+                activeClassFilter = 'all';
+
+                // Populate class selector
+                populateClassSelector();
+                document.getElementById('allClassesToggle').classList.add('active');
+                document.getElementById('allClassesCheckbox').checked = true;
+
                 // Set profile
                 const pic = document.getElementById('profilePic');
                 if (userData.photoURL) {
@@ -1811,13 +1469,16 @@
                     pic.textContent = (userData.firstName?.[0] || 'T') + (userData.surname?.[0] || 'E');
                 }
                 document.getElementById('profileName').textContent = userData.firstName || 'Teacher';
-                
+
                 // Load data
-                if (teacherClass) {
+                if (teacherClasses.length) {
                     await loadAllStudents();
                 }
-                
-                console.log('📚 Class Hub initialized for class:', teacherClass);
+
+                // Start real-time listener for pending actions
+                startPendingActionsListener();
+
+                console.log('📚 Class Hub initialized for classes:', teacherClasses);
             } catch (e) {
                 console.error('Auth error:', e);
                 showToast('Error', 'Authentication failed.', 'error');
@@ -1828,6 +1489,7 @@
         // Logout
         document.getElementById('logoutBtn').addEventListener('click', async () => {
             try {
+                if (pendingActionsUnsub) pendingActionsUnsub();
                 await auth.signOut();
                 window.location.href = 'index.html';
             } catch (e) {
@@ -1835,7 +1497,12 @@
             }
         });
 
-        console.log('🏫 Teacher Class Hub ready');
+        // Cleanup listener on page unload
+        window.addEventListener('beforeunload', () => {
+            if (pendingActionsUnsub) pendingActionsUnsub();
+        });
+
+        console.log('🏫 Teacher Class Hub ready — Multi-Class Edition');
     </script>
 </body>
 </html>
