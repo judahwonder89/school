@@ -13,8 +13,8 @@
     <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-auth-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-firestore-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-remote-config-compat.js"></script>
-<script src="https://cdn.jsdelivr.net/npm/groq-sdk@0.5.0/dist/index.global.js"></script>
-<style>
+    <script src="https://cdn.jsdelivr.net/npm/groq-sdk@0.5.0/dist/index.global.js"></script>
+    <style>
         * { margin:0; padding:0; box-sizing:border-box; }
         
         :root[data-theme="light"] {
@@ -69,6 +69,14 @@
         .orb-1 { width:400px; height:400px; top:-150px; right:-150px; background:radial-gradient(circle at 30% 30%,rgba(10,37,64,0.12),transparent 70%); }
         .orb-2 { width:500px; height:500px; bottom:-200px; left:-200px; background:radial-gradient(circle at 70% 70%,rgba(200,150,62,0.10),transparent 70%); animation-duration:30s; }
         @keyframes float { 0%{transform:translate(0,0)scale(1)} 100%{transform:translate(50px,30px)scale(1.15)} }
+
+        /* DEBUG PANEL */
+        .debug-panel { position:fixed; bottom:10px; right:10px; z-index:9999; background:rgba(0,0,0,0.9); color:#0f0; padding:10px 14px; border-radius:10px; font-size:11px; font-family:monospace; max-width:300px; max-height:200px; overflow-y:auto; border:1px solid #0f0; }
+        .debug-panel .title { color:#ff0; font-weight:bold; margin-bottom:5px; font-size:12px; }
+        .debug-panel .ok { color:#0f0; }
+        .debug-panel .err { color:#f00; }
+        .debug-panel .warn { color:#ff0; }
+        .debug-panel .info { color:#0af; }
 
         /* Top Navigation */
         .top-nav { position:sticky; top:0; z-index:100; background:var(--bg-surface); backdrop-filter:blur(20px); -webkit-backdrop-filter:blur(20px); border-bottom:1px solid var(--border); padding:0.8rem 1rem; display:flex; justify-content:space-between; align-items:center; gap:0.5rem; flex-wrap:wrap; }
@@ -283,6 +291,14 @@
 <div class="orb orb-1"></div><div class="orb orb-2"></div>
 <div class="toast-container" id="toastContainer"></div>
 
+<!-- DEBUG PANEL - ALWAYS VISIBLE -->
+<div class="debug-panel" id="debugPanel">
+    <div class="title">🔍 AI STATUS DEBUG</div>
+    <div id="debugContent">
+        <span class="info">⏳ Waiting for page load...</span>
+    </div>
+</div>
+
 <!-- TOP NAVIGATION -->
 <div class="top-nav">
     <div class="nav-left">
@@ -339,7 +355,6 @@
 
     <!-- PANEL 1: LESSON NOTES -->
     <div class="main-panel active" id="panel-lessonNotes">
-        <!-- Controls Bar -->
         <div class="controls-bar">
             <label style="font-weight:600;font-size:0.8rem;">Subject:</label>
             <select id="lnSubject" onchange="onSubjectChange()"><option value="">Select Subject</option></select>
@@ -354,31 +369,22 @@
             <button class="btn btn-outline btn-sm" onclick="window.print()"><i class="fas fa-print"></i> Print</button>
             <button class="btn btn-outline btn-sm" onclick="exportToPDF()"><i class="fas fa-file-pdf"></i> PDF</button>
         </div>
-
-        <!-- Sub Tabs -->
         <div class="sub-tabs" id="lnSubTabs">
             <div class="sub-tab active" data-sub="drafts">📝 Drafts <span class="count" id="draftCount">0</span></div>
             <div class="sub-tab" data-sub="submitted">⏳ Submitted <span class="count" id="submittedCount">0</span></div>
             <div class="sub-tab" data-sub="approved">✅ Approved <span class="count" id="approvedCount">0</span></div>
             <div class="sub-tab" data-sub="published">📤 Published <span class="count" id="publishedCount">0</span></div>
         </div>
-
-        <!-- Drafts Section -->
         <div id="ln-drafts">
-            <!-- Week Selector -->
             <div class="week-tabs" id="weekSelector"></div>
             <div style="display:flex;gap:0.5rem;margin-bottom:1rem;flex-wrap:wrap;">
                 <button class="btn btn-outline btn-sm" onclick="generateAllWeeks()"><i class="fas fa-robot"></i> AI Generate All Weeks</button>
                 <button class="btn btn-outline btn-sm" onclick="copyFromPreviousTerm()"><i class="fas fa-copy"></i> Copy from Previous Term</button>
                 <button class="btn btn-outline btn-sm" onclick="bulkSubmit()"><i class="fas fa-paper-plane"></i> Bulk Submit</button>
             </div>
-
-            <!-- Syllabus Info Banner -->
             <div id="syllabusBanner" style="display:none;background:var(--info-bg);border-left:4px solid var(--accent);padding:0.8rem 1rem;border-radius:0.8rem;margin-bottom:1rem;font-size:0.85rem;">
                 <strong><i class="fas fa-info-circle"></i> Syllabus:</strong> <span id="syllabusTopicDisplay">No topic found</span>
             </div>
-
-            <!-- Editor Card -->
             <div class="card" id="lessonNoteCard">
                 <div class="card-header">
                     <h3><i class="fas fa-edit"></i> <span id="editorTitle">Select a subject and week</span></h3>
@@ -392,7 +398,6 @@
                     </div>
                 </div>
                 <div class="editor-container"><div id="editor"></div></div>
-                <!-- Comment Thread -->
                 <div class="comment-thread" id="commentThread" style="display:none;">
                     <h4 style="margin-bottom:0.5rem;"><i class="fas fa-comments"></i> Comments</h4>
                     <div id="commentList"></div>
@@ -402,8 +407,6 @@
                     </div>
                 </div>
             </div>
-
-            <!-- Post-Approval Resources -->
             <div id="postApprovalSection" style="display:none;">
                 <div class="card" id="teachingProcessCard">
                     <div class="card-header"><h3><i class="fas fa-chalkboard-teacher"></i> Teaching Process (Teacher's Guide)</h3><button class="btn btn-outline btn-sm" onclick="aiFormatTP()"><i class="fas fa-magic"></i> Auto-Format</button></div>
@@ -422,7 +425,7 @@
                 <div class="card" id="handwritingCard">
                     <div class="card-header"><h3><i class="fas fa-paint-brush"></i> Handwriting / Visual Notes</h3></div>
                     <div style="display:flex;gap:0.5rem;margin-bottom:0.5rem;">
-                        <input type="text" id="handwritingPrompt" placeholder="Describe the image (e.g., 'Diagram of plant cell for JSS1')" class="form-control">
+                        <input type="text" id="handwritingPrompt" placeholder="Describe the image..." class="form-control">
                         <button class="btn btn-primary btn-sm" id="generateHandwritingBtn"><i class="fas fa-robot"></i> Generate Image</button>
                     </div>
                     <div id="aiImageDebug" style="font-size:0.75rem;padding:0.5rem;background:var(--input-bg);border-radius:0.5rem;margin-bottom:0.5rem;display:none;"></div>
@@ -439,8 +442,6 @@
                 </div>
             </div>
         </div>
-
-        <!-- Submitted / Approved / Published Lists -->
         <div id="ln-submitted" style="display:none;"><div class="card"><div class="card-header"><h3>⏳ Submitted for Approval</h3></div><div id="submittedList"></div></div></div>
         <div id="ln-approved" style="display:none;"><div class="card"><div class="card-header"><h3>✅ Approved Lesson Notes</h3></div><div id="approvedList"></div></div></div>
         <div id="ln-published" style="display:none;"><div class="card"><div class="card-header"><h3>📤 Published to Students</h3></div><div id="publishedList"></div></div></div>
@@ -463,22 +464,10 @@
     <!-- PANEL 3: ANALYTICS -->
     <div class="main-panel" id="panel-analytics">
         <div class="analytics-grid">
-            <div class="card">
-                <div class="card-header"><h3><i class="fas fa-chart-pie"></i> Coverage Analysis</h3></div>
-                <div id="coverageAnalysis"></div>
-            </div>
-            <div class="card">
-                <div class="card-header"><h3><i class="fas fa-exclamation-triangle"></i> Gap Detection</h3></div>
-                <div id="gapDetection"></div>
-            </div>
-            <div class="card">
-                <div class="card-header"><h3><i class="fas fa-star"></i> Quality Scores</h3></div>
-                <canvas id="qualityChart" style="max-height:200px;"></canvas>
-            </div>
-            <div class="card">
-                <div class="card-header"><h3><i class="fas fa-chart-bar"></i> Subject Heatmap</h3></div>
-                <div id="subjectHeatmap"></div>
-            </div>
+            <div class="card"><div class="card-header"><h3><i class="fas fa-chart-pie"></i> Coverage Analysis</h3></div><div id="coverageAnalysis"></div></div>
+            <div class="card"><div class="card-header"><h3><i class="fas fa-exclamation-triangle"></i> Gap Detection</h3></div><div id="gapDetection"></div></div>
+            <div class="card"><div class="card-header"><h3><i class="fas fa-star"></i> Quality Scores</h3></div><canvas id="qualityChart" style="max-height:200px;"></canvas></div>
+            <div class="card"><div class="card-header"><h3><i class="fas fa-chart-bar"></i> Subject Heatmap</h3></div><div id="subjectHeatmap"></div></div>
         </div>
     </div>
 
@@ -614,6 +603,39 @@
 
 <script>
 // ============================================
+// DEBUG FUNCTION
+// ============================================
+function updateDebug(msg, type) {
+    const debugContent = document.getElementById('debugContent');
+    const time = new Date().toLocaleTimeString();
+    const cls = type || 'info';
+    debugContent.innerHTML += `<br><span class="${cls}">[${time}] ${msg}</span>`;
+    document.getElementById('debugPanel').scrollTop = document.getElementById('debugPanel').scrollHeight;
+}
+
+function clearDebug() {
+    document.getElementById('debugContent').innerHTML = '<span class="info">Debug started...</span>';
+}
+
+// Initial debug
+updateDebug('Page loaded', 'ok');
+updateDebug('Checking Groq SDK...', 'info');
+
+// Check Groq SDK immediately
+setTimeout(() => {
+    updateDebug('typeof Groq: ' + (typeof Groq), (typeof Groq !== 'undefined' ? 'ok' : 'err'));
+    updateDebug('typeof window.Groq: ' + (typeof window.Groq), (typeof window.Groq !== 'undefined' ? 'ok' : 'err'));
+    
+    if (typeof Groq === 'undefined' && typeof window.Groq === 'undefined') {
+        updateDebug('CRITICAL: Groq SDK not loaded! Check script tag.', 'err');
+        updateDebug('Make sure this line is in HEAD:', 'warn');
+        updateDebug('<script src="https://cdn.jsdelivr.net/npm/groq-sdk@0.5.0/dist/index.global.js"></script>', 'warn');
+    } else {
+        updateDebug('Groq SDK found!', 'ok');
+    }
+}, 1000);
+
+// ============================================
 // FIREBASE CONFIG
 // ============================================
 const firebaseConfig = {
@@ -625,12 +647,15 @@ const firebaseConfig = {
     appId: "1:739196063078:web:c0ee1c1da2cc3794ca8ca7",
     measurementId: "G-YEM22F1C39"
 };
+
+updateDebug('Initializing Firebase...', 'info');
 firebase.initializeApp(firebaseConfig);
 const auth = firebase.auth();
 const db = firebase.firestore();
 const remoteConfig = firebase.remoteConfig();
 remoteConfig.settings.minimumFetchIntervalMillis = 0;
 db.enablePersistence({synchronizeTabs:true}).catch(err=>{if(err.code==='failed-precondition')console.warn('Multi-tab offline limited.');});
+updateDebug('Firebase initialized', 'ok');
 
 // ============================================
 // GLOBAL STATE
@@ -702,8 +727,8 @@ window.addEventListener('offline',()=>{isOffline=true;document.getElementById('o
 // ============================================
 function escapeHtml(s){const d=document.createElement('div');d.textContent=s||'';return d.innerHTML;}
 function escapeAttr(s){return(s||'').replace(/"/g,'&quot;').replace(/'/g,'&#39;');}
-function showLoading(){/* Placeholder for loading spinner if needed */}
-function hideLoading(){/* Placeholder for loading spinner if needed */}
+function showLoading(){}
+function hideLoading(){}
 function showToast(title,msg,type='info',duration=4000){
     const icons={success:'fa-check-circle',error:'fa-exclamation-circle',warning:'fa-exclamation-triangle',info:'fa-info-circle'};
     const toast=document.createElement('div');toast.className='toast';
@@ -775,27 +800,118 @@ studentResourceQuill=new Quill('#studentResourceEditor',{theme:'snow',modules:{t
 quill.on('text-change',()=>{setAutoSaveStatus('unsaved');startTimer();});
 
 // ============================================
-// AUTH
+// AUTH - WITH DETAILED DEBUG
 // ============================================
+updateDebug('Setting up auth listener...', 'info');
+
 auth.onAuthStateChanged(async user=>{
-    if(!user){window.location.href='teacher-login.html';return;}
+    updateDebug('Auth state changed. User: ' + (user ? 'Logged in' : 'Not logged in'), user ? 'ok' : 'warn');
+    
+    if(!user){
+        updateDebug('No user, redirecting to login...', 'warn');
+        window.location.href='teacher-login.html';
+        return;
+    }
+    
+    updateDebug('Fetching user data from Firestore...', 'info');
     const doc=await db.collection('users').doc(user.uid).get();
-    if(!doc.exists||doc.data().role!=='teacher'){await auth.signOut();window.location.href='index.html';return;}
+    
+    if(!doc.exists||doc.data().role!=='teacher'){
+        updateDebug('User not teacher or doc doesnt exist', 'err');
+        await auth.signOut();window.location.href='index.html';return;
+    }
+    
     currentUser=user;userData=doc.data();
+    updateDebug('User: ' + (userData.firstName||'Teacher'), 'ok');
+    
     allAssignedClasses=userData.classesTeaching||(userData.classTeaching?[userData.classTeaching]:[]);
     currentClass=allAssignedClasses[0]||null;
     subjects=userData.subjects||[];
+    
     const pic=document.getElementById('profilePic');
     if(userData.photoURL)pic.innerHTML=`<img src="${userData.photoURL}" alt="Profile" style="width:100%;height:100%;object-fit:cover;border-radius:50%;">`;
     else pic.textContent=(userData.firstName?.[0]||'T')+(userData.surname?.[0]||'E');
     document.getElementById('profileName').textContent=userData.firstName||'Teacher';
+    
     updatePointsDisplay();
     populateClassSelector();
     populateSubjectSelector();
     await loadAllData();
     setupRealtimeListeners();
-    try{await remoteConfig.fetchAndActivate();const key=remoteConfig.getString('groq_api_key');if(key)window.groq=new Groq({apiKey:key,dangerouslyAllowBrowser:true});else window.groq=null;}catch(e){window.groq=null;}
+    
+    // ===== AI INITIALIZATION WITH FULL DEBUG =====
+    updateDebug('--- AI SETUP STARTING ---', 'info');
+    
+    // Check Groq SDK
+    updateDebug('Step 1: Check Groq SDK...', 'info');
+    if (typeof Groq === 'undefined' && typeof window.Groq === 'undefined') {
+        updateDebug('FAIL: Groq SDK not loaded at all!', 'err');
+        updateDebug('The script tag is missing or failed to load', 'err');
+        window.groq = null;
+    } else {
+        updateDebug('Groq SDK is loaded', 'ok');
+    }
+    
+    // Fetch Remote Config
+    updateDebug('Step 2: Fetching Remote Config...', 'info');
+    try {
+        await remoteConfig.fetchAndActivate();
+        updateDebug('Remote Config fetched and activated', 'ok');
+        
+        // Get API key
+        updateDebug('Step 3: Getting groq_api_key...', 'info');
+        const key = remoteConfig.getString('groq_api_key');
+        
+        updateDebug('Key exists: ' + (!!key), key ? 'ok' : 'err');
+        updateDebug('Key length: ' + (key ? key.length : 0), (key && key.length > 10 ? 'ok' : 'warn'));
+        
+        if (key && key.length > 10) {
+            updateDebug('Step 4: Creating Groq instance...', 'info');
+            if (typeof Groq !== 'undefined' || typeof window.Groq !== 'undefined') {
+                const GroqClass = typeof Groq !== 'undefined' ? Groq : window.Groq;
+                window.groq = new GroqClass({ 
+                    apiKey: key, 
+                    dangerouslyAllowBrowser: true 
+                });
+                updateDebug('SUCCESS: window.groq created!', 'ok');
+                updateDebug('AI is READY to use', 'ok');
+                
+                // Quick test
+                updateDebug('Step 5: Running quick AI test...', 'info');
+                try {
+                    const testResult = await window.groq.chat.completions.create({
+                        messages: [
+                            { role: 'system', content: 'Reply with just the word: WORKING' },
+                            { role: 'user', content: 'test' }
+                        ],
+                        model: 'llama-3.3-70b-versatile',
+                        temperature: 0.1,
+                        max_tokens: 20
+                    });
+                    updateDebug('AI TEST RESULT: ' + testResult.choices[0].message.content, 'ok');
+                } catch (testErr) {
+                    updateDebug('AI TEST FAILED: ' + testErr.message, 'err');
+                    updateDebug('Your API key may be invalid or expired', 'warn');
+                }
+            } else {
+                updateDebug('FAIL: Groq class not available', 'err');
+                window.groq = null;
+            }
+        } else {
+            updateDebug('FAIL: API key missing or too short', 'err');
+            updateDebug('Add "groq_api_key" in Firebase Remote Config', 'warn');
+            updateDebug('Go to Firebase Console > Remote Config > Add Parameter', 'warn');
+            window.groq = null;
+        }
+    } catch (e) {
+        updateDebug('Remote Config error: ' + e.message, 'err');
+        window.groq = null;
+    }
+    
+    updateDebug('--- AI SETUP COMPLETE ---', 'info');
+    updateDebug('Final window.groq status: ' + (!!window.groq ? 'AVAILABLE ✅' : 'NOT AVAILABLE ❌'), (window.groq ? 'ok' : 'err'));
 });
+
 document.getElementById('logoutBtn').addEventListener('click',async()=>{stopTimer();await auth.signOut();window.location.href='index.html';});
 
 function populateClassSelector(){
@@ -841,10 +957,9 @@ async function loadAllData(){
 // ============================================
 function getSyllabusWeekCount(){
     const syl=syllabusMap[currentSubject];
-    if(!syl||!syl.weeks||!syl.weeks.length)return 12; // default
+    if(!syl||!syl.weeks||!syl.weeks.length)return 12;
     const termWeeks=syl.weeks.filter(w=>w.term===currentTerm||!w.term);
-    if(!termWeeks.length)return syl.weeks.length; // fallback to all weeks
-    // Find max week number
+    if(!termWeeks.length)return syl.weeks.length;
     return Math.max(...termWeeks.map(w=>parseInt(w.week)||0),12);
 }
 
@@ -865,6 +980,7 @@ function renderWeekSelector(){
     }).join('');
     document.getElementById('syllabusBanner').style.display='block';
 }
+
 function selectWeek(week){
     currentWeek=week;
     currentWeekDraft=week;
@@ -896,11 +1012,13 @@ function selectWeek(week){
     renderComments(note);
     resetTimer();startTimer();
 }
+
 function renderComments(note){
     const list=document.getElementById('commentList');
     const comments=note.comments||[];
     list.innerHTML=comments.length?comments.map(c=>`<div class="comment-item"><span class="comment-author">${escapeHtml(c.byName||'Unknown')}</span>: ${escapeHtml(c.text)}<div class="comment-time">${new Date(c.at).toLocaleString()}</div></div>`).join(''):'<p style="color:var(--text-muted);font-size:0.8rem;">No comments yet.</p>';
 }
+
 async function addComment(){
     const text=document.getElementById('commentInput').value.trim();if(!text)return;
     const key=`${currentSubject}_${currentWeek}`;
@@ -952,7 +1070,7 @@ document.getElementById('submitEditorBtn').addEventListener('click',async()=>{
 // BULK OPERATIONS
 // ============================================
 async function generateAllWeeks(){
-    if(!window.groq)return showToast('Error','AI not available','error');
+    if(!window.groq)return showToast('Error','AI not available. Check debug panel.','error');
     if(!currentSubject)return showToast('Error','Select a subject','warning');
     const syl=syllabusMap[currentSubject];if(!syl?.weeks)return showToast('Error','No syllabus found','error');
     const termWeeks=syl.weeks.filter(w=>w.term===currentTerm||!w.term);
@@ -972,6 +1090,7 @@ async function generateAllWeeks(){
     await addPoints(5,'AI generated all weeks');showToast('Done','All weeks generated','success');updateStats();renderWeekSelector();
     if(currentWeek)selectWeek(currentWeek);
 }
+
 async function copyFromPreviousTerm(){
     if(!currentSubject)return showToast('Error','Select a subject','warning');
     const terms=['First Term','Second Term','Third Term'];const idx=terms.indexOf(currentTerm);if(idx<=0)return showToast('Error','No previous term available','warning');
@@ -982,6 +1101,7 @@ async function copyFromPreviousTerm(){
     for(const d of snap.docs){const data=d.data();const key=`${currentSubject}_${data.week}`;if(!lessonNotesMap[key]){const nd={...data,term:currentTerm,status:'draft',createdAt:firebase.firestore.FieldValue.serverTimestamp()};delete nd.id;const r=await db.collection('lessonNotes').add(nd);lessonNotesMap[key]={id:r.id,...nd};count++;}}
     showToast('Copied',`${count} lesson notes copied from ${prevTerm}`,'success');updateStats();renderWeekSelector();
 }
+
 async function bulkSubmit(){
     if(!currentSubject)return showToast('Error','Select a subject','warning');
     const drafts=Object.values(lessonNotesMap).filter(n=>n.subject===currentSubject&&n.status==='draft'&&n.lessonNote);
@@ -1033,7 +1153,11 @@ async function generateAI(prompt, role = '') {
 // AI ASSISTANT CHAT
 // ============================================
 function openAIAssistant(){
-    if(!window.groq)return showToast('Error','AI not available','error');
+    if(!window.groq){
+        updateDebug('AI Assistant: window.groq is NULL', 'err');
+        return showToast('Error','AI not available - check debug panel','error');
+    }
+    updateDebug('Opening AI Assistant...', 'ok');
     document.getElementById('aiAssistantModal').classList.add('active');
     document.getElementById('aiChatInput').focus();
     if(!aiConversation.length){
@@ -1064,24 +1188,7 @@ async function sendAIMessage(){
     const thinking=document.getElementById('aiThinkBtn')?.classList.contains('active');
     const assistantMsg=addChatMessage('assistant',thinking?'🤔 Thinking...':'✍️ Writing...');
     try{
-        const systemPrompt=`You are a professional Nigerian teacher who writes complete, extremely detailed, and well-structured lesson notes using the NERDC curriculum.
-Your task is to produce a FULL lesson note for the given subject, class, week, term, and topic.
-You MUST follow this exact structure and include every section, no matter what. Do NOT ask questions back. Use the information provided.
-
-The required sections are:
-1. LESSON NOTE header (School, Subject, Class, Term, Week, Date, Duration, Topic, Sub-topic, Teacher's Name, Reference Materials)
-2. LESSON PLAN table
-3. BEHAVIOURAL OBJECTIVES (at least 4-6 measurable objectives)
-4. ENTRY BEHAVIOUR
-5. PRESENTATION (Steps 1 to 6 or more, each with detailed teacher and pupil activities)
-6. CLASS ACTIVITY (at least 3 activities)
-7. EVALUATION (at least 5 questions)
-8. ASSIGNMENT (at least 3 tasks)
-9. SUMMARY
-10. BOARD SUMMARY
-
-Write in full sentences, be extremely detailed, and use Nigerian names, textbooks, locations, and Naira (₦) where appropriate.
-Return the entire lesson note in plain text with clear headings.`;
+        const systemPrompt=`You are a professional Nigerian teacher who writes complete, extremely detailed, and well-structured lesson notes using the NERDC curriculum. Return the entire lesson note in plain text with clear headings.`;
         const messages=[{role:'system',content:systemPrompt},...aiConversation];
         if(thinking)messages.push({role:'system',content:'Now think step-by-step, output your reasoning in a <div class="thinking"> block, then provide the final answer.'});
         const completion=await window.groq.chat.completions.create({messages,model:'llama-3.3-70b-versatile',temperature:0.5,max_tokens:4000});
@@ -1182,10 +1289,8 @@ document.getElementById('generateHandwritingBtn').addEventListener('click',async
     const prompt=document.getElementById('handwritingPrompt').value.trim();
     const debugBox=document.getElementById('aiImageDebug');
     debugBox.classList.remove('visible');debugBox.style.display='none';
-    
     if(!prompt)return showToast('Error','Write a prompt first','warning');
     if(!currentSubject||!currentWeek)return showToast('Error','Select a subject and week first','error');
-
     let replicateKey=null;
     try{
         replicateKey=remoteConfig.getString('Judahimage');
@@ -1196,16 +1301,13 @@ document.getElementById('generateHandwritingBtn').addEventListener('click',async
         debugBox.innerHTML=`<strong>❌ Debug:</strong> Remote Config error: ${e.message}`;
         return showToast('Error','Config error','error');
     }
-    
     if(!replicateKey||replicateKey.length<5){
         debugBox.style.display='block';debugBox.classList.add('visible');
         debugBox.innerHTML=`<strong>❌ Debug:</strong> Key missing or too short`;
         return showToast('Error','API key not configured','error');
     }
-
     showLoading();
     try{
-        // Direct Replicate API call
         debugBox.innerHTML+=`<br>🔄 Sending prediction request...`;
         const replicateRes=await fetch('https://api.replicate.com/v1/predictions',{
             method:'POST',
@@ -1214,7 +1316,6 @@ document.getElementById('generateHandwritingBtn').addEventListener('click',async
         });
         const prediction=await replicateRes.json();
         debugBox.innerHTML+=`<br>✅ Prediction ID: ${prediction.id}<br>⏳ Polling for result...`;
-        
         let imageUrl=null;let attempts=0;
         while(!imageUrl&&attempts<60){
             await new Promise(r=>setTimeout(r,3000));
@@ -1226,7 +1327,6 @@ document.getElementById('generateHandwritingBtn').addEventListener('click',async
             attempts++;
         }
         if(!imageUrl)throw new Error('Timed out after 3 minutes');
-        
         debugBox.innerHTML+=`<br>🔄 Uploading to Cloudinary...`;
         const formData=new FormData();
         formData.append('file',imageUrl);
@@ -1235,16 +1335,13 @@ document.getElementById('generateHandwritingBtn').addEventListener('click',async
         const cloudRes=await fetch('https://api.cloudinary.com/v1_1/dda7kpir8/image/upload',{method:'POST',body:formData});
         const cloudData=await cloudRes.json();
         if(!cloudRes.ok)throw new Error(cloudData.error?.message||'Upload failed');
-        
         const finalUrl=cloudData.secure_url;
         debugBox.innerHTML+=`<br>✅ Done! ${finalUrl.substring(0,50)}...`;
         handwritingImages.push({url:finalUrl,prompt:prompt,createdAt:new Date().toISOString()});
         renderHandwritingImages();
-        
         const key=`${currentSubject}_${currentWeek}`;
         const existing=lessonNotesMap[key]||{};
         if(existing.id)await db.collection('lessonNotes').doc(existing.id).update({handwritingImages,updatedAt:firebase.firestore.FieldValue.serverTimestamp()});
-        
         showToast('Generated','Handwriting image saved!','success');
         document.getElementById('handwritingPrompt').value='';
     }catch(err){
@@ -1254,7 +1351,7 @@ document.getElementById('generateHandwritingBtn').addEventListener('click',async
 });
 
 function renderHandwritingImages(){
-    document.getElementById('handwritingImagesGrid').innerHTML=handwritingImages.length?handwritingImages.map((img,i)=>`<div style="position:relative;display:inline-block;"><img src="${img.url}" alt="${escapeHtml(img.prompt)}" style="width:150px;height:150px;object-fit:cover;border-radius:0.5rem;border:1px solid var(--border);"><button class="btn btn-danger btn-sm" style="position:absolute;top:5px;right:5px;" onclick="removeHandwritingImage(${i})">×</button><div style="font-size:0.6rem;color:var(--text-secondary);max-width:150px;">${escapeHtml(img.prompt).substring(0,50)}...</div></div>`).join(''):'<p style="color:var(--text-muted);font-size:0.8rem;">No images generated yet.</p>';
+    document.getElementById('handwritingImagesGrid').innerHTML=handwritingImages.length?handwritingImages.map((img,i)=>`<div style="position:relative;display:inline-block;"><img src="${img.url}" alt="${escapeHtml(img.prompt)}" style="width:150px;height:150px;object-fit:cover;border-radius:0.5rem;border:1px solid var(--border);"><button class="btn btn-danger btn-sm" style="position:absolute;top:5px;right:5px;" onclick="removeHandwritingImage(${i})">×</button></div>`).join(''):'<p style="color:var(--text-muted);font-size:0.8rem;">No images generated yet.</p>';
 }
 function removeHandwritingImage(i){handwritingImages.splice(i,1);renderHandwritingImages();}
 
@@ -1395,8 +1492,6 @@ function renderReportsPanel(){
     document.getElementById('reportDate').value=new Date().toISOString().split('T')[0];
     loadSubmittedReports();
 }
-
-// Daily Report
 document.getElementById('generateDailyReportBtn').addEventListener('click',()=>{
     const date=document.getElementById('reportDate').value||new Date().toISOString().split('T')[0];
     const subjects=document.getElementById('reportDailySubjects').value.trim();
@@ -1415,24 +1510,10 @@ document.getElementById('submitDailyReportBtn').addEventListener('click',async()
     const notes=document.getElementById('reportDailyNotes').value.trim();
     if(!date)return showToast('Error','Select a date','warning');
     if(!subjects&&!notes)return showToast('Error','Fill in some details','warning');
-    await db.collection('dailyTeachingReports').add({
-        teacherId:currentUser.uid,
-        teacherName:`${userData.firstName||''} ${userData.surname||''}`.trim(),
-        date,subjects,notes,
-        submittedAt:firebase.firestore.FieldValue.serverTimestamp(),
-        term:currentTerm,
-        academicYear:'2025/2026',
-        status:'submitted'
-    });
-    await addPoints(1,'Daily report submitted');
-    showToast('Submitted','Daily report sent','success');
-    document.getElementById('reportDailySubjects').value='';
-    document.getElementById('reportDailyNotes').value='';
-    document.getElementById('dailyReportPreview').innerHTML='';
-    loadSubmittedReports();
+    await db.collection('dailyTeachingReports').add({teacherId:currentUser.uid,teacherName:`${userData.firstName||''} ${userData.surname||''}`.trim(),date,subjects,notes,submittedAt:firebase.firestore.FieldValue.serverTimestamp(),term:currentTerm,academicYear:'2025/2026',status:'submitted'});
+    await addPoints(1,'Daily report submitted');showToast('Submitted','Daily report sent','success');
+    document.getElementById('reportDailySubjects').value='';document.getElementById('reportDailyNotes').value='';document.getElementById('dailyReportPreview').innerHTML='';loadSubmittedReports();
 });
-
-// Weekly Report
 document.getElementById('generateWeeklyReportBtn').addEventListener('click',()=>{
     const week=parseInt(document.getElementById('reportWeek').value);
     const notes=Object.values(lessonNotesMap).filter(n=>n.week==week&&n.subject&&(n.status==='approved'||n.teachable));
@@ -1450,21 +1531,10 @@ document.getElementById('submitWeeklyReportBtn').addEventListener('click',async(
     const week=parseInt(document.getElementById('reportWeek').value);
     const notes=Object.values(lessonNotesMap).filter(n=>n.week==week&&(n.status==='approved'||n.teachable));
     if(!notes.length)return showToast('Error','No data for this week','error');
-    await db.collection('weeklyTeachingReports').add({
-        teacherId:currentUser.uid,
-        teacherName:`${userData.firstName||''} ${userData.surname||''}`.trim(),
-        week,term:currentTerm,academicYear:'2025/2026',
-        subjectsTaught:notes.map(n=>({subject:n.subject,topic:n.topic||'',classId:n.classId||currentClass})),
-        totalSubjects:notes.length,
-        submittedAt:firebase.firestore.FieldValue.serverTimestamp(),
-        status:'submitted'
-    });
-    await addPoints(3,'Weekly report submitted');
-    showToast('Submitted','Weekly report sent','success');
-    document.getElementById('weeklyReportPreview').innerHTML='';
-    loadSubmittedReports();
+    await db.collection('weeklyTeachingReports').add({teacherId:currentUser.uid,teacherName:`${userData.firstName||''} ${userData.surname||''}`.trim(),week,term:currentTerm,academicYear:'2025/2026',subjectsTaught:notes.map(n=>({subject:n.subject,topic:n.topic||'',classId:n.classId||currentClass})),totalSubjects:notes.length,submittedAt:firebase.firestore.FieldValue.serverTimestamp(),status:'submitted'});
+    await addPoints(3,'Weekly report submitted');showToast('Submitted','Weekly report sent','success');
+    document.getElementById('weeklyReportPreview').innerHTML='';loadSubmittedReports();
 });
-
 async function loadSubmittedReports(){
     const dailySnap=await db.collection('dailyTeachingReports').where('teacherId','==',currentUser.uid).orderBy('submittedAt','desc').limit(10).get();
     const weeklySnap=await db.collection('weeklyTeachingReports').where('teacherId','==',currentUser.uid).orderBy('submittedAt','desc').limit(10).get();
@@ -1482,9 +1552,7 @@ function openTeacherRequestModal(){
     document.getElementById('teacherRequestModal').classList.add('active');
     document.getElementById('modalRequestDate').value=new Date().toISOString().split('T')[0];
 }
-function closeTeacherRequestModal(){
-    document.getElementById('teacherRequestModal').classList.remove('active');
-}
+function closeTeacherRequestModal(){document.getElementById('teacherRequestModal').classList.remove('active');}
 async function submitTeacherRequestFromModal(){
     const type=document.getElementById('modalRequestType').value;
     const date=document.getElementById('modalRequestDate').value;
@@ -1492,19 +1560,11 @@ async function submitTeacherRequestFromModal(){
     if(!type)return showToast('Error','Select request type','warning');
     if(!date)return showToast('Error','Select a date','warning');
     if(!reason)return showToast('Error','State your reason','warning');
-    await db.collection('teacherRequests').add({
-        teacherId:currentUser.uid,
-        teacherName:`${userData.firstName||''} ${userData.surname||''}`.trim(),
-        type,date,reason,
-        status:'pending',
-        submittedAt:firebase.firestore.FieldValue.serverTimestamp(),
-        classId:currentClass
-    });
+    await db.collection('teacherRequests').add({teacherId:currentUser.uid,teacherName:`${userData.firstName||''} ${userData.surname||''}`.trim(),type,date,reason,status:'pending',submittedAt:firebase.firestore.FieldValue.serverTimestamp(),classId:currentClass});
     await logAudit('TEACHER_REQUEST',`${type}: ${reason}`);
     showToast('Submitted','Request sent for admin approval','success');
     closeTeacherRequestModal();
-    document.getElementById('modalRequestType').value='';
-    document.getElementById('modalRequestReason').value='';
+    document.getElementById('modalRequestType').value='';document.getElementById('modalRequestReason').value='';
 }
 async function submitTeacherRequest(){
     const type=document.getElementById('requestType').value;
@@ -1513,40 +1573,17 @@ async function submitTeacherRequest(){
     if(!type)return showToast('Error','Select request type','warning');
     if(!date)return showToast('Error','Select a date','warning');
     if(!reason)return showToast('Error','State your reason','warning');
-    await db.collection('teacherRequests').add({
-        teacherId:currentUser.uid,
-        teacherName:`${userData.firstName||''} ${userData.surname||''}`.trim(),
-        type,date,reason,
-        status:'pending',
-        submittedAt:firebase.firestore.FieldValue.serverTimestamp(),
-        classId:currentClass
-    });
+    await db.collection('teacherRequests').add({teacherId:currentUser.uid,teacherName:`${userData.firstName||''} ${userData.surname||''}`.trim(),type,date,reason,status:'pending',submittedAt:firebase.firestore.FieldValue.serverTimestamp(),classId:currentClass});
     await logAudit('TEACHER_REQUEST',`${type}: ${reason}`);
     showToast('Submitted','Request sent for admin approval','success');
-    document.getElementById('requestType').value='';
-    document.getElementById('requestDate').value='';
-    document.getElementById('requestReason').value='';
+    document.getElementById('requestType').value='';document.getElementById('requestDate').value='';document.getElementById('requestReason').value='';
     renderRequestsPanel();
 }
 async function renderRequestsPanel(){
     const snap=await db.collection('teacherRequests').where('teacherId','==',currentUser.uid).orderBy('submittedAt','desc').limit(20).get();
     const typeLabels={absence:'Absence',late:'Coming Late',early:'Leaving Early',other:'Other'};
     const typeClasses={absence:'absence',late:'late',early:'early',other:'other'};
-    document.getElementById('teacherRequestsList').innerHTML=snap.empty?'<p style="color:var(--text-muted);">No requests submitted.</p>':snap.docs.map(d=>{
-        const r=d.data();
-        return`<div class="request-card">
-            <div style="display:flex;justify-content:space-between;align-items:start;flex-wrap:wrap;gap:0.5rem;">
-                <div>
-                    <span class="request-type ${typeClasses[r.type]||'other'}">${typeLabels[r.type]||r.type}</span>
-                    <strong style="margin-left:0.5rem;">${r.date}</strong>
-                    <span class="status-badge ${r.status==='approved'?'status-approved':r.status==='rejected'?'status-rejected':'status-pending'}">${r.status}</span>
-                </div>
-            </div>
-            <p style="font-size:0.85rem;margin-top:0.3rem;">${escapeHtml(r.reason)}</p>
-            ${r.adminNote?`<p style="font-size:0.75rem;color:var(--text-muted);"><strong>Admin Note:</strong> ${escapeHtml(r.adminNote)}</p>`:''}
-            <div style="font-size:0.7rem;color:var(--text-muted);margin-top:0.3rem;">Submitted: ${new Date(r.submittedAt?.toDate?.()||r.submittedAt).toLocaleString()}</div>
-        </div>`;
-    }).join('');
+    document.getElementById('teacherRequestsList').innerHTML=snap.empty?'<p style="color:var(--text-muted);">No requests submitted.</p>':snap.docs.map(d=>{const r=d.data();return`<div class="request-card"><div style="display:flex;justify-content:space-between;align-items:start;flex-wrap:wrap;gap:0.5rem;"><div><span class="request-type ${typeClasses[r.type]||'other'}">${typeLabels[r.type]||r.type}</span><strong style="margin-left:0.5rem;">${r.date}</strong><span class="status-badge ${r.status==='approved'?'status-approved':r.status==='rejected'?'status-rejected':'status-pending'}">${r.status}</span></div></div><p style="font-size:0.85rem;margin-top:0.3rem;">${escapeHtml(r.reason)}</p>${r.adminNote?`<p style="font-size:0.75rem;color:var(--text-muted);"><strong>Admin Note:</strong> ${escapeHtml(r.adminNote)}</p>`:''}<div style="font-size:0.7rem;color:var(--text-muted);margin-top:0.3rem;">Submitted: ${new Date(r.submittedAt?.toDate?.()||r.submittedAt).toLocaleString()}</div></div>`;}).join('');
 }
 
 // ============================================
@@ -1559,14 +1596,7 @@ function renderInsights(){
     const ptsArr=history.map(h=>h.newPoints);const labels=history.map(h=>new Date(h.date).toLocaleDateString());
     pointsChart=new Chart(ctx,{type:'line',data:{labels:labels.length?labels:['Start'],datasets:[{label:'Points',data:ptsArr.length?ptsArr:[0],borderColor:'#C8963E',backgroundColor:'rgba(200,150,62,0.1)',fill:true,tension:0.4}]},options:{responsive:true,scales:{y:{beginAtZero:true}}}});
     const pub=userData?.publicProfile||{};
-    document.getElementById('publicPreview').innerHTML=`
-        <div style="display:flex;align-items:center;gap:1rem;">
-            <div class="profile-pic" style="width:60px;height:60px;">${userData?.photoURL?`<img src="${userData.photoURL}" style="width:100%;height:100%;object-fit:cover;border-radius:50%;">`:(userData?.firstName?.[0]||'T')+(userData?.surname?.[0]||'')}</div>
-            <div><h3>${pub.name!==false?`${userData?.firstName||''} ${userData?.surname||''}`.trim():'Teacher'}</h3><p>${userData?.post||'Teacher'}</p></div>
-        </div>
-        <p><strong>Rating:</strong> ${pub.rating!==false?'★'.repeat(Math.min(5,Math.floor((userData?.points||0)/100))):'Private'}</p>
-        <p><strong>Published:</strong> ${Object.values(lessonNotesMap).filter(n=>n.teachable||n.resourcePublished).length} resources</p>
-    `;
+    document.getElementById('publicPreview').innerHTML=`<div style="display:flex;align-items:center;gap:1rem;"><div class="profile-pic" style="width:60px;height:60px;">${userData?.photoURL?`<img src="${userData.photoURL}" style="width:100%;height:100%;object-fit:cover;border-radius:50%;">`:(userData?.firstName?.[0]||'T')+(userData?.surname?.[0]||'')}</div><div><h3>${pub.name!==false?`${userData?.firstName||''} ${userData?.surname||''}`.trim():'Teacher'}</h3><p>${userData?.post||'Teacher'}</p></div></div><p><strong>Rating:</strong> ${pub.rating!==false?'★'.repeat(Math.min(5,Math.floor((userData?.points||0)/100))):'Private'}</p><p><strong>Published:</strong> ${Object.values(lessonNotesMap).filter(n=>n.teachable||n.resourcePublished).length} resources</p>`;
 }
 
 // ============================================
@@ -1601,7 +1631,6 @@ function setupRealtimeListeners(){
         });
         loadAllData();
     });
-    // Listen for teacher request status changes
     db.collection('teacherRequests').where('teacherId','==',currentUser.uid).onSnapshot(snap=>{
         snap.docChanges().forEach(change=>{
             if(change.type==='modified'){
@@ -1624,26 +1653,10 @@ function toggleNotifications(){loadNotifications();}
 // ============================================
 document.getElementById('aiSendBtn').addEventListener('click',sendAIMessage);
 document.getElementById('aiChatInput').addEventListener('keypress',e=>{if(e.key==='Enter')sendAIMessage();});
-document.getElementById('aiThinkBtn').addEventListener('click',function(){
-    this.classList.toggle('active');
-    this.innerHTML=this.classList.contains('active')?'<i class="fas fa-check"></i> Thinking Mode ON':'<i class="fas fa-brain"></i> Think';
-});
-document.getElementById('aiCopyToEditorBtn').addEventListener('click',()=>{
-    if(lastGeneratedLessonNote){quill.setText(lastGeneratedLessonNote);showToast('Copied','AI content copied to Lesson Note Editor','success');closeAIAssistant();}
-    else showToast('Nothing','No AI content to copy. Generate content first.','warning');
-});
-document.getElementById('aiClearChatBtn').addEventListener('click',()=>{
-    aiConversation=[];lastGeneratedLessonNote=null;
-    document.getElementById('aiChatHistory').innerHTML='<div class="ai-message assistant">Hello! I can help you create a complete lesson note.<br>Tell me the <strong>Subject, Class, Week, and Topic</strong>.</div>';
-});
-
-// Library sub-tab switching
-document.querySelector('#panel-library .sub-tabs')?.addEventListener('click',e=>{
-    const tab=e.target.closest('.sub-tab');if(!tab)return;
-    document.querySelectorAll('#panel-library .sub-tab').forEach(t=>t.classList.remove('active'));
-    tab.classList.add('active');
-    renderLibrary();
-});
+document.getElementById('aiThinkBtn').addEventListener('click',function(){this.classList.toggle('active');this.innerHTML=this.classList.contains('active')?'<i class="fas fa-check"></i> Thinking Mode ON':'<i class="fas fa-brain"></i> Think';});
+document.getElementById('aiCopyToEditorBtn').addEventListener('click',()=>{if(lastGeneratedLessonNote){quill.setText(lastGeneratedLessonNote);showToast('Copied','AI content copied to Lesson Note Editor','success');closeAIAssistant();}else showToast('Nothing','No AI content to copy. Generate content first.','warning');});
+document.getElementById('aiClearChatBtn').addEventListener('click',()=>{aiConversation=[];lastGeneratedLessonNote=null;document.getElementById('aiChatHistory').innerHTML='<div class="ai-message assistant">Hello! I can help you create a complete lesson note.<br>Tell me the <strong>Subject, Class, Week, and Topic</strong>.</div>';});
+document.querySelector('#panel-library .sub-tabs')?.addEventListener('click',e=>{const tab=e.target.closest('.sub-tab');if(!tab)return;document.querySelectorAll('#panel-library .sub-tab').forEach(t=>t.classList.remove('active'));tab.classList.add('active');renderLibrary();});
 
 // ============================================
 // INIT
@@ -1653,7 +1666,6 @@ document.getElementById('coPlanBtn').style.display='inline-flex';
 document.getElementById('teacherRequestBtn').style.display='inline-flex';
 document.getElementById('submitEditorBtn').style.display='inline-block';
 
-// Export functions to window
 window.openAIAssistant=openAIAssistant;window.closeAIAssistant=closeAIAssistant;
 window.useTemplate=useTemplate;window.aiFormatEditor=aiFormatEditor;
 window.aiFormatTP=aiFormatTP;window.aiFormatResource=aiFormatResource;
@@ -1674,12 +1686,6 @@ window.submitTeacherRequest=submitTeacherRequest;window.submitTeacherRequestFrom
 window.removeHandwritingImage=removeHandwritingImage;
 
 console.log('📝 Teacher Lesson Notes — Full Featured Edition Ready');
-console.log('✅ AI Logic: Lesson Notes, Teaching Process, Student Resources, Handwriting');
-console.log('✅ Send for Approval button active');
-console.log('✅ Daily & Weekly Reports');
-console.log('✅ Dynamic Week Count from Syllabus');
-console.log('✅ Teacher Request System (Absence/Late/Early Leave)');
-console.log('✅ Teacher Request in Navigator');
 </script>
 </body>
 </html>
