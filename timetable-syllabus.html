@@ -22,11 +22,8 @@
             --danger-bg:rgba(239,68,68,0.12); --danger-text:#b91c1c;
             --info-bg:rgba(10,37,64,0.08); --info-text:#0A2540;
             --gradient-start:#0A2540; --gradient-end:#C8963E;
-            --draft-bg:#e2e8f0; --draft-text:#475569;
-            --submitted-bg:rgba(245,158,11,0.15); --submitted-text:#b45309;
-            --approved-bg:rgba(59,130,246,0.12); --approved-text:#2563eb;
-            --published-bg:rgba(34,197,94,0.12); --published-text:#16a34a;
-            --rejected-bg:rgba(239,68,68,0.12); --rejected-text:#b91c1c;
+            --draft-text:#475569; --submitted-text:#b45309; --approved-text:#2563eb;
+            --published-text:#16a34a; --rejected-text:#b91c1c;
             --tt-header-bg:#0A2540; --tt-header-text:#ffffff;
             --tt-day-bg:rgba(200,150,62,0.15); --tt-day-text:#b8860b;
             --tt-cell-bg:#ffffff; --tt-border:#e2e8f0;
@@ -43,11 +40,8 @@
             --danger-bg:rgba(239,68,68,0.15); --danger-text:#f87171;
             --info-bg:rgba(200,150,62,0.12); --info-text:#D4AF37;
             --gradient-start:#0A2540; --gradient-end:#C8963E;
-            --draft-bg:#1e293b; --draft-text:#94a3b8;
-            --submitted-bg:rgba(245,158,11,0.2); --submitted-text:#fbbf24;
-            --approved-bg:rgba(59,130,246,0.2); --approved-text:#60a5fa;
-            --published-bg:rgba(34,197,94,0.2); --published-text:#4ade80;
-            --rejected-bg:rgba(239,68,68,0.2); --rejected-text:#f87171;
+            --draft-text:#94a3b8; --submitted-text:#fbbf24; --approved-text:#60a5fa;
+            --published-text:#4ade80; --rejected-text:#f87171;
             --tt-header-bg:#0A2540; --tt-header-text:#ffffff;
             --tt-day-bg:rgba(200,150,62,0.2); --tt-day-text:#D4AF37;
             --tt-cell-bg:rgba(30,41,59,0.6); --tt-border:rgba(255,255,255,0.08);
@@ -60,7 +54,7 @@
         .orb-2 { width:400px; height:400px; bottom:-150px; right:-50px; background:radial-gradient(circle at 70% 70%,rgba(200,150,62,.10),transparent); animation-duration:30s; }
         @keyframes float { 0%{transform:translate(0,0)scale(1)} 100%{transform:translate(40px,30px)scale(1.15)} }
 
-        .sidebar { width:260px; background:var(--bg-surface); backdrop-filter:blur(20px); -webkit-backdrop-filter:blur(20px); border-right:1px solid var(--border); padding:1.5rem 0.8rem; display:flex; flex-direction:column; transition:all 0.3s cubic-bezier(0.4,0,0.2,1); position:fixed; top:0; left:0; height:100vh; overflow-y:auto; z-index:100; box-shadow:var(--shadow-lg); }
+        .sidebar { width:260px; background:var(--bg-surface); backdrop-filter:blur(20px); -webkit-backdrop-filter:blur(20px); border-right:1px solid var(--border); padding:1.5rem 0.8rem; display:flex; flex-direction:column; transition:all 0.3s; position:fixed; top:0; left:0; height:100vh; overflow-y:auto; z-index:100; box-shadow:var(--shadow-lg); }
         .sidebar.collapsed { width:85px; }
         .sidebar .logo-area { display:flex; align-items:center; gap:0.8rem; margin-bottom:1.8rem; padding:0 0.3rem; text-decoration:none; }
         .sidebar .logo-area img { width:38px; height:38px; object-fit:contain; flex-shrink:0; }
@@ -76,30 +70,30 @@
         .sidebar .toggle-btn { margin-top:auto; display:flex; justify-content:flex-end; padding:0.8rem 0.5rem; cursor:pointer; color:var(--text-secondary); font-size:1.1rem; transition:all 0.2s; }
         .sidebar .toggle-btn:hover { color:var(--accent); }
 
-        .main-content { flex:1; margin-left:260px; padding:1.5rem; transition:margin-left 0.3s cubic-bezier(0.4,0,0.2,1); max-width:calc(100vw - 260px); position:relative; z-index:5; }
+        .main-content { flex:1; margin-left:260px; padding:1.5rem; transition:margin-left 0.3s; max-width:calc(100vw - 260px); position:relative; z-index:5; }
         .main-content.expanded { margin-left:85px; max-width:calc(100vw - 85px); }
 
         .top-bar { display:flex; justify-content:space-between; align-items:center; margin-bottom:1.5rem; flex-wrap:wrap; gap:1rem; }
         .page-title h1 { font-family:'Playfair Display',serif; font-size:1.8rem; font-weight:700; color:var(--accent); }
         .page-title p { color:var(--text-secondary); font-size:0.85rem; }
         .profile-area { display:flex; align-items:center; gap:1rem; }
-        .theme-toggle { background:var(--card-bg); border:1px solid var(--border); border-radius:2rem; padding:0.4rem 1rem; display:flex; align-items:center; gap:0.4rem; cursor:pointer; color:var(--text-secondary); font-size:0.8rem; transition:all 0.2s; backdrop-filter:blur(10px); -webkit-backdrop-filter:blur(10px); }
-        .theme-toggle:hover { border-color:var(--accent); color:var(--accent); }
+        .theme-toggle { background:var(--card-bg); border:1px solid var(--border); border-radius:2rem; padding:0.4rem 1rem; display:flex; align-items:center; gap:0.4rem; cursor:pointer; color:var(--text-secondary); font-size:0.8rem; }
+        .theme-toggle:hover { border-color:var(--accent); }
         .profile-pic { width:38px; height:38px; border-radius:50%; background:linear-gradient(135deg,var(--gradient-start),var(--gradient-end)); display:flex; align-items:center; justify-content:center; color:white; font-weight:600; font-size:0.9rem; overflow:hidden; }
         .profile-pic img { width:100%; height:100%; object-fit:cover; border-radius:50%; }
         .dropdown-menu { position:absolute; right:0; top:50px; background:var(--card-bg); border:1px solid var(--border); border-radius:1rem; padding:0.4rem; min-width:160px; display:none; z-index:1000; box-shadow:var(--shadow-lg); }
         .profile-dropdown { position:relative; cursor:pointer; }
         .profile-dropdown:hover .dropdown-menu { display:block; animation:fadeIn 0.2s; }
         @keyframes fadeIn { from{opacity:0;transform:translateY(-10px)} to{opacity:1;transform:translateY(0)} }
-        .dropdown-item { padding:0.6rem 1rem; color:var(--text-primary); border-radius:0.8rem; display:flex; align-items:center; gap:0.6rem; font-size:0.85rem; cursor:pointer; transition:all 0.2s; }
+        .dropdown-item { padding:0.6rem 1rem; color:var(--text-primary); border-radius:0.8rem; display:flex; align-items:center; gap:0.6rem; font-size:0.85rem; cursor:pointer; }
         .dropdown-item:hover { background:var(--hover-bg); color:var(--accent); }
         .dropdown-item.danger:hover { background:var(--danger-bg); color:var(--danger-text); }
 
-        .controls-bar { display:flex; gap:0.8rem; margin-bottom:1.5rem; flex-wrap:wrap; align-items:center; background:var(--card-bg); backdrop-filter:blur(12px); -webkit-backdrop-filter:blur(12px); border:1px solid var(--border); border-radius:1.5rem; padding:0.8rem 1.2rem; box-shadow:var(--shadow); }
+        .controls-bar { display:flex; gap:0.8rem; margin-bottom:1.5rem; flex-wrap:wrap; align-items:center; background:var(--card-bg); border:1px solid var(--border); border-radius:1.5rem; padding:0.8rem 1.2rem; box-shadow:var(--shadow); }
         .controls-bar select { padding:0.5rem 1rem; background:var(--input-bg); border:2px solid var(--border); border-radius:2rem; color:var(--text-primary); font-family:inherit; font-size:0.85rem; cursor:pointer; min-width:160px; }
         .controls-bar select:focus { outline:none; border-color:var(--accent); }
 
-        .main-tabs { display:flex; gap:0.4rem; margin-bottom:1.5rem; background:var(--card-bg); backdrop-filter:blur(12px); -webkit-backdrop-filter:blur(12px); border:1px solid var(--border); border-radius:1.5rem; padding:0.4rem; overflow-x:auto; box-shadow:var(--shadow); }
+        .main-tabs { display:flex; gap:0.4rem; margin-bottom:1.5rem; background:var(--card-bg); border:1px solid var(--border); border-radius:1.5rem; padding:0.4rem; overflow-x:auto; box-shadow:var(--shadow); }
         .main-tab-btn { padding:0.7rem 1.5rem; border-radius:1.25rem; border:none; background:transparent; color:var(--text-secondary); cursor:pointer; font-weight:600; font-size:0.85rem; white-space:nowrap; display:flex; align-items:center; gap:0.5rem; font-family:inherit; transition:all 0.3s; }
         .main-tab-btn:hover { background:var(--hover-bg); color:var(--accent); }
         .main-tab-btn.active { background:linear-gradient(135deg,var(--gradient-start),var(--gradient-end)); color:white; }
@@ -108,7 +102,7 @@
         @keyframes fadeSlideIn { from{opacity:0;transform:translateY(10px)} to{opacity:1;transform:translateY(0)} }
 
         .status-tabs { display:flex; gap:0.3rem; margin-bottom:1rem; flex-wrap:wrap; }
-        .status-tab { padding:0.45rem 1rem; border-radius:2rem; font-weight:600; font-size:0.78rem; cursor:pointer; border:2px solid var(--border); background:var(--card-bg); color:var(--text-secondary); transition:all 0.2s; font-family:inherit; white-space:nowrap; }
+        .status-tab { padding:0.45rem 1rem; border-radius:2rem; font-weight:600; font-size:0.78rem; cursor:pointer; border:2px solid var(--border); background:var(--card-bg); color:var(--text-secondary); font-family:inherit; white-space:nowrap; }
         .status-tab:hover { border-color:var(--accent); }
         .status-tab.active { border-color:transparent; color:white; }
         .status-tab.draft.active { background:var(--draft-text); }
@@ -118,39 +112,36 @@
         .status-tab.rejected.active { background:var(--rejected-text); }
         .status-tab .count { margin-left:0.3rem; opacity:0.7; font-size:0.7rem; }
 
-        .card { background:var(--card-bg); backdrop-filter:blur(12px); -webkit-backdrop-filter:blur(12px); border:1px solid var(--border); border-radius:1.5rem; padding:1.5rem; box-shadow:var(--shadow); margin-bottom:1rem; }
+        .card { background:var(--card-bg); border:1px solid var(--border); border-radius:1.5rem; padding:1.5rem; box-shadow:var(--shadow); margin-bottom:1rem; }
         .card-header { display:flex; justify-content:space-between; align-items:center; margin-bottom:1rem; flex-wrap:wrap; gap:0.5rem; padding-bottom:0.8rem; border-bottom:1px solid var(--border); }
         .card-header h3 { font-size:1.05rem; font-weight:700; display:flex; align-items:center; gap:0.5rem; }
 
         .badge { padding:0.2rem 0.7rem; border-radius:2rem; font-size:0.7rem; font-weight:700; display:inline-flex; align-items:center; gap:0.3rem; }
-        .badge-draft { background:var(--draft-bg); color:var(--draft-text); }
-        .badge-submitted { background:var(--submitted-bg); color:var(--submitted-text); }
-        .badge-approved { background:var(--approved-bg); color:var(--approved-text); }
-        .badge-published { background:var(--published-bg); color:var(--published-text); }
-        .badge-rejected { background:var(--rejected-bg); color:var(--rejected-text); }
+        .badge-draft { background:rgba(100,116,139,0.2); color:var(--draft-text); }
+        .badge-submitted { background:var(--warning-bg); color:var(--submitted-text); }
+        .badge-approved { background:rgba(59,130,246,0.2); color:var(--approved-text); }
+        .badge-published { background:var(--success-bg); color:var(--published-text); }
+        .badge-rejected { background:var(--danger-bg); color:var(--rejected-text); }
 
         .btn { padding:0.4rem 1rem; border:none; border-radius:2rem; font-weight:600; font-size:0.78rem; cursor:pointer; transition:all 0.2s; display:inline-flex; align-items:center; gap:0.3rem; white-space:nowrap; font-family:inherit; }
         .btn-primary { background:linear-gradient(135deg,var(--gradient-start),var(--gradient-end)); color:white; box-shadow:0 4px 12px rgba(200,150,62,.3); }
-        .btn-primary:hover { box-shadow:0 6px 20px rgba(200,150,62,.5); transform:translateY(-2px); }
         .btn-success { background:var(--success-text); color:white; }
         .btn-danger { background:var(--danger-text); color:white; }
         .btn-warning { background:var(--warning-text); color:#000; }
         .btn-outline { background:transparent; border:2px solid var(--border); color:var(--text-primary); }
-        .btn-outline:hover { background:var(--hover-bg); border-color:var(--accent); }
         .btn-sm { padding:0.25rem 0.7rem; font-size:0.7rem; }
-        .btn:disabled { opacity:0.5; cursor:not-allowed; transform:none!important; }
+        .btn:disabled { opacity:0.5; cursor:not-allowed; }
         .btn-group { display:flex; gap:0.4rem; flex-wrap:wrap; }
 
         .tt-wrapper { overflow-x:auto; border-radius:1rem; border:1px solid var(--border); }
-        .tt-table { width:100%; border-collapse:collapse; min-width:700px; }
-        .tt-table th, .tt-table td { border:1px solid var(--tt-border); padding:0.55rem 0.5rem; text-align:center; font-size:0.78rem; vertical-align:middle; }
-        .tt-table thead th { background:var(--tt-header-bg); color:var(--tt-header-text); font-weight:700; font-size:0.72rem; text-transform:uppercase; position:sticky; top:0; z-index:2; }
-        .tt-table thead th:first-child { min-width:100px; }
-        .tt-table tbody td:first-child { background:var(--tt-day-bg); color:var(--tt-day-text); font-weight:700; font-size:0.75rem; min-width:100px; position:sticky; left:0; z-index:1; }
-        .tt-table tbody td { background:var(--tt-cell-bg); color:var(--text-primary); }
-        .tt-table .tt-subject { font-weight:600; color:var(--accent); font-size:0.8rem; }
-        .tt-table .tt-teacher { font-size:0.65rem; color:var(--text-secondary); display:block; }
-        .tt-table .tt-empty { color:var(--text-muted); font-style:italic; font-size:0.7rem; }
+        .tt-table { width:100%; border-collapse:collapse; min-width:600px; }
+        .tt-table th, .tt-table td { border:1px solid var(--tt-border); padding:0.5rem 0.4rem; text-align:center; font-size:0.75rem; vertical-align:middle; }
+        .tt-table thead th { background:var(--tt-header-bg); color:var(--tt-header-text); font-weight:700; font-size:0.7rem; text-transform:uppercase; position:sticky; top:0; z-index:2; }
+        .tt-table thead th:first-child { min-width:90px; }
+        .tt-table tbody td:first-child { background:var(--tt-day-bg); color:var(--tt-day-text); font-weight:700; font-size:0.72rem; min-width:90px; position:sticky; left:0; z-index:1; }
+        .tt-table tbody td { background:var(--tt-cell-bg); }
+        .tt-table .tt-subject { font-weight:600; color:var(--accent); font-size:0.78rem; }
+        .tt-table .tt-teacher { font-size:0.62rem; color:var(--text-secondary); display:block; }
 
         .syl-table { width:100%; border-collapse:collapse; }
         .syl-table th, .syl-table td { border:1px solid var(--border); padding:0.5rem 0.7rem; font-size:0.8rem; text-align:left; }
@@ -159,7 +150,6 @@
         .week-row { display:flex; align-items:center; gap:0.8rem; padding:0.5rem 0; border-bottom:1px solid var(--border); }
         .week-num { width:80px; font-weight:700; color:var(--accent); flex-shrink:0; font-size:0.85rem; }
         .week-topic { flex:1; padding:0.4rem 0.8rem; background:var(--input-bg); border:1px solid var(--border); border-radius:0.5rem; color:var(--text-primary); font-family:inherit; font-size:0.85rem; }
-        .week-topic:focus { outline:none; border-color:var(--accent); }
 
         .modal-overlay { position:fixed; top:0; left:0; width:100%; height:100%; background:rgba(0,0,0,.75); backdrop-filter:blur(6px); z-index:2000; display:none; align-items:center; justify-content:center; }
         .modal-overlay.active { display:flex; }
@@ -185,9 +175,9 @@
         .checkbox-item { display:flex; align-items:center; gap:0.4rem; cursor:pointer; padding:0.3rem 0.7rem; border:1px solid var(--border); border-radius:2rem; font-size:0.75rem; background:var(--input-bg); user-select:none; }
         .checkbox-item:hover { border-color:var(--accent); }
         .checkbox-item input[type="checkbox"] { display:none; }
-        .checkbox-item.checked { background:var(--success-bg); border-color:var(--success-border); color:var(--success-text); font-weight:600; }
+        .checkbox-item.checked { background:var(--success-bg); border-color:var(--success-border,var(--success-text)); color:var(--success-text); font-weight:600; }
 
-        .teacher-list-item { display:flex; align-items:center; gap:0.8rem; padding:0.6rem 0.8rem; border-radius:0.8rem; cursor:pointer; transition:0.2s; }
+        .teacher-list-item { display:flex; align-items:center; gap:0.8rem; padding:0.6rem 0.8rem; border-radius:0.8rem; cursor:pointer; }
         .teacher-list-item:hover { background:var(--hover-bg); }
         .teacher-list-item.selected { background:rgba(139,92,246,0.15); color:#a78bfa; }
         .teacher-avatar-sm { width:35px; height:35px; border-radius:50%; background:linear-gradient(135deg,var(--gradient-start),var(--gradient-end)); display:flex; align-items:center; justify-content:center; color:white; font-weight:600; font-size:0.75rem; flex-shrink:0; }
@@ -215,7 +205,6 @@
         .debug-line .key { color:#60a5fa; }
         .debug-line .val { color:#4ade80; }
         .debug-line .err { color:#f87171; }
-        .debug-line .warn { color:#fbbf24; }
         .debug-btn { position:fixed; bottom:1.5rem; right:1.5rem; z-index:10000; width:48px; height:48px; border-radius:50%; background:#0A2540; border:2px solid #C8963E; color:#C8963E; cursor:pointer; font-size:1.2rem; display:flex; align-items:center; justify-content:center; box-shadow:0 4px 15px rgba(200,150,62,0.4); }
         .debug-btn:hover { background:#C8963E; color:#0A2540; transform:scale(1.1); }
 
@@ -245,7 +234,7 @@
         </div>
     </div>
 
-    <div class="controls-bar" id="controlsBar">
+    <div class="controls-bar">
         <label style="font-weight:600;font-size:0.85rem;"><i class="fas fa-school"></i> Class:</label>
         <select id="classFilter" onchange="onClassFilterChange()"><option value="">Loading...</option></select>
         <label style="font-weight:600;font-size:0.85rem;margin-left:0.5rem;"><i class="fas fa-calendar"></i> Year:</label>
@@ -298,7 +287,7 @@
 
 <div class="modal-overlay" id="ttModal"><div class="modal-content" id="ttModalContent"></div></div>
 <div class="modal-overlay" id="sylModal"><div class="modal-content" id="sylModalContent"></div></div>
-<div class="modal-overlay" id="coPlanModal"><div class="modal-content" style="max-width:600px;"><div class="modal-header"><h3><i class="fas fa-users"></i> Co-Plan - Invite Teachers</h3><i class="fas fa-times modal-close" onclick="closeCoPlanModal()"></i></div><div class="form-group"><input type="text" id="coTeacherSearch" class="form-control" placeholder="Search teachers..." oninput="renderCoTeacherList()"></div><div id="coTeacherList" style="max-height:300px;overflow-y:auto;"></div><div style="margin-top:1rem;"><strong>Selected:</strong></div><div id="selectedCoTeachers" style="margin-top:0.5rem;"></div><div class="modal-actions"><button class="btn btn-outline" onclick="closeCoPlanModal()">Cancel</button><button class="btn btn-primary" onclick="confirmCoPlan()"><i class="fas fa-check"></i> Add Collaborators</button></div></div></div>
+<div class="modal-overlay" id="coPlanModal"><div class="modal-content" style="max-width:600px;"><div class="modal-header"><h3><i class="fas fa-users"></i> Co-Plan</h3><i class="fas fa-times modal-close" onclick="closeCoPlanModal()"></i></div><div class="form-group"><input type="text" id="coTeacherSearch" class="form-control" placeholder="Search teachers..." oninput="renderCoTeacherList()"></div><div id="coTeacherList" style="max-height:300px;overflow-y:auto;"></div><div style="margin-top:1rem;"><strong>Selected:</strong></div><div id="selectedCoTeachers" style="margin-top:0.5rem;"></div><div class="modal-actions"><button class="btn btn-outline" onclick="closeCoPlanModal()">Cancel</button><button class="btn btn-primary" onclick="confirmCoPlan()"><i class="fas fa-check"></i> Add</button></div></div></div>
 
 <script>
 const firebaseConfig = { apiKey: "AIzaSyADXHEiaSQ146QsGsaOCElARtpwrLE8svs", authDomain: "judah-c737e.firebaseapp.com", projectId: "judah-c737e", storageBucket: "judah-c737e.firebasestorage.app", messagingSenderId: "739196063078", appId: "1:739196063078:web:c0ee1c1da2cc3794ca8ca7", measurementId: "G-YEM22F1C39" };
@@ -313,7 +302,7 @@ function debugLog(key, value, type = 'info') {
     console.log(`[DEBUG][${type}] ${key}:`, value);
     updateDebugPanel();
 }
-function updateDebugPanel() { const c = document.getElementById('debugContent'); if (!c) return; c.innerHTML = debugLogs.slice(-30).map(d => `<div class="debug-line"><span style="color:#64748b;">${d.time}</span> <span class="key">${d.key}:</span> <span class="${d.cssClass}">${typeof d.value === 'object' ? JSON.stringify(d.value) : d.value}</span></div>`).join(''); }
+function updateDebugPanel() { const c = document.getElementById('debugContent'); if (!c) return; c.innerHTML = debugLogs.slice(-40).map(d => `<div class="debug-line"><span style="color:#64748b;">${d.time}</span> <span class="key">${d.key}:</span> <span class="${d.cssClass}">${typeof d.value==='object'?JSON.stringify(d.value):d.value}</span></div>`).join(''); }
 document.getElementById('debugToggleBtn').addEventListener('click', () => { document.getElementById('debugPanel').classList.toggle('show'); });
 
 let currentUser = null, userData = null, userRole = null;
@@ -335,11 +324,10 @@ function escapeHtml(s) { const d = document.createElement('div'); d.textContent 
 function showToast(title, msg, type='info') {
     const icons = { success:'fa-check-circle', error:'fa-exclamation-circle', warning:'fa-exclamation-triangle', info:'fa-info-circle' };
     const toast = document.createElement('div'); toast.className = 'toast';
-    toast.innerHTML = `<i class="fas ${icons[type]}" style="color:var(--${type==='success'?'success':type==='error'?'danger':type==='warning'?'warning':'info'}-text);font-size:1.1rem;"></i><div><strong>${escapeHtml(title)}</strong><br><span style="font-size:0.8rem;color:var(--text-secondary);">${escapeHtml(msg)}</span></div>`;
+    toast.innerHTML = `<i class="fas ${icons[type]}" style="color:var(--${type==='success'?'success':type==='error'?'danger':type==='warning'?'warning':'info'}-text);font-size:1.1rem;"></i><div><strong>${escapeHtml(title)}</strong><br><span style="font-size:0.8rem;">${escapeHtml(msg)}</span></div>`;
     document.getElementById('toastContainer').appendChild(toast);
     setTimeout(()=>{ toast.classList.add('removing'); setTimeout(()=>toast.remove(),300); },4000);
 }
-async function logAudit(action, desc) { if(!currentUser) return; try { await db.collection('auditLogs').add({ userId:currentUser.uid, userName:`${userData?.firstName||''} ${userData?.surname||''}`.trim(), userRole:userRole, action, description:desc, timestamp:firebase.firestore.FieldValue.serverTimestamp() }); } catch(e){} }
 function statusBadge(s) { const labels = { draft:'Draft', submitted:'Submitted', approved:'Approved', published:'Published', rejected:'Rejected' }; return `<span class="badge badge-${s}">${labels[s]||s}</span>`; }
 
 const sidebar = document.getElementById('sidebar'), mainContent = document.getElementById('mainContent');
@@ -407,11 +395,15 @@ async function loadData() {
         const sylSnap = await db.collection('syllabi').where('classId','==',selectedClass).where('academicYear','==',selectedYear).orderBy('createdAt','desc').get();
         allSyllabi = []; sylSnap.forEach(d=>allSyllabi.push({id:d.id,...d.data()}));
         debugLog('Data loaded', `Timetables: ${allTimetables.length}, Syllabi: ${allSyllabi.length}`);
-        // Log statuses for debugging
+        
         if(allTimetables.length) {
-            const statuses = allTimetables.map(t => ({title:t.title,status:t.status,type:t.type||'academic',published:t.status==='published'}));
-            debugLog('TT Statuses', JSON.stringify(statuses));
+            allTimetables.forEach((t, i) => {
+                debugLog(`TT#${i+1}`, `"${t.title}" | status:${t.status} | type:${t.type||'none'} | days:${t.days?.length||0} | slots:${t.timeSlots?.length||0} | periodKeys:${t.periods?Object.keys(t.periods).length:0} | isPublished:${t.status==='published'}`);
+            });
+            const published = allTimetables.filter(t => t.status === 'published');
+            debugLog('Published', `${published.length} of ${allTimetables.length}`);
         }
+        
         renderTimetableGrids(); renderSyllabusGrids();
     } catch(e){ debugLog('Load error', e.message, 'error'); }
 }
@@ -423,16 +415,22 @@ function renderTimetableGrids() {
     const typeFilter = document.getElementById('ttTypeFilter')?.value || 'all';
     let filtered = allTimetables;
     if(typeFilter !== 'all') filtered = filtered.filter(t => t.type === typeFilter);
-    if(userRole==='student') filtered = filtered.filter(t=>t.status==='published');
-    else filtered = filtered.filter(t=>t.status===ttStatusFilter);
-    
-    debugLog('Filtered timetables', `Type: ${typeFilter}, Status: ${userRole==='student'?'published':ttStatusFilter}, Showing: ${filtered.length}`);
+    if(userRole==='student') {
+        filtered = filtered.filter(t=>t.status==='published');
+        debugLog('Student view', `Filtering published only. Found: ${filtered.length}`);
+    } else {
+        filtered = filtered.filter(t=>t.status===ttStatusFilter);
+    }
 
     const counts = {}; ['draft','submitted','approved','published','rejected'].forEach(s=>{ counts[s]=allTimetables.filter(t=>t.status===s).length; });
     document.querySelectorAll('#ttStatusTabs .status-tab').forEach(b=>{ const s=b.dataset.status; const c=b.querySelector('.count'); if(c) c.textContent=counts[s]||0; });
     if(userRole==='student'){ document.getElementById('ttStatusTabs').style.display='none'; } else { document.getElementById('ttStatusTabs').style.display='flex'; }
+    
     const container = document.getElementById('timetableGrids');
-    if(!filtered.length){ container.innerHTML='<div class="empty-state"><i class="fas fa-calendar-alt"></i><p>No timetables found for this status and type.</p></div>'; return; }
+    if(!filtered.length){ 
+        container.innerHTML='<div class="empty-state"><i class="fas fa-calendar-alt"></i><p>No timetables found. '+(userRole==='student'?'Ask your teacher to publish a timetable.':'')+'</p></div>'; 
+        return; 
+    }
     container.innerHTML = filtered.map(t=>renderTimetableCard(t)).join('');
 }
 
@@ -442,45 +440,73 @@ function renderTimetableCard(t) {
     const canEdit = isTeacher && (t.status==='draft'||t.status==='rejected') && isContributor;
     const canSubmit = isTeacher && t.status==='draft' && isContributor;
     const canPublish = isTeacher && t.status==='approved' && isContributor;
-    const canDuplicate = isTeacher;
     const typeLabel = TYPE_LABELS[t.type] || '📅 Academic';
-    const days = t.days || ['monday','tuesday','wednesday','thursday','friday'];
-    const dayLabels = t.dayLabels || ['Monday','Tuesday','Wednesday','Thursday','Friday'];
-    const timeSlots = t.timeSlots || [];
-    const periods = t.periods || {};
+    
+    // Handle OLD format (type + periods array) and NEW format (days + timeSlots + periods object)
+    let days, dayLabels, timeSlots, periods;
+    
+    if(t.days && t.timeSlots) {
+        // NEW format
+        days = t.days;
+        dayLabels = t.dayLabels || days;
+        timeSlots = t.timeSlots;
+        periods = t.periods || {};
+    } else if(Array.isArray(t.periods)) {
+        // OLD format - convert to new format for display
+        const oldPeriods = t.periods || [];
+        days = ['monday','tuesday','wednesday','thursday','friday'];
+        dayLabels = ['Monday','Tuesday','Wednesday','Thursday','Friday'];
+        timeSlots = [...new Set(oldPeriods.map(p=>p.startTime+' - '+p.endTime))].sort();
+        periods = {};
+        oldPeriods.forEach(p => {
+            const key = `${p.day||'monday'}_${p.startTime+' - '+p.endTime}`;
+            periods[key] = { subject: p.subject, teacherName: p.teacherName };
+        });
+        debugLog('Converted old format', `TT: ${t.title}, periods: ${oldPeriods.length}`);
+    } else {
+        // Fallback
+        days = ['monday','tuesday','wednesday','thursday','friday'];
+        dayLabels = ['Monday','Tuesday','Wednesday','Thursday','Friday'];
+        timeSlots = [];
+        periods = {};
+    }
     
     let gridHTML = '';
     if(t.type === 'hairstyle') {
         gridHTML = '<div class="tt-wrapper"><table class="tt-table"><thead><tr><th>Day</th><th>Hairstyle</th><th>Description</th></tr></thead><tbody>';
         days.forEach((day, di) => {
             const key = `${day}_Hairstyle`; const entry = periods[key] || {};
-            gridHTML += `<tr><td>${dayLabels[di] || day}</td><td><span class="tt-subject">${escapeHtml(entry.subject||'—')}</span></td><td>${escapeHtml(entry.description||'—')}</td></tr>`;
+            gridHTML += `<tr><td>${dayLabels[di]||day}</td><td><span class="tt-subject">${escapeHtml(entry.subject||'—')}</span></td><td>${escapeHtml(entry.description||'—')}</td></tr>`;
         });
         gridHTML += '</tbody></table></div>';
     } else if(t.type === 'test' || t.type === 'exam') {
         gridHTML = '<div class="tt-wrapper"><table class="tt-table"><thead><tr><th>Date</th><th>Subject</th><th>Start</th><th>End</th><th>Duration</th></tr></thead><tbody>';
         days.forEach((day, di) => {
-            const key = `${day}_${timeSlots[0]||'08:00'}`; const entry = periods[key] || {};
-            gridHTML += `<tr><td>${dayLabels[di] || day}</td><td><span class="tt-subject">${escapeHtml(entry.subject||'—')}</span></td><td>${escapeHtml(entry.startTime||'—')}</td><td>${escapeHtml(entry.endTime||'—')}</td><td>${escapeHtml(entry.duration||'—')}</td></tr>`;
+            const key = `${day}_Slot 1`; const entry = periods[key] || {};
+            gridHTML += `<tr><td>${dayLabels[di]||day}</td><td><span class="tt-subject">${escapeHtml(entry.subject||'—')}</span></td><td>${escapeHtml(entry.startTime||'—')}</td><td>${escapeHtml(entry.endTime||'—')}</td><td>${escapeHtml(entry.duration||'—')}</td></tr>`;
         });
         gridHTML += '</tbody></table></div>';
     } else {
-        gridHTML = '<div class="tt-wrapper"><table class="tt-table"><thead><tr><th>Day</th>';
-        timeSlots.forEach(ts => { gridHTML += `<th>${escapeHtml(ts)}</th>`; });
-        gridHTML += '</tr></thead><tbody>';
-        days.forEach((day, di) => {
-            gridHTML += `<tr><td>${dayLabels[di] || day}</td>`;
-            timeSlots.forEach(ts => {
-                const key = `${day}_${ts}`; const entry = periods[key];
-                if(entry && entry.subject) gridHTML += `<td><span class="tt-subject">${escapeHtml(entry.subject)}</span><span class="tt-teacher">${escapeHtml(entry.teacherName||'')}</span></td>`;
-                else gridHTML += '<td><span class="tt-empty">—</span></td>';
+        if(!timeSlots.length) {
+            gridHTML = '<p style="color:var(--text-muted);text-align:center;padding:1rem;">No time slots defined. Please edit this timetable.</p>';
+        } else {
+            gridHTML = '<div class="tt-wrapper"><table class="tt-table"><thead><tr><th>Day</th>';
+            timeSlots.forEach(ts => { gridHTML += `<th>${escapeHtml(ts)}</th>`; });
+            gridHTML += '</tr></thead><tbody>';
+            days.forEach((day, di) => {
+                gridHTML += `<tr><td>${dayLabels[di]||day}</td>`;
+                timeSlots.forEach(ts => {
+                    const key = `${day}_${ts}`; const entry = periods[key];
+                    if(entry && entry.subject) gridHTML += `<td><span class="tt-subject">${escapeHtml(entry.subject)}</span><span class="tt-teacher">${escapeHtml(entry.teacherName||'')}</span></td>`;
+                    else gridHTML += '<td><span style="color:var(--text-muted);">—</span></td>';
+                });
+                gridHTML += '</tr>';
             });
-            gridHTML += '</tr>';
-        });
-        gridHTML += '</tbody></table></div>';
+            gridHTML += '</tbody></table></div>';
+        }
     }
     
-    return `<div class="card"><div class="card-header"><h3><i class="fas fa-calendar-alt"></i> ${typeLabel} — ${escapeHtml(t.title||'Untitled')} (${days.length} days · ${timeSlots.length} periods)</h3>${statusBadge(t.status)}</div><div class="text-muted">Term: ${escapeHtml(t.term||'—')} | Class: ${escapeHtml(t.classId)} | Contributors: ${(t.contributorNames||[t.createdByName||'Unknown']).map(n=>`<span class="contributor-tag">${escapeHtml(n)}</span>`).join(' ')}</div>${t.adminFeedback ? `<div class="admin-feedback"><strong>Admin Feedback:</strong> ${escapeHtml(t.adminFeedback)}</div>` : ''}${gridHTML}<div class="btn-group" style="margin-top:0.8rem;">${canEdit?`<button class="btn btn-outline btn-sm" onclick="openTimetableModal('${t.id}')"><i class="fas fa-edit"></i> Edit</button>`:''}${canSubmit?`<button class="btn btn-warning btn-sm" onclick="changeTtStatus('${t.id}','submitted')"><i class="fas fa-paper-plane"></i> Submit for Approval</button>`:''}${canPublish?`<button class="btn btn-success btn-sm" onclick="changeTtStatus('${t.id}','published')"><i class="fas fa-bullhorn"></i> Publish to Students</button>`:''}<button class="btn btn-outline btn-sm" onclick="openCoPlanModal('timetables','${t.id}')"><i class="fas fa-users"></i> Co-Plan</button>${canDuplicate?`<button class="btn btn-outline btn-sm" onclick="duplicateTimetable('${t.id}')"><i class="fas fa-copy"></i> Duplicate</button>`:''}<button class="btn btn-outline btn-sm" onclick="printTimetable('${t.id}')"><i class="fas fa-print"></i> Print</button>${isTeacher&&t.status==='draft'?`<button class="btn btn-danger btn-sm" onclick="deleteTimetable('${t.id}')"><i class="fas fa-trash"></i></button>`:''}</div></div>`;
+    return `<div class="card"><div class="card-header"><h3><i class="fas fa-calendar-alt"></i> ${typeLabel} — ${escapeHtml(t.title||'Untitled')} (${days.length}d · ${timeSlots.length}p)</h3>${statusBadge(t.status)}</div><div class="text-muted">Term: ${escapeHtml(t.term||'—')} | Class: ${escapeHtml(t.classId)} | Contributors: ${(t.contributorNames||[t.createdByName||'Unknown']).map(n=>`<span class="contributor-tag">${escapeHtml(n)}</span>`).join(' ')}</div>${t.adminFeedback?`<div class="admin-feedback"><strong>Feedback:</strong> ${escapeHtml(t.adminFeedback)}</div>`:''}${gridHTML}<div class="btn-group" style="margin-top:0.8rem;">${canEdit?`<button class="btn btn-outline btn-sm" onclick="openTimetableModal('${t.id}')"><i class="fas fa-edit"></i> Edit</button>`:''}${canSubmit?`<button class="btn btn-warning btn-sm" onclick="changeTtStatus('${t.id}','submitted')"><i class="fas fa-paper-plane"></i> Submit</button>`:''}${canPublish?`<button class="btn btn-success btn-sm" onclick="changeTtStatus('${t.id}','published')"><i class="fas fa-bullhorn"></i> Publish</button>`:''}<button class="btn btn-outline btn-sm" onclick="openCoPlanModal('timetables','${t.id}')"><i class="fas fa-users"></i> Co-Plan</button>${isTeacher?`<button class="btn btn-outline btn-sm" onclick="duplicateTimetable('${t.id}')"><i class="fas fa-copy"></i></button>`:''}<button class="btn btn-outline btn-sm" onclick="printTimetable('${t.id}')"><i class="fas fa-print"></i></button>${isTeacher&&t.status==='draft'?`<button class="btn btn-danger btn-sm" onclick="deleteTimetable('${t.id}')"><i class="fas fa-trash"></i></button>`:''}</div></div>`;
 }
 
 function renderSyllabusGrids() {
@@ -504,11 +530,11 @@ function renderSyllabusCard(s) {
     const canEdit = isTeacher && (s.status==='draft'||s.status==='rejected') && isContributor;
     const canSubmit = isTeacher && s.status==='draft' && isContributor;
     const canPublish = isTeacher && s.status==='approved' && isContributor;
-    return `<div class="card"><div class="card-header"><h3><i class="fas fa-book"></i> ${escapeHtml(s.subject)} — ${escapeHtml(s.term)}</h3>${statusBadge(s.status)}</div><div class="text-muted">Class: ${escapeHtml(s.classId)} | Contributors: ${(s.contributorNames||[s.createdByName||'Unknown']).map(n=>`<span class="contributor-tag">${escapeHtml(n)}</span>`).join(' ')}</div>${s.adminFeedback ? `<div class="admin-feedback"><strong>Admin Feedback:</strong> ${escapeHtml(s.adminFeedback)}</div>` : ''}<div style="overflow-x:auto;margin-top:0.8rem;"><table class="syl-table"><thead><tr><th>Week</th><th>Topic</th><th>Added By</th></tr></thead><tbody>${(s.weeks||[]).sort((a,b)=>a.week-b.week).map(w=>`<tr><td><strong>Week ${w.week}</strong></td><td>${escapeHtml(w.topic||'—')}</td><td>${escapeHtml(w.addedByName||'—')}</td></tr>`).join('')}</tbody></table></div><div class="btn-group" style="margin-top:0.8rem;">${canEdit?`<button class="btn btn-outline btn-sm" onclick="openSyllabusModal('${s.id}')"><i class="fas fa-edit"></i> Edit</button>`:''}${canSubmit?`<button class="btn btn-warning btn-sm" onclick="changeSylStatus('${s.id}','submitted')"><i class="fas fa-paper-plane"></i> Submit for Approval</button>`:''}${canPublish?`<button class="btn btn-success btn-sm" onclick="changeSylStatus('${s.id}','published')"><i class="fas fa-bullhorn"></i> Publish to Students</button>`:''}<button class="btn btn-outline btn-sm" onclick="openCoPlanModal('syllabi','${s.id}')"><i class="fas fa-users"></i> Co-Plan</button>${isTeacher?`<button class="btn btn-outline btn-sm" onclick="duplicateSyllabus('${s.id}')"><i class="fas fa-copy"></i> Duplicate</button>`:''}<button class="btn btn-outline btn-sm" onclick="printSyllabus('${s.id}')"><i class="fas fa-print"></i> Print</button>${isTeacher&&s.status==='draft'?`<button class="btn btn-danger btn-sm" onclick="deleteSyllabus('${s.id}')"><i class="fas fa-trash"></i></button>`:''}</div></div>`;
+    return `<div class="card"><div class="card-header"><h3><i class="fas fa-book"></i> ${escapeHtml(s.subject)} — ${escapeHtml(s.term)}</h3>${statusBadge(s.status)}</div><div class="text-muted">Class: ${escapeHtml(s.classId)} | Contributors: ${(s.contributorNames||[s.createdByName||'Unknown']).map(n=>`<span class="contributor-tag">${escapeHtml(n)}</span>`).join(' ')}</div>${s.adminFeedback?`<div class="admin-feedback"><strong>Feedback:</strong> ${escapeHtml(s.adminFeedback)}</div>`:''}<div style="overflow-x:auto;margin-top:0.8rem;"><table class="syl-table"><thead><tr><th>Week</th><th>Topic</th><th>By</th></tr></thead><tbody>${(s.weeks||[]).sort((a,b)=>a.week-b.week).map(w=>`<tr><td><strong>Wk ${w.week}</strong></td><td>${escapeHtml(w.topic||'—')}</td><td>${escapeHtml(w.addedByName||'—')}</td></tr>`).join('')}</tbody></table></div><div class="btn-group" style="margin-top:0.8rem;">${canEdit?`<button class="btn btn-outline btn-sm" onclick="openSyllabusModal('${s.id}')"><i class="fas fa-edit"></i> Edit</button>`:''}${canSubmit?`<button class="btn btn-warning btn-sm" onclick="changeSylStatus('${s.id}','submitted')"><i class="fas fa-paper-plane"></i> Submit</button>`:''}${canPublish?`<button class="btn btn-success btn-sm" onclick="changeSylStatus('${s.id}','published')"><i class="fas fa-bullhorn"></i> Publish</button>`:''}<button class="btn btn-outline btn-sm" onclick="openCoPlanModal('syllabi','${s.id}')"><i class="fas fa-users"></i> Co-Plan</button>${isTeacher?`<button class="btn btn-outline btn-sm" onclick="duplicateSyllabus('${s.id}')"><i class="fas fa-copy"></i></button>`:''}<button class="btn btn-outline btn-sm" onclick="printSyllabus('${s.id}')"><i class="fas fa-print"></i></button>${isTeacher&&s.status==='draft'?`<button class="btn btn-danger btn-sm" onclick="deleteSyllabus('${s.id}')"><i class="fas fa-trash"></i></button>`:''}</div></div>`;
 }
 
 // ============================================
-// TIMETABLE MODAL (with Term, Class, Type)
+// TIMETABLE MODAL
 // ============================================
 async function openTimetableModal(id=null) {
     editingTtId = id;
@@ -534,6 +560,10 @@ function onTtTypeChange() {
         window._ttDayLabels = window._ttDays.map(d => ALL_DAY_LABELS[ALL_DAYS.indexOf(d)] || d);
     } else if(window._ttType === 'test' || window._ttType === 'exam') {
         window._ttTimeSlots = ['Slot 1'];
+    } else {
+        if(!window._ttTimeSlots.length || window._ttTimeSlots[0]==='Hairstyle' || window._ttTimeSlots[0]==='Slot 1') {
+            window._ttTimeSlots = ['08:00-08:40','08:40-09:20','09:20-10:00','10:00-10:40','10:40-11:20','11:20-12:00','12:00-12:40','12:40-01:20'];
+        }
     }
     renderTtModalContent();
 }
@@ -549,22 +579,22 @@ function renderTtModalContent() {
     
     let editorHTML = '';
     if(type === 'hairstyle') {
-        editorHTML = '<div class="tt-wrapper"><table class="period-editor-table"><thead><tr><th>Day</th><th>Hairstyle Name</th><th>Description</th></tr></thead><tbody>';
+        editorHTML = '<div class="tt-wrapper"><table class="period-editor-table"><thead><tr><th>Day</th><th>Hairstyle</th><th>Description</th></tr></thead><tbody>';
         days.forEach((day, di) => {
             const key = `${day}_Hairstyle`; const entry = periods[key] || {};
-            editorHTML += `<tr><td style="font-weight:700;background:var(--tt-day-bg);">${dayLabels[di]||day}</td><td><input type="text" value="${escapeHtml(entry.subject||'')}" placeholder="Hairstyle" onchange="updateTtPeriodCell('${key}','subject',this.value)"></td><td><input type="text" value="${escapeHtml(entry.description||'')}" placeholder="Description" onchange="updateTtPeriodCell('${key}','description',this.value)"></td></tr>`;
+            editorHTML += `<tr><td style="font-weight:700;background:var(--tt-day-bg);">${dayLabels[di]||day}</td><td><input value="${escapeHtml(entry.subject||'')}" placeholder="Hairstyle" onchange="updateTtCell('${key}','subject',this.value)"></td><td><input value="${escapeHtml(entry.description||'')}" placeholder="Description" onchange="updateTtCell('${key}','description',this.value)"></td></tr>`;
         });
         editorHTML += '</tbody></table></div>';
     } else if(type === 'test' || type === 'exam') {
-        editorHTML = '<div class="tt-wrapper"><table class="period-editor-table"><thead><tr><th>Date</th><th>Subject</th><th>Start Time</th><th>End Time</th><th>Duration</th></tr></thead><tbody>';
+        editorHTML = '<div class="tt-wrapper"><table class="period-editor-table"><thead><tr><th>Date</th><th>Subject</th><th>Start</th><th>End</th><th>Duration</th></tr></thead><tbody>';
         days.forEach((day, di) => {
             const key = `${day}_Slot 1`; const entry = periods[key] || {};
-            editorHTML += `<tr><td style="font-weight:700;background:var(--tt-day-bg);">${dayLabels[di]||day}</td><td><input type="text" value="${escapeHtml(entry.subject||'')}" placeholder="Subject" onchange="updateTtPeriodCell('${key}','subject',this.value)"></td><td><input type="time" value="${escapeHtml(entry.startTime||'08:00')}" onchange="updateTtPeriodCell('${key}','startTime',this.value)" style="width:100px;"></td><td><input type="time" value="${escapeHtml(entry.endTime||'09:00')}" onchange="updateTtPeriodCell('${key}','endTime',this.value)" style="width:100px;"></td><td><input type="text" value="${escapeHtml(entry.duration||'1hr')}" placeholder="e.g., 1hr" onchange="updateTtPeriodCell('${key}','duration',this.value)" style="width:80px;"></td></tr>`;
+            editorHTML += `<tr><td style="font-weight:700;background:var(--tt-day-bg);">${dayLabels[di]||day}</td><td><input value="${escapeHtml(entry.subject||'')}" placeholder="Subject" onchange="updateTtCell('${key}','subject',this.value)"></td><td><input type="time" value="${escapeHtml(entry.startTime||'08:00')}" onchange="updateTtCell('${key}','startTime',this.value)" style="width:100px;"></td><td><input type="time" value="${escapeHtml(entry.endTime||'09:00')}" onchange="updateTtCell('${key}','endTime',this.value)" style="width:100px;"></td><td><input value="${escapeHtml(entry.duration||'1hr')}" placeholder="1hr" onchange="updateTtCell('${key}','duration',this.value)" style="width:80px;"></td></tr>`;
         });
         editorHTML += '</tbody></table></div>';
     } else {
-        let timeSlotsHTML = timeSlots.map((ts, i) => `<div style="display:flex;gap:0.3rem;align-items:center;margin-bottom:0.3rem;"><input type="text" value="${escapeHtml(ts)}" onchange="window._ttTimeSlots[${i}]=this.value" style="flex:1;padding:0.3rem 0.5rem;background:var(--input-bg);border:1px solid var(--border);border-radius:0.4rem;color:var(--text-primary);font-size:0.75rem;" placeholder="e.g., 08:00-08:40"><button class="btn btn-danger btn-sm" onclick="removeTtTimeSlot(${i})" title="Remove"><i class="fas fa-times"></i></button></div>`).join('');
-        editorHTML = `<div class="form-group"><label>Time Slots</label><div id="ttTimeSlotsList">${timeSlotsHTML}</div><button class="btn btn-outline btn-sm" onclick="addTtTimeSlot()" style="margin-top:0.3rem;"><i class="fas fa-plus"></i> Add Time Slot</button></div>`;
+        let timeSlotsHTML = timeSlots.map((ts, i) => `<div style="display:flex;gap:0.3rem;align-items:center;margin-bottom:0.3rem;"><input value="${escapeHtml(ts)}" onchange="window._ttTimeSlots[${i}]=this.value" style="flex:1;padding:0.3rem 0.5rem;background:var(--input-bg);border:1px solid var(--border);border-radius:0.4rem;color:var(--text-primary);font-size:0.75rem;" placeholder="e.g., 08:00-08:40"><button class="btn btn-danger btn-sm" onclick="removeTtTimeSlot(${i})">×</button></div>`).join('');
+        editorHTML = `<div class="form-group"><label>Time Slots</label><div>${timeSlotsHTML}</div><button class="btn btn-outline btn-sm" onclick="addTtTimeSlot()" style="margin-top:0.3rem;"><i class="fas fa-plus"></i> Add</button></div>`;
         editorHTML += '<div class="tt-wrapper"><table class="period-editor-table"><thead><tr><th>Day</th>';
         timeSlots.forEach(ts => { editorHTML += `<th>${escapeHtml(ts)}</th>`; });
         editorHTML += '</tr></thead><tbody>';
@@ -572,7 +602,7 @@ function renderTtModalContent() {
             editorHTML += `<tr><td style="font-weight:700;background:var(--tt-day-bg);">${dayLabels[di]||day}</td>`;
             timeSlots.forEach(ts => {
                 const key = `${day}_${ts}`; const entry = periods[key] || {};
-                editorHTML += `<td><input type="text" value="${escapeHtml(entry.subject||'')}" placeholder="Subject" onchange="updateTtPeriodCell('${key}','subject',this.value)" style="margin-bottom:2px;"><input type="text" value="${escapeHtml(entry.teacherName||'')}" placeholder="Teacher" onchange="updateTtPeriodCell('${key}','teacherName',this.value)" style="font-size:0.7rem;"></td>`;
+                editorHTML += `<td><input value="${escapeHtml(entry.subject||'')}" placeholder="Subject" onchange="updateTtCell('${key}','subject',this.value)" style="margin-bottom:2px;"><input value="${escapeHtml(entry.teacherName||'')}" placeholder="Teacher" onchange="updateTtCell('${key}','teacherName',this.value)" style="font-size:0.7rem;"></td>`;
             });
             editorHTML += '</tr>';
         });
@@ -587,15 +617,15 @@ function renderTtModalContent() {
             <div class="form-group"><label>Class *</label><select id="ttClass" class="form-control">${userClasses.map(c=>`<option value="${c}" ${window._ttClass===c?'selected':''}>${c}</option>`).join('')}</select></div>
         </div>
         <div class="form-group"><label>Title *</label><input type="text" id="ttTitle" class="form-control" value="${escapeHtml(window._ttTitle||'')}" placeholder="e.g., JSS 1 Academic Timetable"></div>
-        <div class="form-group"><label>School Days (check all that apply)</label><div style="display:flex;flex-wrap:wrap;gap:0.4rem;">${dayCheckboxes}</div><small style="color:var(--text-muted);">Boarding schools can include Saturday/Sunday</small></div>
-        <div class="form-group"><label>${type==='hairstyle'?'Hairstyle Schedule':type==='test'||type==='exam'?'Exam/Test Schedule':'Fill Periods'}</label>${editorHTML}</div>
+        <div class="form-group"><label>Days</label><div style="display:flex;flex-wrap:wrap;gap:0.4rem;">${dayCheckboxes}</div></div>
+        ${editorHTML}
         <div class="modal-actions"><button class="btn btn-outline" onclick="closeTtModal()">Cancel</button><button class="btn btn-primary" id="saveTtBtn" onclick="saveTimetable()"><i class="fas fa-save"></i> Save as Draft</button></div>`;
 }
 
-function toggleTtDay(day) { const idx = window._ttDays.indexOf(day); if(idx >= 0) { window._ttDays.splice(idx, 1); window._ttDayLabels.splice(idx, 1); } else { window._ttDays.push(day); window._ttDayLabels.push(ALL_DAY_LABELS[ALL_DAYS.indexOf(day)] || day); } renderTtModalContent(); }
+function toggleTtDay(day) { const idx = window._ttDays.indexOf(day); if(idx >= 0) { window._ttDays.splice(idx, 1); window._ttDayLabels.splice(idx, 1); } else { window._ttDays.push(day); window._ttDayLabels.push(ALL_DAY_LABELS[ALL_DAYS.indexOf(day)]); } renderTtModalContent(); }
 function addTtTimeSlot() { window._ttTimeSlots.push(''); renderTtModalContent(); }
-function removeTtTimeSlot(idx) { if(window._ttTimeSlots.length <= 1) return showToast('Required','Need at least 1 time slot','warning'); window._ttTimeSlots.splice(idx, 1); renderTtModalContent(); }
-function updateTtPeriodCell(key, field, value) { if(!window._ttPeriods[key]) window._ttPeriods[key] = {}; window._ttPeriods[key][field] = value; }
+function removeTtTimeSlot(idx) { if(window._ttTimeSlots.length <= 1) return showToast('Required','Need at least 1','warning'); window._ttTimeSlots.splice(idx, 1); renderTtModalContent(); }
+function updateTtCell(key, field, value) { if(!window._ttPeriods[key]) window._ttPeriods[key] = {}; window._ttPeriods[key][field] = value; }
 
 async function saveTimetable() {
     const title = document.getElementById('ttTitle').value.trim();
@@ -610,20 +640,44 @@ async function saveTimetable() {
     if(!days.length) return showToast('Required','Select at least one day','warning');
     const btn = document.getElementById('saveTtBtn'); btn.disabled=true; btn.innerHTML='<span class="loading-spinner"></span> Saving...';
     try {
-        const data = { type: ttType, title, term: ttTerm, classId: ttClass, days, dayLabels, timeSlots, periods, academicYear: selectedYear, updatedAt:firebase.firestore.FieldValue.serverTimestamp(), versionHistory: firebase.firestore.FieldValue.arrayUnion({ action:'edited', by:currentUser.uid, byName:`${userData.firstName||''} ${userData.surname||''}`.trim(), at:new Date().toISOString() }) };
-        if(editingTtId){
-            const ref = db.collection('timetables').doc(editingTtId); const doc = await ref.get(); const existing = doc.data()||{};
+        const data = { type: ttType, title, term: ttTerm, classId: ttClass, days, dayLabels, timeSlots, periods, academicYear: selectedYear, updatedAt:firebase.firestore.FieldValue.serverTimestamp() };
+        
+        // CHECK FOR EXISTING timetable of same type/class/term/year to overwrite
+        const existingSnap = await db.collection('timetables')
+            .where('classId','==',ttClass)
+            .where('academicYear','==',selectedYear)
+            .where('term','==',ttTerm)
+            .where('type','==',ttType)
+            .where('status','in',['draft','submitted','approved'])
+            .get();
+        
+        if(!editingTtId && !existingSnap.empty) {
+            // Overwrite the existing one instead of creating new
+            const existingDoc = existingSnap.docs[0];
+            if(!confirm(`A ${ttType} timetable for ${ttClass} (${ttTerm}) already exists. Overwrite it?`)) {
+                btn.disabled=false; btn.innerHTML='<i class="fas fa-save"></i> Save as Draft';
+                return;
+            }
+            const ref = db.collection('timetables').doc(existingDoc.id);
+            const existing = existingDoc.data();
             const contributors = [...new Set([...(existing.contributors||[]), currentUser.uid])];
             const contributorNames = [...new Set([...(existing.contributorNames||[]), `${userData.firstName||''} ${userData.surname||''}`.trim()])];
             await ref.update({...data, contributors, contributorNames});
-            await logAudit('EDIT_TIMETABLE',`Updated ${title}`);
+            debugLog('Overwritten', `${ttType} timetable for ${ttClass} ${ttTerm}`);
+            showToast('Updated!', `Existing ${ttType} timetable overwritten.`,'success');
+        } else if(editingTtId) {
+            const ref = db.collection('timetables').doc(editingTtId);
+            const doc = await ref.get(); const existing = doc.data()||{};
+            const contributors = [...new Set([...(existing.contributors||[]), currentUser.uid])];
+            const contributorNames = [...new Set([...(existing.contributorNames||[]), `${userData.firstName||''} ${userData.surname||''}`.trim()])];
+            await ref.update({...data, contributors, contributorNames});
+            showToast('Updated','Timetable saved','success');
         } else {
-            await db.collection('timetables').add({...data, status:'draft', createdBy:currentUser.uid, createdByName:`${userData.firstName||''} ${userData.surname||''}`.trim(), contributors:[currentUser.uid], contributorNames:[`${userData.firstName||''} ${userData.surname||''}`.trim()], createdAt:firebase.firestore.FieldValue.serverTimestamp(), versionHistory:[{ action:'created', by:currentUser.uid, byName:`${userData.firstName||''} ${userData.surname||''}`.trim(), at:new Date().toISOString() }] });
-            await logAudit('CREATE_TIMETABLE',`Created ${title} (${ttType})`);
+            await db.collection('timetables').add({...data, status:'draft', createdBy:currentUser.uid, createdByName:`${userData.firstName||''} ${userData.surname||''}`.trim(), contributors:[currentUser.uid], contributorNames:[`${userData.firstName||''} ${userData.surname||''}`.trim()], createdAt:firebase.firestore.FieldValue.serverTimestamp()});
+            showToast('Saved','Timetable saved as draft','success');
         }
-        debugLog('Timetable saved', `${title} (${ttType})`);
-        showToast('Saved','Timetable saved as draft','success'); closeTtModal(); loadData();
-    } catch(e){ showToast('Error',e.message,'error'); }
+        closeTtModal(); loadData();
+    } catch(e){ showToast('Error',e.message,'error'); debugLog('Save error', e.message, 'error'); }
     finally { btn.disabled=false; btn.innerHTML='<i class="fas fa-save"></i> Save as Draft'; }
 }
 function closeTtModal(){ document.getElementById('ttModal').classList.remove('active'); editingTtId=null; }
@@ -642,18 +696,18 @@ async function openSyllabusModal(id=null) {
 function addSylWeek() { if(!window._sylWeeks) window._sylWeeks = []; const nextWeek = window._sylWeeks.length ? Math.max(...window._sylWeeks.map(w=>w.week))+1 : 1; window._sylWeeks.push({ week:nextWeek, topic:'', addedBy:currentUser?.uid, addedByName:`${userData?.firstName||''} ${userData?.surname||''}`.trim() }); renderSylWeeks(); }
 function addBulkWeeks() { if(!window._sylWeeks) window._sylWeeks = []; const existing = new Set(window._sylWeeks.map(w=>w.week)); for(let i=1;i<=12;i++){ if(!existing.has(i)) window._sylWeeks.push({ week:i, topic:'', addedBy:currentUser?.uid, addedByName:`${userData?.firstName||''} ${userData?.surname||''}`.trim() }); } window._sylWeeks.sort((a,b)=>a.week-b.week); renderSylWeeks(); }
 function removeSylWeek(idx){ window._sylWeeks.splice(idx,1); renderSylWeeks(); }
-function renderSylWeeks() { const container = document.getElementById('sylWeeksContainer'); if(!container) return; const weeks = window._sylWeeks||[]; container.innerHTML = weeks.sort((a,b)=>a.week-b.week).map((w,i)=>`<div class="week-row"><span class="week-num">Week ${w.week}</span><input type="text" class="week-topic" value="${escapeHtml(w.topic||'')}" placeholder="Enter topic for week ${w.week}..." onchange="window._sylWeeks[${i}].topic=this.value"><span class="week-added">${escapeHtml(w.addedByName||'')}</span><button class="btn btn-danger btn-sm" onclick="removeSylWeek(${i})"><i class="fas fa-times"></i></button></div>`).join(''); if(!weeks.length) container.innerHTML = '<p class="text-muted">No weeks added.</p>'; }
+function renderSylWeeks() { const container = document.getElementById('sylWeeksContainer'); if(!container) return; const weeks = window._sylWeeks||[]; container.innerHTML = weeks.sort((a,b)=>a.week-b.week).map((w,i)=>`<div class="week-row"><span class="week-num">Week ${w.week}</span><input type="text" class="week-topic" value="${escapeHtml(w.topic||'')}" placeholder="Topic for week ${w.week}..." onchange="window._sylWeeks[${i}].topic=this.value"><span class="text-muted">${escapeHtml(w.addedByName||'')}</span><button class="btn btn-danger btn-sm" onclick="removeSylWeek(${i})">×</button></div>`).join(''); if(!weeks.length) container.innerHTML = '<p class="text-muted">No weeks added.</p>'; }
 async function saveSyllabus() {
     const subject = document.getElementById('sylSubject').value, term = document.getElementById('sylTerm').value;
     if(!subject) return showToast('Required','Subject is required','warning');
     const weeks = (window._sylWeeks||[]).filter(w=>w.topic.trim());
-    if(!weeks.length) return showToast('Required','Add at least one week with a topic','warning');
+    if(!weeks.length) return showToast('Required','Add at least one week','warning');
     const btn = document.getElementById('saveSylBtn'); btn.disabled=true; btn.innerHTML='<span class="loading-spinner"></span> Saving...';
     try {
         const data = { subject, term, weeks, classId:selectedClass, academicYear:selectedYear, updatedAt:firebase.firestore.FieldValue.serverTimestamp() };
         if(editingSylId){ const ref = db.collection('syllabi').doc(editingSylId); const doc = await ref.get(); const existing = doc.data()||{}; const contributors = [...new Set([...(existing.contributors||[]), currentUser.uid])]; const contributorNames = [...new Set([...(existing.contributorNames||[]), `${userData.firstName||''} ${userData.surname||''}`.trim()])]; await ref.update({...data, contributors, contributorNames}); }
         else { await db.collection('syllabi').add({...data, status:'draft', createdBy:currentUser.uid, createdByName:`${userData.firstName||''} ${userData.surname||''}`.trim(), contributors:[currentUser.uid], contributorNames:[`${userData.firstName||''} ${userData.surname||''}`.trim()], createdAt:firebase.firestore.FieldValue.serverTimestamp() }); }
-        showToast('Saved','Syllabus saved as draft','success'); closeSylModal(); loadData();
+        showToast('Saved','Syllabus saved','success'); closeSylModal(); loadData();
     } catch(e){ showToast('Error',e.message,'error'); }
     finally { btn.disabled=false; btn.innerHTML='<i class="fas fa-save"></i> Save as Draft'; }
 }
@@ -672,7 +726,7 @@ async function renderCoTeacherList(search='') {
     renderSelectedCoTeachers();
 }
 function toggleCoTeacher(id, name) { const idx = selectedCoTeacherIds.indexOf(id); if(idx >= 0) { selectedCoTeacherIds.splice(idx, 1); selectedCoTeacherNames.splice(idx, 1); } else { selectedCoTeacherIds.push(id); selectedCoTeacherNames.push(name); } renderCoTeacherList(document.getElementById('coTeacherSearch')?.value||''); }
-function renderSelectedCoTeachers() { document.getElementById('selectedCoTeachers').innerHTML = selectedCoTeacherNames.length ? selectedCoTeacherNames.map(n=>`<span class="badge badge-info" style="margin:0.2rem;">${escapeHtml(n)} <i class="fas fa-times" style="cursor:pointer;" onclick="removeCoTeacher('${escapeHtml(n)}')"></i></span>`).join('') : '<p style="color:var(--text-muted);">None selected.</p>'; }
+function renderSelectedCoTeachers() { document.getElementById('selectedCoTeachers').innerHTML = selectedCoTeacherNames.length ? selectedCoTeacherNames.map(n=>`<span class="badge badge-info" style="margin:0.2rem;">${escapeHtml(n)} <i class="fas fa-times" style="cursor:pointer;" onclick="removeCoTeacher('${escapeHtml(n)}')"></i></span>`).join('') : '<p class="text-muted">None selected.</p>'; }
 function removeCoTeacher(name) { const idx = selectedCoTeacherNames.indexOf(name); if(idx >= 0) { selectedCoTeacherIds.splice(idx, 1); selectedCoTeacherNames.splice(idx, 1); } renderCoTeacherList(); renderSelectedCoTeachers(); }
 async function confirmCoPlan() {
     if(!coPlanItemId) return;
@@ -683,7 +737,7 @@ async function confirmCoPlan() {
     const contributors = [...new Set([...(data.contributors||[data.createdBy]), ...selectedCoTeacherIds])];
     const contributorNames = [...new Set([...(data.contributorNames||[data.createdByName||'Unknown']), ...selectedCoTeacherNames])];
     await db.collection(collection).doc(coPlanItemId).update({ contributors, contributorNames });
-    showToast('Collaborators Added', `${selectedCoTeacherNames.length} teacher(s) added`, 'success');
+    showToast('Added', `${selectedCoTeacherNames.length} collaborator(s)`,'success');
     closeCoPlanModal(); loadData();
 }
 
@@ -691,26 +745,26 @@ async function confirmCoPlan() {
 // STATUS CHANGES
 // ============================================
 async function changeTtStatus(id, newStatus) {
-    const labels = { submitted:'Submit for Admin Approval', published:'Publish to Students' };
-    if(!confirm(`${labels[newStatus]||newStatus} this timetable?`)) return;
+    const labels = { submitted:'Submit for Approval', published:'Publish to Students' };
+    if(!confirm(`${labels[newStatus]||newStatus}?`)) return;
     try {
         const update = { status:newStatus, updatedAt:firebase.firestore.FieldValue.serverTimestamp() };
         if(newStatus==='submitted') update.submittedAt = firebase.firestore.FieldValue.serverTimestamp();
         if(newStatus==='published') update.publishedAt = firebase.firestore.FieldValue.serverTimestamp();
         await db.collection('timetables').doc(id).update(update);
-        showToast('Updated',`Timetable ${newStatus==='submitted'?'submitted for admin approval':newStatus}`,'success');
+        showToast('Updated',newStatus==='submitted'?'Submitted for admin approval':newStatus,'success');
         loadData();
     } catch(e){ showToast('Error',e.message,'error'); }
 }
 async function changeSylStatus(id, newStatus) {
-    const labels = { submitted:'Submit for Admin Approval', published:'Publish to Students' };
-    if(!confirm(`${labels[newStatus]||newStatus} this syllabus?`)) return;
+    const labels = { submitted:'Submit for Approval', published:'Publish to Students' };
+    if(!confirm(`${labels[newStatus]||newStatus}?`)) return;
     try {
         const update = { status:newStatus, updatedAt:firebase.firestore.FieldValue.serverTimestamp() };
         if(newStatus==='submitted') update.submittedAt = firebase.firestore.FieldValue.serverTimestamp();
         if(newStatus==='published') update.publishedAt = firebase.firestore.FieldValue.serverTimestamp();
         await db.collection('syllabi').doc(id).update(update);
-        showToast('Updated',`Syllabus ${newStatus==='submitted'?'submitted for admin approval':newStatus}`,'success');
+        showToast('Updated',newStatus==='submitted'?'Submitted for admin approval':newStatus,'success');
         loadData();
     } catch(e){ showToast('Error',e.message,'error'); }
 }
@@ -718,12 +772,12 @@ async function changeSylStatus(id, newStatus) {
 // ============================================
 // DUPLICATE & DELETE & PRINT
 // ============================================
-async function duplicateTimetable(id) { const doc = await db.collection('timetables').doc(id).get(); if(!doc.exists) return; const data = doc.data(); await db.collection('timetables').add({...data, title:(data.title||'')+' (Copy)', status:'draft', createdBy:currentUser.uid, createdByName:`${userData.firstName||''} ${userData.surname||''}`.trim(), contributors:[currentUser.uid], contributorNames:[`${userData.firstName||''} ${userData.surname||''}`.trim()], createdAt:firebase.firestore.FieldValue.serverTimestamp(), submittedAt:null, approvedAt:null, publishedAt:null, rejectedAt:null, adminFeedback:'' }); showToast('Duplicated','Copy created as draft','success'); loadData(); }
-async function duplicateSyllabus(id) { const doc = await db.collection('syllabi').doc(id).get(); if(!doc.exists) return; const data = doc.data(); await db.collection('syllabi').add({...data, status:'draft', createdBy:currentUser.uid, createdByName:`${userData.firstName||''} ${userData.surname||''}`.trim(), contributors:[currentUser.uid], contributorNames:[`${userData.firstName||''} ${userData.surname||''}`.trim()], createdAt:firebase.firestore.FieldValue.serverTimestamp(), submittedAt:null, approvedAt:null, publishedAt:null, adminFeedback:'' }); showToast('Duplicated','Copy created as draft','success'); loadData(); }
+async function duplicateTimetable(id) { const doc = await db.collection('timetables').doc(id).get(); if(!doc.exists) return; const data = doc.data(); await db.collection('timetables').add({...data, title:(data.title||'')+' (Copy)', status:'draft', createdBy:currentUser.uid, createdByName:`${userData.firstName||''} ${userData.surname||''}`.trim(), contributors:[currentUser.uid], contributorNames:[`${userData.firstName||''} ${userData.surname||''}`.trim()], createdAt:firebase.firestore.FieldValue.serverTimestamp(), submittedAt:null, approvedAt:null, publishedAt:null, rejectedAt:null, adminFeedback:'' }); showToast('Duplicated','Done','success'); loadData(); }
+async function duplicateSyllabus(id) { const doc = await db.collection('syllabi').doc(id).get(); if(!doc.exists) return; const data = doc.data(); await db.collection('syllabi').add({...data, status:'draft', createdBy:currentUser.uid, createdByName:`${userData.firstName||''} ${userData.surname||''}`.trim(), contributors:[currentUser.uid], contributorNames:[`${userData.firstName||''} ${userData.surname||''}`.trim()], createdAt:firebase.firestore.FieldValue.serverTimestamp(), submittedAt:null, approvedAt:null, publishedAt:null, adminFeedback:'' }); showToast('Duplicated','Done','success'); loadData(); }
 async function deleteTimetable(id) { if(!confirm('Delete?')) return; await db.collection('timetables').doc(id).delete(); showToast('Deleted','Done','success'); loadData(); }
 async function deleteSyllabus(id) { if(!confirm('Delete?')) return; await db.collection('syllabi').doc(id).delete(); showToast('Deleted','Done','success'); loadData(); }
-function printTimetable(id) { const t = allTimetables.find(x=>x.id===id); if(!t) return; const w = window.open('','_blank','width=900,height=600'); let h = `<html><head><title>${t.title||'Timetable'}</title><style>body{font-family:sans-serif;padding:20px;}table{width:100%;border-collapse:collapse;}th,td{border:1px solid #000;padding:8px;text-align:center;font-size:12px;}th{background:#0A2540;color:white;}</style></head><body><h2>${t.title||'Timetable'} (${t.type||'academic'})</h2>`; if(t.type==='hairstyle'){ h+='<table><tr><th>Day</th><th>Hairstyle</th><th>Description</th></tr>'; (t.days||[]).forEach((day,di)=>{ const key=`${day}_Hairstyle`; const e=(t.periods||{})[key]||{}; h+=`<tr><td>${(t.dayLabels||[])[di]||day}</td><td>${e.subject||'—'}</td><td>${e.description||'—'}</td></tr>`; }); h+='</table>'; } else if(t.type==='test'||t.type==='exam'){ h+='<table><tr><th>Date</th><th>Subject</th><th>Start</th><th>End</th><th>Duration</th></tr>'; (t.days||[]).forEach((day,di)=>{ const key=`${day}_Slot 1`; const e=(t.periods||{})[key]||{}; h+=`<tr><td>${(t.dayLabels||[])[di]||day}</td><td>${e.subject||'—'}</td><td>${e.startTime||'—'}</td><td>${e.endTime||'—'}</td><td>${e.duration||'—'}</td></tr>`; }); h+='</table>'; } else { h+='<table><tr><th>Day</th>'; (t.timeSlots||[]).forEach(ts=>h+=`<th>${ts}</th>`); h+='</tr>'; (t.days||[]).forEach((day,di)=>{ h+=`<tr><td>${(t.dayLabels||[])[di]||day}</td>`; (t.timeSlots||[]).forEach(ts=>{ const key=`${day}_${ts}`; const e=(t.periods||{})[key]; h+=`<td>${e&&e.subject?e.subject+(e.teacherName?'<br><small>'+e.teacherName+'</small>':''):'—'}</td>`; }); h+='</tr>'; }); h+='</table>'; } h+='</body></html>'; w.document.write(h); w.document.close(); w.print(); }
-function printSyllabus(id) { const s = allSyllabi.find(x=>x.id===id); if(!s) return; const w = window.open('','_blank','width=800,height=600'); w.document.write(`<html><head><title>${s.subject} - ${s.term}</title><style>body{font-family:sans-serif;padding:20px;}table{width:100%;border-collapse:collapse;}th,td{border:1px solid #000;padding:8px;}th{background:#0A2540;color:white;}</style></head><body><h2>${s.subject} — ${s.term}</h2><table><tr><th>Week</th><th>Topic</th><th>Added By</th></tr>${(s.weeks||[]).sort((a,b)=>a.week-b.week).map(w=>`<tr><td>${w.week}</td><td>${w.topic||''}</td><td>${w.addedByName||''}</td></tr>`).join('')}</table></body></html>`); w.document.close(); w.print(); }
+function printTimetable(id) { const t = allTimetables.find(x=>x.id===id); if(!t) return; const w = window.open('','_blank','width=900,height=600'); let h = `<html><head><title>${t.title||'Timetable'}</title><style>body{font-family:sans-serif;padding:20px;}table{width:100%;border-collapse:collapse;}th,td{border:1px solid #000;padding:8px;text-align:center;font-size:12px;}th{background:#0A2540;color:white;}</style></head><body><h2>${t.title||'Timetable'} (${t.type||'academic'})</h2>`; if(t.type==='hairstyle'){ h+='<table><tr><th>Day</th><th>Hairstyle</th><th>Description</th></tr>'; (t.days||['monday','tuesday','wednesday','thursday','friday']).forEach((day,di)=>{ const key=`${day}_Hairstyle`; const e=(t.periods||{})[key]||{}; h+=`<tr><td>${(t.dayLabels||[])[di]||day}</td><td>${e.subject||'—'}</td><td>${e.description||'—'}</td></tr>`; }); h+='</table>'; } else if(t.type==='test'||t.type==='exam'){ h+='<table><tr><th>Date</th><th>Subject</th><th>Start</th><th>End</th><th>Duration</th></tr>'; (t.days||['monday']).forEach((day,di)=>{ const key=`${day}_Slot 1`; const e=(t.periods||{})[key]||{}; h+=`<tr><td>${(t.dayLabels||[])[di]||day}</td><td>${e.subject||'—'}</td><td>${e.startTime||'—'}</td><td>${e.endTime||'—'}</td><td>${e.duration||'—'}</td></tr>`; }); h+='</table>'; } else { h+='<table><tr><th>Day</th>'; (t.timeSlots||[]).forEach(ts=>h+=`<th>${ts}</th>`); h+='</tr>'; (t.days||['monday']).forEach((day,di)=>{ h+=`<tr><td>${(t.dayLabels||[])[di]||day}</td>`; (t.timeSlots||[]).forEach(ts=>{ const key=`${day}_${ts}`; const e=(t.periods||{})[key]; h+=`<td>${e&&e.subject?e.subject+(e.teacherName?'<br><small>'+e.teacherName+'</small>':''):'—'}</td>`; }); h+='</tr>'; }); h+='</table>'; } h+='</body></html>'; w.document.write(h); w.document.close(); w.print(); }
+function printSyllabus(id) { const s = allSyllabi.find(x=>x.id===id); if(!s) return; const w = window.open('','_blank','width=800,height=600'); w.document.write(`<html><head><title>${s.subject} - ${s.term}</title><style>body{font-family:sans-serif;padding:20px;}table{width:100%;border-collapse:collapse;}th,td{border:1px solid #000;padding:8px;}th{background:#0A2540;color:white;}</style></head><body><h2>${s.subject} — ${s.term}</h2><table><tr><th>Week</th><th>Topic</th><th>By</th></tr>${(s.weeks||[]).sort((a,b)=>a.week-b.week).map(w=>`<tr><td>${w.week}</td><td>${w.topic||''}</td><td>${w.addedByName||''}</td></tr>`).join('')}</table></body></html>`); w.document.close(); w.print(); }
 
 document.addEventListener('click', function(e) { const cb = e.target.closest('[data-checkbox]'); if(cb) { const input = cb.querySelector('input[type="checkbox"]'); if(input && e.target !== input) { input.checked = !input.checked; cb.classList.toggle('checked', input.checked); if(input.onchange) input.onchange(); } } });
 
@@ -731,7 +785,7 @@ window.openTimetableModal = openTimetableModal; window.openSyllabusModal = openS
 window.closeTtModal = closeTtModal; window.closeSylModal = closeSylModal;
 window.saveTimetable = saveTimetable; window.saveSyllabus = saveSyllabus;
 window.addTtTimeSlot = addTtTimeSlot; window.removeTtTimeSlot = removeTtTimeSlot;
-window.updateTtPeriodCell = updateTtPeriodCell; window.toggleTtDay = toggleTtDay;
+window.updateTtCell = updateTtCell; window.toggleTtDay = toggleTtDay;
 window.onTtTypeChange = onTtTypeChange;
 window.addSylWeek = addSylWeek; window.addBulkWeeks = addBulkWeeks; window.removeSylWeek = removeSylWeek;
 window.changeTtStatus = changeTtStatus; window.changeSylStatus = changeSylStatus;
@@ -745,8 +799,8 @@ window.openCoPlanModal = openCoPlanModal; window.closeCoPlanModal = closeCoPlanM
 window.confirmCoPlan = confirmCoPlan; window.renderCoTeacherList = renderCoTeacherList;
 window.toggleCoTeacher = toggleCoTeacher; window.removeCoTeacher = removeCoTeacher;
 
-debugLog('Page ready', 'Timetable & Syllabus with Academic/Hairstyle/Test/Exam types');
-console.log('📅 Timetable & Syllabus ready — Academic, Hairstyle, Test, Exam + Collaboration');
+debugLog('Page ready', 'Timetable & Syllabus with auto-overwrite + old format support');
+console.log('📅 Ready — Auto-overwrite same type/class/term + Backward compatible');
 </script>
 </body>
 </html>
