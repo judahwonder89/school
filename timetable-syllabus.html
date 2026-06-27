@@ -27,6 +27,9 @@
             --approved-bg:rgba(59,130,246,0.12); --approved-text:#2563eb;
             --published-bg:rgba(34,197,94,0.12); --published-text:#16a34a;
             --rejected-bg:rgba(239,68,68,0.12); --rejected-text:#b91c1c;
+            --tt-header-bg:#0A2540; --tt-header-text:#ffffff;
+            --tt-day-bg:rgba(200,150,62,0.15); --tt-day-text:#b8860b;
+            --tt-cell-bg:#ffffff; --tt-border:#e2e8f0;
         }
         :root[data-theme="dark"] {
             --bg-primary:#0a0f1e; --bg-surface:rgba(15,23,42,0.85); --text-primary:#f0f4fa;
@@ -45,6 +48,9 @@
             --approved-bg:rgba(59,130,246,0.2); --approved-text:#60a5fa;
             --published-bg:rgba(34,197,94,0.2); --published-text:#4ade80;
             --rejected-bg:rgba(239,68,68,0.2); --rejected-text:#f87171;
+            --tt-header-bg:#0A2540; --tt-header-text:#ffffff;
+            --tt-day-bg:rgba(200,150,62,0.2); --tt-day-text:#D4AF37;
+            --tt-cell-bg:rgba(30,41,59,0.6); --tt-border:rgba(255,255,255,0.08);
         }
         body { font-family:'Inter',sans-serif; background:var(--bg-primary); color:var(--text-primary); min-height:100vh; display:flex; position:relative; overflow-x:hidden; transition:background 0.3s; }
         .bg-logo { position:fixed; top:50%; left:50%; transform:translate(-50%,-50%); width:400px; max-width:70vw; opacity:0.03; pointer-events:none; z-index:0; animation:breathe 6s ease-in-out infinite; }
@@ -54,7 +60,8 @@
         .orb-2 { width:400px; height:400px; bottom:-150px; right:-50px; background:radial-gradient(circle at 70% 70%,rgba(200,150,62,.10),transparent); animation-duration:30s; }
         @keyframes float { 0%{transform:translate(0,0)scale(1)} 100%{transform:translate(40px,30px)scale(1.15)} }
 
-        .sidebar { width:260px; background:var(--bg-surface); backdrop-filter:blur(20px); -webkit-backdrop-filter:blur(20px); border-right:1px solid var(--border); padding:1.5rem 0.8rem; display:flex; flex-direction:column; transition:all 0.3s; position:fixed; top:0; left:0; height:100vh; overflow-y:auto; z-index:100; box-shadow:var(--shadow-lg); }
+        /* SIDEBAR */
+        .sidebar { width:260px; background:var(--bg-surface); backdrop-filter:blur(20px); -webkit-backdrop-filter:blur(20px); border-right:1px solid var(--border); padding:1.5rem 0.8rem; display:flex; flex-direction:column; transition:all 0.3s cubic-bezier(0.4,0,0.2,1); position:fixed; top:0; left:0; height:100vh; overflow-y:auto; z-index:100; box-shadow:var(--shadow-lg); }
         .sidebar.collapsed { width:85px; }
         .sidebar .logo-area { display:flex; align-items:center; gap:0.8rem; margin-bottom:1.8rem; padding:0 0.3rem; text-decoration:none; }
         .sidebar .logo-area img { width:38px; height:38px; object-fit:contain; flex-shrink:0; }
@@ -70,7 +77,7 @@
         .sidebar .toggle-btn { margin-top:auto; display:flex; justify-content:flex-end; padding:0.8rem 0.5rem; cursor:pointer; color:var(--text-secondary); font-size:1.1rem; transition:all 0.2s; }
         .sidebar .toggle-btn:hover { color:var(--accent); }
 
-        .main-content { flex:1; margin-left:260px; padding:1.5rem; transition:margin-left 0.3s; max-width:calc(100vw - 260px); position:relative; z-index:5; }
+        .main-content { flex:1; margin-left:260px; padding:1.5rem; transition:margin-left 0.3s cubic-bezier(0.4,0,0.2,1); max-width:calc(100vw - 260px); position:relative; z-index:5; }
         .main-content.expanded { margin-left:85px; max-width:calc(100vw - 85px); }
 
         .top-bar { display:flex; justify-content:space-between; align-items:center; margin-bottom:1.5rem; flex-wrap:wrap; gap:1rem; }
@@ -89,12 +96,10 @@
         .dropdown-item:hover { background:var(--hover-bg); color:var(--accent); }
         .dropdown-item.danger:hover { background:var(--danger-bg); color:var(--danger-text); }
 
-        /* Top Controls */
         .controls-bar { display:flex; gap:0.8rem; margin-bottom:1.5rem; flex-wrap:wrap; align-items:center; background:var(--card-bg); backdrop-filter:blur(12px); -webkit-backdrop-filter:blur(12px); border:1px solid var(--border); border-radius:1.5rem; padding:0.8rem 1.2rem; box-shadow:var(--shadow); }
         .controls-bar select { padding:0.5rem 1rem; background:var(--input-bg); border:2px solid var(--border); border-radius:2rem; color:var(--text-primary); font-family:inherit; font-size:0.85rem; cursor:pointer; min-width:160px; }
         .controls-bar select:focus { outline:none; border-color:var(--accent); }
 
-        /* Main Tabs */
         .main-tabs { display:flex; gap:0.4rem; margin-bottom:1.5rem; background:var(--card-bg); backdrop-filter:blur(12px); -webkit-backdrop-filter:blur(12px); border:1px solid var(--border); border-radius:1.5rem; padding:0.4rem; overflow-x:auto; box-shadow:var(--shadow); }
         .main-tab-btn { padding:0.7rem 1.5rem; border-radius:1.25rem; border:none; background:transparent; color:var(--text-secondary); cursor:pointer; font-weight:600; font-size:0.85rem; white-space:nowrap; display:flex; align-items:center; gap:0.5rem; font-family:inherit; transition:all 0.3s; }
         .main-tab-btn:hover { background:var(--hover-bg); color:var(--accent); }
@@ -103,7 +108,6 @@
         .main-tab-content.active { display:block; }
         @keyframes fadeSlideIn { from{opacity:0;transform:translateY(10px)} to{opacity:1;transform:translateY(0)} }
 
-        /* Status Grid Tabs */
         .status-tabs { display:flex; gap:0.3rem; margin-bottom:1rem; flex-wrap:wrap; }
         .status-tab { padding:0.45rem 1rem; border-radius:2rem; font-weight:600; font-size:0.78rem; cursor:pointer; border:2px solid var(--border); background:var(--card-bg); color:var(--text-secondary); transition:all 0.2s; font-family:inherit; white-space:nowrap; }
         .status-tab:hover { border-color:var(--accent); }
@@ -115,21 +119,17 @@
         .status-tab.rejected.active { background:var(--rejected-text); }
         .status-tab .count { margin-left:0.3rem; opacity:0.7; font-size:0.7rem; }
 
-        /* Cards */
         .card { background:var(--card-bg); backdrop-filter:blur(12px); -webkit-backdrop-filter:blur(12px); border:1px solid var(--border); border-radius:1.5rem; padding:1.5rem; box-shadow:var(--shadow); margin-bottom:1rem; }
         .card-header { display:flex; justify-content:space-between; align-items:center; margin-bottom:1rem; flex-wrap:wrap; gap:0.5rem; padding-bottom:0.8rem; border-bottom:1px solid var(--border); }
         .card-header h3 { font-size:1.05rem; font-weight:700; display:flex; align-items:center; gap:0.5rem; }
 
-        /* Badges */
         .badge { padding:0.2rem 0.7rem; border-radius:2rem; font-size:0.7rem; font-weight:700; display:inline-flex; align-items:center; gap:0.3rem; }
         .badge-draft { background:var(--draft-bg); color:var(--draft-text); }
         .badge-submitted { background:var(--submitted-bg); color:var(--submitted-text); }
         .badge-approved { background:var(--approved-bg); color:var(--approved-text); }
         .badge-published { background:var(--published-bg); color:var(--published-text); }
         .badge-rejected { background:var(--rejected-bg); color:var(--rejected-text); }
-        .badge-info { background:var(--info-bg); color:var(--info-text); border:1px solid var(--info-border,var(--border)); }
 
-        /* Buttons */
         .btn { padding:0.4rem 1rem; border:none; border-radius:2rem; font-weight:600; font-size:0.78rem; cursor:pointer; transition:all 0.2s; display:inline-flex; align-items:center; gap:0.3rem; white-space:nowrap; font-family:inherit; }
         .btn-primary { background:linear-gradient(135deg,var(--gradient-start),var(--gradient-end)); color:white; box-shadow:0 4px 12px rgba(200,150,62,.3); }
         .btn-primary:hover { box-shadow:0 6px 20px rgba(200,150,62,.5); transform:translateY(-2px); }
@@ -142,30 +142,33 @@
         .btn:disabled { opacity:0.5; cursor:not-allowed; transform:none!important; }
         .btn-group { display:flex; gap:0.4rem; flex-wrap:wrap; }
 
-        /* Timetable Grid */
-        .tt-grid { display:grid; gap:0.3rem; overflow-x:auto; }
-        .tt-grid.academic { grid-template-columns:80px repeat(5,1fr); }
-        .tt-grid.hairstyle { grid-template-columns:80px repeat(2,1fr); }
-        .tt-grid.test-exam { grid-template-columns:repeat(5,1fr); }
-        .tt-cell { background:var(--hover-bg); border:1px solid var(--border); border-radius:0.5rem; padding:0.5rem; font-size:0.75rem; text-align:center; min-width:100px; }
-        .tt-cell.header { background:linear-gradient(135deg,var(--gradient-start),var(--gradient-end)); color:white; font-weight:700; font-size:0.7rem; text-transform:uppercase; }
-        .tt-cell .subject { font-weight:600; color:var(--accent); }
-        .tt-cell .time { font-size:0.65rem; color:var(--text-muted); }
-        .tt-cell .teacher { font-size:0.6rem; color:var(--text-secondary); }
-        .tt-cell.empty { color:var(--text-muted); font-style:italic; }
+        /* NEW TIMETABLE TABLE */
+        .tt-wrapper { overflow-x:auto; border-radius:1rem; border:1px solid var(--border); }
+        .tt-table { width:100%; border-collapse:collapse; min-width:700px; }
+        .tt-table th, .tt-table td { border:1px solid var(--tt-border); padding:0.55rem 0.5rem; text-align:center; font-size:0.78rem; vertical-align:middle; }
+        .tt-table thead th { background:var(--tt-header-bg); color:var(--tt-header-text); font-weight:700; font-size:0.72rem; text-transform:uppercase; letter-spacing:0.5px; position:sticky; top:0; z-index:2; }
+        .tt-table thead th:first-child { background:var(--tt-header-bg); min-width:100px; }
+        .tt-table tbody td:first-child { background:var(--tt-day-bg); color:var(--tt-day-text); font-weight:700; font-size:0.75rem; text-transform:uppercase; min-width:100px; position:sticky; left:0; z-index:1; }
+        .tt-table tbody td { background:var(--tt-cell-bg); color:var(--text-primary); }
+        .tt-table .tt-subject { font-weight:600; color:var(--accent); font-size:0.8rem; }
+        .tt-table .tt-teacher { font-size:0.65rem; color:var(--text-secondary); display:block; }
+        .tt-table .tt-empty { color:var(--text-muted); font-style:italic; font-size:0.7rem; }
 
-        /* Syllabus */
-        .syl-header { display:flex; justify-content:space-between; align-items:center; margin-bottom:1rem; flex-wrap:wrap; gap:0.5rem; }
+        /* NEW SYLLABUS TABLE */
+        .syl-table { width:100%; border-collapse:collapse; }
+        .syl-table th, .syl-table td { border:1px solid var(--border); padding:0.5rem 0.7rem; font-size:0.8rem; text-align:left; }
+        .syl-table th { background:var(--tt-header-bg); color:var(--tt-header-text); font-weight:700; font-size:0.7rem; text-transform:uppercase; }
+        .syl-table tbody tr:hover td { background:var(--hover-bg); }
+
         .week-row { display:flex; align-items:center; gap:0.8rem; padding:0.5rem 0; border-bottom:1px solid var(--border); }
         .week-num { width:80px; font-weight:700; color:var(--accent); flex-shrink:0; font-size:0.85rem; }
         .week-topic { flex:1; padding:0.4rem 0.8rem; background:var(--input-bg); border:1px solid var(--border); border-radius:0.5rem; color:var(--text-primary); font-family:inherit; font-size:0.85rem; }
         .week-topic:focus { outline:none; border-color:var(--accent); }
         .week-added { font-size:0.65rem; color:var(--text-muted); flex-shrink:0; }
 
-        /* Modal */
         .modal-overlay { position:fixed; top:0; left:0; width:100%; height:100%; background:rgba(0,0,0,.75); backdrop-filter:blur(6px); -webkit-backdrop-filter:blur(6px); z-index:2000; display:none; align-items:center; justify-content:center; animation:fadeIn 0.3s; }
         .modal-overlay.active { display:flex; }
-        .modal-content { background:var(--card-bg); border:1px solid var(--border); border-radius:1.5rem; padding:1.5rem; max-width:800px; width:95%; max-height:85vh; overflow-y:auto; box-shadow:0 20px 60px rgba(0,0,0,.5); animation:slideUp 0.3s cubic-bezier(0.4,0,0.2,1); }
+        .modal-content { background:var(--card-bg); border:1px solid var(--border); border-radius:1.5rem; padding:1.5rem; max-width:900px; width:95%; max-height:85vh; overflow-y:auto; box-shadow:0 20px 60px rgba(0,0,0,.5); animation:slideUp 0.3s cubic-bezier(0.4,0,0.2,1); }
         @keyframes slideUp { from{transform:translateY(30px);opacity:0} to{transform:translateY(0);opacity:1} }
         .modal-header { display:flex; justify-content:space-between; align-items:center; margin-bottom:1rem; padding-bottom:1rem; border-bottom:1px solid var(--border); }
         .modal-header h3 { font-size:1.1rem; font-weight:700; }
@@ -180,10 +183,12 @@
         .form-row { display:flex; gap:0.8rem; flex-wrap:wrap; }
         .form-row .form-group { flex:1; min-width:120px; }
 
-        /* Period editor */
-        .period-row { display:flex; gap:0.5rem; align-items:center; margin-bottom:0.5rem; flex-wrap:wrap; padding:0.5rem; background:var(--hover-bg); border-radius:0.8rem; }
-        .period-row input, .period-row select { padding:0.4rem 0.6rem; background:var(--input-bg); border:1px solid var(--border); border-radius:0.5rem; color:var(--text-primary); font-family:inherit; font-size:0.8rem; }
-        .period-row input:focus, .period-row select:focus { outline:none; border-color:var(--accent); }
+        /* Period editor in modal */
+        .period-editor-table { width:100%; border-collapse:collapse; margin-top:0.5rem; }
+        .period-editor-table th { background:var(--tt-header-bg); color:var(--tt-header-text); padding:0.4rem; font-size:0.7rem; text-transform:uppercase; }
+        .period-editor-table td { padding:0.3rem; border:1px solid var(--border); }
+        .period-editor-table input, .period-editor-table select { width:100%; padding:0.35rem 0.5rem; background:var(--input-bg); border:1px solid var(--border); border-radius:0.4rem; color:var(--text-primary); font-family:inherit; font-size:0.75rem; }
+        .period-editor-table input:focus, .period-editor-table select:focus { outline:none; border-color:var(--accent); }
 
         .empty-state { text-align:center; padding:2rem; color:var(--text-muted); }
         .empty-state i { font-size:2.5rem; margin-bottom:0.8rem; opacity:0.4; display:block; }
@@ -198,17 +203,16 @@
         @keyframes spin { 0%{transform:rotate(0deg)} 100%{transform:rotate(360deg)} }
 
         .text-muted { color:var(--text-muted); font-size:0.75rem; }
-        .contributor-list { display:flex; gap:0.3rem; flex-wrap:wrap; margin-top:0.3rem; }
         .contributor-tag { font-size:0.65rem; padding:0.1rem 0.5rem; border-radius:1rem; background:var(--info-bg); color:var(--info-text); }
         .admin-feedback { background:var(--warning-bg); border-left:3px solid var(--warning-text); padding:0.5rem 0.8rem; border-radius:0.5rem; font-size:0.8rem; margin-top:0.5rem; }
+        .add-time-btn { display:inline-flex; align-items:center; gap:0.3rem; cursor:pointer; color:var(--accent); font-weight:600; font-size:0.8rem; margin-top:0.5rem; }
 
         @media(max-width:768px) {
             .sidebar { width:85px; }
             .sidebar .logo-area h2,.sidebar .nav-item span { display:none; }
             .sidebar .nav-item { justify-content:center; padding:0.7rem; }
             .main-content { margin-left:85px; max-width:calc(100vw - 85px); padding:1rem; }
-            .tt-grid.academic { grid-template-columns:60px repeat(5,1fr); }
-            .tt-cell { font-size:0.65rem; padding:0.3rem; min-width:70px; }
+            .tt-table { font-size:0.65rem; }
         }
     </style>
 </head>
@@ -239,7 +243,6 @@
         </div>
     </div>
 
-    <!-- Controls Bar -->
     <div class="controls-bar" id="controlsBar">
         <label style="font-weight:600;font-size:0.85rem;"><i class="fas fa-school"></i> Class:</label>
         <select id="classFilter" onchange="onClassFilterChange()"><option value="">Loading...</option></select>
@@ -252,7 +255,6 @@
         <span style="margin-left:auto;font-size:0.75rem;color:var(--text-muted);" id="roleIndicator"></span>
     </div>
 
-    <!-- Main Tabs -->
     <div class="main-tabs" id="mainTabs">
         <button class="main-tab-btn active" data-tab="timetables"><i class="fas fa-calendar-alt"></i> Timetables</button>
         <button class="main-tab-btn" data-tab="syllabus"><i class="fas fa-book-open"></i> Syllabus</button>
@@ -261,13 +263,6 @@
     <!-- TIMETABLES TAB -->
     <div class="main-tab-content active" id="main-tab-timetables">
         <div style="display:flex;gap:0.5rem;margin-bottom:1rem;flex-wrap:wrap;align-items:center;">
-            <select id="ttTypeFilter" class="form-control" style="width:auto;" onchange="renderTimetableGrids()">
-                <option value="all">All Types</option>
-                <option value="academic">Academic</option>
-                <option value="hairstyle">Hairstyle</option>
-                <option value="test">Test</option>
-                <option value="exam">Exam</option>
-            </select>
             <button class="btn btn-primary btn-sm" id="createTtBtn" onclick="openTimetableModal()"><i class="fas fa-plus"></i> New Timetable</button>
         </div>
         <div class="status-tabs" id="ttStatusTabs">
@@ -337,8 +332,9 @@ let ttStatusFilter = 'draft', sylStatusFilter = 'draft';
 let selectedClass = '', selectedYear = '2025/2026';
 let editingTtId = null, editingSylId = null;
 
-const DAYS = ['monday','tuesday','wednesday','thursday','friday'];
-const DAY_LABELS = ['Monday','Tuesday','Wednesday','Thursday','Friday'];
+// Day labels - Monday to Sunday (teacher can choose how many days)
+const ALL_DAYS = ['monday','tuesday','wednesday','thursday','friday','saturday','sunday'];
+const ALL_DAY_LABELS = ['Monday','Tuesday','Wednesday','Thursday','Friday','Saturday','Sunday'];
 const TERMS = ['First Term','Second Term','Third Term'];
 const COMMON_SUBJECTS = ['Mathematics','English Language','Basic Science','Basic Technology','Social Studies','Civic Education','Christian Religious Studies','French','Yoruba','Hausa','Igbo','Business Studies','Home Economics','Agricultural Science','Physical and Health Education','Computer Studies','Creative Arts','Music','Literature in English','Government','Economics','Geography','Biology','Chemistry','Physics','Further Mathematics','Technical Drawing','Food and Nutrition','Commerce','Accounting','History','Security Education'];
 
@@ -416,6 +412,7 @@ function setupSidebar() {
         document.getElementById('sidebarLinks').innerHTML = `
             <a href="teacher-dashboard.html" class="nav-item"><i class="fas fa-chart-pie"></i><span>Dashboard</span></a>
             <a href="teacher-workspace.html" class="nav-item"><i class="fas fa-briefcase"></i><span>Workspace</span></a>
+            <a href="teacher-class-hub.html" class="nav-item"><i class="fas fa-chalkboard"></i><span>Class Hub</span></a>
             <a href="timetable-syllabus.html" class="nav-item active"><i class="fas fa-calendar-alt"></i><span>Timetable & Syllabus</span></a>
             <a href="teacher-profile.html" class="nav-item"><i class="fas fa-user-edit"></i><span>Profile</span></a>`;
     } else {
@@ -487,16 +484,13 @@ function setSylStatusFilter(s) {
 }
 
 // ============================================
-// RENDER TIMETABLES
+// RENDER TIMETABLES - NEW GRID DESIGN
 // ============================================
 function renderTimetableGrids() {
-    const typeFilter = document.getElementById('ttTypeFilter').value;
     let filtered = allTimetables;
-    if(typeFilter!=='all') filtered = filtered.filter(t=>t.type===typeFilter);
     if(userRole==='student') filtered = filtered.filter(t=>t.status==='published');
     else filtered = filtered.filter(t=>t.status===ttStatusFilter);
 
-    // Update counts
     const counts = {}; ['draft','submitted','approved','published','rejected'].forEach(s=>{ counts[s]=allTimetables.filter(t=>t.status===s).length; });
     document.querySelectorAll('#ttStatusTabs .status-tab').forEach(b=>{ const s=b.dataset.status; const c=b.querySelector('.count'); if(c) c.textContent=counts[s]||0; });
     if(userRole==='student'){ document.getElementById('ttStatusTabs').style.display='none'; } else { document.getElementById('ttStatusTabs').style.display='flex'; }
@@ -508,35 +502,40 @@ function renderTimetableGrids() {
 
 function renderTimetableCard(t) {
     const isTeacher = userRole==='teacher';
-    const isLocked = t.status==='submitted'||t.status==='approved'||t.status==='published';
     const canEdit = isTeacher && (t.status==='draft'||t.status==='rejected') && (t.contributors||[t.createdBy]).includes(currentUser.uid);
     const canSubmit = isTeacher && t.status==='draft' && (t.contributors||[t.createdBy]).includes(currentUser.uid);
     const canPublish = isTeacher && t.status==='approved' && (t.contributors||[t.createdBy]).includes(currentUser.uid);
     const canDuplicate = isTeacher;
 
-    let gridHTML = '';
-    if(t.type==='academic'){
-        gridHTML = `<div class="tt-grid academic" style="margin-top:0.8rem;"><div class="tt-cell header">Time</div>${DAYS.map(d=>`<div class="tt-cell header">${DAY_LABELS[DAYS.indexOf(d)]}</div>`).join('')}`;
-        const times = [...new Set(t.periods.map(p=>p.startTime))].sort();
-        times.forEach(time=>{
-            gridHTML += `<div class="tt-cell"><strong>${time}</strong></div>`;
-            DAYS.forEach(day=>{
-                const p = t.periods.find(pe=>pe.startTime===time&&pe.day===day);
-                if(p) gridHTML += `<div class="tt-cell"><div class="subject">${escapeHtml(p.subject||'—')}</div><div class="teacher">${escapeHtml(p.teacherName||'')}</div></div>`;
-                else gridHTML += '<div class="tt-cell empty">—</div>';
-            });
-        });
-        gridHTML += '</div>';
-    } else if(t.type==='hairstyle'){
-        gridHTML = `<div class="tt-grid hairstyle" style="margin-top:0.8rem;"><div class="tt-cell header">Day</div><div class="tt-cell header">Hairstyle</div><div class="tt-cell header">Description</div>${t.periods.map(p=>`<div class="tt-cell">${escapeHtml(p.day||'')}</div><div class="tt-cell">${escapeHtml(p.subject||'')}</div><div class="tt-cell">${escapeHtml(p.description||'—')}</div>`).join('')}</div>`;
-    } else {
-        gridHTML = `<div class="tt-grid test-exam" style="margin-top:0.8rem;"><div class="tt-cell header">Date</div><div class="tt-cell header">Subject</div><div class="tt-cell header">Start</div><div class="tt-cell header">End</div><div class="tt-cell header">Duration</div>${t.periods.map(p=>`<div class="tt-cell">${escapeHtml(p.date||p.day||'')}</div><div class="tt-cell subject">${escapeHtml(p.subject||'—')}</div><div class="tt-cell">${p.startTime||'—'}</div><div class="tt-cell">${p.endTime||'—'}</div><div class="tt-cell">${p.duration||'—'}</div>`).join('')}</div>`;
-    }
+    // Get the days and time slots for this timetable
+    const days = t.days || ['monday','tuesday','wednesday','thursday','friday'];
+    const dayLabels = t.dayLabels || ['Monday','Tuesday','Wednesday','Thursday','Friday'];
+    const timeSlots = t.timeSlots || ['08:00-08:40','08:40-09:20','09:20-10:00','10:00-10:40','10:40-11:20','11:20-12:00','12:00-12:40','12:40-01:20'];
+    const periods = t.periods || {};
 
-    const typeLabels = { academic:'📅 Academic', hairstyle:'💇 Hairstyle', test:'📝 Test', exam:'🏛️ Exam' };
+    // Build the timetable table
+    let gridHTML = '<div class="tt-wrapper"><table class="tt-table"><thead><tr><th>Day</th>';
+    timeSlots.forEach(ts => { gridHTML += `<th>${escapeHtml(ts)}</th>`; });
+    gridHTML += '</tr></thead><tbody>';
+
+    days.forEach((day, di) => {
+        gridHTML += `<tr><td>${dayLabels[di] || day}</td>`;
+        timeSlots.forEach(ts => {
+            const key = `${day}_${ts}`;
+            const entry = periods[key];
+            if(entry && entry.subject) {
+                gridHTML += `<td><span class="tt-subject">${escapeHtml(entry.subject)}</span><span class="tt-teacher">${escapeHtml(entry.teacherName||'')}</span></td>`;
+            } else {
+                gridHTML += '<td><span class="tt-empty">—</span></td>';
+            }
+        });
+        gridHTML += '</tr>';
+    });
+    gridHTML += '</tbody></table></div>';
+
     return `<div class="card">
         <div class="card-header">
-            <h3>${typeLabels[t.type]||t.type} — ${escapeHtml(t.title||'Untitled')}</h3>
+            <h3><i class="fas fa-calendar-alt"></i> ${escapeHtml(t.title||'Untitled')} (${days.length} days · ${timeSlots.length} periods)</h3>
             ${statusBadge(t.status)}
         </div>
         <div class="text-muted">Contributors: ${(t.contributorNames||[t.createdByName||'Unknown']).map(n=>`<span class="contributor-tag">${escapeHtml(n)}</span>`).join(' ')} | Updated: ${t.updatedAt?.toDate?.().toLocaleString()||'—'}</div>
@@ -544,8 +543,8 @@ function renderTimetableCard(t) {
         ${gridHTML}
         <div class="btn-group" style="margin-top:0.8rem;">
             ${canEdit?`<button class="btn btn-outline btn-sm" onclick="openTimetableModal('${t.id}')"><i class="fas fa-edit"></i> Edit</button>`:''}
-            ${canSubmit?`<button class="btn btn-warning btn-sm" onclick="changeTtStatus('${t.id}','submitted')"><i class="fas fa-paper-plane"></i> Submit</button>`:''}
-            ${canPublish?`<button class="btn btn-success btn-sm" onclick="changeTtStatus('${t.id}','published')"><i class="fas fa-bullhorn"></i> Publish</button>`:''}
+            ${canSubmit?`<button class="btn btn-warning btn-sm" onclick="changeTtStatus('${t.id}','submitted')"><i class="fas fa-paper-plane"></i> Submit for Approval</button>`:''}
+            ${canPublish?`<button class="btn btn-success btn-sm" onclick="changeTtStatus('${t.id}','published')"><i class="fas fa-bullhorn"></i> Publish to Students</button>`:''}
             ${canDuplicate?`<button class="btn btn-outline btn-sm" onclick="duplicateTimetable('${t.id}')"><i class="fas fa-copy"></i> Duplicate</button>`:''}
             <button class="btn btn-outline btn-sm" onclick="printTimetable('${t.id}')"><i class="fas fa-print"></i> Print</button>
             ${isTeacher&&t.status==='draft'?`<button class="btn btn-danger btn-sm" onclick="deleteTimetable('${t.id}')"><i class="fas fa-trash"></i></button>`:''}
@@ -586,11 +585,15 @@ function renderSyllabusCard(s) {
         </div>
         <div class="text-muted">Contributors: ${(s.contributorNames||[s.createdByName||'Unknown']).map(n=>`<span class="contributor-tag">${escapeHtml(n)}</span>`).join(' ')}</div>
         ${s.adminFeedback ? `<div class="admin-feedback"><strong>Admin Feedback:</strong> ${escapeHtml(s.adminFeedback)}</div>` : ''}
-        ${(s.weeks||[]).sort((a,b)=>a.week-b.week).map(w=>`<div class="week-row"><span class="week-num">Week ${w.week}</span><span style="flex:1;font-size:0.85rem;">${escapeHtml(w.topic||'—')}</span><span class="week-added">by ${escapeHtml(w.addedByName||'—')}</span></div>`).join('')}
+        <div style="overflow-x:auto;margin-top:0.8rem;">
+            <table class="syl-table"><thead><tr><th>Week</th><th>Topic</th><th>Added By</th></tr></thead><tbody>
+            ${(s.weeks||[]).sort((a,b)=>a.week-b.week).map(w=>`<tr><td><strong>Week ${w.week}</strong></td><td>${escapeHtml(w.topic||'—')}</td><td>${escapeHtml(w.addedByName||'—')}</td></tr>`).join('')}
+            </tbody></table>
+        </div>
         <div class="btn-group" style="margin-top:0.8rem;">
             ${canEdit?`<button class="btn btn-outline btn-sm" onclick="openSyllabusModal('${s.id}')"><i class="fas fa-edit"></i> Edit</button>`:''}
-            ${canSubmit?`<button class="btn btn-warning btn-sm" onclick="changeSylStatus('${s.id}','submitted')"><i class="fas fa-paper-plane"></i> Submit</button>`:''}
-            ${canPublish?`<button class="btn btn-success btn-sm" onclick="changeSylStatus('${s.id}','published')"><i class="fas fa-bullhorn"></i> Publish</button>`:''}
+            ${canSubmit?`<button class="btn btn-warning btn-sm" onclick="changeSylStatus('${s.id}','submitted')"><i class="fas fa-paper-plane"></i> Submit for Approval</button>`:''}
+            ${canPublish?`<button class="btn btn-success btn-sm" onclick="changeSylStatus('${s.id}','published')"><i class="fas fa-bullhorn"></i> Publish to Students</button>`:''}
             ${isTeacher?`<button class="btn btn-outline btn-sm" onclick="duplicateSyllabus('${s.id}')"><i class="fas fa-copy"></i> Duplicate</button>`:''}
             <button class="btn btn-outline btn-sm" onclick="printSyllabus('${s.id}')"><i class="fas fa-print"></i> Print</button>
             ${isTeacher&&s.status==='draft'?`<button class="btn btn-danger btn-sm" onclick="deleteSyllabus('${s.id}')"><i class="fas fa-trash"></i></button>`:''}
@@ -599,142 +602,138 @@ function renderSyllabusCard(s) {
 }
 
 // ============================================
-// TIMETABLE MODAL
+// TIMETABLE MODAL - COMPLETELY REDESIGNED
 // ============================================
 async function openTimetableModal(id=null) {
     editingTtId = id;
-    let t = { type:'academic', title:'', periods:[], contributors:[currentUser.uid], contributorNames:[`${userData.firstName||''} ${userData.surname||''}`.trim()], status:'draft', classId:selectedClass, academicYear:selectedYear, createdBy:currentUser.uid, createdByName:`${userData.firstName||''} ${userData.surname||''}`.trim() };
+    let t = { title:'', days:['monday','tuesday','wednesday','thursday','friday'], dayLabels:['Monday','Tuesday','Wednesday','Thursday','Friday'], timeSlots:['08:00-08:40','08:40-09:20','09:20-10:00','10:00-10:40','10:40-11:20','11:20-12:00','12:00-12:40','12:40-01:20'], periods:{}, contributors:[currentUser.uid], contributorNames:[`${userData.firstName||''} ${userData.surname||''}`.trim()], status:'draft', classId:selectedClass, academicYear:selectedYear, createdBy:currentUser.uid, createdByName:`${userData.firstName||''} ${userData.surname||''}`.trim() };
     if(id){ const doc=await db.collection('timetables').doc(id).get(); if(doc.exists) t={...t,...doc.data()}; }
 
-    document.getElementById('ttModalContent').innerHTML = `
-        <div class="modal-header"><h3>${id?'Edit':'New'} Timetable</h3><i class="fas fa-times modal-close" onclick="closeTtModal()"></i></div>
-        <div class="form-row">
-            <div class="form-group"><label>Type</label><select id="ttType" class="form-control" onchange="updateTtForm()"><option value="academic" ${t.type==='academic'?'selected':''}>Academic</option><option value="hairstyle" ${t.type==='hairstyle'?'selected':''}>Hairstyle</option><option value="test" ${t.type==='test'?'selected':''}>Test</option><option value="exam" ${t.type==='exam'?'selected':''}>Exam</option></select></div>
-            <div class="form-group"><label>Title</label><input type="text" id="ttTitle" class="form-control" value="${escapeHtml(t.title||'')}" placeholder="e.g., JSS 1 Academic Timetable"></div>
+    // Store periods data for editing
+    window._ttDays = t.days || ['monday','tuesday','wednesday','thursday','friday'];
+    window._ttDayLabels = t.dayLabels || ['Monday','Tuesday','Wednesday','Thursday','Friday'];
+    window._ttTimeSlots = t.timeSlots || ['08:00-08:40','08:40-09:20','09:20-10:00','10:00-10:40','10:40-11:20','11:20-12:00','12:00-12:40','12:40-01:20'];
+    window._ttPeriods = t.periods || {};
+
+    renderTtModalContent();
+    document.getElementById('ttModal').classList.add('active');
+}
+
+function renderTtModalContent() {
+    const days = window._ttDays || [];
+    const dayLabels = window._ttDayLabels || [];
+    const timeSlots = window._ttTimeSlots || [];
+    const periods = window._ttPeriods || {};
+
+    let dayCheckboxes = ALL_DAYS.map((d, i) => `
+        <label class="checkbox-item ${days.includes(d)?'checked':''}" data-checkbox style="padding:0.3rem 0.7rem;font-size:0.75rem;">
+            <input type="checkbox" value="${d}" ${days.includes(d)?'checked':''} onchange="toggleTtDay('${d}')"> ${ALL_DAY_LABELS[i]}
+        </label>
+    `).join('');
+
+    let timeSlotsHTML = timeSlots.map((ts, i) => `
+        <div style="display:flex;gap:0.3rem;align-items:center;margin-bottom:0.3rem;">
+            <input type="text" value="${escapeHtml(ts)}" onchange="window._ttTimeSlots[${i}]=this.value" style="flex:1;padding:0.3rem 0.5rem;background:var(--input-bg);border:1px solid var(--border);border-radius:0.4rem;color:var(--text-primary);font-size:0.75rem;" placeholder="e.g., 08:00-08:40">
+            <button class="btn btn-danger btn-sm" onclick="removeTtTimeSlot(${i})" title="Remove"><i class="fas fa-times"></i></button>
         </div>
-        <div class="form-group"><label>Periods</label><div id="ttPeriodsContainer"></div><button class="btn btn-outline btn-sm" onclick="addTtPeriod()"><i class="fas fa-plus"></i> Add Period</button></div>
+    `).join('');
+
+    // Build editor table
+    let editorTableHTML = '<div class="tt-wrapper"><table class="period-editor-table"><thead><tr><th>Day</th>';
+    timeSlots.forEach(ts => { editorTableHTML += `<th>${escapeHtml(ts)}</th>`; });
+    editorTableHTML += '</tr></thead><tbody>';
+
+    days.forEach((day, di) => {
+        editorTableHTML += `<tr><td style="font-weight:700;background:var(--tt-day-bg);color:var(--tt-day-text);">${dayLabels[di] || day}</td>`;
+        timeSlots.forEach(ts => {
+            const key = `${day}_${ts}`;
+            const entry = periods[key] || {};
+            editorTableHTML += `<td><input type="text" value="${escapeHtml(entry.subject||'')}" placeholder="Subject" onchange="updateTtPeriodCell('${key}','subject',this.value)" style="margin-bottom:2px;"><input type="text" value="${escapeHtml(entry.teacherName||'')}" placeholder="Teacher" onchange="updateTtPeriodCell('${key}','teacherName',this.value)" style="font-size:0.7rem;"></td>`;
+        });
+        editorTableHTML += '</tr>';
+    });
+    editorTableHTML += '</tbody></table></div>';
+
+    document.getElementById('ttModalContent').innerHTML = `
+        <div class="modal-header"><h3>${editingTtId?'Edit':'New'} Timetable</h3><i class="fas fa-times modal-close" onclick="closeTtModal()"></i></div>
+        <div class="form-group"><label>Title *</label><input type="text" id="ttTitle" class="form-control" value="${escapeHtml(window._ttTitle||'')}" placeholder="e.g., JSS 1 Academic Timetable"></div>
+        <div class="form-group"><label>School Days (check all that apply)</label>
+            <div style="display:flex;flex-wrap:wrap;gap:0.4rem;">${dayCheckboxes}</div>
+            <small style="color:var(--text-muted);">Boarding schools can include Saturday/Sunday</small>
+        </div>
+        <div class="form-group"><label>Time Slots (periods across the top)</label>
+            <div id="ttTimeSlotsList">${timeSlotsHTML}</div>
+            <button class="btn btn-outline btn-sm add-time-btn" onclick="addTtTimeSlot()"><i class="fas fa-plus"></i> Add Time Slot</button>
+        </div>
+        <div class="form-group"><label>Fill Periods (subject per time slot per day)</label>
+            ${editorTableHTML}
+        </div>
         <div class="modal-actions">
             <button class="btn btn-outline" onclick="closeTtModal()">Cancel</button>
-            <button class="btn btn-primary" id="saveTtBtn" onclick="saveTimetable()"><i class="fas fa-save"></i> Save Timetable</button>
+            <button class="btn btn-primary" id="saveTtBtn" onclick="saveTimetable()"><i class="fas fa-save"></i> Save as Draft</button>
         </div>`;
-    document.getElementById('ttModal').classList.add('active');
-    // Store periods data
-    window._ttPeriods = t.periods||[];
-    updateTtForm();
-    renderTtPeriods();
 }
 
-function updateTtForm() {
-    const type = document.getElementById('ttType')?.value||'academic';
-    const container = document.getElementById('ttPeriodsContainer');
-    if(!container) return;
-    if(!window._ttPeriods) window._ttPeriods = [];
-    renderTtPeriods();
-}
-
-function addTtPeriod() {
-    if(!window._ttPeriods) window._ttPeriods = [];
-    const type = document.getElementById('ttType')?.value||'academic';
-    const p = { day:'monday', date:'', startTime:'08:00', endTime:'08:40', subject:'', teacherName:`${userData?.firstName||''} ${userData?.surname||''}`.trim(), teacherId:currentUser?.uid, duration:'', description:'' };
-    window._ttPeriods.push(p);
-    renderTtPeriods();
-}
-
-function removeTtPeriod(idx) {
-    window._ttPeriods.splice(idx,1);
-    renderTtPeriods();
-}
-
-function renderTtPeriods() {
-    const container = document.getElementById('ttPeriodsContainer');
-    if(!container) return;
-    const type = document.getElementById('ttType')?.value||'academic';
-    const periods = window._ttPeriods||[];
-    if(type==='academic'){
-        container.innerHTML = periods.map((p,i)=>`
-            <div class="period-row">
-                <select onchange="window._ttPeriods[${i}].day=this.value">${DAYS.map(d=>`<option value="${d}" ${p.day===d?'selected':''}>${DAY_LABELS[DAYS.indexOf(d)]}</option>`).join('')}</select>
-                <input type="time" value="${p.startTime||'08:00'}" onchange="window._ttPeriods[${i}].startTime=this.value" style="width:100px;">
-                <input type="time" value="${p.endTime||'08:40'}" onchange="window._ttPeriods[${i}].endTime=this.value" style="width:100px;">
-                <input type="text" value="${escapeHtml(p.subject||'')}" placeholder="Subject" onchange="window._ttPeriods[${i}].subject=this.value" style="flex:1;min-width:120px;">
-                <input type="text" value="${escapeHtml(p.teacherName||'')}" placeholder="Teacher" onchange="window._ttPeriods[${i}].teacherName=this.value" style="width:120px;">
-                <button class="btn btn-danger btn-sm" onclick="removeTtPeriod(${i})"><i class="fas fa-times"></i></button>
-            </div>`).join('');
-    } else if(type==='hairstyle'){
-        container.innerHTML = periods.map((p,i)=>`
-            <div class="period-row">
-                <select onchange="window._ttPeriods[${i}].day=this.value">${DAYS.map(d=>`<option value="${d}" ${p.day===d?'selected':''}>${DAY_LABELS[DAYS.indexOf(d)]}</option>`).join('')}</select>
-                <input type="text" value="${escapeHtml(p.subject||'')}" placeholder="Hairstyle name" onchange="window._ttPeriods[${i}].subject=this.value" style="flex:1;">
-                <input type="text" value="${escapeHtml(p.description||'')}" placeholder="Description" onchange="window._ttPeriods[${i}].description=this.value" style="flex:1;">
-                <button class="btn btn-danger btn-sm" onclick="removeTtPeriod(${i})"><i class="fas fa-times"></i></button>
-            </div>`).join('');
+function toggleTtDay(day) {
+    const idx = window._ttDays.indexOf(day);
+    if(idx >= 0) {
+        window._ttDays.splice(idx, 1);
+        window._ttDayLabels.splice(idx, 1);
     } else {
-        container.innerHTML = periods.map((p,i)=>`
-            <div class="period-row">
-                <input type="date" value="${p.date||p.day||''}" onchange="window._ttPeriods[${i}].date=this.value;window._ttPeriods[${i}].day=this.value;" style="width:140px;">
-                <input type="time" value="${p.startTime||'08:00'}" onchange="window._ttPeriods[${i}].startTime=this.value" style="width:100px;">
-                <input type="time" value="${p.endTime||'08:40'}" onchange="window._ttPeriods[${i}].endTime=this.value" style="width:100px;">
-                <input type="text" value="${escapeHtml(p.subject||'')}" placeholder="Subject" onchange="window._ttPeriods[${i}].subject=this.value" style="flex:1;">
-                <input type="text" value="${p.duration||''}" placeholder="Duration (e.g., 2hrs)" onchange="window._ttPeriods[${i}].duration=this.value" style="width:100px;">
-                <button class="btn btn-danger btn-sm" onclick="removeTtPeriod(${i})"><i class="fas fa-times"></i></button>
-            </div>`).join('');
+        window._ttDays.push(day);
+        const dayIdx = ALL_DAYS.indexOf(day);
+        window._ttDayLabels.push(ALL_DAY_LABELS[dayIdx] || day);
     }
-    if(!periods.length) container.innerHTML = '<p class="text-muted">No periods added yet. Click "Add Period" below.</p>';
+    renderTtModalContent();
+}
+
+function addTtTimeSlot() {
+    window._ttTimeSlots.push('');
+    renderTtModalContent();
+}
+
+function removeTtTimeSlot(idx) {
+    if(window._ttTimeSlots.length <= 1) return showToast('Required','Need at least 1 time slot','warning');
+    window._ttTimeSlots.splice(idx, 1);
+    renderTtModalContent();
+}
+
+function updateTtPeriodCell(key, field, value) {
+    if(!window._ttPeriods[key]) window._ttPeriods[key] = {};
+    window._ttPeriods[key][field] = value;
 }
 
 async function saveTimetable() {
-    const type = document.getElementById('ttType').value;
     const title = document.getElementById('ttTitle').value.trim();
     if(!title) return showToast('Required','Title is required','warning');
-    const periods = window._ttPeriods||[];
-    if(!periods.length) return showToast('Required','Add at least one period','warning');
 
-    // Time conflict check for academic
-    if(type==='academic'){
-        for(let i=0;i<periods.length;i++){
-            for(let j=i+1;j<periods.length;j++){
-                if(periods[i].day===periods[j].day && periods[i].startTime===periods[j].startTime){
-                    if(!confirm(`Time conflict: "${periods[i].subject}" and "${periods[j].subject}" both on ${periods[i].day} at ${periods[i].startTime}. Save anyway?`)) return;
-                }
-            }
-        }
-    }
+    const days = window._ttDays.filter(d => d);
+    const dayLabels = window._ttDayLabels.filter((l, i) => window._ttDays[i]);
+    const timeSlots = window._ttTimeSlots.filter(ts => ts.trim());
+    const periods = { ...window._ttPeriods };
+
+    if(!days.length) return showToast('Required','Select at least one day','warning');
+    if(!timeSlots.length) return showToast('Required','Add at least one time slot','warning');
 
     const btn = document.getElementById('saveTtBtn'); btn.disabled=true; btn.innerHTML='<span class="loading-spinner"></span> Saving...';
     try {
-        const data = {
-            type, title, periods, classId:selectedClass, academicYear:selectedYear,
-            updatedAt:firebase.firestore.FieldValue.serverTimestamp(),
-            versionHistory: firebase.firestore.FieldValue.arrayUnion({ action:'edited', by:currentUser.uid, byName:`${userData.firstName||''} ${userData.surname||''}`.trim(), at:new Date().toISOString() })
-        };
+        const data = { title, days, dayLabels, timeSlots, periods, classId:selectedClass, academicYear:selectedYear, updatedAt:firebase.firestore.FieldValue.serverTimestamp(), versionHistory: firebase.firestore.FieldValue.arrayUnion({ action:'edited', by:currentUser.uid, byName:`${userData.firstName||''} ${userData.surname||''}`.trim(), at:new Date().toISOString() }) };
         if(editingTtId){
-            const ref = db.collection('timetables').doc(editingTtId);
-            const doc = await ref.get();
-            const existing = doc.data()||{};
+            const ref = db.collection('timetables').doc(editingTtId); const doc = await ref.get(); const existing = doc.data()||{};
             const contributors = [...new Set([...(existing.contributors||[]), currentUser.uid])];
             const contributorNames = [...new Set([...(existing.contributorNames||[]), `${userData.firstName||''} ${userData.surname||''}`.trim()])];
             await ref.update({...data, contributors, contributorNames});
             await logAudit('EDIT_TIMETABLE',`Updated ${title}`);
         } else {
-            await db.collection('timetables').add({
-                ...data,
-                status:'draft', createdBy:currentUser.uid,
-                createdByName:`${userData.firstName||''} ${userData.surname||''}`.trim(),
-                contributors:[currentUser.uid],
-                contributorNames:[`${userData.firstName||''} ${userData.surname||''}`.trim()],
-                createdAt:firebase.firestore.FieldValue.serverTimestamp(),
-                versionHistory:[{ action:'created', by:currentUser.uid, byName:`${userData.firstName||''} ${userData.surname||''}`.trim(), at:new Date().toISOString() }]
-            });
+            await db.collection('timetables').add({...data, status:'draft', createdBy:currentUser.uid, createdByName:`${userData.firstName||''} ${userData.surname||''}`.trim(), contributors:[currentUser.uid], contributorNames:[`${userData.firstName||''} ${userData.surname||''}`.trim()], createdAt:firebase.firestore.FieldValue.serverTimestamp(), versionHistory:[{ action:'created', by:currentUser.uid, byName:`${userData.firstName||''} ${userData.surname||''}`.trim(), at:new Date().toISOString() }] });
             await logAudit('CREATE_TIMETABLE',`Created ${title}`);
         }
-        showToast('Saved','Timetable saved','success');
-        closeTtModal();
-        loadData();
+        showToast('Saved','Timetable saved as draft','success'); closeTtModal(); loadData();
     } catch(e){ showToast('Error',e.message,'error'); }
-    finally { btn.disabled=false; btn.innerHTML='<i class="fas fa-save"></i> Save Timetable'; }
+    finally { btn.disabled=false; btn.innerHTML='<i class="fas fa-save"></i> Save as Draft'; }
 }
 
-function closeTtModal(){ document.getElementById('ttModal').classList.remove('active'); editingTtId=null; window._ttPeriods=[]; }
+function closeTtModal(){ document.getElementById('ttModal').classList.remove('active'); editingTtId=null; window._ttDays=null; window._ttDayLabels=null; window._ttTimeSlots=null; window._ttPeriods=null; }
 document.getElementById('ttModal').addEventListener('click',function(e){ if(e.target===this) closeTtModal(); });
 
 // ============================================
@@ -752,63 +751,32 @@ async function openSyllabusModal(id=null) {
             <div class="form-group"><label>Term</label><select id="sylTerm" class="form-control">${TERMS.map(t=>`<option value="${t}" ${s.term===t?'selected':''}>${t}</option>`).join('')}</select></div>
         </div>
         <div class="form-group"><label>Weekly Topics</label><div id="sylWeeksContainer"></div>
-        <div style="display:flex;gap:0.5rem;margin-top:0.5rem;">
-            <button class="btn btn-outline btn-sm" onclick="addSylWeek()"><i class="fas fa-plus"></i> Add Week</button>
-            <button class="btn btn-outline btn-sm" onclick="addBulkWeeks()"><i class="fas fa-layer-group"></i> Add Weeks 1-12</button>
-        </div></div>
-        <div class="modal-actions">
-            <button class="btn btn-outline" onclick="closeSylModal()">Cancel</button>
-            <button class="btn btn-primary" id="saveSylBtn" onclick="saveSyllabus()"><i class="fas fa-save"></i> Save Syllabus</button>
-        </div>`;
+        <div style="display:flex;gap:0.5rem;margin-top:0.5rem;"><button class="btn btn-outline btn-sm" onclick="addSylWeek()"><i class="fas fa-plus"></i> Add Week</button><button class="btn btn-outline btn-sm" onclick="addBulkWeeks()"><i class="fas fa-layer-group"></i> Add Weeks 1-12</button></div></div>
+        <div class="modal-actions"><button class="btn btn-outline" onclick="closeSylModal()">Cancel</button><button class="btn btn-primary" id="saveSylBtn" onclick="saveSyllabus()"><i class="fas fa-save"></i> Save as Draft</button></div>`;
     document.getElementById('sylModal').classList.add('active');
     window._sylWeeks = s.weeks||[];
     renderSylWeeks();
 }
 
-function addSylWeek() {
-    if(!window._sylWeeks) window._sylWeeks = [];
-    const nextWeek = window._sylWeeks.length ? Math.max(...window._sylWeeks.map(w=>w.week))+1 : 1;
-    window._sylWeeks.push({ week:nextWeek, topic:'', addedBy:currentUser?.uid, addedByName:`${userData?.firstName||''} ${userData?.surname||''}`.trim() });
-    renderSylWeeks();
-}
-
-function addBulkWeeks() {
-    if(!window._sylWeeks) window._sylWeeks = [];
-    const existing = new Set(window._sylWeeks.map(w=>w.week));
-    for(let i=1;i<=12;i++){ if(!existing.has(i)) window._sylWeeks.push({ week:i, topic:'', addedBy:currentUser?.uid, addedByName:`${userData?.firstName||''} ${userData?.surname||''}`.trim() }); }
-    window._sylWeeks.sort((a,b)=>a.week-b.week);
-    renderSylWeeks();
-}
-
+function addSylWeek() { if(!window._sylWeeks) window._sylWeeks = []; const nextWeek = window._sylWeeks.length ? Math.max(...window._sylWeeks.map(w=>w.week))+1 : 1; window._sylWeeks.push({ week:nextWeek, topic:'', addedBy:currentUser?.uid, addedByName:`${userData?.firstName||''} ${userData?.surname||''}`.trim() }); renderSylWeeks(); }
+function addBulkWeeks() { if(!window._sylWeeks) window._sylWeeks = []; const existing = new Set(window._sylWeeks.map(w=>w.week)); for(let i=1;i<=12;i++){ if(!existing.has(i)) window._sylWeeks.push({ week:i, topic:'', addedBy:currentUser?.uid, addedByName:`${userData?.firstName||''} ${userData?.surname||''}`.trim() }); } window._sylWeeks.sort((a,b)=>a.week-b.week); renderSylWeeks(); }
 function removeSylWeek(idx){ window._sylWeeks.splice(idx,1); renderSylWeeks(); }
-
 function renderSylWeeks() {
-    const container = document.getElementById('sylWeeksContainer');
-    if(!container) return;
+    const container = document.getElementById('sylWeeksContainer'); if(!container) return;
     const weeks = window._sylWeeks||[];
-    container.innerHTML = weeks.sort((a,b)=>a.week-b.week).map((w,i)=>`
-        <div class="week-row">
-            <span class="week-num">Week ${w.week}</span>
-            <input type="text" class="week-topic" value="${escapeHtml(w.topic||'')}" placeholder="Enter topic for week ${w.week}..." onchange="window._sylWeeks[${i}].topic=this.value">
-            <span class="week-added">${escapeHtml(w.addedByName||'')}</span>
-            <button class="btn btn-danger btn-sm" onclick="removeSylWeek(${i})"><i class="fas fa-times"></i></button>
-        </div>`).join('');
-    if(!weeks.length) container.innerHTML = '<p class="text-muted">No weeks added. Click "Add Week" or "Add Weeks 1-12".</p>';
+    container.innerHTML = weeks.sort((a,b)=>a.week-b.week).map((w,i)=>`<div class="week-row"><span class="week-num">Week ${w.week}</span><input type="text" class="week-topic" value="${escapeHtml(w.topic||'')}" placeholder="Enter topic for week ${w.week}..." onchange="window._sylWeeks[${i}].topic=this.value"><span class="week-added">${escapeHtml(w.addedByName||'')}</span><button class="btn btn-danger btn-sm" onclick="removeSylWeek(${i})"><i class="fas fa-times"></i></button></div>`).join('');
+    if(!weeks.length) container.innerHTML = '<p class="text-muted">No weeks added.</p>';
 }
-
 async function saveSyllabus() {
-    const subject = document.getElementById('sylSubject').value;
-    const term = document.getElementById('sylTerm').value;
+    const subject = document.getElementById('sylSubject').value, term = document.getElementById('sylTerm').value;
     if(!subject) return showToast('Required','Subject is required','warning');
     const weeks = (window._sylWeeks||[]).filter(w=>w.topic.trim());
     if(!weeks.length) return showToast('Required','Add at least one week with a topic','warning');
-
     const btn = document.getElementById('saveSylBtn'); btn.disabled=true; btn.innerHTML='<span class="loading-spinner"></span> Saving...';
     try {
         const data = { subject, term, weeks, classId:selectedClass, academicYear:selectedYear, updatedAt:firebase.firestore.FieldValue.serverTimestamp(), versionHistory: firebase.firestore.FieldValue.arrayUnion({ action:'edited', by:currentUser.uid, byName:`${userData.firstName||''} ${userData.surname||''}`.trim(), at:new Date().toISOString() }) };
         if(editingSylId){
-            const ref = db.collection('syllabi').doc(editingSylId);
-            const doc = await ref.get(); const existing = doc.data()||{};
+            const ref = db.collection('syllabi').doc(editingSylId); const doc = await ref.get(); const existing = doc.data()||{};
             const contributors = [...new Set([...(existing.contributors||[]), currentUser.uid])];
             const contributorNames = [...new Set([...(existing.contributorNames||[]), `${userData.firstName||''} ${userData.surname||''}`.trim()])];
             await ref.update({...data, contributors, contributorNames});
@@ -817,13 +785,10 @@ async function saveSyllabus() {
             await db.collection('syllabi').add({...data, status:'draft', createdBy:currentUser.uid, createdByName:`${userData.firstName||''} ${userData.surname||''}`.trim(), contributors:[currentUser.uid], contributorNames:[`${userData.firstName||''} ${userData.surname||''}`.trim()], createdAt:firebase.firestore.FieldValue.serverTimestamp(), versionHistory:[{ action:'created', by:currentUser.uid, byName:`${userData.firstName||''} ${userData.surname||''}`.trim(), at:new Date().toISOString() }] });
             await logAudit('CREATE_SYLLABUS',`Created ${subject} ${term}`);
         }
-        showToast('Saved','Syllabus saved','success');
-        closeSylModal();
-        loadData();
+        showToast('Saved','Syllabus saved as draft','success'); closeSylModal(); loadData();
     } catch(e){ showToast('Error',e.message,'error'); }
-    finally { btn.disabled=false; btn.innerHTML='<i class="fas fa-save"></i> Save Syllabus'; }
+    finally { btn.disabled=false; btn.innerHTML='<i class="fas fa-save"></i> Save as Draft'; }
 }
-
 function closeSylModal(){ document.getElementById('sylModal').classList.remove('active'); editingSylId=null; window._sylWeeks=[]; }
 document.getElementById('sylModal').addEventListener('click',function(e){ if(e.target===this) closeSylModal(); });
 
@@ -831,22 +796,20 @@ document.getElementById('sylModal').addEventListener('click',function(e){ if(e.t
 // STATUS CHANGES
 // ============================================
 async function changeTtStatus(id, newStatus) {
-    const labels = { submitted:'Submit', approved:'approve', published:'Publish' };
+    const labels = { submitted:'Submit for Admin Approval', published:'Publish to Students' };
     if(!confirm(`${labels[newStatus]||newStatus} this timetable?`)) return;
     try {
         const update = { status:newStatus, updatedAt:firebase.firestore.FieldValue.serverTimestamp() };
         if(newStatus==='submitted') update.submittedAt = firebase.firestore.FieldValue.serverTimestamp();
         if(newStatus==='published') update.publishedAt = firebase.firestore.FieldValue.serverTimestamp();
-        if(newStatus==='approved') update.approvedAt = firebase.firestore.FieldValue.serverTimestamp();
         await db.collection('timetables').doc(id).update(update);
         await logAudit('TT_STATUS',`Changed to ${newStatus}`);
-        showToast('Updated',`Timetable ${newStatus}`,'success');
+        showToast('Updated',`Timetable ${newStatus==='submitted'?'submitted for admin approval':newStatus}`,'success');
         loadData();
     } catch(e){ showToast('Error',e.message,'error'); }
 }
-
 async function changeSylStatus(id, newStatus) {
-    const labels = { submitted:'Submit', approved:'approve', published:'Publish' };
+    const labels = { submitted:'Submit for Admin Approval', published:'Publish to Students' };
     if(!confirm(`${labels[newStatus]||newStatus} this syllabus?`)) return;
     try {
         const update = { status:newStatus, updatedAt:firebase.firestore.FieldValue.serverTimestamp() };
@@ -854,78 +817,88 @@ async function changeSylStatus(id, newStatus) {
         if(newStatus==='published') update.publishedAt = firebase.firestore.FieldValue.serverTimestamp();
         await db.collection('syllabi').doc(id).update(update);
         await logAudit('SYL_STATUS',`Changed to ${newStatus}`);
-        showToast('Updated',`Syllabus ${newStatus}`,'success');
+        showToast('Updated',`Syllabus ${newStatus==='submitted'?'submitted for admin approval':newStatus}`,'success');
         loadData();
     } catch(e){ showToast('Error',e.message,'error'); }
 }
 
 // ============================================
-// DUPLICATE & DELETE
+// DUPLICATE & DELETE & PRINT
 // ============================================
 async function duplicateTimetable(id) {
-    const doc = await db.collection('timetables').doc(id).get();
-    if(!doc.exists) return;
+    const doc = await db.collection('timetables').doc(id).get(); if(!doc.exists) return;
     const data = doc.data();
     await db.collection('timetables').add({...data, title:(data.title||'')+' (Copy)', status:'draft', createdBy:currentUser.uid, createdByName:`${userData.firstName||''} ${userData.surname||''}`.trim(), contributors:[currentUser.uid], contributorNames:[`${userData.firstName||''} ${userData.surname||''}`.trim()], createdAt:firebase.firestore.FieldValue.serverTimestamp(), submittedAt:null, approvedAt:null, publishedAt:null, rejectedAt:null, adminFeedback:'', versionHistory:[{ action:'duplicated', by:currentUser.uid, byName:`${userData.firstName||''} ${userData.surname||''}`.trim(), at:new Date().toISOString() }] });
-    showToast('Duplicated','Copy created as draft','success');
-    loadData();
+    showToast('Duplicated','Copy created as draft','success'); loadData();
 }
 async function duplicateSyllabus(id) {
-    const doc = await db.collection('syllabi').doc(id).get();
-    if(!doc.exists) return;
+    const doc = await db.collection('syllabi').doc(id).get(); if(!doc.exists) return;
     const data = doc.data();
     await db.collection('syllabi').add({...data, status:'draft', createdBy:currentUser.uid, createdByName:`${userData.firstName||''} ${userData.surname||''}`.trim(), contributors:[currentUser.uid], contributorNames:[`${userData.firstName||''} ${userData.surname||''}`.trim()], createdAt:firebase.firestore.FieldValue.serverTimestamp(), submittedAt:null, approvedAt:null, publishedAt:null, adminFeedback:'', versionHistory:[{ action:'duplicated', by:currentUser.uid, byName:`${userData.firstName||''} ${userData.surname||''}`.trim(), at:new Date().toISOString() }] });
-    showToast('Duplicated','Copy created as draft','success');
-    loadData();
+    showToast('Duplicated','Copy created as draft','success'); loadData();
 }
-async function deleteTimetable(id) { if(!confirm('Delete this timetable?')) return; await db.collection('timetables').doc(id).delete(); await logAudit('DELETE_TIMETABLE',id); showToast('Deleted','Timetable removed','success'); loadData(); }
-async function deleteSyllabus(id) { if(!confirm('Delete this syllabus?')) return; await db.collection('syllabi').doc(id).delete(); await logAudit('DELETE_SYLLABUS',id); showToast('Deleted','Syllabus removed','success'); loadData(); }
-
-// ============================================
-// PRINT
-// ============================================
+async function deleteTimetable(id) { if(!confirm('Delete?')) return; await db.collection('timetables').doc(id).delete(); await logAudit('DELETE_TIMETABLE',id); showToast('Deleted','Done','success'); loadData(); }
+async function deleteSyllabus(id) { if(!confirm('Delete?')) return; await db.collection('syllabi').doc(id).delete(); await logAudit('DELETE_SYLLABUS',id); showToast('Deleted','Done','success'); loadData(); }
 function printTimetable(id) {
     const t = allTimetables.find(x=>x.id===id); if(!t) return;
-    const w = window.open('','_blank','width=800,height=600');
-    w.document.write(`<html><head><title>${t.title||'Timetable'}</title><style>body{font-family:sans-serif;padding:20px;}table{width:100%;border-collapse:collapse;}th,td{border:1px solid #000;padding:8px;text-align:center;}th{background:#0A2540;color:white;}</style></head><body><h2>${t.title||'Timetable'}</h2><p>Class: ${t.classId} | Year: ${t.academicYear} | Type: ${t.type}</p><table>${t.type==='academic'?('<tr><th>Time</th>'+DAYS.map(d=>`<th>${DAY_LABELS[DAYS.indexOf(d)]}</th>`).join('')+'</tr>'+[...new Set(t.periods.map(p=>p.startTime))].sort().map(time=>'<tr><td>'+time+'</td>'+DAYS.map(day=>{const p=t.periods.find(pe=>pe.startTime===time&&pe.day===day);return '<td>'+(p?p.subject+'<br><small>'+p.teacherName+'</small>':'—')+'</td>';}).join('')+'</tr>').join('')):'<tr><th>Date/Day</th><th>Subject</th><th>Time</th></tr>'+t.periods.map(p=>`<tr><td>${p.date||p.day||''}</td><td>${p.subject||''}</td><td>${p.startTime||''}-${p.endTime||''}</td></tr>`).join('')}</table></body></html>`);
-    w.document.close(); w.print();
+    const days = t.days||['monday','tuesday','wednesday','thursday','friday'];
+    const dayLabels = t.dayLabels||['Monday','Tuesday','Wednesday','Thursday','Friday'];
+    const timeSlots = t.timeSlots||['08:00-08:40'];
+    const periods = t.periods||{};
+    const w = window.open('','_blank','width=900,height=600');
+    let h = `<html><head><title>${t.title||'Timetable'}</title><style>body{font-family:sans-serif;padding:20px;}table{width:100%;border-collapse:collapse;}th,td{border:1px solid #000;padding:8px;text-align:center;font-size:12px;}th{background:#0A2540;color:white;}</style></head><body><h2>${t.title||'Timetable'}</h2><table><tr><th>Day</th>`;
+    timeSlots.forEach(ts=>h+=`<th>${ts}</th>`);
+    h+='</tr>';
+    days.forEach((day,di)=>{
+        h+=`<tr><td style="font-weight:bold;">${dayLabels[di]||day}</td>`;
+        timeSlots.forEach(ts=>{
+            const key=`${day}_${ts}`; const e=periods[key];
+            h+=`<td>${e&&e.subject?e.subject+(e.teacherName?'<br><small>'+e.teacherName+'</small>':''):'—'}</td>`;
+        });
+        h+='</tr>';
+    });
+    h+='</table></body></html>';
+    w.document.write(h); w.document.close(); w.print();
 }
 function printSyllabus(id) {
     const s = allSyllabi.find(x=>x.id===id); if(!s) return;
     const w = window.open('','_blank','width=800,height=600');
-    w.document.write(`<html><head><title>${s.subject} - ${s.term}</title><style>body{font-family:sans-serif;padding:20px;}table{width:100%;border-collapse:collapse;}th,td{border:1px solid #000;padding:8px;}th{background:#0A2540;color:white;}</style></head><body><h2>${s.subject} — ${s.term}</h2><p>Class: ${s.classId} | Year: ${s.academicYear}</p><table><tr><th>Week</th><th>Topic</th><th>Added By</th></tr>${(s.weeks||[]).sort((a,b)=>a.week-b.week).map(w=>`<tr><td>${w.week}</td><td>${w.topic||''}</td><td>${w.addedByName||''}</td></tr>`).join('')}</table></body></html>`);
+    w.document.write(`<html><head><title>${s.subject} - ${s.term}</title><style>body{font-family:sans-serif;padding:20px;}table{width:100%;border-collapse:collapse;}th,td{border:1px solid #000;padding:8px;}th{background:#0A2540;color:white;}</style></head><body><h2>${s.subject} — ${s.term}</h2><table><tr><th>Week</th><th>Topic</th><th>Added By</th></tr>${(s.weeks||[]).sort((a,b)=>a.week-b.week).map(w=>`<tr><td>${w.week}</td><td>${w.topic||''}</td><td>${w.addedByName||''}</td></tr>`).join('')}</table></body></html>`);
     w.document.close(); w.print();
 }
 
-// Expose functions to global scope
-window.openTimetableModal = openTimetableModal;
-window.openSyllabusModal = openSyllabusModal;
-window.closeTtModal = closeTtModal;
-window.closeSylModal = closeSylModal;
-window.addTtPeriod = addTtPeriod;
-window.removeTtPeriod = removeTtPeriod;
-window.updateTtForm = updateTtForm;
-window.saveTimetable = saveTimetable;
-window.saveSyllabus = saveSyllabus;
-window.addSylWeek = addSylWeek;
-window.addBulkWeeks = addBulkWeeks;
-window.removeSylWeek = removeSylWeek;
-window.changeTtStatus = changeTtStatus;
-window.changeSylStatus = changeSylStatus;
-window.duplicateTimetable = duplicateTimetable;
-window.duplicateSyllabus = duplicateSyllabus;
-window.deleteTimetable = deleteTimetable;
-window.deleteSyllabus = deleteSyllabus;
-window.printTimetable = printTimetable;
-window.printSyllabus = printSyllabus;
-window.renderTimetableGrids = renderTimetableGrids;
-window.renderSyllabusGrids = renderSyllabusGrids;
-window.setTtStatusFilter = setTtStatusFilter;
-window.setSylStatusFilter = setSylStatusFilter;
-window.onClassFilterChange = onClassFilterChange;
-window.onYearFilterChange = onYearFilterChange;
+// ============================================
+// CHECKBOX HELPER
+// ============================================
+document.addEventListener('click', function(e) {
+    const cb = e.target.closest('[data-checkbox]');
+    if(cb) {
+        const input = cb.querySelector('input[type="checkbox"]');
+        if(input && e.target !== input) {
+            input.checked = !input.checked;
+            cb.classList.toggle('checked', input.checked);
+            if(input.onchange) input.onchange();
+        }
+    }
+});
 
-console.log('📅 Timetable & Syllabus Hub ready');
+// Expose functions to global scope
+window.openTimetableModal = openTimetableModal; window.openSyllabusModal = openSyllabusModal;
+window.closeTtModal = closeTtModal; window.closeSylModal = closeSylModal;
+window.saveTimetable = saveTimetable; window.saveSyllabus = saveSyllabus;
+window.addTtTimeSlot = addTtTimeSlot; window.removeTtTimeSlot = removeTtTimeSlot;
+window.updateTtPeriodCell = updateTtPeriodCell; window.toggleTtDay = toggleTtDay;
+window.addSylWeek = addSylWeek; window.addBulkWeeks = addBulkWeeks;
+window.removeSylWeek = removeSylWeek;
+window.changeTtStatus = changeTtStatus; window.changeSylStatus = changeSylStatus;
+window.duplicateTimetable = duplicateTimetable; window.duplicateSyllabus = duplicateSyllabus;
+window.deleteTimetable = deleteTimetable; window.deleteSyllabus = deleteSyllabus;
+window.printTimetable = printTimetable; window.printSyllabus = printSyllabus;
+window.renderTimetableGrids = renderTimetableGrids; window.renderSyllabusGrids = renderSyllabusGrids;
+window.setTtStatusFilter = setTtStatusFilter; window.setSylStatusFilter = setSylStatusFilter;
+window.onClassFilterChange = onClassFilterChange; window.onYearFilterChange = onYearFilterChange;
+
+console.log('📅 Timetable & Syllabus ready — Days x TimeSlots grid with Draft→Submit→Admin→Approved→Publish workflow');
 </script>
 </body>
 </html>
