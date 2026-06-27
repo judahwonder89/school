@@ -74,7 +74,7 @@
         .page-title h1 { font-family: 'Playfair Display', serif; font-size: 1.8rem; font-weight: 700; color: var(--accent); }
         .page-title p { color: var(--text-secondary); font-size: 0.85rem; }
         .profile-area { display: flex; align-items: center; gap: 1rem; }
-        .theme-toggle { background: var(--card-bg); border: 1px solid var(--border); border-radius: 2rem; padding: 0.4rem 1rem; display: flex; align-items: center; gap: 0.4rem; cursor: pointer; color: var(--text-secondary); font-size: 0.8rem; transition: all 0.2s; }
+        .theme-toggle { background: var(--card-bg); border: 1px solid var(--border); border-radius: 2rem; padding: 0.4rem 1rem; display: flex; align-items: center; gap: 0.4rem; cursor: pointer; color: var(--text-secondary); font-size: 0.8rem; }
         .theme-toggle:hover { border-color: var(--accent); color: var(--accent); }
         .profile-pic { width: 38px; height: 38px; border-radius: 50%; background: linear-gradient(135deg, var(--gradient-start), var(--gradient-end)); display: flex; align-items: center; justify-content: center; color: white; font-weight: 600; font-size: 0.9rem; overflow: hidden; }
         .profile-pic img { width: 100%; height: 100%; object-fit: cover; border-radius: 50%; }
@@ -82,7 +82,7 @@
         .profile-dropdown { position: relative; cursor: pointer; }
         .profile-dropdown:hover .dropdown-menu { display: block; animation: fadeIn 0.2s; }
         @keyframes fadeIn { from { opacity: 0; transform: translateY(-10px); } to { opacity: 1; transform: translateY(0); } }
-        .dropdown-item { padding: 0.6rem 1rem; color: var(--text-primary); border-radius: 0.8rem; display: flex; align-items: center; gap: 0.6rem; font-size: 0.85rem; cursor: pointer; transition: all 0.2s; }
+        .dropdown-item { padding: 0.6rem 1rem; color: var(--text-primary); border-radius: 0.8rem; display: flex; align-items: center; gap: 0.6rem; font-size: 0.85rem; cursor: pointer; }
         .dropdown-item:hover { background: var(--hover-bg); color: var(--accent); }
         .dropdown-item.danger:hover { background: var(--danger-bg); color: var(--danger-text); }
 
@@ -123,8 +123,8 @@
         .info-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(250px, 1fr)); gap: 1rem; }
         .info-item { background: var(--hover-bg); border: 1px solid var(--border); border-radius: 1rem; padding: 1rem; display: flex; gap: 0.8rem; align-items: flex-start; }
         .info-item .info-icon { font-size: 1.5rem; color: var(--accent); flex-shrink: 0; width: 40px; height: 40px; display: flex; align-items: center; justify-content: center; background: var(--card-bg); border-radius: 50%; }
-        .info-item .info-value { font-weight: 600; font-size: 0.95rem; }
         .info-item .info-label { font-size: 0.7rem; color: var(--text-muted); text-transform: uppercase; }
+        .info-item .info-value { font-weight: 600; font-size: 0.95rem; }
 
         .classmates-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(250px, 1fr)); gap: 0.8rem; }
         .classmate-card { background: var(--hover-bg); border: 1px solid var(--border); border-radius: 1rem; padding: 1rem; display: flex; align-items: center; gap: 0.8rem; }
@@ -174,25 +174,23 @@
         .modal-overlay { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.75); backdrop-filter: blur(6px); z-index: 2000; display: none; align-items: center; justify-content: center; }
         .modal-overlay.active { display: flex; }
         .modal-content { background: var(--card-bg); border: 1px solid var(--border); border-radius: 1.5rem; padding: 1.5rem; max-width: 550px; width: 90%; max-height: 85vh; overflow-y: auto; }
-        .toast-container { position: fixed; top: 1rem; right: 1rem; z-index: 5000; display: flex; flex-direction: column; gap: 0.5rem; pointer-events: none; }
-        .toast { background: var(--card-bg); border: 1px solid var(--border); border-radius: 1rem; padding: 0.9rem 1.2rem; min-width: 300px; box-shadow: var(--shadow-lg); display: flex; align-items: flex-start; gap: 0.7rem; animation: toastIn 0.3s; pointer-events: auto; font-size: 0.85rem; }
+        .toast-container { position: fixed; top: 1rem; right: 1rem; z-index: 5000; display: flex; flex-direction: column; gap: 0.5rem; }
+        .toast { background: var(--card-bg); border: 1px solid var(--border); border-radius: 1rem; padding: 0.9rem 1.2rem; min-width: 300px; box-shadow: var(--shadow-lg); display: flex; align-items: flex-start; gap: 0.7rem; animation: toastIn 0.3s; font-size: 0.85rem; }
         .toast.removing { animation: toastOut 0.3s ease-in forwards; }
         @keyframes toastIn { from{transform:translateX(120%);opacity:0} to{transform:translateX(0);opacity:1} }
         @keyframes toastOut { from{transform:translateX(0);opacity:1} to{transform:translateX(120%);opacity:0} }
         .loading-spinner { display: inline-block; width: 18px; height: 18px; border: 3px solid rgba(255,255,255,0.3); border-top: 3px solid white; border-radius: 50%; animation: spin 0.8s linear infinite; }
         @keyframes spin { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }
+        .table-responsive { overflow-x: auto; }
 
-        .debug-panel { position: fixed; bottom: 80px; right: 1rem; z-index: 9999; background: #0a0f1e; border: 1px solid #C8963E; border-radius: 1rem; padding: 1rem; width: 450px; max-width: calc(100vw - 2rem); max-height: 60vh; overflow-y: auto; box-shadow: 0 10px 40px rgba(0,0,0,0.8); font-family: 'Space Grotesk', monospace; font-size: 0.7rem; display: none; }
+        .debug-panel { position: fixed; bottom: 80px; right: 1rem; z-index: 9999; background: #0a0f1e; border: 1px solid #C8963E; border-radius: 1rem; padding: 1rem; width: 420px; max-width: calc(100vw - 2rem); max-height: 55vh; overflow-y: auto; font-family: 'Space Grotesk', monospace; font-size: 0.68rem; display: none; }
         .debug-panel.show { display: block; }
-        .debug-panel h4 { color: #C8963E; margin-bottom: 0.5rem; font-size: 0.85rem; }
-        .debug-line { padding: 0.2rem 0; border-bottom: 1px solid rgba(255,255,255,0.05); word-break: break-all; }
+        .debug-panel h4 { color: #C8963E; margin-bottom: 0.5rem; }
+        .debug-line { padding: 0.15rem 0; border-bottom: 1px solid rgba(255,255,255,0.04); word-break: break-all; }
         .debug-line .key { color: #60a5fa; }
         .debug-line .val { color: #4ade80; }
         .debug-line .err { color: #f87171; }
-        .debug-line .warn { color: #fbbf24; }
-        .debug-btn { position: fixed; bottom: 1.5rem; right: 1.5rem; z-index: 10000; width: 48px; height: 48px; border-radius: 50%; background: #0A2540; border: 2px solid #C8963E; color: #C8963E; cursor: pointer; font-size: 1.2rem; display: flex; align-items: center; justify-content: center; box-shadow: 0 4px 15px rgba(200,150,62,0.4); transition: all 0.3s; }
-        .debug-btn:hover { background: #C8963E; color: #0A2540; transform: scale(1.1); }
-        .table-responsive { overflow-x: auto; }
+        .debug-btn { position: fixed; bottom: 1.5rem; right: 1.5rem; z-index: 10000; width: 44px; height: 44px; border-radius: 50%; background: #0A2540; border: 2px solid #C8963E; color: #C8963E; cursor: pointer; font-size: 1rem; display: flex; align-items: center; justify-content: center; }
 
         @media (max-width: 768px) { .sidebar { width: 85px; } .sidebar .logo-area h2, .sidebar .nav-item span { display: none; } .sidebar .nav-item { justify-content: center; padding: 0.7rem; } .main-content { margin-left: 85px; max-width: calc(100vw - 85px); padding: 1rem; } .page-title h1 { font-size: 1.4rem; } }
     </style>
@@ -202,8 +200,8 @@
     <div class="orb orb-1"></div><div class="orb orb-2"></div>
     <div class="toast-container" id="toastContainer"></div>
 
-    <button class="debug-btn" id="debugToggleBtn" title="Debug Panel"><i class="fas fa-bug"></i></button>
-    <div class="debug-panel" id="debugPanel"><h4><i class="fas fa-bug"></i> Debug Panel</h4><div id="debugContent"></div></div>
+    <button class="debug-btn" id="debugToggleBtn" title="Debug"><i class="fas fa-bug"></i></button>
+    <div class="debug-panel" id="debugPanel"><h4><i class="fas fa-bug"></i> Debug</h4><div id="debugContent"></div></div>
 
     <div class="sidebar" id="sidebar">
         <a href="index.html" class="logo-area"><img src="https://res.cloudinary.com/dda7kpir8/image/upload/q_auto/f_auto/v1781038310/ChatGPT_Image_Jun_9_2026_09_25_06_AM_elnine.png" alt="JWMS Logo"><h2>Judah Wonders<span>Model School</span></h2></a>
@@ -228,12 +226,7 @@
             </div>
         </div>
 
-        <div class="stats-row" id="statsRow">
-            <div class="stat-card"><div class="val" id="statClassmates">0</div><div class="lbl">Classmates</div></div>
-            <div class="stat-card"><div class="val" id="statAttendance">—</div><div class="lbl">Attendance</div></div>
-            <div class="stat-card"><div class="val" id="statTeachers">0</div><div class="lbl">Teachers</div></div>
-            <div class="stat-card"><div class="val" id="statAnnouncements">0</div><div class="lbl">Announcements</div></div>
-        </div>
+        <div class="stats-row"><div class="stat-card"><div class="val" id="statClassmates">0</div><div class="lbl">Classmates</div></div><div class="stat-card"><div class="val" id="statAttendance">—</div><div class="lbl">Attendance</div></div><div class="stat-card"><div class="val" id="statTeachers">0</div><div class="lbl">Teachers</div></div><div class="stat-card"><div class="val" id="statAnnouncements">0</div><div class="lbl">Announcements</div></div></div>
 
         <div class="tab-navigation" id="tabNavigation">
             <button class="tab-btn active" data-tab="info"><i class="fas fa-info-circle"></i> Class Info</button>
@@ -252,17 +245,13 @@
         </div>
 
         <div class="tab-content" id="tab-announcements"><div class="card"><div class="card-header"><h3><i class="fas fa-bullhorn"></i> Class Announcements</h3></div><div id="announcementsList" class="announcement-grid"><div class="empty-state" style="grid-column:1/-1;"><i class="fas fa-spinner fa-spin"></i><p>Loading...</p></div></div></div></div>
-        
         <div class="tab-content" id="tab-classmates"><div class="card"><div class="card-header"><h3><i class="fas fa-users"></i> My Classmates</h3></div><div class="search-box"><i class="fas fa-search"></i><input type="text" id="classmateSearch" placeholder="Search by name or ID..." oninput="filterClassmates()"></div><div id="classmatesList" class="classmates-grid"><div class="empty-state" style="grid-column:1/-1;"><i class="fas fa-spinner fa-spin"></i><p>Loading...</p></div></div></div></div>
-        
         <div class="tab-content" id="tab-attendance">
-            <div class="attendance-summary" id="attendanceSummary"><div class="att-summary-card"><div style="font-size:1.5rem;">✅</div><div class="val" id="attPresent" style="color:var(--success-text);">0</div><div class="lbl">Days Present</div></div><div class="att-summary-card"><div style="font-size:1.5rem;">❌</div><div class="val" id="attAbsent" style="color:var(--danger-text);">0</div><div class="lbl">Days Absent</div></div><div class="att-summary-card"><div style="font-size:1.5rem;">📊</div><div class="val" id="attRate" style="color:var(--accent);">0%</div><div class="lbl">Rate</div></div></div>
+            <div class="attendance-summary"><div class="att-summary-card"><div style="font-size:1.5rem;">✅</div><div class="val" id="attPresent" style="color:var(--success-text);">0</div><div class="lbl">Days Present</div></div><div class="att-summary-card"><div style="font-size:1.5rem;">❌</div><div class="val" id="attAbsent" style="color:var(--danger-text);">0</div><div class="lbl">Days Absent</div></div><div class="att-summary-card"><div style="font-size:1.5rem;">📊</div><div class="val" id="attRate" style="color:var(--accent);">0%</div><div class="lbl">Rate</div></div></div>
             <div class="card"><div class="card-header"><h3><i class="fas fa-envelope-open-text"></i> Absence Requests</h3><button class="btn btn-primary btn-sm" onclick="openAbsenceRequestModal()"><i class="fas fa-plus"></i> New</button></div><div id="absenceRequestsList"><div class="empty-state"><i class="fas fa-inbox"></i><p>No requests</p></div></div></div>
             <div class="card"><div class="card-header"><h3><i class="fas fa-list-ul"></i> Attendance Record</h3><div class="filter-row"><select id="attMonthFilter" onchange="renderAttendanceTable()"><option value="all">All Months</option></select><select id="attSessionFilter" onchange="renderAttendanceTable()"><option value="all">All Sessions</option><option value="morning">Morning</option><option value="afternoon">Afternoon</option></select></div></div><div class="table-responsive"><table style="width:100%;border-collapse:collapse;"><thead><tr><th style="text-align:left;padding:0.5rem;border-bottom:1px solid var(--border);">Date</th><th style="text-align:left;padding:0.5rem;border-bottom:1px solid var(--border);">Session</th><th style="text-align:left;padding:0.5rem;border-bottom:1px solid var(--border);">Status</th><th style="text-align:left;padding:0.5rem;border-bottom:1px solid var(--border);">Remark</th><th style="text-align:left;padding:0.5rem;border-bottom:1px solid var(--border);">Recorded By</th></tr></thead><tbody id="attendanceBody"><tr><td colspan="5"><div class="empty-state"><p>No records</p></div></td></tr></tbody></table></div></div>
         </div>
-        
         <div class="tab-content" id="tab-timetable"><div class="card"><div class="card-header"><h3><i class="fas fa-calendar-alt"></i> Class Timetable</h3></div><div id="timetableContent"><div class="empty-state"><i class="fas fa-spinner fa-spin"></i><p>Loading...</p></div></div></div></div>
-        
         <div class="tab-content" id="tab-syllabus"><div class="card"><div class="card-header"><h3><i class="fas fa-book-open"></i> Published Syllabus</h3></div><div id="syllabusContent"><div class="empty-state"><i class="fas fa-spinner fa-spin"></i><p>Loading...</p></div></div></div></div>
     </div>
 
@@ -287,10 +276,10 @@
         function debugLog(key, value, type = 'info') {
             const cssClass = type === 'error' ? 'err' : type === 'warn' ? 'warn' : 'val';
             debugLogs.push({ key, value, cssClass, time: new Date().toLocaleTimeString() });
-            console.log(`[DEBUG][${type}] ${key}:`, value);
+            console.log(`[${type}] ${key}:`, value);
             updateDebugPanel();
         }
-        function updateDebugPanel() { const c = document.getElementById('debugContent'); if (!c) return; c.innerHTML = debugLogs.slice(-30).map(d => `<div class="debug-line"><span style="color:#64748b;">${d.time}</span> <span class="key">${d.key}:</span> <span class="${d.cssClass}">${typeof d.value === 'object' ? JSON.stringify(d.value) : d.value}</span></div>`).join(''); }
+        function updateDebugPanel() { const c = document.getElementById('debugContent'); if (!c) return; c.innerHTML = debugLogs.slice(-25).map(d => `<div class="debug-line"><span style="color:#64748b;">${d.time}</span> <span class="key">${d.key}:</span> <span class="${d.cssClass}">${typeof d.value==='object'?JSON.stringify(d.value):d.value}</span></div>`).join(''); }
         document.getElementById('debugToggleBtn').addEventListener('click', () => { document.getElementById('debugPanel').classList.toggle('show'); });
 
         let currentUser = null, userData = null, studentClass = null;
@@ -323,72 +312,66 @@
         });
 
         function startListeners() {
-            if(!studentClass||!currentUser) { debugLog('Listeners', 'Cannot start - missing studentClass or currentUser', 'error'); return; }
-            debugLog('Starting listeners', `class=${studentClass}, uid=${currentUser.uid}`);
+            if(!studentClass||!currentUser) { debugLog('Listeners', 'Cannot start - no class/user', 'error'); return; }
+            debugLog('Listeners starting', `class=${studentClass}, uid=${currentUser.uid}`);
 
+            // Announcements
             if(unsubscribers['announcements']) unsubscribers['announcements']();
-            debugLog('Query', `classAnnouncements where classId==${studentClass}`);
             unsubscribers['announcements'] = db.collection('classAnnouncements').where('classId','==',studentClass).orderBy('createdAt','desc')
-                .onSnapshot(snap=>{ allAnnouncements=[]; snap.forEach(d=>allAnnouncements.push({id:d.id,...d.data()})); debugLog('Announcements loaded', allAnnouncements.length); updateStats(); renderAnnouncements(); },
-                err => { debugLog('Announcements ERROR', err.message, 'error'); document.getElementById('announcementsList').innerHTML = `<div class="empty-state" style="grid-column:1/-1;"><i class="fas fa-exclamation-triangle"></i><h3>Error</h3><p>${err.message}</p></div>`; });
+                .onSnapshot(snap=>{ allAnnouncements=[]; snap.forEach(d=>allAnnouncements.push({id:d.id,...d.data()})); debugLog('Announcements', allAnnouncements.length); updateStats(); renderAnnouncements(); },
+                err => { debugLog('Announce ERR', err.message, 'error'); });
 
+            // Attendance
             if(unsubscribers['attendance']) unsubscribers['attendance']();
-            debugLog('Query', `attendance where studentId==${currentUser.uid}`);
             unsubscribers['attendance'] = db.collection('attendance').where('studentId','==',currentUser.uid).orderBy('date','desc')
-                .onSnapshot(snap=>{ allAttendance=[]; snap.forEach(d=>allAttendance.push({id:d.id,...d.data()})); debugLog('Attendance loaded', allAttendance.length); updateStats(); updateAttendanceSummary(); populateMonthFilter(); renderAttendanceTable(); },
-                err => { debugLog('Attendance ERROR', err.message, 'error'); });
+                .onSnapshot(snap=>{ allAttendance=[]; snap.forEach(d=>allAttendance.push({id:d.id,...d.data()})); debugLog('Attendance', allAttendance.length); updateStats(); updateAttendanceSummary(); populateMonthFilter(); renderAttendanceTable(); },
+                err => { debugLog('Attendance ERR', err.message, 'error'); });
 
+            // Timetable - only published
             if(unsubscribers['timetable']) unsubscribers['timetable']();
-            debugLog('Query', `timetables where classId==${studentClass} AND status==published`);
             unsubscribers['timetable'] = db.collection('timetables').where('classId','==',studentClass).where('status','==','published').limit(1)
-                .onSnapshot(snap=>{ classTimetable=null; snap.forEach(d=>classTimetable={id:d.id,...d.data()}); debugLog('Timetable loaded', classTimetable ? `Found: ${classTimetable.title}` : 'None published'); renderTimetable(); },
-                err => { debugLog('Timetable ERROR', err.message, 'error'); });
+                .onSnapshot(snap=>{ classTimetable=null; snap.forEach(d=>classTimetable={id:d.id,...d.data()}); debugLog('Timetable', classTimetable?`Found: ${classTimetable.title}`:'None published'); renderTimetable(); },
+                err => { debugLog('Timetable ERR', err.message, 'error'); });
 
+            // Syllabus - only published
             if(unsubscribers['syllabus']) unsubscribers['syllabus']();
-            debugLog('Query', `syllabi where classId==${studentClass} AND status==published`);
             unsubscribers['syllabus'] = db.collection('syllabi').where('classId','==',studentClass).where('status','==','published')
-                .onSnapshot(snap=>{ allSyllabi=[]; snap.forEach(d=>allSyllabi.push({id:d.id,...d.data()})); debugLog('Syllabi loaded', allSyllabi.length); renderSyllabus(); },
-                err => { debugLog('Syllabus ERROR', err.message, 'error'); });
+                .onSnapshot(snap=>{ allSyllabi=[]; snap.forEach(d=>allSyllabi.push({id:d.id,...d.data()})); debugLog('Syllabi', allSyllabi.length); renderSyllabus(); },
+                err => { debugLog('Syllabus ERR', err.message, 'error'); });
 
+            // Absence requests
             if(unsubscribers['absence']) unsubscribers['absence']();
-            debugLog('Query', `pendingActions where studentId==${currentUser.uid} AND actionType in [absence_request, absence_explanation]`);
             unsubscribers['absence'] = db.collection('pendingActions').where('studentId','==',currentUser.uid).where('actionType','in',['absence_request','absence_explanation']).orderBy('requestedAt','desc')
-                .onSnapshot(snap=>{ absenceRequests=[]; snap.forEach(d=>absenceRequests.push({id:d.id,...d.data()})); debugLog('Absence requests loaded', absenceRequests.length); renderAbsenceRequests(); },
-                err => { debugLog('Absence requests ERROR', err.message, 'error'); });
+                .onSnapshot(snap=>{ absenceRequests=[]; snap.forEach(d=>absenceRequests.push({id:d.id,...d.data()})); debugLog('AbsenceReqs', absenceRequests.length); renderAbsenceRequests(); },
+                err => { debugLog('AbsenceReq ERR', err.message, 'error'); });
         }
 
         async function loadClassData() {
-            if(!studentClass) { debugLog('loadClassData', 'No studentClass!', 'error'); document.getElementById('classSubtitle').textContent = 'No class assigned'; return; }
-            debugLog('Loading class data for', studentClass);
+            if(!studentClass) { debugLog('No class!', 'Cannot load', 'error'); document.getElementById('classSubtitle').textContent = 'No class assigned'; return; }
+            debugLog('Loading class', studentClass);
             try {
                 const cs = await db.collection('users').where('role','==','student').where('class','==',studentClass).where('approved','==',true).get();
                 allClassmates=[]; cs.forEach(d=>{ const dd=d.data(); if(!dd.suspended) allClassmates.push({id:d.id,...dd}); });
                 allClassmates.sort((a,b)=>`${a.surname||''}${a.firstName||''}`.localeCompare(`${b.surname||''}${b.firstName||''}`));
-                debugLog('Classmates loaded', allClassmates.length);
-
                 const ct = await db.collection('users').where('role','==','teacher').where('classTeacherFor','array-contains',studentClass).where('approved','==',true).get();
                 classTeachers=[]; ct.forEach(d=>classTeachers.push({id:d.id,...d.data()}));
-                debugLog('Class teachers loaded', classTeachers.length);
-
                 const at = await db.collection('users').where('role','==','teacher').where('approved','==',true).get();
                 subjectTeachers=[]; const sm={};
                 at.forEach(d=>{ const dd=d.data(); const map=dd.subjectClassMap||{}; if(map[studentClass]&&map[studentClass].length){ const ti={id:d.id,firstName:dd.firstName,surname:dd.surname,email:dd.email,phone:dd.phone,photoURL:dd.photoURL,publicProfile:dd.publicProfile||{},points:dd.points||0}; map[studentClass].forEach(sub=>{ if(!sm[sub]) sm[sub]=[]; sm[sub].push(ti); }); } });
                 for(const [sub,teachers] of Object.entries(sm)){ subjectTeachers.push({subject:sub,teachers}); }
                 subjectTeachers.sort((a,b)=>a.subject.localeCompare(b.subject));
-                debugLog('Subject teachers loaded', subjectTeachers.length);
-
+                debugLog('Data loaded', `Classmates:${allClassmates.length}, CT:${classTeachers.length}, ST:${subjectTeachers.length}`);
                 updateStats(); renderClassInfo(); renderClassTeachers(); renderSubjectTeachers(); renderPrefects();
                 renderClassmatesList(allClassmates);
                 startListeners();
-                debugLog('✅ All class data loaded', 'Starting real-time listeners');
-            } catch(e){ debugLog('loadClassData ERROR', e.message, 'error'); document.getElementById('classInfoGrid').innerHTML = `<div class="empty-state"><i class="fas fa-exclamation-triangle"></i><h3>Error</h3><p>${e.message}</p></div>`; }
+            } catch(e){ debugLog('Load error', e.message, 'error'); }
         }
 
         function updateStats() {
             document.getElementById('statClassmates').textContent = allClassmates.length;
             document.getElementById('statAnnouncements').textContent = allAnnouncements.length;
-            const uniqueIds = new Set(); classTeachers.forEach(t=>uniqueIds.add(t.id)); subjectTeachers.forEach(st=>st.teachers.forEach(t=>uniqueIds.add(t.id)));
-            document.getElementById('statTeachers').textContent = uniqueIds.size;
+            const uids = new Set(); classTeachers.forEach(t=>uids.add(t.id)); subjectTeachers.forEach(st=>st.teachers.forEach(t=>uids.add(t.id)));
+            document.getElementById('statTeachers').textContent = uids.size;
             if(allAttendance.length){ const pc=allAttendance.filter(a=>a.status==='present').length; document.getElementById('statAttendance').textContent = Math.round((pc/allAttendance.length)*100)+'%'; }
         }
 
@@ -412,7 +395,7 @@
 
         function renderSubjectTeachers() {
             const c = document.getElementById('subjectTeachersList');
-            if(!subjectTeachers.length){ c.innerHTML='<div class="empty-state"><i class="fas fa-book"></i><h3>No Subject Teachers</h3><p>No subject teachers assigned.</p></div>'; return; }
+            if(!subjectTeachers.length){ c.innerHTML='<div class="empty-state"><i class="fas fa-book"></i><h3>No Subject Teachers</h3></div>'; return; }
             c.innerHTML = subjectTeachers.map(st=>`<div style="margin-bottom:1rem;"><h4 style="margin-bottom:0.5rem;"><span class="badge badge-subject">${escapeHtml(st.subject)}</span></h4>${st.teachers.map(t=>{ const name=`${t.firstName||''} ${t.surname||''}`.trim(); const ini=(t.firstName?.[0]||'')+(t.surname?.[0]||''); return `<div style="display:flex;align-items:center;gap:0.8rem;padding:0.5rem;background:var(--hover-bg);border-radius:0.8rem;margin-bottom:0.3rem;"><div style="width:35px;height:35px;border-radius:50%;background:linear-gradient(135deg,var(--gradient-start),var(--gradient-end));display:flex;align-items:center;justify-content:center;color:white;font-size:0.7rem;font-weight:700;overflow:hidden;">${t.photoURL?`<img src="${t.photoURL}" style="width:100%;height:100%;object-fit:cover;">`:ini}</div><div><strong style="font-size:0.85rem;">${escapeHtml(name)}</strong></div></div>`; }).join('')}</div>`).join('');
         }
 
@@ -425,7 +408,7 @@
         function renderAnnouncements() {
             const c=document.getElementById('announcementsList');
             if(!allAnnouncements.length){ c.innerHTML='<div class="empty-state" style="grid-column:1/-1;"><i class="fas fa-bullhorn"></i><h3>No Announcements</h3><p>No announcements posted yet.</p></div>'; return; }
-            c.innerHTML = allAnnouncements.map(a=>{ const dateStr = a.createdAt?.toDate?.().toLocaleDateString('en-GB',{day:'numeric',month:'short',year:'numeric',hour:'2-digit',minute:'2-digit'})||'Unknown'; return `<div class="announcement-card"><h4>${escapeHtml(a.title||'Untitled')}</h4><div style="font-size:0.7rem;color:var(--text-muted);">${dateStr} · ${escapeHtml(a.teacherName||'Teacher')}</div><p style="margin-top:0.5rem;font-size:0.85rem;">${escapeHtml(a.content||'')}</p></div>`; }).join('');
+            c.innerHTML = allAnnouncements.map(a=>{ const ds = a.createdAt?.toDate?.().toLocaleDateString('en-GB',{day:'numeric',month:'short',year:'numeric',hour:'2-digit',minute:'2-digit'})||'Unknown'; return `<div class="announcement-card"><h4>${escapeHtml(a.title||'Untitled')}</h4><div style="font-size:0.7rem;color:var(--text-muted);">${ds} · ${escapeHtml(a.teacherName||'Teacher')}</div><p style="margin-top:0.5rem;font-size:0.85rem;">${escapeHtml(a.content||'')}</p></div>`; }).join('');
         }
 
         function renderClassmatesList(list) {
@@ -452,49 +435,64 @@
             try {
                 const teacherIds = classTeachers.map(t=>t.id);
                 await db.collection('pendingActions').add({teacherId:teacherIds[0]||'',teacherIds,studentId:currentUser.uid,studentName:`${userData?.firstName||''} ${userData?.surname||''}`.trim(),actionType:type==='upcoming'?'absence_request':'absence_explanation',classId:studentClass,studentClassId:studentClass,details:{absenceDate:date,session,reason},status:'pending',requestedAt:firebase.firestore.FieldValue.serverTimestamp()});
-                closeAbsenceRequestModal(); showToast('Submitted','Request sent','success'); debugLog('Absence request submitted', {date, session, type});
-            } catch(e){ showToast('Error',e.message,'error'); debugLog('Submit absence error', e.message, 'error'); }
+                closeAbsenceRequestModal(); showToast('Submitted','Request sent to teacher','success'); debugLog('Absence sent', date);
+            } catch(e){ showToast('Error',e.message,'error'); }
             finally { btn.disabled=false; btn.innerHTML='Submit'; }
         });
 
         function renderTimetable() {
             const c=document.getElementById('timetableContent');
-            if(!classTimetable||!classTimetable.timeSlots||!classTimetable.days){ c.innerHTML='<div class="empty-state"><i class="fas fa-calendar-alt"></i><h3>No Timetable Published</h3><p>No timetable published yet.</p></div>'; return; }
-            const days=classTimetable.days,dayLabels=classTimetable.dayLabels||days,timeSlots=classTimetable.timeSlots,periods=classTimetable.periods||{};
-            let h='<div class="tt-wrapper"><table class="tt-table"><thead><tr><th>Day</th>'; timeSlots.forEach(ts=>h+=`<th>${escapeHtml(ts)}</th>`); h+='</tr></thead><tbody>';
-            days.forEach((day,di)=>{ h+=`<tr><td>${dayLabels[di]||day}</td>`; timeSlots.forEach(ts=>{ const key=`${day}_${ts}`,e=periods[key]; h+=e&&e.subject?`<td><span class="tt-subject">${escapeHtml(e.subject)}</span><span class="tt-teacher">${escapeHtml(e.teacherName||'')}</span></td>`:'<td><span style="color:var(--text-muted);">—</span></td>'; }); h+='</tr>'; });
-            h+='</tbody></table></div>'; c.innerHTML=h;
+            if(!classTimetable||!classTimetable.days){ c.innerHTML='<div class="empty-state"><i class="fas fa-calendar-alt"></i><h3>No Timetable Published</h3><p>No timetable has been published yet.</p></div>'; return; }
+            const days=classTimetable.days,dayLabels=classTimetable.dayLabels||days,timeSlots=classTimetable.timeSlots||[],periods=classTimetable.periods||{};
+            const typeLabel = {academic:'📅 Academic',hairstyle:'💇 Hairstyle',test:'📝 Test',exam:'🏛️ Exam'}[classTimetable.type]||'📅 Academic';
+            let h = `<div style="margin-bottom:0.5rem;font-weight:600;">${typeLabel} — ${escapeHtml(classTimetable.title||'Timetable')} (${classTimetable.term||''})</div>`;
+            if(classTimetable.type==='hairstyle'){
+                h+='<div class="tt-wrapper"><table class="tt-table"><thead><tr><th>Day</th><th>Hairstyle</th><th>Description</th></tr></thead><tbody>';
+                days.forEach((day,di)=>{ const e=periods[`${day}_Hairstyle`]||{}; h+=`<tr><td>${dayLabels[di]||day}</td><td><span class="tt-subject">${escapeHtml(e.subject||'—')}</span></td><td>${escapeHtml(e.description||'—')}</td></tr>`; });
+                h+='</tbody></table></div>';
+            } else if(classTimetable.type==='test'||classTimetable.type==='exam'){
+                h+='<div class="tt-wrapper"><table class="tt-table"><thead><tr><th>Date</th><th>Subject</th><th>Start</th><th>End</th><th>Duration</th></tr></thead><tbody>';
+                days.forEach((day,di)=>{ const e=periods[`${day}_Slot 1`]||{}; h+=`<tr><td>${dayLabels[di]||day}</td><td><span class="tt-subject">${escapeHtml(e.subject||'—')}</span></td><td>${escapeHtml(e.startTime||'—')}</td><td>${escapeHtml(e.endTime||'—')}</td><td>${escapeHtml(e.duration||'—')}</td></tr>`; });
+                h+='</tbody></table></div>';
+            } else {
+                if(!timeSlots.length){ h+='<p style="text-align:center;color:var(--text-muted);">No periods defined.</p>'; }
+                else {
+                    h+='<div class="tt-wrapper"><table class="tt-table"><thead><tr><th>Day</th>';
+                    timeSlots.forEach(ts=>h+=`<th>${escapeHtml(ts)}</th>`);
+                    h+='</tr></thead><tbody>';
+                    days.forEach((day,di)=>{ h+=`<tr><td>${dayLabels[di]||day}</td>`; timeSlots.forEach(ts=>{ const e=periods[`${day}_${ts}`]; h+=e&&e.subject?`<td><span class="tt-subject">${escapeHtml(e.subject)}</span><span class="tt-teacher">${escapeHtml(e.teacherName||'')}</span></td>`:'<td><span style="color:var(--text-muted);">—</span></td>'; }); h+='</tr>'; });
+                    h+='</tbody></table></div>';
+                }
+            }
+            c.innerHTML=h;
         }
 
         function renderSyllabus() {
             const c=document.getElementById('syllabusContent');
             if(!allSyllabi.length){ c.innerHTML='<div class="empty-state"><i class="fas fa-book-open"></i><h3>No Syllabus Published</h3><p>No syllabus published yet.</p></div>'; return; }
-            c.innerHTML=`<div class="syllabus-grid">${allSyllabi.map(s=>`<div class="syllabus-card"><h4><i class="fas fa-book"></i> ${escapeHtml(s.subject||'Untitled')}</h4><div style="font-size:0.75rem;color:var(--text-muted);">${escapeHtml(s.term||'')} · ${s.weeks?.length||0} weeks</div><table class="syl-table-sm" style="margin-top:0.5rem;"><thead><tr><th>Week</th><th>Topic</th></tr></thead><tbody>${(s.weeks||[]).sort((a,b)=>a.week-b.week).map(w=>`<tr><td><strong>Week ${w.week}</strong></td><td>${escapeHtml(w.topic||'—')}</td></tr>`).join('')}</tbody></table></div>`).join('')}</div>`;
+            c.innerHTML=`<div class="syllabus-grid">${allSyllabi.map(s=>`<div class="syllabus-card"><h4><i class="fas fa-book"></i> ${escapeHtml(s.subject||'Untitled')}</h4><div style="font-size:0.75rem;color:var(--text-muted);">${escapeHtml(s.term||'')} · ${s.weeks?.length||0} weeks</div><table class="syl-table-sm" style="margin-top:0.5rem;"><thead><tr><th>Week</th><th>Topic</th></tr></thead><tbody>${(s.weeks||[]).sort((a,b)=>a.week-b.week).map(w=>`<tr><td><strong>Wk ${w.week}</strong></td><td>${escapeHtml(w.topic||'—')}</td></tr>`).join('')}</tbody></table></div>`).join('')}</div>`;
         }
 
-        debugLog('Firebase', 'Initialized, waiting for auth...');
+        debugLog('Firebase', 'Init, waiting auth...');
         auth.onAuthStateChanged(async user=>{
-            debugLog('Auth state changed', user ? `User: ${user.uid}` : 'No user');
+            debugLog('Auth', user ? `User: ${user.uid}` : 'No user');
             if(!user){ window.location.href='student-login.html'; return; }
             try {
-                debugLog('Fetching user doc', user.uid);
                 const d=await db.collection('users').doc(user.uid).get();
-                if(!d.exists){ debugLog('User doc', 'NOT FOUND', 'error'); await auth.signOut(); window.location.href='index.html'; return; }
+                if(!d.exists){ debugLog('No doc','redirecting','error'); await auth.signOut(); window.location.href='index.html'; return; }
                 userData=d.data();
-                debugLog('User data', {role:userData.role,class:userData.class,firstName:userData.firstName,approved:userData.approved});
-                if(userData.role!=='student'){ debugLog('Role check', `Expected student, got ${userData.role}`, 'error'); await auth.signOut(); window.location.href='index.html'; return; }
+                debugLog('User', {role:userData.role,class:userData.class,name:userData.firstName});
+                if(userData.role!=='student'){ await auth.signOut(); window.location.href='index.html'; return; }
                 currentUser=user; studentClass=userData.class;
-                debugLog('Student class', studentClass||'UNDEFINED!', studentClass?'':'error');
                 const pic=document.getElementById('profilePic');
                 if(userData.photoURL) pic.innerHTML=`<img src="${userData.photoURL}" alt="Profile" style="width:100%;height:100%;object-fit:cover;border-radius:50%;">`;
                 else pic.textContent=(userData.firstName?.[0]||'S')+(userData.surname?.[0]||'T');
-                if(!studentClass){ debugLog('WARNING', 'No class assigned!', 'warn'); document.getElementById('classSubtitle').textContent='⚠️ No class assigned'; document.getElementById('classInfoGrid').innerHTML='<div class="empty-state"><i class="fas fa-exclamation-triangle"></i><h3>No Class Assigned</h3><p>Contact admin to be assigned to a class.</p></div>'; return; }
+                if(!studentClass){ document.getElementById('classSubtitle').textContent='⚠️ No class - Contact admin'; document.getElementById('classInfoGrid').innerHTML='<div class="empty-state"><i class="fas fa-exclamation-triangle"></i><h3>No Class Assigned</h3><p>Contact admin.</p></div>'; return; }
                 await loadClassData();
-            } catch(e){ debugLog('Auth error', e.message, 'error'); }
+            } catch(e){ debugLog('Auth err', e.message, 'error'); }
         });
         document.getElementById('logoutBtn').addEventListener('click',()=>{ Object.values(unsubscribers).forEach(u=>{try{u()}catch(e){}}); auth.signOut().then(()=>window.location.href='index.html'); });
         window.addEventListener('beforeunload',()=>Object.values(unsubscribers).forEach(u=>{try{u()}catch(e){}}));
-        debugLog('Page ready', 'Waiting for authentication...');
     </script>
 </body>
 </html>
