@@ -5,7 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=yes">
     <title>Judah Wonders Model School · Teacher Dashboard</title>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
-    <link href="https://fonts.googleapis.com/css2?family=Inter:opsz,wght@14..32,400;500;600;700;800&family=Playfair+Display:wght@600;700&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:opsz,wght@14..32,400;500;600;700;800&family=Playfair+Display:wght@600;700&family=Space+Grotesk:wght@400;500;600;700&display=swap" rel="stylesheet">
     <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-app-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-auth-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-firestore-compat.js"></script>
@@ -14,10 +14,11 @@
         * { margin: 0; padding: 0; box-sizing: border-box; }
         :root[data-theme="light"] {
             --bg-primary: #f0f5fa; --bg-sidebar: rgba(255,255,255,0.75); --text-primary: #0b1e33;
-            --text-secondary: #2c3e50; --accent: #0A2540; --accent-glow: #C8963E;
-            --border: rgba(0,0,0,0.08); --card-bg: rgba(255,255,255,0.7); --hover-bg: rgba(255,255,255,0.9);
-            --shadow: 0 8px 20px -5px rgba(0,0,0,0.08); --input-bg: #ffffff;
-            --success-bg: rgba(34,197,94,0.15); --success-text: #16a34a;
+            --text-secondary: #2c3e50; --text-muted: #64748b; --accent: #0A2540; --accent-glow: #C8963E;
+            --accent-light: rgba(10,37,64,0.08); --border: rgba(0,0,0,0.08);
+            --card-bg: rgba(255,255,255,0.7); --hover-bg: rgba(255,255,255,0.9);
+            --shadow: 0 8px 20px -5px rgba(0,0,0,0.08); --shadow-lg: 0 15px 35px -10px rgba(0,0,0,0.12);
+            --input-bg: #ffffff; --success-bg: rgba(34,197,94,0.15); --success-text: #16a34a;
             --warning-bg: rgba(245,158,11,0.15); --warning-text: #b45309;
             --danger-bg: rgba(239,68,68,0.15); --danger-text: #b91c1c;
             --info-bg: rgba(10,37,64,0.1); --info-text: #0A2540;
@@ -25,10 +26,11 @@
         }
         :root[data-theme="dark"] {
             --bg-primary: #0a0f1e; --bg-sidebar: rgba(15,23,42,0.8); --text-primary: #f0f4fa;
-            --text-secondary: #a0b3d9; --accent: #C8963E; --accent-glow: #D4AF37;
-            --border: rgba(255,255,255,0.06); --card-bg: rgba(15,23,42,0.6); --hover-bg: rgba(30,41,59,0.8);
-            --shadow: 0 8px 20px -5px rgba(0,0,0,0.4); --input-bg: rgba(30,41,59,0.9);
-            --success-bg: rgba(34,197,94,0.15); --success-text: #4ade80;
+            --text-secondary: #a0b3d9; --text-muted: #64748b; --accent: #C8963E; --accent-glow: #D4AF37;
+            --accent-light: rgba(200,150,62,0.1); --border: rgba(255,255,255,0.06);
+            --card-bg: rgba(15,23,42,0.6); --hover-bg: rgba(30,41,59,0.8);
+            --shadow: 0 8px 20px -5px rgba(0,0,0,0.4); --shadow-lg: 0 15px 35px -10px rgba(0,0,0,0.5);
+            --input-bg: rgba(30,41,59,0.9); --success-bg: rgba(34,197,94,0.15); --success-text: #4ade80;
             --warning-bg: rgba(245,158,11,0.15); --warning-text: #fbbf24;
             --danger-bg: rgba(239,68,68,0.15); --danger-text: #f87171;
             --info-bg: rgba(200,150,62,0.15); --info-text: #D4AF37;
@@ -36,18 +38,18 @@
         }
 
         body { font-family: 'Inter', sans-serif; background: var(--bg-primary); color: var(--text-primary); min-height: 100vh; display: flex; position: relative; overflow-x: hidden; }
-        .bg-logo { position: fixed; top: 50%; left: 50%; transform: translate(-50%, -50%); width: 400px; max-width: 70vw; opacity: 0.03; pointer-events: none; animation: breathe 6s ease-in-out infinite; }
+        .bg-logo { position: fixed; top: 50%; left: 50%; transform: translate(-50%, -50%); width: 400px; max-width: 70vw; opacity: 0.03; pointer-events: none; z-index: 0; animation: breathe 6s ease-in-out infinite; }
         @keyframes breathe { 0%,100% { transform: translate(-50%, -50%) scale(1); opacity: 0.03; } 50% { transform: translate(-50%, -50%) scale(1.06); opacity: 0.06; } }
-        .orb { position: fixed; width: 250px; height: 250px; border-radius: 50%; filter: blur(80px); pointer-events: none; animation: float 25s infinite alternate; }
-        .orb-1 { top: -100px; left: -100px; background: radial-gradient(circle at 30% 30%, rgba(10,37,64,0.12), transparent 70%); }
+        .orb { position: fixed; border-radius: 50%; filter: blur(80px); pointer-events: none; z-index: 0; animation: float 25s infinite alternate; }
+        .orb-1 { width: 250px; height: 250px; top: -100px; left: -100px; background: radial-gradient(circle at 30% 30%, rgba(10,37,64,0.12), transparent 70%); }
         .orb-2 { bottom: -150px; right: -50px; width: 350px; height: 350px; background: radial-gradient(circle at 70% 70%, rgba(200,150,62,0.12), transparent); animation-duration: 30s; }
         @keyframes float { 0% { transform: translate(0,0) scale(1); } 100% { transform: translate(40px,30px) scale(1.15); } }
 
-        .sidebar { width: 260px; background: var(--bg-sidebar); backdrop-filter: blur(16px); border-right: 1px solid var(--border); padding: 1.5rem 0.8rem; display: flex; flex-direction: column; transition: width 0.3s; position: fixed; top: 0; left: 0; height: 100vh; overflow-y: auto; z-index: 100; box-shadow: var(--shadow); }
+        /* Sidebar */
+        .sidebar { width: 260px; background: var(--bg-sidebar); backdrop-filter: blur(16px); -webkit-backdrop-filter: blur(16px); border-right: 1px solid var(--border); padding: 1.5rem 0.8rem; display: flex; flex-direction: column; transition: width 0.3s; position: fixed; top: 0; left: 0; height: 100vh; overflow-y: auto; z-index: 100; box-shadow: var(--shadow); }
         .sidebar.collapsed { width: 85px; }
         .sidebar .logo-area { display: flex; align-items: center; gap: 0.8rem; margin-bottom: 1.8rem; padding: 0 0.3rem; text-decoration: none; }
-        .sidebar .logo-area img { width: 38px; height: 38px; object-fit: contain; animation: logoPulse 3s ease-in-out infinite; }
-        @keyframes logoPulse { 0%,100%{transform:scale(1);} 50%{transform:scale(1.05);} }
+        .sidebar .logo-area img { width: 38px; height: 38px; object-fit: contain; flex-shrink: 0; }
         .sidebar .logo-area h2 { font-family: 'Playfair Display', serif; font-size: 1.1rem; font-weight: 700; white-space: nowrap; color: var(--accent); line-height: 1.2; }
         .sidebar .logo-area h2 span { display: block; font-size: 0.6rem; letter-spacing: 1.5px; color: var(--accent-glow); }
         .sidebar.collapsed .logo-area h2 { display: none; }
@@ -55,8 +57,8 @@
         .sidebar.collapsed .nav-section { display: none; }
         .sidebar .nav-item { display: flex; align-items: center; gap: 0.9rem; padding: 0.7rem 1rem; border-radius: 1rem; color: var(--text-secondary); transition: all 0.2s; cursor: pointer; margin-bottom: 0.25rem; text-decoration: none; font-weight: 500; white-space: nowrap; border: 1px solid transparent; font-size: 0.9rem; }
         .sidebar .nav-item:hover { background: var(--hover-bg); color: var(--accent); border-color: var(--border); transform: translateX(3px); }
-        .sidebar .nav-item.active { background: linear-gradient(135deg, var(--accent), var(--accent-glow)); color: white; box-shadow: 0 6px 15px -5px var(--accent); }
-        .sidebar .nav-item i { font-size: 1.2rem; width: 1.6rem; text-align: center; }
+        .sidebar .nav-item.active { background: linear-gradient(135deg, var(--gradient-start), var(--gradient-end)); color: white; box-shadow: 0 6px 15px -5px rgba(200,150,62,0.4); font-weight: 600; }
+        .sidebar .nav-item i { font-size: 1.2rem; width: 1.6rem; text-align: center; flex-shrink: 0; }
         .sidebar.collapsed .nav-item span { display: none; }
         .sidebar.collapsed .nav-item { justify-content: center; padding: 0.7rem; }
         .sidebar .toggle-btn { margin-top: auto; display: flex; justify-content: flex-end; padding: 0.8rem 0.5rem; cursor: pointer; color: var(--text-secondary); font-size: 1.1rem; }
@@ -69,62 +71,85 @@
         .page-title h1 { font-family: 'Playfair Display', serif; font-size: 1.8rem; font-weight: 700; color: var(--accent); margin-bottom: 0.1rem; }
         .page-title p { color: var(--text-secondary); font-size: 0.85rem; }
         .profile-area { display: flex; align-items: center; gap: 1rem; }
-        .theme-toggle { background: var(--card-bg); border: 1px solid var(--border); border-radius: 2rem; padding: 0.4rem 1rem; display: flex; align-items: center; gap: 0.4rem; cursor: pointer; color: var(--text-secondary); font-size: 0.8rem; transition: 0.2s; }
-        .profile-pic { width: 36px; height: 36px; border-radius: 50%; background: linear-gradient(135deg, var(--accent), var(--accent-glow)); display: flex; align-items: center; justify-content: center; color: white; font-weight: 600; font-size: 0.9rem; box-shadow: 0 4px 10px var(--accent); overflow: hidden; }
+        .theme-toggle { background: var(--card-bg); border: 1px solid var(--border); border-radius: 2rem; padding: 0.4rem 1rem; display: flex; align-items: center; gap: 0.4rem; cursor: pointer; color: var(--text-secondary); font-size: 0.8rem; transition: 0.2s; backdrop-filter: blur(10px); -webkit-backdrop-filter: blur(10px); }
+        .theme-toggle:hover { border-color: var(--accent); color: var(--accent); }
+        .profile-pic { width: 36px; height: 36px; border-radius: 50%; background: linear-gradient(135deg, var(--gradient-start), var(--gradient-end)); display: flex; align-items: center; justify-content: center; color: white; font-weight: 600; font-size: 0.9rem; overflow: hidden; }
         .profile-pic img { width: 100%; height: 100%; object-fit: cover; border-radius: 50%; }
-        .dropdown-menu { position: absolute; right: 0; top: 50px; background: var(--bg-sidebar); border: 1px solid var(--border); border-radius: 1rem; padding: 0.4rem; min-width: 160px; display: none; z-index: 1000; }
+        .dropdown-menu { position: absolute; right: 0; top: 50px; background: var(--bg-sidebar); border: 1px solid var(--border); border-radius: 1rem; padding: 0.4rem; min-width: 180px; display: none; z-index: 1000; box-shadow: var(--shadow-lg); }
         .profile-dropdown { position: relative; cursor: pointer; }
         .profile-dropdown:hover .dropdown-menu { display: block; animation: fadeIn 0.2s; }
         @keyframes fadeIn { from { opacity: 0; transform: translateY(-10px); } to { opacity: 1; transform: translateY(0); } }
-        .dropdown-item { padding: 0.6rem 1rem; color: var(--text-primary); border-radius: 0.8rem; display: flex; align-items: center; gap: 0.6rem; font-size: 0.85rem; cursor: pointer; }
+        .dropdown-item { padding: 0.6rem 1rem; color: var(--text-primary); border-radius: 0.8rem; display: flex; align-items: center; gap: 0.6rem; font-size: 0.85rem; cursor: pointer; transition: 0.2s; text-decoration: none; }
         .dropdown-item:hover { background: var(--hover-bg); color: var(--accent); }
+        .dropdown-item.danger:hover { background: var(--danger-bg); color: var(--danger-text); }
 
+        /* Welcome Banner */
         .welcome-banner { background: linear-gradient(135deg, var(--gradient-start), var(--gradient-end)); border-radius: 1.5rem; padding: 1.5rem; margin-bottom: 1.5rem; color: white; display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 1rem; }
         .welcome-banner h2 { font-size: 1.3rem; margin-bottom: 0.25rem; }
         .welcome-banner p { opacity: 0.9; font-size: 0.85rem; }
 
-        .stats-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(160px, 1fr)); gap: 1rem; margin-bottom: 1.5rem; }
-        .stat-card { background: var(--card-bg); border: 1px solid var(--border); border-radius: 1.2rem; padding: 1.1rem; text-align: center; transition: all 0.3s; }
-        .stat-card:hover { transform: translateY(-2px); box-shadow: var(--shadow); }
-        .stat-value { font-size: 1.8rem; font-weight: 700; color: var(--accent); }
-        .stat-label { color: var(--text-secondary); font-size: 0.7rem; margin-top: 0.15rem; }
+        /* Stats */
+        .stats-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(150px, 1fr)); gap: 1rem; margin-bottom: 1.5rem; }
+        .stat-card { background: var(--card-bg); backdrop-filter: blur(12px); -webkit-backdrop-filter: blur(12px); border: 1px solid var(--border); border-radius: 1.2rem; padding: 1.1rem; text-align: center; transition: all 0.3s; position: relative; overflow: hidden; }
+        .stat-card::before { content: ''; position: absolute; top: 0; left: 0; right: 0; height: 3px; background: linear-gradient(90deg, var(--gradient-start), var(--gradient-end)); }
+        .stat-card:hover { transform: translateY(-2px); box-shadow: var(--shadow-lg); }
+        .stat-card .stat-icon { font-size: 1.3rem; color: var(--accent); margin-bottom: 0.3rem; }
+        .stat-card .val { font-size: 1.8rem; font-weight: 800; font-family: 'Space Grotesk', monospace; color: var(--accent); }
+        .stat-card .lbl { font-size: 0.72rem; color: var(--text-muted); text-transform: uppercase; letter-spacing: 0.5px; margin-top: 0.15rem; }
 
+        /* Quick Actions */
         .quick-actions { display: grid; grid-template-columns: repeat(auto-fill, minmax(140px, 1fr)); gap: 0.75rem; margin-bottom: 1.5rem; }
-        .action-card { background: var(--card-bg); border: 1px solid var(--border); border-radius: 1rem; padding: 1rem 0.75rem; text-align: center; cursor: pointer; transition: 0.2s; text-decoration: none; color: var(--text-primary); }
+        .action-card { background: var(--card-bg); backdrop-filter: blur(8px); -webkit-backdrop-filter: blur(8px); border: 1px solid var(--border); border-radius: 1rem; padding: 1rem 0.75rem; text-align: center; cursor: pointer; transition: 0.2s; text-decoration: none; color: var(--text-primary); }
         .action-card:hover { transform: translateY(-4px); border-color: var(--accent); box-shadow: var(--shadow); }
         .action-card i { font-size: 1.4rem; color: var(--accent); margin-bottom: 0.5rem; display: block; }
         .action-card span { font-size: 0.72rem; font-weight: 500; }
 
-        .section-card { background: var(--card-bg); border: 1px solid var(--border); border-radius: 1.5rem; padding: 1.25rem; margin-bottom: 1.25rem; box-shadow: var(--shadow); }
+        /* Section Cards */
+        .section-card { background: var(--card-bg); backdrop-filter: blur(12px); -webkit-backdrop-filter: blur(12px); border: 1px solid var(--border); border-radius: 1.5rem; padding: 1.25rem; margin-bottom: 1.25rem; box-shadow: var(--shadow); }
         .section-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 0.75rem; flex-wrap: wrap; gap: 0.5rem; padding-bottom: 0.75rem; border-bottom: 1px solid var(--border); }
         .section-header h3 { font-size: 0.95rem; font-weight: 600; display: flex; align-items: center; gap: 0.5rem; }
         .section-header a { color: var(--accent); text-decoration: none; font-size: 0.78rem; font-weight: 500; }
 
+        .two-columns { display: grid; grid-template-columns: 1fr 1fr; gap: 1.25rem; margin-bottom: 1.25rem; }
+
+        /* Tables */
         .table-responsive { overflow-x: auto; }
         table { width: 100%; border-collapse: collapse; }
-        th { text-align: left; padding: 0.65rem 0.5rem; color: var(--text-secondary); font-weight: 500; border-bottom: 1px solid var(--border); font-size: 0.75rem; white-space: nowrap; }
-        td { padding: 0.65rem 0.5rem; border-bottom: 1px solid var(--border); font-size: 0.8rem; }
+        th { text-align: left; padding: 0.6rem 0.5rem; color: var(--text-muted); font-weight: 600; border-bottom: 1px solid var(--border); font-size: 0.7rem; text-transform: uppercase; letter-spacing: 0.5px; white-space: nowrap; }
+        td { padding: 0.6rem 0.5rem; border-bottom: 1px solid var(--border); font-size: 0.8rem; }
         tr:last-child td { border-bottom: none; }
-        .badge { padding: 0.18rem 0.55rem; border-radius: 2rem; font-size: 0.68rem; font-weight: 600; display: inline-block; }
-        .badge-success { background: var(--success-bg); color: var(--success-text); }
-        .badge-warning { background: var(--warning-bg); color: var(--warning-text); }
-        .badge-danger { background: var(--danger-bg); color: var(--danger-text); }
-        .badge-info { background: var(--info-bg); color: var(--info-text); }
-        .btn { padding: 0.3rem 0.75rem; border: none; border-radius: 0.65rem; font-weight: 500; cursor: pointer; transition: 0.2s; font-size: 0.72rem; display: inline-flex; align-items: center; gap: 0.3rem; text-decoration: none; }
+        tr:hover td { background: var(--hover-bg); }
+
+        /* Badges */
+        .badge { padding: 0.2rem 0.7rem; border-radius: 2rem; font-size: 0.7rem; font-weight: 600; display: inline-block; text-transform: uppercase; letter-spacing: 0.3px; }
+        .badge-success { background: var(--success-bg); color: var(--success-text); border: 1px solid var(--success-text); }
+        .badge-warning { background: var(--warning-bg); color: var(--warning-text); border: 1px solid var(--warning-text); }
+        .badge-danger { background: var(--danger-bg); color: var(--danger-text); border: 1px solid var(--danger-text); }
+        .badge-info { background: var(--info-bg); color: var(--info-text); border: 1px solid var(--info-text); }
+        .badge-purple { background: rgba(139,92,246,0.15); color: #8b5cf6; border: 1px solid #8b5cf6; }
+
+        /* Buttons */
+        .btn { padding: 0.35rem 0.8rem; border: none; border-radius: 2rem; font-weight: 500; cursor: pointer; transition: 0.2s; font-size: 0.75rem; display: inline-flex; align-items: center; gap: 0.3rem; text-decoration: none; font-family: inherit; }
         .btn-primary { background: linear-gradient(135deg, var(--gradient-start), var(--gradient-end)); color: white; }
+        .btn-primary:hover { box-shadow: 0 4px 12px rgba(200,150,62,0.4); }
         .btn-outline { background: transparent; border: 1px solid var(--border); color: var(--text-primary); }
         .btn-outline:hover { background: var(--hover-bg); border-color: var(--accent); color: var(--accent); }
+        .btn-sm { padding: 0.25rem 0.6rem; font-size: 0.7rem; }
 
-        .two-columns { display: grid; grid-template-columns: 1fr 1fr; gap: 1.25rem; margin-bottom: 1.25rem; }
-        .empty-state-text { text-align: center; padding: 2rem 1rem; color: var(--text-secondary); font-size: 0.82rem; }
+        .empty-state { text-align: center; padding: 2rem 1rem; color: var(--text-secondary); font-size: 0.82rem; }
+        .empty-state i { font-size: 2rem; margin-bottom: 0.5rem; opacity: 0.3; display: block; }
 
         @media (max-width: 768px) {
             .sidebar { width: 85px; }
             .sidebar .logo-area h2, .sidebar .nav-item span, .sidebar .nav-section { display: none; }
+            .sidebar .nav-item { justify-content: center; padding: 0.7rem; }
             .main-content { margin-left: 85px; max-width: calc(100vw - 85px); padding: 1rem; }
             .two-columns { grid-template-columns: 1fr; }
-            .quick-actions { grid-template-columns: repeat(2, 1fr); }
+            .quick-actions { grid-template-columns: repeat(3, 1fr); }
             .stats-grid { grid-template-columns: repeat(2, 1fr); }
+        }
+        @media (max-width: 480px) {
+            .quick-actions { grid-template-columns: repeat(2, 1fr); }
         }
     </style>
 </head>
@@ -132,7 +157,7 @@
     <img src="https://res.cloudinary.com/dda7kpir8/image/upload/q_auto/f_auto/v1781038310/ChatGPT_Image_Jun_9_2026_09_25_06_AM_elnine.png" alt="" class="bg-logo" aria-hidden="true">
     <div class="orb orb-1"></div><div class="orb orb-2"></div>
 
-    <!-- SIDEBAR WITH ALL NEW NAVIGATION -->
+    <!-- SIDEBAR — UPDATED WITH ALL SYSTEM LINKS -->
     <div class="sidebar" id="sidebar">
         <a href="index.html" class="logo-area">
             <img src="https://res.cloudinary.com/dda7kpir8/image/upload/q_auto/f_auto/v1781038310/ChatGPT_Image_Jun_9_2026_09_25_06_AM_elnine.png" alt="JWMS Logo">
@@ -145,15 +170,10 @@
         <div class="nav-section">Teaching</div>
         <a href="teacher-workspace.html" class="nav-item"><i class="fas fa-book-open"></i><span>Workspace</span></a>
         <a href="teacher-class-hub.html" class="nav-item"><i class="fas fa-users"></i><span>Class Hub</span></a>
+        <a href="teacher-teach.html" class="nav-item"><i class="fas fa-chalkboard"></i><span>Teach Mode</span></a>
 
-        <div class="nav-section">Assessments</div>
-        <a href="teacher-assessments.html" class="nav-item"><i class="fas fa-pen-fancy"></i><span>Create Assessment</span></a>
-        <a href="teacher-assessment-history.html" class="nav-item"><i class="fas fa-history"></i><span>Assessment History</span></a>
-        <a href="teacher-assessment-evaluation.html" class="nav-item"><i class="fas fa-clipboard-check"></i><span>Evaluation</span></a>
-
-        <div class="nav-section">Grading & Reports</div>
-        <a href="teacher-scoring-engine.html" class="nav-item"><i class="fas fa-calculator"></i><span>Scoring Engine</span></a>
-        <a href="teacher-report-card.html" class="nav-item"><i class="fas fa-graduation-cap"></i><span>Report Card</span></a>
+        <div class="nav-section">Planning</div>
+        <a href="timetable-syllabus.html" class="nav-item"><i class="fas fa-calendar-alt"></i><span>Timetable & Syllabus</span></a>
 
         <div class="nav-section">Personal</div>
         <a href="teacher-profile.html" class="nav-item"><i class="fas fa-user-edit"></i><span>Profile</span></a>
@@ -172,61 +192,100 @@
                 <div class="theme-toggle" id="themeToggle"><i class="fas fa-sun"></i><span>Light</span><i class="fas fa-moon"></i></div>
                 <div class="profile-dropdown">
                     <div class="profile-pic" id="profilePic">TE</div>
-                    <div class="dropdown-menu"><a href="teacher-profile.html" class="dropdown-item"><i class="fas fa-user-edit"></i> Update Profile</a><div class="dropdown-item" id="logoutBtn"><i class="fas fa-sign-out-alt"></i> Logout</div></div>
+                    <div class="dropdown-menu">
+                        <a href="teacher-profile.html" class="dropdown-item"><i class="fas fa-user-edit"></i> Profile</a>
+                        <div class="dropdown-item danger" id="logoutBtn"><i class="fas fa-sign-out-alt"></i> Logout</div>
+                    </div>
                 </div>
             </div>
         </div>
 
+        <!-- Welcome Banner -->
         <div class="welcome-banner">
-            <div><h2><i class="fas fa-chalkboard"></i> Ready to inspire minds!</h2><p>You have <span id="pendingTasksCount">0</span> pending tasks</p></div>
+            <div>
+                <h2><i class="fas fa-chalkboard-teacher"></i> Ready to inspire minds!</h2>
+                <p>You have <span id="pendingTasksCount">0</span> pending tasks across <span id="classCount">0</span> class(es)</p>
+            </div>
             <div><span id="currentDate" style="font-size:0.9rem;"></span></div>
         </div>
 
+        <!-- Stats Grid -->
         <div class="stats-grid">
-            <div class="stat-card"><div class="stat-value" id="totalStudents">0</div><div class="stat-label">Total Students</div></div>
-            <div class="stat-card"><div class="stat-value" id="publishedAssessments">0</div><div class="stat-label">Assessments</div></div>
-            <div class="stat-card"><div class="stat-value" id="pendingSubmissions">0</div><div class="stat-label">Pending Grading</div></div>
-            <div class="stat-card"><div class="stat-value" id="gradedSubmissions">0</div><div class="stat-label">Graded</div></div>
-            <div class="stat-card"><div class="stat-value" id="avgClassScore">0%</div><div class="stat-label">Avg Class Score</div></div>
-            <div class="stat-card"><div class="stat-value" id="attendanceToday">0%</div><div class="stat-label">Today's Attendance</div></div>
+            <div class="stat-card"><div class="stat-icon"><i class="fas fa-users"></i></div><div class="val" id="totalStudents">0</div><div class="lbl">Total Students</div></div>
+            <div class="stat-card"><div class="stat-icon"><i class="fas fa-book"></i></div><div class="val" id="totalLessons">0</div><div class="lbl">Lesson Notes</div></div>
+            <div class="stat-card"><div class="stat-icon"><i class="fas fa-clock"></i></div><div class="val" id="pendingApprovals">0</div><div class="lbl">Pending Approval</div></div>
+            <div class="stat-card"><div class="stat-icon"><i class="fas fa-check-circle"></i></div><div class="val" id="approvedLessons">0</div><div class="lbl">Approved</div></div>
+            <div class="stat-card"><div class="stat-icon"><i class="fas fa-star"></i></div><div class="val" id="teacherRating">0</div><div class="lbl">Rating</div></div>
+            <div class="stat-card"><div class="stat-icon"><i class="fas fa-calendar-check"></i></div><div class="val" id="attendanceToday">—</div><div class="lbl">Today's Attendance</div></div>
         </div>
 
+        <!-- Quick Actions -->
         <div class="quick-actions">
-            <a href="teacher-assessments.html" class="action-card"><i class="fas fa-plus-circle"></i><span>New Assessment</span></a>
-            <a href="teacher-assessment-history.html" class="action-card"><i class="fas fa-history"></i><span>View History</span></a>
-            <a href="teacher-assessment-evaluation.html" class="action-card"><i class="fas fa-check-double"></i><span>Grade Work</span></a>
-            <a href="teacher-scoring-engine.html" class="action-card"><i class="fas fa-calculator"></i><span>Scoring Engine</span></a>
-            <a href="teacher-report-card.html" class="action-card"><i class="fas fa-graduation-cap"></i><span>Report Card</span></a>
             <a href="teacher-workspace.html" class="action-card"><i class="fas fa-book-open"></i><span>Lesson Notes</span></a>
-            <a href="teacher-class-hub.html" class="action-card"><i class="fas fa-users"></i><span>My Class</span></a>
+            <a href="teacher-class-hub.html" class="action-card"><i class="fas fa-users"></i><span>Class Hub</span></a>
+            <a href="teacher-teach.html" class="action-card"><i class="fas fa-chalkboard"></i><span>Teach Mode</span></a>
+            <a href="timetable-syllabus.html" class="action-card"><i class="fas fa-calendar-alt"></i><span>Timetable</span></a>
             <a href="teacher-profile.html" class="action-card"><i class="fas fa-user-edit"></i><span>Profile</span></a>
+            <a href="teacher-workspace.html" class="action-card" onclick="localStorage.setItem('workspace-tab','reports')"><i class="fas fa-clipboard-list"></i><span>Reports</span></a>
         </div>
 
+        <!-- Two Column Layout -->
         <div class="two-columns">
+            <!-- Left Column -->
             <div>
+                <!-- Recent Lesson Notes -->
                 <div class="section-card">
-                    <div class="section-header"><h3><i class="fas fa-clock"></i> Pending Submissions</h3><a href="teacher-assessment-evaluation.html">View All <i class="fas fa-arrow-right"></i></a></div>
-                    <div class="table-responsive"><table><thead><tr><th>Student</th><th>Assessment</th><th>Type</th><th>Action</th></tr></thead><tbody id="pendingSubmissionsBody"><tr><td colspan="4" class="empty-state-text">Loading...</td></tr></tbody></table></div>
+                    <div class="section-header">
+                        <h3><i class="fas fa-book"></i> Recent Lesson Notes</h3>
+                        <a href="teacher-workspace.html">View All <i class="fas fa-arrow-right"></i></a>
+                    </div>
+                    <div class="table-responsive">
+                        <table>
+                            <thead><tr><th>Subject</th><th>Week</th><th>Topic</th><th>Status</th></tr></thead>
+                            <tbody id="recentLessonsBody"><tr><td colspan="4"><div class="empty-state"><i class="fas fa-spinner fa-spin"></i><p>Loading...</p></div></td></tr></tbody>
+                        </table>
+                    </div>
                 </div>
+
+                <!-- Recent Announcements -->
                 <div class="section-card">
-                    <div class="section-header"><h3><i class="fas fa-tasks"></i> Recent Assessments</h3><a href="teacher-assessment-history.html">View All <i class="fas fa-arrow-right"></i></a></div>
-                    <div class="table-responsive"><table><thead><tr><th>Title</th><th>Subject</th><th>Type</th><th>Status</th></tr></thead><tbody id="recentAssessmentsBody"><tr><td colspan="4" class="empty-state-text">Loading...</td></tr></tbody></table></div>
+                    <div class="section-header">
+                        <h3><i class="fas fa-bullhorn"></i> My Announcements</h3>
+                        <a href="teacher-class-hub.html">View All <i class="fas fa-arrow-right"></i></a>
+                    </div>
+                    <div class="table-responsive">
+                        <table>
+                            <thead><tr><th>Title</th><th>Class</th><th>Date</th></tr></thead>
+                            <tbody id="recentAnnouncementsBody"><tr><td colspan="3"><div class="empty-state"><i class="fas fa-spinner fa-spin"></i><p>Loading...</p></div></td></tr></tbody>
+                        </table>
+                    </div>
                 </div>
             </div>
+
+            <!-- Right Column -->
             <div>
+                <!-- Pending Tasks -->
                 <div class="section-card">
-                    <div class="section-header"><h3><i class="fas fa-chart-simple"></i> Recent Results</h3><a href="teacher-assessment-evaluation.html">View All <i class="fas fa-arrow-right"></i></a></div>
-                    <div class="table-responsive"><table><thead><tr><th>Student</th><th>Assessment</th><th>Score</th><th>Grade</th></tr></thead><tbody id="recentResultsBody"><tr><td colspan="4" class="empty-state-text">Loading...</td></tr></tbody></table></div>
+                    <div class="section-header">
+                        <h3><i class="fas fa-tasks"></i> Pending Tasks</h3>
+                        <a href="teacher-workspace.html">View All <i class="fas fa-arrow-right"></i></a>
+                    </div>
+                    <div id="pendingTasksList"><div class="empty-state"><i class="fas fa-spinner fa-spin"></i><p>Loading...</p></div></div>
                 </div>
+
+                <!-- Points Chart -->
                 <div class="section-card">
-                    <div class="section-header"><h3><i class="fas fa-chart-line"></i> Class Performance</h3></div>
-                    <canvas id="performanceChart" style="height:200px;width:100%;"></canvas>
+                    <div class="section-header"><h3><i class="fas fa-chart-line"></i> Points Earned</h3></div>
+                    <canvas id="pointsChart" style="height:200px;width:100%;"></canvas>
                 </div>
             </div>
         </div>
     </div>
 
     <script>
+        // ============================================
+        // FIREBASE CONFIG
+        // ============================================
         const firebaseConfig = {
             apiKey: "AIzaSyADXHEiaSQ146QsGsaOCElARtpwrLE8svs",
             authDomain: "judah-c737e.firebaseapp.com",
@@ -240,86 +299,194 @@
         const auth = firebase.auth();
         const db = firebase.firestore();
 
+        // ============================================
+        // SIDEBAR & THEME
+        // ============================================
         const sidebar = document.getElementById('sidebar'), mainContent = document.getElementById('mainContent');
-        document.getElementById('sidebarToggle').addEventListener('click', () => { sidebar.classList.toggle('collapsed'); mainContent.classList.toggle('expanded'); const icon = document.getElementById('sidebarToggle').querySelector('i'); icon.classList.toggle('fa-chevron-left'); icon.classList.toggle('fa-chevron-right'); });
+        document.getElementById('sidebarToggle').addEventListener('click', () => {
+            sidebar.classList.toggle('collapsed'); mainContent.classList.toggle('expanded');
+            const icon = document.getElementById('sidebarToggle').querySelector('i');
+            icon.classList.toggle('fa-chevron-left'); icon.classList.toggle('fa-chevron-right');
+        });
         const html = document.documentElement, themeToggle = document.getElementById('themeToggle');
         const savedTheme = localStorage.getItem('judah-theme') || 'dark';
         html.setAttribute('data-theme', savedTheme);
         themeToggle.querySelector('span').textContent = savedTheme === 'dark' ? 'Light' : 'Dark';
-        themeToggle.addEventListener('click', () => { const next = html.getAttribute('data-theme') === 'dark' ? 'light' : 'dark'; html.setAttribute('data-theme', next); localStorage.setItem('judah-theme', next); themeToggle.querySelector('span').textContent = next === 'dark' ? 'Light' : 'Dark'; });
+        themeToggle.addEventListener('click', () => {
+            const next = html.getAttribute('data-theme') === 'dark' ? 'light' : 'dark';
+            html.setAttribute('data-theme', next); localStorage.setItem('judah-theme', next);
+            themeToggle.querySelector('span').textContent = next === 'dark' ? 'Light' : 'Dark';
+        });
 
+        // ============================================
+        // UTILITIES
+        // ============================================
         document.getElementById('currentDate').textContent = new Date().toLocaleDateString('en-US', { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' });
-
-        let currentUser = null, userData = null, performanceChart = null;
         function escapeHtml(text) { if (!text) return ''; const div = document.createElement('div'); div.textContent = text; return div.innerHTML; }
+        function statusBadge(status) {
+            const map = { draft: 'badge-info', pending: 'badge-warning', approved: 'badge-success', published: 'badge-purple', rejected: 'badge-danger' };
+            return `<span class="badge ${map[status] || 'badge-info'}">${status}</span>`;
+        }
 
+        // ============================================
+        // GLOBAL STATE
+        // ============================================
+        let currentUser = null, userData = null, pointsChart = null;
+
+        // ============================================
+        // AUTH
+        // ============================================
         auth.onAuthStateChanged(async (user) => {
             if (!user) { window.location.href = 'teacher-login.html'; return; }
             try {
                 const userDoc = await db.collection('users').doc(user.uid).get();
-                if (!userDoc.exists || (userDoc.data().role !== 'teacher' && !(userDoc.data().roles || []).includes('teacher'))) { auth.signOut(); window.location.href = 'index.html'; return; }
+                if (!userDoc.exists || userDoc.data().role !== 'teacher') {
+                    await auth.signOut(); window.location.href = 'index.html'; return;
+                }
                 userData = userDoc.data();
-                if (!(userData.approved === true || userData.status === 'approved')) { alert('Your account is pending approval.'); auth.signOut(); window.location.href = 'teacher-login.html'; return; }
+                if (!userData.approved) {
+                    alert('Your account is pending approval.'); await auth.signOut(); window.location.href = 'teacher-login.html'; return;
+                }
                 currentUser = user;
                 document.getElementById('teacherName').textContent = userData.firstName || 'Teacher';
                 const pic = document.getElementById('profilePic');
-                if (userData.photoURL) pic.innerHTML = `<img src="${userData.photoURL}" alt="Profile">`;
-                else pic.textContent = (userData.firstName?.[0]||'T')+(userData.surname?.[0]||'E');
+                if (userData.photoURL) pic.innerHTML = `<img src="${userData.photoURL}" alt="Profile" style="width:100%;height:100%;object-fit:cover;border-radius:50%;">`;
+                else pic.textContent = (userData.firstName?.[0] || 'T') + (userData.surname?.[0] || 'E');
                 await loadDashboardData();
             } catch (e) { console.error('Auth error:', e); }
         });
+
         document.getElementById('logoutBtn').addEventListener('click', () => auth.signOut().then(() => window.location.href = 'index.html'));
 
+        // ============================================
+        // LOAD DASHBOARD DATA
+        // ============================================
         async function loadDashboardData() {
-            if (!currentUser) return;
-            try {
-                const classId = userData.classTeaching;
-                let totalStudents = 0, publishedAssessments = 0, pendingGrading = 0, gradedCount = 0, totalScore = 0;
+            if (!currentUser || !userData) return;
 
-                if (classId) {
-                    const stuSnap = await db.collection('users').where('role','==','student').where('class','==',classId).get();
-                    totalStudents = stuSnap.size;
+            try {
+                // Get classes
+                const classes = userData.classesTeaching || (userData.classTeaching ? [userData.classTeaching] : []);
+                document.getElementById('classCount').textContent = classes.length;
+
+                // Total students across all classes
+                let totalStudents = 0;
+                if (classes.length > 0) {
+                    const studentSnap = await db.collection('users')
+                        .where('role', '==', 'student')
+                        .where('class', 'in', classes.length > 1 ? classes : [classes[0]])
+                        .get();
+                    totalStudents = studentSnap.size;
                 }
                 document.getElementById('totalStudents').textContent = totalStudents;
 
-                const assessSnap = await db.collection('assessments').where('teacherId','==',currentUser.uid).where('status','==','published').get();
-                publishedAssessments = assessSnap.size;
-                document.getElementById('publishedAssessments').textContent = publishedAssessments;
+                // Lesson notes stats
+                const lessonSnap = await db.collection('lessonNotes').where('teacherId', '==', currentUser.uid).get();
+                const lessons = []; lessonSnap.forEach(d => lessons.push({ id: d.id, ...d.data() }));
+                
+                document.getElementById('totalLessons').textContent = lessons.length;
+                
+                const pending = lessons.filter(l => l.status === 'pending');
+                const approved = lessons.filter(l => l.status === 'approved');
+                document.getElementById('pendingApprovals').textContent = pending.length;
+                document.getElementById('approvedLessons').textContent = approved.length;
+                document.getElementById('pendingTasksCount').textContent = pending.length;
 
-                const recentAssessments = await db.collection('assessments').where('teacherId','==',currentUser.uid).orderBy('createdAt','desc').limit(5).get();
-                document.getElementById('recentAssessmentsBody').innerHTML = recentAssessments.empty ? '<tr><td colspan="4" class="empty-state-text">No assessments yet</td></tr>' : recentAssessments.docs.map(d => { const a = d.data(); return `<tr><td><strong>${escapeHtml(a.title||'Untitled')}</strong></td><td>${escapeHtml(a.subject||'—')}</td><td>${a.type}</td><td><span class="badge ${a.status==='published'?'badge-success':'badge-warning'}">${a.status}</span></td></tr>`; }).join('');
+                // Rating
+                const points = userData.points || 0;
+                const stars = Math.min(5, Math.floor(points / 100));
+                document.getElementById('teacherRating').textContent = '★'.repeat(stars) + '☆'.repeat(5 - stars);
 
-                const subSnap = await db.collection('submissions').where('teacherId','==',currentUser.uid).orderBy('submittedAt','desc').limit(10).get();
-                const pendingSubs = subSnap.docs.filter(d => !d.data().graded);
-                const gradedSubs = subSnap.docs.filter(d => d.data().graded);
-                pendingGrading = pendingSubs.length;
-                gradedCount = gradedSubs.length;
-                document.getElementById('pendingSubmissions').textContent = pendingGrading;
-                document.getElementById('gradedSubmissions').textContent = gradedCount;
-                document.getElementById('pendingTasksCount').textContent = pendingGrading;
-
-                document.getElementById('pendingSubmissionsBody').innerHTML = pendingSubs.length ? pendingSubs.slice(0,5).map(d => { const s = d.data(); return `<tr><td>${escapeHtml(s.studentName||'Student')}</td><td>${escapeHtml(s.assignmentTitle||'Assessment')}</td><td>${s.type||'—'}</td><td><a href="teacher-assessment-evaluation.html?id=${s.assessmentId}" class="btn btn-primary btn-sm">Grade</a></td></tr>`; }).join('') : '<tr><td colspan="4" class="empty-state-text">No pending submissions</td></tr>';
-
-                document.getElementById('recentResultsBody').innerHTML = gradedSubs.length ? gradedSubs.slice(0,5).map(d => { const s = d.data(); const pct = s.totalPoints>0?((s.score/s.totalPoints)*100).toFixed(1):0; totalScore+=parseFloat(pct); return `<tr><td>${escapeHtml(s.studentName||'Student')}</td><td>${escapeHtml(s.assignmentTitle||'Assessment')}</td><td><strong>${s.score}/${s.totalPoints||100}</strong></td><td><span class="badge badge-info">${pct>=75?'A':pct>=65?'B':pct>=50?'C':pct>=40?'D':'F'}</span></td></tr>`; }).join('') : '<tr><td colspan="4" class="empty-state-text">No graded results</td></tr>';
-
-                const avgScore = gradedCount ? (totalScore/gradedCount).toFixed(1) : 0;
-                document.getElementById('avgClassScore').textContent = avgScore + '%';
-
+                // Today's attendance
                 const today = new Date().toISOString().split('T')[0];
-                if (classId) {
-                    const attSnap = await db.collection('attendance').where('classId','==',classId).where('date','==',today).get();
-                    let present = 0; attSnap.forEach(d => { if (d.data().status==='present') present++; });
-                    document.getElementById('attendanceToday').textContent = attSnap.size ? ((present/attSnap.size)*100).toFixed(1)+'%' : '0%';
+                if (classes.length > 0) {
+                    try {
+                        const attSnap = await db.collection('attendance')
+                            .where('classId', 'in', classes.length > 1 ? classes : [classes[0]])
+                            .where('date', '==', today)
+                            .get();
+                        let present = 0; attSnap.forEach(d => { if (d.data().status === 'present') present++; });
+                        document.getElementById('attendanceToday').textContent = attSnap.size ? Math.round((present / attSnap.size) * 100) + '%' : '—';
+                    } catch (e) { document.getElementById('attendanceToday').textContent = '—'; }
                 }
 
-                const scores = gradedSubs.map(d => d.data().totalPoints>0?(d.data().score/d.data().totalPoints)*100:0);
-                const ctx = document.getElementById('performanceChart')?.getContext('2d');
-                if (ctx) {
-                    if (performanceChart) performanceChart.destroy();
-                    if (scores.length) {
-                        performanceChart = new Chart(ctx, { type:'line', data:{ labels:scores.map((_,i)=>`#${i+1}`), datasets:[{ label:'Score (%)', data:scores, borderColor:'#C8963E', backgroundColor:'rgba(200,150,62,0.1)', fill:true, tension:0.4 }] }, options:{ responsive:true, maintainAspectRatio:true, plugins:{ legend:{ position:'top', labels:{ color:'#94a3b8' } } }, scales:{ y:{ min:0, max:100 } } } });
+                // Recent lesson notes
+                const recentLessons = lessons.sort((a, b) => {
+                    const da = a.updatedAt?.toDate?.() || a.createdAt?.toDate?.() || new Date(0);
+                    const db2 = b.updatedAt?.toDate?.() || b.createdAt?.toDate?.() || new Date(0);
+                    return db2 - da;
+                }).slice(0, 5);
+
+                document.getElementById('recentLessonsBody').innerHTML = recentLessons.length
+                    ? recentLessons.map(l => `
+                        <tr>
+                            <td><strong>${escapeHtml(l.subject || '—')}</strong></td>
+                            <td>Week ${l.week || '—'}</td>
+                            <td>${escapeHtml((l.topic || '').substring(0, 40))}${(l.topic || '').length > 40 ? '...' : ''}</td>
+                            <td>${statusBadge(l.status || 'draft')}</td>
+                        </tr>`).join('')
+                    : '<tr><td colspan="4"><div class="empty-state"><i class="fas fa-book"></i><p>No lesson notes yet. <a href="teacher-workspace.html">Create one</a></p></div></td></tr>';
+
+                // Recent announcements
+                try {
+                    const annSnap = await db.collection('classAnnouncements')
+                        .where('teacherId', '==', currentUser.uid)
+                        .orderBy('createdAt', 'desc').limit(5).get();
+                    document.getElementById('recentAnnouncementsBody').innerHTML = annSnap.empty
+                        ? '<tr><td colspan="3"><div class="empty-state"><i class="fas fa-bullhorn"></i><p>No announcements yet.</p></div></td></tr>'
+                        : annSnap.docs.map(d => {
+                            const a = d.data();
+                            const date = a.createdAt?.toDate?.().toLocaleDateString('en-GB', { day: 'numeric', month: 'short' }) || '—';
+                            return `<tr><td>${escapeHtml(a.title || 'Untitled')}</td><td>${escapeHtml(a.classId || '—')}</td><td>${date}</td></tr>`;
+                        }).join('');
+                } catch (e) {
+                    document.getElementById('recentAnnouncementsBody').innerHTML = '<tr><td colspan="3"><div class="empty-state"><p>No announcements.</p></div></td></tr>';
+                }
+
+                // Pending tasks
+                let tasksHTML = '';
+                if (pending.length > 0) {
+                    tasksHTML += `<div style="margin-bottom:0.75rem;"><strong style="color:var(--warning-text);"><i class="fas fa-clock"></i> ${pending.length} lesson note(s) awaiting approval</strong></div>`;
+                    pending.slice(0, 3).forEach(l => {
+                        tasksHTML += `<div style="padding:0.4rem 0;border-bottom:1px solid var(--border);font-size:0.8rem;">📝 ${escapeHtml(l.subject)} Week ${l.week} — <span class="badge badge-warning">pending</span></div>`;
+                    });
+                }
+                if (classes.length > 0) {
+                    const pendingStudentsSnap = await db.collection('users')
+                        .where('role', '==', 'student')
+                        .where('class', 'in', classes.length > 1 ? classes : [classes[0]])
+                        .where('approved', '==', false)
+                        .get();
+                    if (!pendingStudentsSnap.empty) {
+                        tasksHTML += `<div style="margin-top:0.5rem;"><strong style="color:var(--warning-text);"><i class="fas fa-user-clock"></i> ${pendingStudentsSnap.size} student(s) awaiting approval</strong></div>`;
                     }
                 }
+                document.getElementById('pendingTasksList').innerHTML = tasksHTML || '<div class="empty-state"><i class="fas fa-check-circle" style="color:var(--success-text);"></i><p>All caught up!</p></div>';
+
+                // Points chart
+                const history = userData.pointHistory || [];
+                const ctx = document.getElementById('pointsChart')?.getContext('2d');
+                if (ctx) {
+                    if (pointsChart) pointsChart.destroy();
+                    const labels = history.length ? history.map(h => new Date(h.date).toLocaleDateString('en-GB', { day: 'numeric', month: 'short' })) : ['Start'];
+                    const data = history.length ? history.map(h => h.newPoints) : [0];
+                    pointsChart = new Chart(ctx, {
+                        type: 'line',
+                        data: {
+                            labels,
+                            datasets: [{ label: 'Points', data, borderColor: '#C8963E', backgroundColor: 'rgba(200,150,62,0.1)', fill: true, tension: 0.4, pointRadius: 3 }]
+                        },
+                        options: {
+                            responsive: true, maintainAspectRatio: true,
+                            plugins: { legend: { display: false } },
+                            scales: {
+                                y: { beginAtZero: true, ticks: { color: '#94a3b8' } },
+                                x: { ticks: { color: '#94a3b8', maxTicksLimit: 6 } }
+                            }
+                        }
+                    });
+                }
+
             } catch (e) { console.error('Dashboard error:', e); }
         }
     </script>
