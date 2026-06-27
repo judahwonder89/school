@@ -191,11 +191,6 @@
         }
         .all-toggle:hover { border-color: var(--accent); }
         .all-toggle input { display: none; }
-        .class-badge-inline {
-            font-size: 0.7rem; padding: 0.15rem 0.5rem; border-radius: 1rem;
-            background: var(--info-bg); color: var(--info-text); font-weight: 600;
-            display: inline-block; margin-left: 0.3rem;
-        }
 
         /* Tab Navigation */
         .tab-navigation {
@@ -446,7 +441,7 @@
             <button class="tab-btn" data-tab="approvals"><i class="fas fa-user-check"></i> Student Approvals <span class="badge badge-pending" id="approvalBadge" style="display:none;">0</span></button>
             <button class="tab-btn" data-tab="attendance"><i class="fas fa-fingerprint"></i> Attendance</button>
             <button class="tab-btn" data-tab="announcements"><i class="fas fa-bullhorn"></i> Class Announcements</button>
-            <button class="tab-btn" data-tab="actions"><i class="fas fa-clock"></i> Action Requests <span class="badge badge-pending" id="actionBadge" style="display:none;">0</span></button>
+            <button class="tab-btn" data-tab="actions"><i class="fas fa-clock"></i> All Requests <span class="badge badge-pending" id="actionBadge" style="display:none;">0</span></button>
         </div>
 
         <!-- Tab 1: Class Roster -->
@@ -555,22 +550,14 @@
             </div>
         </div>
 
-        <!-- Tab 5: Action Requests -->
+        <!-- Tab 5: All Requests (COMBINED) -->
         <div class="tab-content" id="tab-actions">
             <div class="card">
                 <div class="card-header">
-                    <h3><i class="fas fa-clock"></i> My Pending Action Requests</h3>
+                    <h3><i class="fas fa-clock"></i> All Requests & Actions</h3>
                     <button class="btn btn-outline btn-sm" onclick="loadPendingActions()"><i class="fas fa-sync-alt"></i> Refresh</button>
                 </div>
                 <div id="pendingActionsList"><div class="empty-state"><i class="fas fa-spinner fa-spin"></i><p>Loading...</p></div></div>
-            </div>
-            <!-- NEW: Student Absence Requests Section -->
-            <div class="card" style="margin-top:1rem;">
-                <div class="card-header">
-                    <h3><i class="fas fa-envelope-open-text"></i> Student Absence Requests</h3>
-                    <button class="btn btn-outline btn-sm" onclick="loadStudentAbsenceRequests()"><i class="fas fa-sync-alt"></i> Refresh</button>
-                </div>
-                <div id="studentAbsenceList"><div class="empty-state"><i class="fas fa-spinner fa-spin"></i><p>Loading...</p></div></div>
             </div>
         </div>
     </div>
@@ -609,6 +596,26 @@
         </div>
     </div>
 
+    <!-- Teacher Response Modal (for approve/reject with feedback) -->
+    <div class="modal-overlay" id="teacherResponseModal">
+        <div class="modal-content">
+            <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:1rem;padding-bottom:1rem;border-bottom:1px solid var(--border);">
+                <h3 id="teacherResponseTitle">Respond to Request</h3>
+                <i class="fas fa-times" style="cursor:pointer;font-size:1.3rem;color:var(--text-secondary);padding:0.3rem;border-radius:0.5rem;" onclick="closeTeacherResponseModal()"></i>
+            </div>
+            <div id="teacherResponseBody"></div>
+            <div class="form-group">
+                <label>Your Response / Reason</label>
+                <textarea class="form-control" id="teacherResponseNote" rows="3" placeholder="Write your response or reason..."></textarea>
+            </div>
+            <div class="btn-group" style="justify-content:flex-end;margin-top:1rem;">
+                <button class="btn btn-outline" onclick="closeTeacherResponseModal()">Cancel</button>
+                <button class="btn btn-danger" id="teacherRejectBtn"><i class="fas fa-times"></i> Reject</button>
+                <button class="btn btn-success" id="teacherApproveBtn"><i class="fas fa-check"></i> Approve</button>
+            </div>
+        </div>
+    </div>
+
     <script>
         // ============================================
         // FIREBASE CONFIGURATION
@@ -638,6 +645,7 @@
         let currentAttendance = {};
         let pendingActionsUnsub = null;
         let unsubscribers = {};
+        let currentActionId = null;
 
         // ============================================
         // UTILITY FUNCTIONS
@@ -715,7 +723,6 @@
         const savedTheme = localStorage.getItem('judah-theme') || 'dark';
         html.setAttribute('data-theme', savedTheme);
         themeToggle.querySelector('span').textContent = savedTheme === 'dark' ? 'Light' : 'Dark';
-
         themeToggle.addEventListener('click', () => {
             const next = html.getAttribute('data-theme') === 'dark' ? 'light' : 'dark';
             html.setAttribute('data-theme', next);
@@ -788,23 +795,14 @@
             if (!activeTab) return;
             const tabId = activeTab.id;
             switch (tabId) {
-                case 'tab-roster':
-                    loadAllStudents();
-                    break;
-                case 'tab-approvals':
-                    loadPendingStudents();
-                    break;
+                case 'tab-roster': loadAllStudents(); break;
+                case 'tab-approvals': loadPendingStudents(); break;
                 case 'tab-attendance':
                     document.getElementById('attTableCard').style.display = 'none';
                     document.getElementById('attEmpty').style.display = 'block';
                     break;
-                case 'tab-announcements':
-                    loadAnnouncements();
-                    break;
-                case 'tab-actions':
-                    loadPendingActions();
-                    loadStudentAbsenceRequests();
-                    break;
+                case 'tab-announcements': loadAnnouncements(); break;
+                case 'tab-actions': loadPendingActions(); break;
             }
         }
 
@@ -814,18 +812,15 @@
         document.getElementById('tabNavigation').addEventListener('click', (e) => {
             const btn = e.target.closest('.tab-btn');
             if (!btn) return;
-
             document.querySelectorAll('#tabNavigation .tab-btn').forEach(b => b.classList.remove('active'));
             btn.classList.add('active');
-
             document.querySelectorAll('.tab-content').forEach(t => t.classList.remove('active'));
             const tabContent = document.getElementById('tab-' + btn.dataset.tab);
             if (tabContent) tabContent.classList.add('active');
-
             const tab = btn.dataset.tab;
             if (tab === 'approvals') loadPendingStudents();
             else if (tab === 'announcements') loadAnnouncements();
-            else if (tab === 'actions') { loadPendingActions(); loadStudentAbsenceRequests(); }
+            else if (tab === 'actions') loadPendingActions();
             else if (tab === 'attendance') {
                 document.getElementById('attDate').valueAsDate = new Date();
                 document.getElementById('attTableCard').style.display = 'none';
@@ -834,14 +829,15 @@
         });
 
         // ============================================
-        // LOAD ALL STUDENTS (REAL-TIME)
+        // LOAD ALL STUDENTS
         // ============================================
         function startStudentsListener() {
             if (!teacherClasses.length) return;
             if (unsubscribers['students']) unsubscribers['students']();
+            const targets = teacherClasses.length <= 10 ? teacherClasses : teacherClasses.slice(0, 10);
             unsubscribers['students'] = db.collection('users')
                 .where('role', '==', 'student')
-                .where('class', 'in', teacherClasses.length <= 10 ? teacherClasses : teacherClasses.slice(0, 10))
+                .where('class', 'in', targets)
                 .onSnapshot(snap => {
                     allStudents = [];
                     pendingStudents = [];
@@ -858,9 +854,7 @@
                     renderRoster();
                     updateApprovalBadge();
                     renderApprovals();
-                }, err => {
-                    console.error('Students listener error:', err);
-                });
+                }, err => console.error('Students listener error:', err));
         }
 
         async function loadAllStudents() {
@@ -943,7 +937,7 @@
         }
 
         // ============================================
-        // REQUEST ACTION (goes through admin approval) - FIXED
+        // REQUEST ACTION (goes through admin approval)
         // ============================================
         async function requestAction(actionType, studentId) {
             const student = allStudents.find(s => s.id === studentId);
@@ -955,15 +949,9 @@
                 if (!role) return;
                 details = { prefectRole: role };
             }
-            const actionLabels = {
-                suspend: 'Suspend',
-                activate: 'Activate',
-                assign_prefect: 'Assign Prefect',
-                delete: 'Delete'
-            };
+            const actionLabels = { suspend: 'Suspend', activate: 'Activate', assign_prefect: 'Assign Prefect', delete: 'Delete' };
             if (!confirm(`Request to ${actionLabels[actionType] || actionType} "${name}"? The admin must approve this action.`)) return;
             try {
-                // FIXED: Include studentClassId so it's clear which class
                 await db.collection('pendingActions').add({
                     teacherId: currentUser.uid,
                     teacherName: `${userData?.firstName || ''} ${userData?.surname || ''}`.trim(),
@@ -1047,7 +1035,7 @@
         });
 
         // ============================================
-        // STUDENT APPROVALS - FIXED
+        // STUDENT APPROVALS
         // ============================================
         function updateApprovalBadge() {
             const badge = document.getElementById('approvalBadge');
@@ -1163,7 +1151,7 @@
         window.rejectStudent = rejectStudent;
 
         // ============================================
-        // ATTENDANCE - FIXED (no pre-toggle)
+        // ATTENDANCE
         // ============================================
         document.getElementById('attDate').valueAsDate = new Date();
 
@@ -1176,7 +1164,6 @@
             btn.innerHTML = '<span class="loading-spinner"></span> Loading...';
             try {
                 const targets = getTargetClasses();
-                // FIXED: Reset currentAttendance before loading
                 currentAttendance = {};
                 const snap = await db.collection('attendance')
                     .where('classId', 'in', targets.length <= 10 ? targets : targets.slice(0, 10))
@@ -1193,7 +1180,6 @@
                 if (!students.length) {
                     tbody.innerHTML = '<tr><td colspan="6"><div class="empty-state"><p>No active students in selected class(es).</p></div></td></tr>';
                 } else {
-                    // FIXED: No pre-toggle - only check existing records
                     tbody.innerHTML = students.map((s, i) => {
                         const existingStatus = currentAttendance[s.id] || '';
                         const existingRemark = currentAttendance[s.id + '_remark'] || '';
@@ -1219,9 +1205,7 @@
             }
         });
 
-        function updateAttendance(id, status) {
-            currentAttendance[id] = status;
-        }
+        function updateAttendance(id, status) { currentAttendance[id] = status; }
         window.updateAttendance = updateAttendance;
 
         function markAllAttendance(status) {
@@ -1243,13 +1227,11 @@
             const date = document.getElementById('attDate').value;
             const session = document.getElementById('attSession').value;
             const students = allStudents.filter(s => !s.suspended && s.approved);
-            // FIXED: Check if attendance has been set for at least some students
-            const markedCount = students.filter(s => currentAttendance[s.id]).length;
             if (!students.length) {
                 showToast('No Students', 'No active students to record attendance for.', 'warning');
                 return;
             }
-            if (!confirm(`Save attendance for ${markedCount || students.length} student(s) on ${date} (${session})? Unmarked students will be recorded as present.`)) return;
+            if (!confirm(`Save attendance for ${students.length} student(s) on ${date} (${session})? Unmarked will be present.`)) return;
             const btn = document.getElementById('attSaveBtn');
             btn.disabled = true;
             btn.innerHTML = '<span class="loading-spinner"></span> Saving...';
@@ -1380,7 +1362,7 @@
         window.deleteAnnouncement = deleteAnnouncement;
 
         // ============================================
-        // PENDING ACTIONS (Real-time listener)
+        // PENDING ACTIONS (COMBINED - Teacher's actions + Student absence requests)
         // ============================================
         function startPendingActionsListener() {
             if (pendingActionsUnsub) pendingActionsUnsub();
@@ -1389,17 +1371,27 @@
                 .where('teacherId', '==', currentUser.uid)
                 .orderBy('requestedAt', 'desc')
                 .onSnapshot(snap => {
-                    renderPendingActionsFromSnapshot(snap);
-                    updateActionBadge(snap);
-                }, err => {
-                    console.error('Pending actions listener error:', err);
-                });
+                    loadPendingActions(); // Full refresh to include both sources
+                }, err => console.error('Pending actions listener error:', err));
         }
 
-        function updateActionBadge(snap) {
+        function startStudentRequestsListener() {
+            if (unsubscribers['studentRequests']) unsubscribers['studentRequests']();
+            if (!teacherClasses.length) return;
+            const targets = getTargetClasses();
+            unsubscribers['studentRequests'] = db.collection('pendingActions')
+                .where('classId', 'in', targets.length <= 10 ? targets : targets.slice(0, 10))
+                .where('actionType', 'in', ['absence_request', 'absence_explanation'])
+                .orderBy('requestedAt', 'desc')
+                .onSnapshot(snap => {
+                    loadPendingActions(); // Refresh combined list
+                }, err => console.error('Student requests listener error:', err));
+        }
+
+        function updateActionBadgeFromList(actions) {
             const badge = document.getElementById('actionBadge');
             let pendingCount = 0;
-            snap.forEach(doc => {
+            actions.forEach(doc => {
                 if (doc.data().status === 'pending') pendingCount++;
             });
             if (pendingCount > 0) {
@@ -1410,36 +1402,65 @@
             }
         }
 
-        function renderPendingActionsFromSnapshot(snap) {
+        function renderPendingActionsFromList(allActions) {
             const container = document.getElementById('pendingActionsList');
-            if (snap.empty) {
-                container.innerHTML = `<div class="empty-state"><i class="fas fa-check-circle" style="color:var(--success-text);"></i><h3>No Pending Requests</h3><p>Action requests will appear here.</p></div>`;
+            if (!allActions.length) {
+                container.innerHTML = `<div class="empty-state"><i class="fas fa-check-circle" style="color:var(--success-text);"></i><h3>No Requests</h3><p>No action requests or absence requests yet.</p></div>`;
                 return;
             }
             container.innerHTML = '';
-            snap.forEach(doc => {
+            allActions.forEach(doc => {
                 const a = doc.data();
                 const statusClass = a.status === 'approved' ? 'badge-approved' :
                                     a.status === 'rejected' ? 'badge-rejected' : 'badge-pending';
                 const statusIcon = a.status === 'approved' ? 'fa-check-circle' :
                                    a.status === 'rejected' ? 'fa-times-circle' : 'fa-clock';
                 const dateStr = a.requestedAt?.toDate ? a.requestedAt.toDate().toLocaleString() : 'Unknown';
+                const isAbsence = a.actionType === 'absence_request' || a.actionType === 'absence_explanation';
+                const typeLabel = isAbsence 
+                    ? (a.actionType === 'absence_request' ? '📅 Upcoming Absence Request' : '📝 Past Absence Explanation')
+                    : (a.actionType || '').replace(/_/g, ' ').toUpperCase();
+                const fromStudent = !a.teacherId || a.teacherId !== currentUser?.uid;
+                
+                let detailsHTML = '';
+                if (isAbsence && a.details) {
+                    detailsHTML = `
+                        <div style="margin-top:0.3rem;font-size:0.8rem;">
+                            <strong>Date:</strong> ${escapeHtml(a.details.absenceDate || '—')} · 
+                            <strong>Session:</strong> ${escapeHtml(a.details.session || '—')}
+                        </div>
+                        <div style="margin-top:0.2rem;font-size:0.8rem;color:var(--text-secondary);">
+                            <strong>Reason:</strong> ${escapeHtml(a.details.reason || '—')}
+                        </div>`;
+                }
+                if (a.details?.prefectRole) {
+                    detailsHTML += `<div style="margin-top:0.2rem;font-size:0.8rem;"><strong>Role:</strong> ${escapeHtml(a.details.prefectRole)}</div>`;
+                }
+
                 const card = document.createElement('div');
                 card.className = 'card';
                 card.style.cssText = 'padding:1rem; margin-bottom:0.75rem;';
                 card.innerHTML = `
-                    <div style="display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:0.5rem;">
-                        <div>
-                            <strong>${escapeHtml((a.actionType || '').replace(/_/g, ' ').toUpperCase())}</strong>
+                    <div style="display:flex;justify-content:space-between;align-items:flex-start;flex-wrap:wrap;gap:0.5rem;">
+                        <div style="flex:1;">
+                            <strong>${escapeHtml(typeLabel)}</strong>
                             <span style="margin-left:0.5rem;">for <strong>${escapeHtml(a.studentName || 'Unknown')}</strong></span>
                             ${a.classId ? `<span class="class-tag">${escapeHtml(a.classId)}</span>` : ''}
-                            ${a.details?.prefectRole ? `<br><small>Role: ${escapeHtml(a.details.prefectRole)}</small>` : ''}
-                            ${a.details?.reason ? `<br><small>Reason: ${escapeHtml(a.details.reason)}</small>` : ''}
+                            ${fromStudent ? '<span class="badge badge-info" style="font-size:0.6rem;">From Student</span>' : ''}
+                            ${detailsHTML}
                         </div>
                         <span class="badge ${statusClass}"><i class="fas ${statusIcon}"></i> ${a.status || 'pending'}</span>
                     </div>
-                    <small style="color:var(--text-muted);">Requested: ${dateStr}</small>
-                    ${a.adminNote ? `<br><small style="color:var(--text-secondary);"><strong>Admin:</strong> ${escapeHtml(a.adminNote)}</small>` : ''}
+                    <div style="display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:0.5rem;margin-top:0.5rem;">
+                        <small style="color:var(--text-muted);">Requested: ${dateStr}</small>
+                        ${a.adminNote ? `<div style="font-size:0.8rem;color:var(--accent);"><strong>Response:</strong> ${escapeHtml(a.adminNote)}</div>` : ''}
+                        ${a.status === 'pending' ? `
+                            <div class="btn-group">
+                                <button class="btn btn-success btn-sm" onclick="openTeacherResponse('${doc.id}', 'approve')"><i class="fas fa-check"></i> Approve</button>
+                                <button class="btn btn-danger btn-sm" onclick="openTeacherResponse('${doc.id}', 'reject')"><i class="fas fa-times"></i> Reject</button>
+                            </div>
+                        ` : ''}
+                    </div>
                 `;
                 container.appendChild(card);
             });
@@ -1450,76 +1471,150 @@
             const container = document.getElementById('pendingActionsList');
             container.innerHTML = '<div class="empty-state"><i class="fas fa-spinner fa-spin"></i><p>Loading...</p></div>';
             try {
-                const snap = await db.collection('pendingActions')
+                const targets = getTargetClasses();
+                
+                // Query 1: Actions requested BY this teacher
+                const snap1 = await db.collection('pendingActions')
                     .where('teacherId', '==', currentUser.uid)
                     .orderBy('requestedAt', 'desc')
                     .get();
-                renderPendingActionsFromSnapshot(snap);
-                updateActionBadge(snap);
+                
+                // Query 2: Student absence requests for teacher's classes
+                const snap2 = await db.collection('pendingActions')
+                    .where('classId', 'in', targets.length <= 10 ? targets : targets.slice(0, 10))
+                    .where('actionType', 'in', ['absence_request', 'absence_explanation'])
+                    .orderBy('requestedAt', 'desc')
+                    .get();
+                
+                // Combine and deduplicate
+                const allActions = [];
+                const seenIds = new Set();
+                snap1.forEach(doc => {
+                    if (!seenIds.has(doc.id)) { seenIds.add(doc.id); allActions.push(doc); }
+                });
+                snap2.forEach(doc => {
+                    if (!seenIds.has(doc.id)) { seenIds.add(doc.id); allActions.push(doc); }
+                });
+                
+                // Sort by date descending
+                allActions.sort((a, b) => {
+                    const dateA = a.data().requestedAt?.toDate?.() || new Date(0);
+                    const dateB = b.data().requestedAt?.toDate?.() || new Date(0);
+                    return dateB - dateA;
+                });
+                
+                renderPendingActionsFromList(allActions);
+                updateActionBadgeFromList(allActions);
             } catch (e) {
                 console.error('Load actions error:', e);
-                container.innerHTML = '<div class="empty-state"><i class="fas fa-exclamation-triangle"></i><p>Failed to load.</p></div>';
+                container.innerHTML = `<div class="empty-state"><i class="fas fa-exclamation-triangle"></i><h3>Failed to load</h3><p>${e.message}</p></div>`;
             }
         }
         window.loadPendingActions = loadPendingActions;
 
         // ============================================
-        // NEW: STUDENT ABSENCE REQUESTS
+        // TEACHER RESPONSE MODAL
         // ============================================
-        async function loadStudentAbsenceRequests() {
-            if (!currentUser) return;
-            const container = document.getElementById('studentAbsenceList');
-            container.innerHTML = '<div class="empty-state"><i class="fas fa-spinner fa-spin"></i><p>Loading...</p></div>';
-            try {
-                // Get all students in teacher's classes
-                const targets = getTargetClasses();
-                // Query pendingActions for absence requests from students in these classes
-                const snap = await db.collection('pendingActions')
-                    .where('classId', 'in', targets.length <= 10 ? targets : targets.slice(0, 10))
-                    .where('actionType', 'in', ['absence_request', 'absence_explanation'])
-                    .where('status', '==', 'pending')
-                    .orderBy('requestedAt', 'desc')
-                    .get();
-                if (snap.empty) {
-                    container.innerHTML = `<div class="empty-state"><i class="fas fa-envelope-open"></i><h3>No Absence Requests</h3><p>Student absence requests will appear here.</p></div>`;
-                    return;
-                }
-                container.innerHTML = '';
-                snap.forEach(doc => {
-                    const a = doc.data();
-                    const card = document.createElement('div');
-                    card.className = 'card';
-                    card.style.cssText = 'padding:1rem; margin-bottom:0.75rem;';
-                    const typeLabel = a.actionType === 'absence_request' ? 'Upcoming Absence' : 'Past Absence Explanation';
-                    card.innerHTML = `
-                        <div style="display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:0.5rem;">
-                            <div>
-                                <strong>${escapeHtml(a.studentName || 'Unknown')}</strong>
-                                <span class="class-tag">${escapeHtml(a.classId || '—')}</span>
-                                <br><small>${typeLabel} · Date: ${escapeHtml(a.details?.absenceDate || '—')} · Session: ${escapeHtml(a.details?.session || '—')}</small>
-                                <br><small style="color:var(--text-secondary);">Reason: ${escapeHtml(a.details?.reason || '—')}</small>
-                            </div>
-                            <span class="badge badge-pending"><i class="fas fa-clock"></i> Pending</span>
-                        </div>
-                        <small style="color:var(--text-muted);">Requested: ${a.requestedAt?.toDate?.().toLocaleString() || 'Unknown'}</small>
-                    `;
-                    container.appendChild(card);
-                });
-            } catch (e) {
-                console.error('Load student absence requests error:', e);
-                container.innerHTML = '<div class="empty-state"><i class="fas fa-exclamation-triangle"></i><p>Failed to load absence requests.</p></div>';
-            }
+        function openTeacherResponse(actionId, action) {
+            currentActionId = actionId;
+            const title = action === 'approve' ? 'Approve Request' : 'Reject Request';
+            document.getElementById('teacherResponseTitle').textContent = title;
+            document.getElementById('teacherResponseNote').value = '';
+            document.getElementById('teacherResponseBody').innerHTML = '';
+            document.getElementById('teacherApproveBtn').style.display = action === 'approve' ? 'inline-flex' : 'none';
+            document.getElementById('teacherRejectBtn').style.display = action === 'reject' ? 'inline-flex' : 'none';
+            document.getElementById('teacherResponseModal').classList.add('active');
         }
-        window.loadStudentAbsenceRequests = loadStudentAbsenceRequests;
+        window.openTeacherResponse = openTeacherResponse;
+
+        function closeTeacherResponseModal() {
+            document.getElementById('teacherResponseModal').classList.remove('active');
+            currentActionId = null;
+        }
+        window.closeTeacherResponseModal = closeTeacherResponseModal;
+
+        document.getElementById('teacherResponseModal').addEventListener('click', function(e) {
+            if (e.target === this) closeTeacherResponseModal();
+        });
+        document.addEventListener('keydown', function(e) {
+            if (e.key === 'Escape') closeTeacherResponseModal();
+        });
+
+        document.getElementById('teacherApproveBtn').addEventListener('click', async () => {
+            if (!currentActionId) return;
+            const note = document.getElementById('teacherResponseNote').value.trim();
+            const btn = document.getElementById('teacherApproveBtn');
+            btn.disabled = true;
+            btn.innerHTML = '<span class="loading-spinner"></span> Approving...';
+            try {
+                await db.collection('pendingActions').doc(currentActionId).update({
+                    status: 'approved',
+                    adminNote: note || 'Approved by teacher',
+                    reviewedAt: firebase.firestore.FieldValue.serverTimestamp()
+                });
+                const doc = await db.collection('pendingActions').doc(currentActionId).get();
+                const data = doc.data();
+                if (data && (data.actionType === 'absence_request' || data.actionType === 'absence_explanation') && data.studentId) {
+                    await db.collection('attendance').add({
+                        studentId: data.studentId,
+                        studentName: data.studentName,
+                        classId: data.classId,
+                        date: data.details?.absenceDate,
+                        session: data.details?.session || 'morning',
+                        status: 'absent',
+                        remark: 'Excused: ' + (note || data.details?.reason || '').substring(0, 100),
+                        teacherId: currentUser.uid,
+                        teacherName: `${userData?.firstName || ''} ${userData?.surname || ''}`.trim(),
+                        recordedAt: firebase.firestore.FieldValue.serverTimestamp()
+                    });
+                }
+                await logAudit('TEACHER_RESPONSE', `Approved action ${currentActionId}: ${note || 'No note'}`);
+                showToast('Approved!', 'The request has been approved.', 'success');
+                closeTeacherResponseModal();
+                loadPendingActions();
+            } catch (e) {
+                console.error('Approve error:', e);
+                showToast('Error', e.message, 'error');
+            } finally {
+                btn.disabled = false;
+                btn.innerHTML = '<i class="fas fa-check"></i> Approve';
+            }
+        });
+
+        document.getElementById('teacherRejectBtn').addEventListener('click', async () => {
+            if (!currentActionId) return;
+            const note = document.getElementById('teacherResponseNote').value.trim();
+            if (!note) {
+                showToast('Required', 'Please provide a reason for rejection.', 'warning');
+                return;
+            }
+            const btn = document.getElementById('teacherRejectBtn');
+            btn.disabled = true;
+            btn.innerHTML = '<span class="loading-spinner"></span> Rejecting...';
+            try {
+                await db.collection('pendingActions').doc(currentActionId).update({
+                    status: 'rejected',
+                    adminNote: note,
+                    reviewedAt: firebase.firestore.FieldValue.serverTimestamp()
+                });
+                await logAudit('TEACHER_RESPONSE', `Rejected action ${currentActionId}: ${note}`);
+                showToast('Rejected', 'The request has been rejected.', 'warning');
+                closeTeacherResponseModal();
+                loadPendingActions();
+            } catch (e) {
+                console.error('Reject error:', e);
+                showToast('Error', e.message, 'error');
+            } finally {
+                btn.disabled = false;
+                btn.innerHTML = '<i class="fas fa-times"></i> Reject';
+            }
+        });
 
         // ============================================
         // AUTHENTICATION
         // ============================================
         auth.onAuthStateChanged(async (user) => {
-            if (!user) {
-                window.location.href = 'teacher-login.html';
-                return;
-            }
+            if (!user) { window.location.href = 'teacher-login.html'; return; }
             try {
                 const doc = await db.collection('users').doc(user.uid).get();
                 if (!doc.exists || doc.data().role !== 'teacher') {
@@ -1549,6 +1644,7 @@
                     await loadAllStudents();
                 }
                 startPendingActionsListener();
+                startStudentRequestsListener();
                 console.log('📚 Class Hub initialized for classes:', teacherClasses);
             } catch (e) {
                 console.error('Auth error:', e);
@@ -1557,11 +1653,10 @@
             }
         });
 
-        // Logout
         document.getElementById('logoutBtn').addEventListener('click', async () => {
             try {
                 if (pendingActionsUnsub) pendingActionsUnsub();
-                Object.values(unsubscribers).forEach(u => u());
+                Object.values(unsubscribers).forEach(u => { try { u(); } catch(e) {} });
                 await auth.signOut();
                 window.location.href = 'index.html';
             } catch (e) {
@@ -1571,10 +1666,10 @@
 
         window.addEventListener('beforeunload', () => {
             if (pendingActionsUnsub) pendingActionsUnsub();
-            Object.values(unsubscribers).forEach(u => u());
+            Object.values(unsubscribers).forEach(u => { try { u(); } catch(e) {} });
         });
 
-        console.log('🏫 Teacher Class Hub ready — Multi-Class Edition with fixes');
+        console.log('🏫 Teacher Class Hub ready — Multi-Class Edition');
     </script>
 </body>
 </html>
