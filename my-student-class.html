@@ -247,6 +247,17 @@
 
         .star-rating-sm { display: inline-flex; gap: 0.1rem; color: var(--accent); font-size: 0.8rem; }
 
+        /* Debug Button */
+        .debug-btn { position: fixed; bottom: 1rem; left: 1rem; z-index: 9999; width: 44px; height: 44px; border-radius: 50%; background: var(--danger-bg); border: 2px solid var(--danger-text); color: var(--danger-text); cursor: pointer; display: flex; align-items: center; justify-content: center; font-size: 1.1rem; box-shadow: var(--shadow-lg); transition: all 0.2s; }
+        .debug-btn:hover { transform: scale(1.1); }
+        .debug-panel { display: none; position: fixed; bottom: 4rem; left: 1rem; z-index: 9998; background: var(--card-bg-solid); backdrop-filter: blur(16px); -webkit-backdrop-filter: blur(16px); border: 1px solid var(--border); border-radius: 1rem; padding: 1rem; width: 360px; max-width: calc(100vw - 2rem); max-height: 50vh; overflow-y: auto; box-shadow: var(--shadow-lg); font-size: 0.75rem; font-family: 'Space Grotesk', monospace; }
+        .debug-panel.active { display: block; }
+        .debug-panel h4 { margin-bottom: 0.5rem; color: var(--danger-text); font-size: 0.85rem; }
+        .debug-panel .debug-line { padding: 0.3rem 0; border-bottom: 1px solid var(--border-light); word-break: break-all; }
+        .debug-panel .debug-line.ok { color: var(--success-text); }
+        .debug-panel .debug-line.err { color: var(--danger-text); }
+        .debug-panel .debug-line.warn { color: var(--warning-text); }
+
         @media (max-width: 768px) {
             .sidebar { width: 85px; }
             .sidebar .logo-area h2, .sidebar .nav-item span { display: none; }
@@ -269,6 +280,13 @@
     <img src="https://res.cloudinary.com/dda7kpir8/image/upload/q_auto/f_auto/v1781038310/ChatGPT_Image_Jun_9_2026_09_25_06_AM_elnine.png" alt="" class="bg-logo" aria-hidden="true">
     <div class="orb orb-1"></div><div class="orb orb-2"></div>
     <div class="toast-container" id="toastContainer"></div>
+
+    <!-- DEBUG BUTTON -->
+    <button class="debug-btn" id="debugBtn" title="Debug Info"><i class="fas fa-bug"></i></button>
+    <div class="debug-panel" id="debugPanel">
+        <h4><i class="fas fa-bug"></i> Debug Console</h4>
+        <div id="debugContent"></div>
+    </div>
 
     <!-- SIDEBAR -->
     <div class="sidebar" id="sidebar">
@@ -309,7 +327,7 @@
         <!-- STATS -->
         <div class="stats-row" id="statsRow">
             <div class="stat-card"><div class="stat-icon"><i class="fas fa-users"></i></div><div class="val" id="statClassmates">0</div><div class="lbl">Classmates</div></div>
-            <div class="stat-card"><div class="stat-icon"><i class="fas fa-check-circle"></i></div><div class="val" id="statAttendance">0%</div><div class="lbl">Attendance Rate</div></div>
+            <div class="stat-card"><div class="stat-icon"><i class="fas fa-check-circle"></i></div><div class="val" id="statAttendance">—</div><div class="lbl">Attendance Rate</div></div>
             <div class="stat-card"><div class="stat-icon"><i class="fas fa-chalkboard-teacher"></i></div><div class="val" id="statTeachers">0</div><div class="lbl">Teachers</div></div>
             <div class="stat-card"><div class="stat-icon"><i class="fas fa-bullhorn"></i></div><div class="val" id="statAnnouncements">0</div><div class="lbl">Announcements</div></div>
         </div>
@@ -382,6 +400,29 @@
         const db = firebase.firestore();
 
         // ============================================
+        // DEBUG SYSTEM
+        // ============================================
+        const debugLogs = [];
+        function debugLog(msg, type = 'info') {
+            const timestamp = new Date().toLocaleTimeString();
+            debugLogs.push({ timestamp, msg, type });
+            console.log(`[DEBUG ${type.toUpperCase()}] ${msg}`);
+            renderDebug();
+        }
+        function renderDebug() {
+            const container = document.getElementById('debugContent');
+            if (!container) return;
+            container.innerHTML = debugLogs.slice(-30).map(d => 
+                `<div class="debug-line ${d.type}">[${d.timestamp}] ${d.msg}</div>`
+            ).join('');
+        }
+        document.getElementById('debugBtn').addEventListener('click', () => {
+            const panel = document.getElementById('debugPanel');
+            panel.classList.toggle('active');
+            renderDebug();
+        });
+
+        // ============================================
         // STATE
         // ============================================
         let currentUser = null, userData = null, studentClass = null;
@@ -393,7 +434,13 @@
         // UTILITIES
         // ============================================
         function escapeHtml(s) { const d = document.createElement('div'); d.textContent = s || ''; return d.innerHTML; }
-        function formatDate(dv) { if(!dv) return '—'; if(dv.toDate) return dv.toDate().toLocaleDateString('en-GB',{weekday:'short',day:'numeric',month:'short',year:'numeric'}); const d=new Date(dv); return isNaN(d.getTime())?String(dv):d.toLocaleDateString('en-GB',{weekday:'short',day:'numeric',month:'short',year:'numeric'}); }
+        function formatDate(dv) { 
+            if(!dv) return '—'; 
+            try {
+                if(dv.toDate) return dv.toDate().toLocaleDateString('en-GB',{weekday:'short',day:'numeric',month:'short',year:'numeric'}); 
+                const d=new Date(dv); return isNaN(d.getTime())?String(dv):d.toLocaleDateString('en-GB',{weekday:'short',day:'numeric',month:'short',year:'numeric'}); 
+            } catch(e) { return String(dv); }
+        }
         function showToast(title, msg, type='info') {
             const icons = { success:'fa-check-circle', error:'fa-exclamation-circle', warning:'fa-exclamation-triangle', info:'fa-info-circle' };
             const toast = document.createElement('div'); toast.className = 'toast';
@@ -406,18 +453,31 @@
         // SIDEBAR & THEME
         // ============================================
         const sidebar = document.getElementById('sidebar'), mainContent = document.getElementById('mainContent');
-        document.getElementById('sidebarToggle').addEventListener('click',()=>{ sidebar.classList.toggle('collapsed'); mainContent.classList.toggle('expanded'); const i=document.getElementById('sidebarToggle').querySelector('i'); i.classList.toggle('fa-chevron-left'); i.classList.toggle('fa-chevron-right'); });
+        document.getElementById('sidebarToggle').addEventListener('click',()=>{ 
+            sidebar.classList.toggle('collapsed'); 
+            mainContent.classList.toggle('expanded'); 
+            const i=document.getElementById('sidebarToggle').querySelector('i'); 
+            i.classList.toggle('fa-chevron-left'); 
+            i.classList.toggle('fa-chevron-right'); 
+        });
         const html = document.documentElement, themeToggle = document.getElementById('themeToggle');
         const savedTheme = localStorage.getItem('judah-theme')||'dark';
-        html.setAttribute('data-theme',savedTheme); themeToggle.querySelector('span').textContent = savedTheme==='dark'?'Light':'Dark';
-        themeToggle.addEventListener('click',()=>{ const n=html.getAttribute('data-theme')==='dark'?'light':'dark'; html.setAttribute('data-theme',n); localStorage.setItem('judah-theme',n); themeToggle.querySelector('span').textContent=n==='dark'?'Light':'Dark'; });
+        html.setAttribute('data-theme',savedTheme); 
+        themeToggle.querySelector('span').textContent = savedTheme==='dark'?'Light':'Dark';
+        themeToggle.addEventListener('click',()=>{ 
+            const n=html.getAttribute('data-theme')==='dark'?'light':'dark'; 
+            html.setAttribute('data-theme',n); 
+            localStorage.setItem('judah-theme',n); 
+            themeToggle.querySelector('span').textContent=n==='dark'?'Light':'Dark'; 
+        });
 
         // ============================================
         // TABS
         // ============================================
         document.getElementById('tabNavigation').addEventListener('click',(e)=>{
             const btn = e.target.closest('.tab-btn'); if(!btn) return;
-            document.querySelectorAll('#tabNavigation .tab-btn').forEach(b=>b.classList.remove('active')); btn.classList.add('active');
+            document.querySelectorAll('#tabNavigation .tab-btn').forEach(b=>b.classList.remove('active')); 
+            btn.classList.add('active');
             document.querySelectorAll('.tab-content').forEach(t=>t.classList.remove('active'));
             const tc = document.getElementById('tab-'+btn.dataset.tab); if(tc) tc.classList.add('active');
             const tab = btn.dataset.tab;
@@ -432,51 +492,204 @@
         // REAL-TIME LISTENERS
         // ============================================
         function startListeners() {
-            if(!studentClass||!currentUser) return;
+            if(!currentUser) { debugLog('Cannot start listeners: no currentUser', 'err'); return; }
+            
+            debugLog('Starting real-time listeners...', 'info');
+            debugLog(`Student class: ${studentClass || 'NOT SET'}`, studentClass ? 'ok' : 'warn');
+            debugLog(`User ID: ${currentUser.uid}`, 'info');
+            
+            // Announcements listener
             if(unsubscribers['announcements']) unsubscribers['announcements']();
-            unsubscribers['announcements'] = db.collection('classAnnouncements').where('classId','==',studentClass).orderBy('createdAt','desc').onSnapshot(snap=>{ allAnnouncements=[]; snap.forEach(d=>allAnnouncements.push({id:d.id,...d.data()})); updateStats(); });
+            if(studentClass) {
+                unsubscribers['announcements'] = db.collection('classAnnouncements')
+                    .where('classId','==',studentClass)
+                    .orderBy('createdAt','desc')
+                    .onSnapshot(snap=>{ 
+                        allAnnouncements=[]; 
+                        snap.forEach(d=>allAnnouncements.push({id:d.id,...d.data()})); 
+                        debugLog(`Announcements loaded: ${allAnnouncements.length}`, 'ok');
+                        updateStats(); 
+                        if(document.getElementById('tab-announcements').classList.contains('active')) renderAnnouncements();
+                    }, err => {
+                        debugLog(`Announcements listener error: ${err.message}`, 'err');
+                        console.error('Announcements error:', err);
+                    });
+            } else {
+                debugLog('Skipping announcements listener: no studentClass', 'warn');
+            }
+            
+            // Attendance listener
             if(unsubscribers['attendance']) unsubscribers['attendance']();
-            unsubscribers['attendance'] = db.collection('attendance').where('studentId','==',currentUser.uid).orderBy('date','desc').onSnapshot(snap=>{ allAttendance=[]; snap.forEach(d=>allAttendance.push({id:d.id,...d.data()})); updateStats(); });
-            // UPDATED: Timetable from 'timetables' collection (published)
+            unsubscribers['attendance'] = db.collection('attendance')
+                .where('studentId','==',currentUser.uid)
+                .orderBy('date','desc')
+                .onSnapshot(snap=>{ 
+                    allAttendance=[]; 
+                    snap.forEach(d=>allAttendance.push({id:d.id,...d.data()})); 
+                    debugLog(`Attendance records loaded: ${allAttendance.length}`, 'ok');
+                    updateStats(); 
+                }, err => {
+                    debugLog(`Attendance listener error: ${err.message}`, 'err');
+                    console.error('Attendance error:', err);
+                });
+            
+            // Timetable listener (published only)
             if(unsubscribers['timetable']) unsubscribers['timetable']();
-            unsubscribers['timetable'] = db.collection('timetables').where('classId','==',studentClass).where('status','==','published').limit(1).onSnapshot(snap=>{ classTimetable=null; snap.forEach(d=>classTimetable={id:d.id,...d.data()}); });
-            // UPDATED: Syllabus from 'syllabi' collection (published)
+            if(studentClass) {
+                unsubscribers['timetable'] = db.collection('timetables')
+                    .where('classId','==',studentClass)
+                    .where('status','==','published')
+                    .limit(1)
+                    .onSnapshot(snap=>{ 
+                        classTimetable=null; 
+                        snap.forEach(d=>classTimetable={id:d.id,...d.data()}); 
+                        debugLog(`Timetable: ${classTimetable ? 'Found' : 'None published'}`, classTimetable ? 'ok' : 'warn');
+                        if(document.getElementById('tab-timetable').classList.contains('active')) renderTimetable();
+                    }, err => {
+                        debugLog(`Timetable listener error: ${err.message}`, 'err');
+                    });
+            }
+            
+            // Syllabus listener (published only)
             if(unsubscribers['syllabus']) unsubscribers['syllabus']();
-            unsubscribers['syllabus'] = db.collection('syllabi').where('classId','==',studentClass).where('status','==','published').onSnapshot(snap=>{ allSyllabi=[]; snap.forEach(d=>allSyllabi.push({id:d.id,...d.data()})); });
+            if(studentClass) {
+                unsubscribers['syllabus'] = db.collection('syllabi')
+                    .where('classId','==',studentClass)
+                    .where('status','==','published')
+                    .onSnapshot(snap=>{ 
+                        allSyllabi=[]; 
+                        snap.forEach(d=>allSyllabi.push({id:d.id,...d.data()})); 
+                        debugLog(`Syllabi loaded: ${allSyllabi.length}`, 'ok');
+                        if(document.getElementById('tab-syllabus').classList.contains('active')) renderSyllabus();
+                    }, err => {
+                        debugLog(`Syllabus listener error: ${err.message}`, 'err');
+                    });
+            }
+            
+            // Absence requests listener
             if(unsubscribers['absence']) unsubscribers['absence']();
-            unsubscribers['absence'] = db.collection('pendingActions').where('studentId','==',currentUser.uid).where('actionType','in',['absence_request','absence_explanation']).orderBy('requestedAt','desc').onSnapshot(snap=>{ absenceRequests=[]; snap.forEach(d=>absenceRequests.push({id:d.id,...d.data()})); });
+            unsubscribers['absence'] = db.collection('pendingActions')
+                .where('studentId','==',currentUser.uid)
+                .where('actionType','in',['absence_request','absence_explanation'])
+                .orderBy('requestedAt','desc')
+                .onSnapshot(snap=>{ 
+                    absenceRequests=[]; 
+                    snap.forEach(d=>absenceRequests.push({id:d.id,...d.data()})); 
+                    debugLog(`Absence requests loaded: ${absenceRequests.length}`, 'ok');
+                }, err => {
+                    debugLog(`Absence requests error: ${err.message}`, 'err');
+                });
+            
+            debugLog('All listeners started', 'ok');
         }
 
-        function refreshAttendanceTab() { updateAttendanceSummary(); populateMonthFilter(); renderAttendanceTable(); renderAbsenceRequests(); }
+        function refreshAttendanceTab() { 
+            updateAttendanceSummary(); 
+            populateMonthFilter(); 
+            renderAttendanceTable(); 
+            renderAbsenceRequests(); 
+        }
 
         // ============================================
         // LOAD DATA
         // ============================================
         async function loadClassData() {
-            if(!studentClass) return;
+            debugLog('loadClassData() called', 'info');
+            
+            if(!studentClass) {
+                debugLog('studentClass is null/empty - cannot load class data', 'err');
+                document.getElementById('classSubtitle').textContent = '⚠️ No class assigned. Contact admin.';
+                document.getElementById('classNameBadge').textContent = 'NO CLASS';
+                document.getElementById('classInfoGrid').innerHTML = '<div class="empty-state"><i class="fas fa-exclamation-triangle" style="color:var(--danger-text);"></i><h3>No Class Assigned</h3><p>Your account has not been assigned to a class. Please contact the school admin to assign you to a class.</p></div>';
+                document.getElementById('classTeachersList').innerHTML = '<div class="empty-state"><i class="fas fa-exclamation-triangle"></i><h3>No class assigned</h3></div>';
+                document.getElementById('subjectTeachersList').innerHTML = '<div class="empty-state"><i class="fas fa-exclamation-triangle"></i><h3>No class assigned</h3></div>';
+                document.getElementById('prefectsList').innerHTML = '<div class="empty-state"><i class="fas fa-exclamation-triangle"></i><h3>No class assigned</h3></div>';
+                document.getElementById('classmatesList').innerHTML = '<div class="empty-state" style="grid-column:1/-1;"><i class="fas fa-exclamation-triangle"></i><h3>No class assigned</h3></div>';
+                document.getElementById('announcementsList').innerHTML = '<div class="empty-state" style="grid-column:1/-1;"><i class="fas fa-exclamation-triangle"></i><h3>No class assigned</h3></div>';
+                document.getElementById('timetableContent').innerHTML = '<div class="empty-state"><i class="fas fa-exclamation-triangle"></i><h3>No class assigned</h3></div>';
+                document.getElementById('syllabusContent').innerHTML = '<div class="empty-state"><i class="fas fa-exclamation-triangle"></i><h3>No class assigned</h3></div>';
+                return;
+            }
+            
+            debugLog(`Loading data for class: ${studentClass}`, 'info');
+            
             try {
-                const cs = await db.collection('users').where('role','==','student').where('class','==',studentClass).where('approved','==',true).get();
-                allClassmates=[]; cs.forEach(d=>{ const dd=d.data(); if(!dd.suspended) allClassmates.push({id:d.id,...dd}); });
+                // Load classmates
+                debugLog('Querying classmates...', 'info');
+                const cs = await db.collection('users')
+                    .where('role','==','student')
+                    .where('class','==',studentClass)
+                    .where('approved','==',true)
+                    .get();
+                allClassmates=[]; 
+                cs.forEach(d=>{ const dd=d.data(); if(!dd.suspended) allClassmates.push({id:d.id,...dd}); });
                 allClassmates.sort((a,b)=>`${a.surname||''}${a.firstName||''}`.localeCompare(`${b.surname||''}${b.firstName||''}`));
-                const ct = await db.collection('users').where('role','==','teacher').where('classTeacherFor','array-contains',studentClass).where('approved','==',true).get();
-                classTeachers=[]; ct.forEach(d=>classTeachers.push({id:d.id,...d.data()}));
-                const at = await db.collection('users').where('role','==','teacher').where('approved','==',true).get();
-                subjectTeachers=[]; const sm={};
-                at.forEach(d=>{ const dd=d.data(); const map=dd.subjectClassMap||{}; if(map[studentClass]&&map[studentClass].length){ const ti={id:d.id,firstName:dd.firstName,surname:dd.surname,email:dd.email,phone:dd.phone,photoURL:dd.photoURL,publicProfile:dd.publicProfile||{},points:dd.points||0,qualifications:dd.qualifications}; map[studentClass].forEach(sub=>{ if(!sm[sub]) sm[sub]=[]; sm[sub].push(ti); }); } });
+                debugLog(`Classmates found: ${allClassmates.length}`, 'ok');
+                
+                // Load class teachers
+                debugLog('Querying class teachers...', 'info');
+                const ct = await db.collection('users')
+                    .where('role','==','teacher')
+                    .where('classTeacherFor','array-contains',studentClass)
+                    .where('approved','==',true)
+                    .get();
+                classTeachers=[]; 
+                ct.forEach(d=>classTeachers.push({id:d.id,...d.data()}));
+                debugLog(`Class teachers found: ${classTeachers.length}`, classTeachers.length ? 'ok' : 'warn');
+                
+                // Load subject teachers
+                debugLog('Querying subject teachers...', 'info');
+                const at = await db.collection('users')
+                    .where('role','==','teacher')
+                    .where('approved','==',true)
+                    .get();
+                subjectTeachers=[]; 
+                const sm={};
+                at.forEach(d=>{ 
+                    const dd=d.data(); 
+                    const map=dd.subjectClassMap||{}; 
+                    if(map[studentClass]&&map[studentClass].length){ 
+                        const ti={id:d.id,firstName:dd.firstName,surname:dd.surname,email:dd.email,phone:dd.phone,photoURL:dd.photoURL,publicProfile:dd.publicProfile||{},points:dd.points||0,qualifications:dd.qualifications}; 
+                        map[studentClass].forEach(sub=>{ if(!sm[sub]) sm[sub]=[]; sm[sub].push(ti); }); 
+                    } 
+                });
                 for(const [sub,teachers] of Object.entries(sm)){ subjectTeachers.push({subject:sub,teachers}); }
                 subjectTeachers.sort((a,b)=>a.subject.localeCompare(b.subject));
-                updateStats(); renderClassInfo(); renderClassTeachers(); renderSubjectTeachers(); renderPrefects();
-                renderClassmatesList(allClassmates); document.getElementById('classmateCount').textContent=`${allClassmates.length} student(s)`;
+                debugLog(`Subject teachers found: ${subjectTeachers.length} subjects`, 'ok');
+                
+                // Render everything
+                updateStats(); 
+                renderClassInfo(); 
+                renderClassTeachers(); 
+                renderSubjectTeachers(); 
+                renderPrefects();
+                renderClassmatesList(allClassmates); 
+                document.getElementById('classmateCount').textContent=`${allClassmates.length} student(s)`;
+                
+                // Start real-time listeners
                 startListeners();
-            } catch(e){ console.error('Load error:',e); }
+                
+                debugLog('Class data loaded successfully!', 'ok');
+            } catch(e){ 
+                debugLog(`Load error: ${e.message}`, 'err');
+                console.error('Load error:', e); 
+                showToast('Error', 'Failed to load class data: ' + e.message, 'error');
+            }
         }
 
         function updateStats() {
             document.getElementById('statClassmates').textContent = allClassmates.length;
             document.getElementById('statAnnouncements').textContent = allAnnouncements.length;
-            document.getElementById('statTeachers').textContent = classTeachers.length + new Set(subjectTeachers.flatMap(st=>st.teachers.map(t=>t.id))).size;
-            if(allAttendance.length){ const pc=allAttendance.filter(a=>a.status==='present').length; document.getElementById('statAttendance').textContent = Math.round((pc/allAttendance.length)*100)+'%'; }
-            else document.getElementById('statAttendance').textContent = '—';
+            const uniqueTeacherIds = new Set();
+            classTeachers.forEach(t => uniqueTeacherIds.add(t.id));
+            subjectTeachers.forEach(st => st.teachers.forEach(t => uniqueTeacherIds.add(t.id)));
+            document.getElementById('statTeachers').textContent = uniqueTeacherIds.size;
+            if(allAttendance.length){ 
+                const pc=allAttendance.filter(a=>a.status==='present').length; 
+                document.getElementById('statAttendance').textContent = Math.round((pc/allAttendance.length)*100)+'%'; 
+            } else {
+                document.getElementById('statAttendance').textContent = '—'; 
+            }
         }
 
         // ============================================
@@ -497,7 +710,7 @@
         function renderClassTeachers() {
             const c = document.getElementById('classTeachersList');
             document.getElementById('classTeacherCount').textContent = `${classTeachers.length} teacher(s)`;
-            if(!classTeachers.length){ c.innerHTML='<div class="empty-state"><i class="fas fa-user-slash"></i><h3>No Class Teachers</h3></div>'; return; }
+            if(!classTeachers.length){ c.innerHTML='<div class="empty-state"><i class="fas fa-user-slash"></i><h3>No Class Teachers</h3><p>No class teacher has been assigned to your class yet.</p></div>'; return; }
             c.innerHTML = `<div class="teacher-grid">${classTeachers.map(t=>renderTeacherCard(t,'Class Teacher')).join('')}</div>`;
         }
 
@@ -505,7 +718,7 @@
             const c = document.getElementById('subjectTeachersList');
             const unique = new Set(subjectTeachers.flatMap(st=>st.teachers.map(t=>t.id))).size;
             document.getElementById('subjectTeacherCount').textContent = `${unique} teacher(s) across ${subjectTeachers.length} subject(s)`;
-            if(!subjectTeachers.length){ c.innerHTML='<div class="empty-state"><i class="fas fa-book"></i><h3>No Subject Teachers</h3></div>'; return; }
+            if(!subjectTeachers.length){ c.innerHTML='<div class="empty-state"><i class="fas fa-book"></i><h3>No Subject Teachers</h3><p>No subject teachers found for your class.</p></div>'; return; }
             c.innerHTML = subjectTeachers.map(st=>`
                 <div class="subject-group"><h4><span class="badge badge-subject">${escapeHtml(st.subject)}</span></h4>
                 ${st.teachers.map(t=>{
@@ -537,41 +750,149 @@
         // ANNOUNCEMENTS
         // ============================================
         function renderAnnouncements() {
-            const c=document.getElementById('announcementsList'); document.getElementById('announcementCount').textContent=`${allAnnouncements.length} announcement(s)`;
-            if(!allAnnouncements.length){ c.innerHTML='<div class="empty-state" style="grid-column:1/-1;"><i class="fas fa-bullhorn"></i><h3>No Announcements</h3></div>'; return; }
-            c.innerHTML = allAnnouncements.map(a=>`<div class="announcement-card"><h4>${escapeHtml(a.title||'Untitled')}</h4><div class="date"><i class="fas fa-calendar"></i> ${a.createdAt?.toDate?.().toLocaleDateString('en-GB',{day:'numeric',month:'short',year:'numeric',hour:'2-digit',minute:'2-digit'})||'Unknown'} · <i class="fas fa-user"></i> ${escapeHtml(a.teacherName||'Teacher')}</div><p>${escapeHtml(a.content||'')}</p></div>`).join('');
+            const c=document.getElementById('announcementsList'); 
+            document.getElementById('announcementCount').textContent=`${allAnnouncements.length} announcement(s)`;
+            if(!allAnnouncements.length){ c.innerHTML='<div class="empty-state" style="grid-column:1/-1;"><i class="fas fa-bullhorn"></i><h3>No Announcements</h3><p>Your teachers haven\'t posted any announcements yet.</p></div>'; return; }
+            c.innerHTML = allAnnouncements.map(a=>{
+                let dateStr = 'Unknown';
+                try { if(a.createdAt?.toDate) dateStr = a.createdAt.toDate().toLocaleDateString('en-GB',{day:'numeric',month:'short',year:'numeric',hour:'2-digit',minute:'2-digit'}); } catch(e) {}
+                return `<div class="announcement-card"><h4>${escapeHtml(a.title||'Untitled')}</h4><div class="date"><i class="fas fa-calendar"></i> ${dateStr} · <i class="fas fa-user"></i> ${escapeHtml(a.teacherName||'Teacher')}</div><p>${escapeHtml(a.content||'')}</p></div>`;
+            }).join('');
         }
 
         // ============================================
         // CLASSMATES
         // ============================================
         function renderClassmatesList(list) {
-            const c=document.getElementById('classmatesList'); if(!list.length){ c.innerHTML='<div class="empty-state" style="grid-column:1/-1;"><i class="fas fa-user-slash"></i><h3>No classmates</h3></div>'; return; }
-            c.innerHTML = list.map(s=>{ const name=`${s.firstName||''} ${s.surname||''}`.trim(); const ini=(s.firstName?.[0]||'')+(s.surname?.[0]||''); return `<div class="classmate-card" style="${s.id===currentUser.uid?'border-color:var(--accent);border-width:2px;':''}"><div class="classmate-avatar">${s.photoURL?`<img src="${s.photoURL}">`:ini}</div><div class="classmate-info"><div class="name">${escapeHtml(name)}${s.id===currentUser.uid?'<span style="font-size:0.7rem;color:var(--accent);margin-left:0.3rem;">(You)</span>':''}</div><div style="display:flex;gap:0.4rem;align-items:center;flex-wrap:wrap;margin-top:0.2rem;"><span class="id">${s.userId||'—'}</span>${s.prefect?`<span class="badge badge-prefect"><i class="fas fa-crown"></i> ${escapeHtml(s.prefect)}</span>`:''}</div></div></div>`; }).join('');
+            const c=document.getElementById('classmatesList'); 
+            if(!list.length){ c.innerHTML='<div class="empty-state" style="grid-column:1/-1;"><i class="fas fa-user-slash"></i><h3>No classmates found</h3></div>'; return; }
+            c.innerHTML = list.map(s=>{ 
+                const name=`${s.firstName||''} ${s.surname||''}`.trim(); 
+                const ini=(s.firstName?.[0]||'')+(s.surname?.[0]||''); 
+                return `<div class="classmate-card" style="${s.id===currentUser?.uid?'border-color:var(--accent);border-width:2px;':''}"><div class="classmate-avatar">${s.photoURL?`<img src="${s.photoURL}">`:ini}</div><div class="classmate-info"><div class="name">${escapeHtml(name)}${s.id===currentUser?.uid?'<span style="font-size:0.7rem;color:var(--accent);margin-left:0.3rem;">(You)</span>':''}</div><div style="display:flex;gap:0.4rem;align-items:center;flex-wrap:wrap;margin-top:0.2rem;"><span class="id">${s.userId||'—'}</span>${s.prefect?`<span class="badge badge-prefect"><i class="fas fa-crown"></i> ${escapeHtml(s.prefect)}</span>`:''}</div></div></div>`; 
+            }).join('');
         }
-        window.filterClassmates = ()=>{ const s=document.getElementById('classmateSearch').value.toLowerCase().trim(); if(!s){ renderClassmatesList(allClassmates); return; } renderClassmatesList(allClassmates.filter(x=>`${x.firstName||''} ${x.surname||''}`.toLowerCase().includes(s)||(x.userId||'').toLowerCase().includes(s))); };
+        window.filterClassmates = ()=>{ 
+            const s=document.getElementById('classmateSearch').value.toLowerCase().trim(); 
+            if(!s){ renderClassmatesList(allClassmates); return; } 
+            renderClassmatesList(allClassmates.filter(x=>`${x.firstName||''} ${x.surname||''}`.toLowerCase().includes(s)||(x.userId||'').toLowerCase().includes(s))); 
+        };
 
         // ============================================
         // ATTENDANCE
         // ============================================
-        function updateAttendanceSummary() { const p=allAttendance.filter(a=>a.status==='present').length,ab=allAttendance.filter(a=>a.status==='absent').length; document.getElementById('attPresent').textContent=p; document.getElementById('attAbsent').textContent=ab; document.getElementById('attRate').textContent=allAttendance.length?Math.round((p/allAttendance.length)*100)+'%':'0%'; }
-        function populateMonthFilter() { const ms=new Set(); allAttendance.forEach(a=>{ if(a.date){ const d=a.date.toDate?new Date(a.date.toDate()):new Date(a.date); ms.add(JSON.stringify({k:`${d.getFullYear()}-${String(d.getMonth()+1).padStart(2,'0')}`,l:d.toLocaleDateString('en-US',{month:'long',year:'numeric'})})); } }); const mf=document.getElementById('attMonthFilter'); mf.innerHTML='<option value="all">All Months</option>'; [...ms].map(JSON.parse).sort((a,b)=>b.k.localeCompare(a.k)).forEach(m=>mf.innerHTML+=`<option value="${m.k}">${m.l}</option>`); }
-        function renderAttendanceTable() { const mf=document.getElementById('attMonthFilter').value,sf=document.getElementById('attSessionFilter').value; let f=[...allAttendance]; if(mf!=='all') f=f.filter(a=>{ if(!a.date) return false; const d=a.date.toDate?new Date(a.date.toDate()):new Date(a.date); return `${d.getFullYear()}-${String(d.getMonth()+1).padStart(2,'0')}`===mf; }); if(sf!=='all') f=f.filter(a=>a.session===sf); const tb=document.getElementById('attendanceBody'); if(!f.length){ tb.innerHTML='<tr><td colspan="6"><div class="empty-state"><h3>No records</h3></div></td></tr>'; return; } tb.innerHTML=f.map(a=>{ const he=absenceRequests.some(r=>r.details?.absenceDate===a.date&&r.actionType==='absence_explanation'); return `<tr><td>${formatDate(a.date)}</td><td>${a.session==='morning'?'🌅 Morning':'🌤 Afternoon'}</td><td><span class="badge ${a.status==='present'?'badge-present':'badge-absent'}">${a.status==='present'?'Present':'Absent'}</span></td><td>${escapeHtml(a.remark||'—')}</td><td>${escapeHtml(a.teacherName||'—')}</td><td>${a.status==='absent'&&!he?`<button class="btn btn-outline btn-sm" onclick="explainAbsence('${a.date}','${a.session||''}')">Explain</button>`:a.status==='absent'?'<span class="badge badge-info" style="font-size:0.65rem;">Explained</span>':'—'}</td></tr>`; }).join(''); }
-        function renderAbsenceRequests() { const c=document.getElementById('absenceRequestsList'); if(!absenceRequests.length){ c.innerHTML='<div class="empty-state"><i class="fas fa-envelope-open"></i><h3>No Requests</h3></div>'; return; } c.innerHTML=absenceRequests.map(r=>{ const sc=r.status==='approved'?'badge-approved':r.status==='rejected'?'badge-rejected':'badge-pending'; return `<div class="card" style="padding:1rem;margin-bottom:0.75rem;"><div style="display:flex;justify-content:space-between;gap:1rem;flex-wrap:wrap;"><div><span class="badge ${sc}">${r.status?.toUpperCase()||'PENDING'}</span> <strong>${escapeHtml(r.details?.absenceDate||'—')}</strong> — ${escapeHtml(r.details?.session||'—')}<br><small>${escapeHtml(r.details?.reason||'—')}</small>${r.adminNote?`<br><small style="color:var(--accent);">Response: ${escapeHtml(r.adminNote)}</small>`:''}</div><small style="color:var(--text-muted);">${r.requestedAt?.toDate?.().toLocaleDateString()||''}</small></div></div>`; }).join(''); }
+        function updateAttendanceSummary() { 
+            const p=allAttendance.filter(a=>a.status==='present').length,
+                  ab=allAttendance.filter(a=>a.status==='absent').length; 
+            document.getElementById('attPresent').textContent=p; 
+            document.getElementById('attAbsent').textContent=ab; 
+            document.getElementById('attRate').textContent=allAttendance.length?Math.round((p/allAttendance.length)*100)+'%':'0%'; 
+        }
+        function populateMonthFilter() { 
+            const ms=new Set(); 
+            allAttendance.forEach(a=>{ 
+                if(a.date){ 
+                    try {
+                        const d=a.date.toDate?new Date(a.date.toDate()):new Date(a.date); 
+                        ms.add(JSON.stringify({k:`${d.getFullYear()}-${String(d.getMonth()+1).padStart(2,'0')}`,l:d.toLocaleDateString('en-US',{month:'long',year:'numeric'})})); 
+                    } catch(e) {}
+                } 
+            }); 
+            const mf=document.getElementById('attMonthFilter'); 
+            mf.innerHTML='<option value="all">All Months</option>'; 
+            [...ms].map(JSON.parse).sort((a,b)=>b.k.localeCompare(a.k)).forEach(m=>mf.innerHTML+=`<option value="${m.k}">${m.l}</option>`); 
+        }
+        function renderAttendanceTable() { 
+            const mf=document.getElementById('attMonthFilter').value,
+                  sf=document.getElementById('attSessionFilter').value; 
+            let f=[...allAttendance]; 
+            if(mf!=='all') f=f.filter(a=>{ 
+                if(!a.date) return false; 
+                try {
+                    const d=a.date.toDate?new Date(a.date.toDate()):new Date(a.date); 
+                    return `${d.getFullYear()}-${String(d.getMonth()+1).padStart(2,'0')}`===mf; 
+                } catch(e) { return false; }
+            }); 
+            if(sf!=='all') f=f.filter(a=>a.session===sf); 
+            const tb=document.getElementById('attendanceBody'); 
+            if(!f.length){ tb.innerHTML='<tr><td colspan="6"><div class="empty-state"><h3>No records found</h3></div></td></tr>'; return; } 
+            tb.innerHTML=f.map(a=>{ 
+                const hasExplanation=absenceRequests.some(r=>r.details?.absenceDate===a.date&&r.actionType==='absence_explanation'); 
+                return `<tr><td>${formatDate(a.date)}</td><td>${a.session==='morning'?'🌅 Morning':'🌤 Afternoon'}</td><td><span class="badge ${a.status==='present'?'badge-present':'badge-absent'}">${a.status==='present'?'Present':'Absent'}</span></td><td>${escapeHtml(a.remark||'—')}</td><td>${escapeHtml(a.teacherName||'—')}</td><td>${a.status==='absent'&&!hasExplanation?`<button class="btn btn-outline btn-sm" onclick="explainAbsence('${a.date}','${a.session||''}')">Explain</button>`:a.status==='absent'?'<span class="badge badge-info" style="font-size:0.65rem;">Explained</span>':'—'}</td></tr>`; 
+            }).join(''); 
+        }
+        function renderAbsenceRequests() { 
+            const c=document.getElementById('absenceRequestsList'); 
+            if(!absenceRequests.length){ c.innerHTML='<div class="empty-state"><i class="fas fa-envelope-open"></i><h3>No Requests</h3></div>'; return; } 
+            c.innerHTML=absenceRequests.map(r=>{ 
+                const sc=r.status==='approved'?'badge-approved':r.status==='rejected'?'badge-rejected':'badge-pending'; 
+                return `<div class="card" style="padding:1rem;margin-bottom:0.75rem;"><div style="display:flex;justify-content:space-between;gap:1rem;flex-wrap:wrap;"><div><span class="badge ${sc}">${(r.status||'pending').toUpperCase()}</span> <strong>${escapeHtml(r.details?.absenceDate||'—')}</strong> — ${escapeHtml(r.details?.session||'—')}<br><small>${escapeHtml(r.details?.reason||'—')}</small>${r.adminNote?`<br><small style="color:var(--accent);">Response: ${escapeHtml(r.adminNote)}</small>`:''}</div><small style="color:var(--text-muted);">${r.requestedAt?.toDate?.().toLocaleDateString()||''}</small></div></div>`; 
+            }).join(''); 
+        }
 
         window.updateAbsenceModalTitle = ()=>document.getElementById('absenceModalTitle').textContent=document.getElementById('absenceType').value==='upcoming'?'Request Absence':'Explain Absence';
-        window.openAbsenceRequestModal = ()=>{ document.getElementById('absenceDate').valueAsDate=new Date(); document.getElementById('absenceType').value='upcoming'; document.getElementById('absenceSession').value='morning'; document.getElementById('absenceReason').value=''; updateAbsenceModalTitle(); document.getElementById('absenceRequestModal').classList.add('active'); };
+        window.openAbsenceRequestModal = ()=>{ 
+            document.getElementById('absenceDate').valueAsDate=new Date(); 
+            document.getElementById('absenceType').value='upcoming'; 
+            document.getElementById('absenceSession').value='morning'; 
+            document.getElementById('absenceReason').value=''; 
+            updateAbsenceModalTitle(); 
+            document.getElementById('absenceRequestModal').classList.add('active'); 
+        };
         window.closeAbsenceRequestModal = ()=>document.getElementById('absenceRequestModal').classList.remove('active');
-        window.explainAbsence = (date,session)=>{ document.getElementById('absenceDate').value=date; document.getElementById('absenceType').value='past'; document.getElementById('absenceSession').value=session||'morning'; document.getElementById('absenceReason').value=''; updateAbsenceModalTitle(); document.getElementById('absenceRequestModal').classList.add('active'); };
+        window.explainAbsence = (date,session)=>{ 
+            document.getElementById('absenceDate').value=date; 
+            document.getElementById('absenceType').value='past'; 
+            document.getElementById('absenceSession').value=session||'morning'; 
+            document.getElementById('absenceReason').value=''; 
+            updateAbsenceModalTitle(); 
+            document.getElementById('absenceRequestModal').classList.add('active'); 
+        };
         document.getElementById('absenceRequestModal').addEventListener('click',function(e){ if(e.target===this) closeAbsenceRequestModal(); });
         document.addEventListener('keydown',function(e){ if(e.key==='Escape') closeAbsenceRequestModal(); });
+        
         document.getElementById('submitAbsenceBtn').addEventListener('click',async()=>{
-            const date=document.getElementById('absenceDate').value,type=document.getElementById('absenceType').value,session=document.getElementById('absenceSession').value,reason=document.getElementById('absenceReason').value.trim();
-            if(!date) return alert('Select a date.'); if(!reason) return alert('Provide a reason.');
-            if(!confirm('Submit?')) return;
-            const btn=document.getElementById('submitAbsenceBtn'); btn.disabled=true; btn.innerHTML='<span class="loading-spinner"></span>';
-            try { await db.collection('pendingActions').add({teacherId:classTeachers[0]?.id||'',teacherIds:classTeachers.map(t=>t.id),studentId:currentUser.uid,studentName:`${userData?.firstName||''} ${userData?.surname||''}`.trim(),actionType:type==='upcoming'?'absence_request':'absence_explanation',classId:studentClass,details:{absenceDate:date,session,reason},status:'pending',requestedAt:firebase.firestore.FieldValue.serverTimestamp()}); closeAbsenceRequestModal(); alert('Submitted.'); }
-            catch(e){ alert('Error: '+e.message); } finally { btn.disabled=false; btn.innerHTML='Submit'; }
+            const date=document.getElementById('absenceDate').value,
+                  type=document.getElementById('absenceType').value,
+                  session=document.getElementById('absenceSession').value,
+                  reason=document.getElementById('absenceReason').value.trim();
+            if(!date) return showToast('Required','Select a date.','warning'); 
+            if(!reason) return showToast('Required','Provide a reason.','warning');
+            if(!confirm('Submit this absence request?')) return;
+            
+            // Collect ALL teacher IDs for this student's class
+            const allTeacherIds = new Set();
+            classTeachers.forEach(t => allTeacherIds.add(t.id));
+            subjectTeachers.forEach(st => st.teachers.forEach(t => allTeacherIds.add(t.id)));
+            const teacherIdsArray = [...allTeacherIds];
+            
+            debugLog(`Submitting absence. Teacher IDs: ${teacherIdsArray.length}`, 'info');
+            
+            const btn=document.getElementById('submitAbsenceBtn'); 
+            btn.disabled=true; 
+            btn.innerHTML='<span class="loading-spinner"></span> Submitting...';
+            try { 
+                await db.collection('pendingActions').add({
+                    teacherId: teacherIdsArray[0] || '',
+                    teacherIds: teacherIdsArray,
+                    studentId: currentUser.uid,
+                    studentName: `${userData?.firstName||''} ${userData?.surname||''}`.trim(),
+                    actionType: type==='upcoming'?'absence_request':'absence_explanation',
+                    classId: studentClass,
+                    details: { absenceDate: date, session, reason },
+                    status: 'pending',
+                    requestedAt: firebase.firestore.FieldValue.serverTimestamp()
+                }); 
+                debugLog('Absence request submitted successfully', 'ok');
+                closeAbsenceRequestModal(); 
+                showToast('Submitted', 'Your request has been sent.', 'success');
+            } catch(e){ 
+                debugLog(`Submit error: ${e.message}`, 'err');
+                showToast('Error', e.message, 'error');
+            } finally { 
+                btn.disabled=false; 
+                btn.innerHTML='Submit'; 
+            }
         });
 
         // ============================================
@@ -579,17 +900,27 @@
         // ============================================
         function renderTimetable() {
             const c=document.getElementById('timetableContent');
-            if(!classTimetable||!classTimetable.periods?.length){ c.innerHTML='<div class="empty-state"><i class="fas fa-calendar-alt"></i><h3>No Timetable Published</h3><p>Your teachers haven\'t published a timetable yet.</p></div>'; return; }
-            const days=['monday','tuesday','wednesday','thursday','friday'],dl=['Monday','Tuesday','Wednesday','Thursday','Friday'];
-            c.innerHTML = `<div class="timetable-grid">${days.map((d,i)=>{ const dp=classTimetable.periods.filter(p=>p.day===d); return `<div class="timetable-day"><div class="day-header">${dl[i]}</div>${dp.length?dp.map(p=>`<div class="period"><div class="subject">${escapeHtml(p.subject||'—')}</div><div class="time">${escapeHtml(p.startTime||'')} - ${escapeHtml(p.endTime||'')}</div><div class="teacher">${escapeHtml(p.teacherName||'')}</div></div>`).join(''):'<div class="period"><div class="subject" style="color:var(--text-muted);">—</div></div>'}</div>`; }).join('')}</div>`;
+            if(!classTimetable||!classTimetable.periods?.length){ 
+                c.innerHTML='<div class="empty-state"><i class="fas fa-calendar-alt"></i><h3>No Timetable Published</h3><p>Your teachers haven\'t published a timetable yet.</p></div>'; 
+                return; 
+            }
+            const days=['monday','tuesday','wednesday','thursday','friday'],
+                  dl=['Monday','Tuesday','Wednesday','Thursday','Friday'];
+            c.innerHTML = `<div class="timetable-grid">${days.map((d,i)=>{ 
+                const dp=classTimetable.periods.filter(p=>p.day===d); 
+                return `<div class="timetable-day"><div class="day-header">${dl[i]}</div>${dp.length?dp.map(p=>`<div class="period"><div class="subject">${escapeHtml(p.subject||'—')}</div><div class="time">${escapeHtml(p.startTime||'')} - ${escapeHtml(p.endTime||'')}</div><div class="teacher">${escapeHtml(p.teacherName||'')}</div></div>`).join(''):'<div class="period"><div class="subject" style="color:var(--text-muted);">—</div></div>'}</div>`; 
+            }).join('')}</div>`;
         }
 
         // ============================================
-        // SYLLABUS (UPDATED for 'syllabi' collection)
+        // SYLLABUS
         // ============================================
         function renderSyllabus() {
             const c=document.getElementById('syllabusContent');
-            if(!allSyllabi.length){ c.innerHTML='<div class="empty-state"><i class="fas fa-book-open"></i><h3>No Syllabus Published</h3><p>Your teachers haven\'t published a syllabus yet.</p></div>'; return; }
+            if(!allSyllabi.length){ 
+                c.innerHTML='<div class="empty-state"><i class="fas fa-book-open"></i><h3>No Syllabus Published</h3><p>Your teachers haven\'t published a syllabus yet.</p></div>'; 
+                return; 
+            }
             c.innerHTML = `<div class="syllabus-grid">${allSyllabi.map(s=>`
                 <div class="syllabus-card">
                     <h4><i class="fas fa-book"></i> ${escapeHtml(s.subject||'Untitled')}</h4>
@@ -602,21 +933,60 @@
         // AUTH
         // ============================================
         auth.onAuthStateChanged(async user=>{
-            if(!user){ window.location.href='student-login.html'; return; }
+            debugLog('Auth state changed', 'info');
+            if(!user){ 
+                debugLog('No user, redirecting to login', 'warn');
+                window.location.href='student-login.html'; 
+                return; 
+            }
             try {
+                debugLog(`User ID: ${user.uid}`, 'info');
                 const d=await db.collection('users').doc(user.uid).get();
-                if(!d.exists||d.data().role!=='student'){ await auth.signOut(); window.location.href='index.html'; return; }
-                currentUser=user; userData=d.data(); studentClass=userData.class;
+                if(!d.exists || d.data().role!=='student'){ 
+                    debugLog(`User doc exists: ${d.exists}, role: ${d.exists ? d.data().role : 'N/A'}`, 'err');
+                    await auth.signOut(); 
+                    window.location.href='index.html'; 
+                    return; 
+                }
+                currentUser=user; 
+                userData=d.data(); 
+                studentClass=userData.class;
+                
+                debugLog(`Logged in as: ${userData.firstName} ${userData.surname}`, 'ok');
+                debugLog(`Role: ${userData.role}`, 'ok');
+                debugLog(`Class: ${studentClass || 'NOT SET'}`, studentClass ? 'ok' : 'err');
+                debugLog(`Approved: ${userData.approved}`, userData.approved ? 'ok' : 'warn');
+                debugLog(`User ID: ${userData.userId || 'NOT GENERATED'}`, userData.userId ? 'ok' : 'warn');
+                
                 const pic=document.getElementById('profilePic');
                 if(userData.photoURL) pic.innerHTML=`<img src="${userData.photoURL}" alt="Profile" style="width:100%;height:100%;object-fit:cover;border-radius:50%;">`;
                 else pic.textContent=(userData.firstName?.[0]||'S')+(userData.surname?.[0]||'T');
-                if(!studentClass){ document.getElementById('classSubtitle').textContent='No class assigned'; return; }
+                
+                if(!studentClass){ 
+                    debugLog('STUDENT HAS NO CLASS ASSIGNED!', 'err');
+                    document.getElementById('classSubtitle').textContent='⚠️ No class assigned. Contact admin.';
+                }
+                
                 await loadClassData();
-            } catch(e){ console.error('Auth error:',e); window.location.href='student-login.html'; }
+                debugLog('Initialization complete', 'ok');
+            } catch(e){ 
+                debugLog(`Auth error: ${e.message}`, 'err');
+                console.error('Auth error:',e); 
+                window.location.href='student-login.html'; 
+            }
         });
-        document.getElementById('logoutBtn').addEventListener('click',()=>{ Object.values(unsubscribers).forEach(u=>u()); auth.signOut().then(()=>window.location.href='index.html'); });
-        window.addEventListener('beforeunload',()=>Object.values(unsubscribers).forEach(u=>u()));
-        console.log('📚 Student My Class ready — Updated for new Syllabus & Timetable workflow');
+        
+        document.getElementById('logoutBtn').addEventListener('click',()=>{ 
+            debugLog('Logging out...', 'info');
+            Object.values(unsubscribers).forEach(u=>{ try { u(); } catch(e) {} }); 
+            auth.signOut().then(()=>window.location.href='index.html'); 
+        });
+        
+        window.addEventListener('beforeunload',()=>{
+            Object.values(unsubscribers).forEach(u=>{ try { u(); } catch(e) {} });
+        });
+        
+        console.log('📚 Student My Class ready — v2 with debug panel');
     </script>
 </body>
 </html>
