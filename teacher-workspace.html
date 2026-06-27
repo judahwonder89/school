@@ -235,13 +235,19 @@
         .empty-state { text-align:center; padding:2rem; color:var(--text-muted); }
         .empty-state i { font-size:2.5rem; margin-bottom:0.8rem; opacity:0.4; display:block; }
 
-        /* Handwriting/Image styles */
         .handwriting-grid { display:flex; flex-wrap:wrap; gap:0.8rem; margin-top:0.5rem; }
         .handwriting-card { position:relative; border-radius:0.8rem; overflow:hidden; border:1px solid var(--border); background:var(--card-bg); width:180px; }
         .handwriting-card img { width:100%; height:140px; object-fit:cover; display:block; cursor:pointer; }
         .handwriting-card .caption { padding:0.4rem 0.6rem; font-size:0.7rem; color:var(--text-secondary); display:flex; justify-content:space-between; align-items:center; }
         .ai-debug-box { font-size:0.7rem; padding:0.5rem; background:var(--input-bg); border-radius:0.5rem; margin-bottom:0.5rem; display:none; max-height:150px; overflow-y:auto; word-break:break-all; }
         .ai-debug-box.show { display:block; }
+
+        .request-card { background:var(--card-bg); border:1px solid var(--border); border-radius:1rem; padding:1rem; margin-bottom:0.8rem; transition:0.2s; }
+        .request-card:hover { border-color:var(--accent); }
+        .request-type { display:inline-block; padding:0.2rem 0.6rem; border-radius:1rem; font-size:0.7rem; font-weight:600; }
+        .request-type.absence { background:var(--danger-bg); color:var(--danger-text); }
+        .request-type.late { background:var(--warning-bg); color:var(--warning-text); }
+        .request-type.early { background:var(--info-bg); color:var(--info-text); }
 
         @media(max-width:768px) {
             .top-nav { flex-direction:column; align-items:stretch; }
@@ -267,6 +273,8 @@
         <span class="co-indicator" id="coIndicator"><i class="fas fa-users"></i> Co-Planning</span>
         <span class="timer-display" id="timerDisplay"><i class="fas fa-clock"></i> <span id="timerValue">00:00</span></span>
         <button class="nav-btn active-co" id="coPlanToggle" style="display:none;"><i class="fas fa-users"></i> Co-Plan</button>
+        <button class="nav-btn" onclick="openPermissionModal()"><i class="fas fa-envelope-open-text"></i> Permission</button>
+        <button class="nav-btn" onclick="openMyRequestsModal()"><i class="fas fa-list-check"></i> My Requests</button>
     </div>
     <div class="nav-right">
         <div class="notif-btn" id="notifBtn" onclick="toggleNotifications()"><i class="fas fa-bell"></i><span class="notif-dot" id="notifDot"></span></div>
@@ -289,6 +297,7 @@
 
 <!-- MAIN CONTENT -->
 <div class="main-container">
+    <!-- Stats -->
     <div class="stats-grid">
         <div class="stat-card"><div class="stat-icon blue"><i class="fas fa-book"></i></div><div class="stat-info"><div class="stat-value" id="statLessons">0</div><div class="stat-label">Lessons</div></div></div>
         <div class="stat-card"><div class="stat-icon yellow"><i class="fas fa-clock"></i></div><div class="stat-info"><div class="stat-value" id="statPending">0</div><div class="stat-label">Pending</div></div></div>
@@ -297,6 +306,7 @@
         <div class="stat-card"><div class="stat-icon yellow"><i class="fas fa-coins"></i></div><div class="stat-info"><div class="stat-value" id="statPoints">0</div><div class="stat-label">Points</div></div></div>
     </div>
 
+    <!-- Main Tabs -->
     <div class="main-tabs" id="mainTabs">
         <div class="main-tab active" data-panel="lessonNotes"><i class="fas fa-book-open"></i> Lesson Notes</div>
         <div class="main-tab" data-panel="library"><i class="fas fa-layer-group"></i> Library</div>
@@ -351,7 +361,7 @@
                         <button class="btn btn-outline btn-sm" onclick="aiFormatEditor()"><i class="fas fa-magic"></i> Auto-Format</button>
                         <button class="btn btn-outline btn-sm" id="saveAsTemplateBtn2"><i class="fas fa-layer-group"></i> Save as Template</button>
                         <button class="btn btn-primary btn-sm" id="saveEditorBtn"><i class="fas fa-save"></i> Save Draft</button>
-                        <button class="btn btn-success btn-sm" id="submitEditorBtn" style="display:none;"><i class="fas fa-paper-plane"></i> Submit</button>
+                        <button class="btn btn-success btn-sm" id="submitEditorBtn" style="display:none;"><i class="fas fa-paper-plane"></i> Submit for Approval</button>
                     </div>
                 </div>
                 <div class="editor-container"><div id="editor"></div></div>
@@ -380,11 +390,10 @@
                     <button class="btn btn-primary btn-sm" id="saveResourceBtn" style="margin-top:0.5rem;">Save Resources</button>
                     <button class="btn btn-success btn-sm" id="publishResourceBtn2" style="margin-top:0.5rem;">📤 Publish to Students</button>
                 </div>
-                <!-- HANDWRITING / IMAGE GENERATION CARD -->
                 <div class="card" id="handwritingCard">
                     <div class="card-header"><h3><i class="fas fa-paint-brush"></i> Handwriting / Visual Notes</h3></div>
                     <div style="display:flex;gap:0.5rem;margin-bottom:0.5rem;">
-                        <input type="text" id="handwritingPrompt" placeholder="Describe the image (e.g., 'Diagram of plant cell for JSS1')" class="form-control">
+                        <input type="text" id="handwritingPrompt" placeholder="Describe the image..." class="form-control">
                         <button class="btn btn-primary btn-sm" id="generateHandwritingBtn"><i class="fas fa-robot"></i> Generate Image</button>
                     </div>
                     <div id="aiImageDebug" class="ai-debug-box"></div>
@@ -410,11 +419,9 @@
 
     <!-- PANEL 2: LIBRARY -->
     <div class="main-panel" id="panel-library">
-        <div class="card">
-            <div class="card-header"><h3><i class="fas fa-layer-group"></i> School Library</h3><input type="text" class="form-control" id="librarySearch" placeholder="Search..." style="max-width:300px;" oninput="renderLibrary()"></div>
-            <div class="sub-tabs" style="margin-bottom:1rem;"><div class="sub-tab active" data-lib="all">All</div><div class="sub-tab" data-lib="mySubjects">My Subjects</div><div class="sub-tab" data-lib="topRated">Top Rated</div><div class="sub-tab" data-lib="recent">Recent</div></div>
-            <div id="libraryGrid"></div>
-        </div>
+        <div class="card"><div class="card-header"><h3><i class="fas fa-layer-group"></i> School Library</h3><input type="text" class="form-control" id="librarySearch" placeholder="Search..." style="max-width:300px;" oninput="renderLibrary()"></div>
+        <div class="sub-tabs" style="margin-bottom:1rem;"><div class="sub-tab active" data-lib="all">All</div><div class="sub-tab" data-lib="mySubjects">My Subjects</div><div class="sub-tab" data-lib="topRated">Top Rated</div><div class="sub-tab" data-lib="recent">Recent</div></div>
+        <div id="libraryGrid"></div></div>
     </div>
 
     <!-- PANEL 3: ANALYTICS -->
@@ -450,6 +457,26 @@
         <canvas id="pointsChart" style="max-height:200px;"></canvas>
         <h4 style="margin-top:1rem;">Rating History</h4><div id="ratingHistory"></div>
         <h4 style="margin-top:1rem;">Public Profile</h4><div id="publicPreview" class="card" style="margin-top:0.5rem;"></div></div>
+    </div>
+</div>
+
+<!-- PERMISSION REQUEST MODAL -->
+<div class="modal-overlay" id="permissionModal">
+    <div class="modal-content" style="max-width:550px;">
+        <div class="modal-header"><h3><i class="fas fa-envelope-open-text"></i> Request Permission</h3><i class="fas fa-times modal-close" onclick="closePermissionModal()"></i></div>
+        <div class="form-group"><label>Request Type *</label><select id="permType" class="form-control"><option value="leave_request">🏠 Leave of Absence</option><option value="event_request">🎉 School Event / Trip</option><option value="resource_request">📦 Classroom Resource</option><option value="schedule_change">📅 Schedule Change</option><option value="other">📋 Other</option></select></div>
+        <div class="form-group"><label>Date(s) *</label><input type="date" id="permStartDate" class="form-control" required></div>
+        <div class="form-group"><label>End Date (if applicable)</label><input type="date" id="permEndDate" class="form-control"></div>
+        <div class="form-group"><label>Reason / Description *</label><textarea id="permReason" class="form-control" rows="4" placeholder="Explain your request..."></textarea></div>
+        <div class="modal-actions"><button class="btn btn-outline" onclick="closePermissionModal()">Cancel</button><button class="btn btn-primary" id="submitPermBtn"><i class="fas fa-paper-plane"></i> Submit</button></div>
+    </div>
+</div>
+
+<!-- MY REQUESTS MODAL -->
+<div class="modal-overlay" id="myRequestsModal">
+    <div class="modal-content" style="max-width:700px;max-height:80vh;overflow-y:auto;">
+        <div class="modal-header"><h3><i class="fas fa-list-check"></i> My Requests</h3><i class="fas fa-times modal-close" onclick="closeMyRequestsModal()"></i></div>
+        <div id="myRequestsList" style="text-align:center;padding:2rem;color:var(--text-muted);"><i class="fas fa-spinner fa-spin"></i> Loading...</div>
     </div>
 </div>
 
@@ -492,9 +519,6 @@
 </div>
 
 <script>
-// ============================================
-// FIREBASE CONFIG
-// ============================================
 const firebaseConfig = {
     apiKey: "AIzaSyADXHEiaSQ146QsGsaOCElARtpwrLE8svs",
     authDomain: "judah-c737e.firebaseapp.com",
@@ -511,9 +535,6 @@ const remoteConfig = firebase.remoteConfig();
 remoteConfig.settings.minimumFetchIntervalMillis = 0;
 db.enablePersistence({synchronizeTabs:true}).catch(err=>{if(err.code==='failed-precondition')console.warn('Multi-tab offline limited.');});
 
-// ============================================
-// GLOBAL STATE
-// ============================================
 let currentUser=null,userData=null,currentClass=null,allAssignedClasses=[],subjects=[];
 let currentSubject=null,currentWeek=null,currentTerm='First Term';
 let lessonNotesMap={},syllabusMap={},coTeachers=[],coTeacherNames=[];
@@ -525,15 +546,9 @@ let pointsChart=null,qualityChart=null;
 let confirmCallback=null;
 let groq=null;
 
-// ============================================
-// OFFLINE DETECTION
-// ============================================
 window.addEventListener('online',()=>{isOffline=false;document.getElementById('offlineIndicator').classList.remove('show');showToast('Online','Connection restored','success');});
 window.addEventListener('offline',()=>{isOffline=true;document.getElementById('offlineIndicator').classList.add('show');showToast('Offline','Changes saved locally','warning');});
 
-// ============================================
-// THEME
-// ============================================
 (()=>{
     const saved=localStorage.getItem('judah-theme')||'dark';
     document.documentElement.setAttribute('data-theme',saved);
@@ -550,9 +565,6 @@ window.addEventListener('offline',()=>{isOffline=true;document.getElementById('o
     });
 })();
 
-// ============================================
-// UTILITIES
-// ============================================
 function escapeHtml(s){const d=document.createElement('div');d.textContent=s||'';return d.innerHTML;}
 function escapeAttr(s){return(s||'').replace(/"/g,'&quot;').replace(/'/g,'&#39;');}
 function showToast(title,msg,type='info',duration=4000){
@@ -581,16 +593,10 @@ function showConfirm(title,msg,cb){document.getElementById('confirmTitle').textC
 function closeConfirmModal(){document.getElementById('confirmModal').classList.remove('active');confirmCallback=null;}
 document.getElementById('confirmActionBtn').addEventListener('click',()=>{if(confirmCallback)confirmCallback();closeConfirmModal();});
 
-// ============================================
-// TIMER
-// ============================================
 function startTimer(){if(editTimer)return;editTimer=setInterval(()=>{editSeconds++;const m=Math.floor(editSeconds/60),s=editSeconds%60;document.getElementById('timerValue').textContent=`${String(m).padStart(2,'0')}:${String(s).padStart(2,'0')}`;},1000);}
 function stopTimer(){if(editTimer){clearInterval(editTimer);editTimer=null;}}
 function resetTimer(){stopTimer();editSeconds=0;document.getElementById('timerValue').textContent='00:00';}
 
-// ============================================
-// MAIN TAB SWITCHING
-// ============================================
 document.getElementById('mainTabs').addEventListener('click',e=>{
     const tab=e.target.closest('.main-tab');if(!tab)return;
     document.querySelectorAll('#mainTabs .main-tab').forEach(t=>t.classList.remove('active'));tab.classList.add('active');
@@ -603,9 +609,6 @@ document.getElementById('mainTabs').addEventListener('click',e=>{
     else if(tab.dataset.panel==='insights')renderInsights();
 });
 
-// ============================================
-// SUB TAB SWITCHING
-// ============================================
 document.getElementById('lnSubTabs').addEventListener('click',e=>{
     const tab=e.target.closest('.sub-tab');if(!tab)return;
     document.querySelectorAll('#lnSubTabs .sub-tab').forEach(t=>t.classList.remove('active'));tab.classList.add('active');
@@ -616,17 +619,11 @@ document.getElementById('lnSubTabs').addEventListener('click',e=>{
     else if(sub==='published')renderPublishedTab();
 });
 
-// ============================================
-// QUILL EDITORS
-// ============================================
 quill=new Quill('#editor',{theme:'snow',modules:{toolbar:[['bold','italic','underline'],[{header:[1,2,3,false]}],[{list:'ordered'},{list:'bullet'}],['link','blockquote'],['clean']]},placeholder:'Write your lesson note here...'});
 teachingProcessQuill=new Quill('#teachingProcessEditor',{theme:'snow',modules:{toolbar:[['bold','italic'],[{header:[1,2,false]}],[{list:'ordered'},{list:'bullet'}],['link'],['clean']]},placeholder:'Teaching process...'});
 studentResourceQuill=new Quill('#studentResourceEditor',{theme:'snow',modules:{toolbar:[['bold','italic'],[{header:[1,2,false]}],[{list:'ordered'},{list:'bullet'}],['link'],['clean']]},placeholder:'Student resources...'});
 quill.on('text-change',()=>{setAutoSaveStatus('unsaved');startTimer();});
 
-// ============================================
-// AUTH
-// ============================================
 auth.onAuthStateChanged(async user=>{
     if(!user){window.location.href='teacher-login.html';return;}
     const doc=await db.collection('users').doc(user.uid).get();
@@ -663,9 +660,6 @@ function populateSubjectSelector(){
 function onSubjectChange(){currentSubject=document.getElementById('lnSubject').value;currentTerm=document.getElementById('lnTerm').value;if(currentSubject)renderWeekSelector();}
 function onTermChange(){currentTerm=document.getElementById('lnTerm').value;if(currentSubject)renderWeekSelector();}
 
-// ============================================
-// LOAD DATA
-// ============================================
 async function loadAllData(){
     if(!currentUser)return;
     try{
@@ -678,9 +672,6 @@ async function loadAllData(){
     }catch(e){console.error('Load error:',e);}
 }
 
-// ============================================
-// WEEK SELECTOR
-// ============================================
 function renderWeekSelector(){
     const container=document.getElementById('weekSelector');
     const syl=syllabusMap[currentSubject];
@@ -741,9 +732,6 @@ async function addComment(){
     renderComments({...note,comments});document.getElementById('commentInput').value='';
 }
 
-// ============================================
-// SAVE / SUBMIT
-// ============================================
 document.getElementById('saveEditorBtn').addEventListener('click',async()=>{
     if(!currentSubject||!currentWeek)return showToast('Error','Select subject and week','warning');
     const lnHtml=quill.root.innerHTML;if(!quill.getText().trim())return showToast('Empty','Write something','warning');
@@ -771,9 +759,6 @@ document.getElementById('submitEditorBtn').addEventListener('click',async()=>{
     }catch(e){showToast('Error',e.message,'error');}
 });
 
-// ============================================
-// BULK OPERATIONS
-// ============================================
 async function generateAllWeeks(){
     if(!groq)return showToast('Error','AI not available','error');
     if(!currentSubject)return showToast('Error','Select a subject','warning');
@@ -810,9 +795,6 @@ async function bulkSubmit(){
     await addPoints(drafts.length,'Bulk submitted');showToast('Submitted',`${drafts.length} notes`,'success');updateStats();renderWeekSelector();
 }
 
-// ============================================
-// SUBMITTED / APPROVED / PUBLISHED TABS
-// ============================================
 function renderSubmittedTab(){
     const notes=Object.values(lessonNotesMap).filter(n=>n.status==='pending');
     document.getElementById('submittedCount').textContent=notes.length;
@@ -831,9 +813,6 @@ function renderPublishedTab(){
 async function cancelSubmission(id){await db.collection('lessonNotes').doc(id).update({status:'draft'});await loadAllData();renderWeekSelector();renderSubmittedTab();showToast('Cancelled','Moved to drafts','info');}
 async function publishNote(id){await db.collection('lessonNotes').doc(id).update({teachable:true});await loadAllData();renderApprovedTab();renderPublishedTab();showToast('Published','Visible to students','success');}
 
-// ============================================
-// AI ASSISTANT
-// ============================================
 function openAIAssistant(){
     if(!groq)return showToast('Error','AI not available','error');
     document.getElementById('aiAssistantModal').classList.add('active');
@@ -859,9 +838,6 @@ function clearAIChat(){aiConversation=[];lastGeneratedLN=null;document.getElemen
 document.getElementById('aiSendBtn').addEventListener('click',sendAIMessage);
 document.getElementById('aiChatInput').addEventListener('keypress',e=>{if(e.key==='Enter')sendAIMessage();});
 
-// ============================================
-// TEMPLATE / AI FORMAT
-// ============================================
 function useTemplate(){
     const topic=syllabusMap[currentSubject]?.weeks?.find(w=>w.week==currentWeek)?.topic||'___';
     quill.root.innerHTML=`<h2>LESSON NOTE</h2><p><strong>Subject:</strong> ${currentSubject||'___'} &nbsp; <strong>Class:</strong> ${currentClass||'___'}</p><p><strong>Week:</strong> ${currentWeek||'___'} &nbsp; <strong>Topic:</strong> ${topic}</p><p><strong>Duration:</strong> 40 minutes</p><h3>Instructional Materials:</h3><ul><li>...</li></ul><h3>Objectives:</h3><ol><li>...</li></ol><h3>Presentation:</h3><p>...</p><h3>Evaluation:</h3><ol><li>...</li></ol><h3>Assignment:</h3><ol><li>...</li></ol>`;
@@ -881,12 +857,9 @@ document.getElementById('aiGenerateResourceBtn2').addEventListener('click',async
     try{const c=await groq.chat.completions.create({messages:[{role:'system',content:'You are a Nigerian teacher. Write textbook-style student resources.'},{role:'user',content:`Create student resources for ${currentSubject} Week ${currentWeek}: ${topic}`}],model:'llama-3.3-70b-versatile',temperature:0.5,max_tokens:2000});studentResourceQuill.root.innerHTML=c.choices[0].message.content;showToast('Generated','Resources ready','success');}catch(e){showToast('Error',e.message,'error');}
 });
 
-// ============================================
-// HANDWRITING / IMAGE GENERATION (REPLICATE)
-// ============================================
 function renderHandwritingImages(){
     const grid=document.getElementById('handwritingImagesGrid');
-    grid.innerHTML=handwritingImages.length?handwritingImages.map((img,i)=>`<div class="handwriting-card"><img src="${img.url}" alt="${escapeHtml(img.prompt||'')}" onclick="window.open('${img.url}')" onerror="this.src='data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 width=%22180%22 height=%22140%22><rect fill=%22%23333%22 width=%22180%22 height=%22140%22/><text fill=%22%23999%22 x=%2290%22 y=%2275%22 text-anchor=%22middle%22 font-size=%2212%22>Image unavailable</text></svg>';"><div class="caption"><span>${escapeHtml((img.prompt||'').substring(0,25))}...</span><button class="btn btn-danger btn-sm" onclick="event.stopPropagation();removeHandwriting(${i})" style="padding:0.1rem 0.4rem;font-size:0.6rem;">×</button></div></div>`).join(''):'<p style="color:var(--text-muted);font-size:0.8rem;">No images yet. Describe what you want and click Generate.</p>';
+    grid.innerHTML=handwritingImages.length?handwritingImages.map((img,i)=>`<div class="handwriting-card"><img src="${img.url}" alt="${escapeHtml(img.prompt||'')}" onclick="window.open('${img.url}')" onerror="this.src='data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 width=%22180%22 height=%22140%22><rect fill=%22%23333%22 width=%22180%22 height=%22140%22/><text fill=%22%23999%22 x=%2290%22 y=%2275%22 text-anchor=%22middle%22 font-size=%2212%22>Image unavailable</text></svg>';"><div class="caption"><span>${escapeHtml((img.prompt||'').substring(0,25))}...</span><button class="btn btn-danger btn-sm" onclick="event.stopPropagation();removeHandwriting(${i})" style="padding:0.1rem 0.4rem;font-size:0.6rem;">×</button></div></div>`).join(''):'<p style="color:var(--text-muted);font-size:0.8rem;">No images yet.</p>';
 }
 function removeHandwriting(i){handwritingImages.splice(i,1);renderHandwritingImages();}
 
@@ -894,86 +867,32 @@ document.getElementById('generateHandwritingBtn').addEventListener('click',async
     const prompt=document.getElementById('handwritingPrompt').value.trim();
     const debugBox=document.getElementById('aiImageDebug');
     debugBox.classList.remove('show');debugBox.innerHTML='';
-    
     if(!prompt)return showToast('Error','Write a prompt first','warning');
     if(!currentSubject||!currentWeek)return showToast('Error','Select subject and week first','error');
-
     let replicateKey=null;
-    try{
-        replicateKey=remoteConfig.getString('Judahimage');
-        debugBox.classList.add('show');
-        debugBox.innerHTML=`<strong>🔍 Debug:</strong> Key fetched. Length: ${replicateKey?.length||0}`;
-    }catch(e){
-        debugBox.classList.add('show');
-        debugBox.innerHTML=`<strong>❌ Debug:</strong> Remote Config error: ${e.message}`;
-        return showToast('Error','Config error','error');
-    }
-    
-    if(!replicateKey||replicateKey.length<5){
-        debugBox.classList.add('show');
-        debugBox.innerHTML=`<strong>❌ Debug:</strong> Key missing or too short`;
-        return showToast('Error','API key not configured','error');
-    }
-
-    const btn=document.getElementById('generateHandwritingBtn');
-    const origHTML=btn.innerHTML;
-    btn.disabled=true;
-    btn.innerHTML='<i class="fas fa-spinner fa-spin"></i> Generating...';
-
+    try{replicateKey=remoteConfig.getString('Judahimage');debugBox.classList.add('show');debugBox.innerHTML=`<strong>🔍 Debug:</strong> Key fetched. Length: ${replicateKey?.length||0}`;}catch(e){debugBox.classList.add('show');debugBox.innerHTML=`<strong>❌ Debug:</strong> Remote Config error: ${e.message}`;return showToast('Error','Config error','error');}
+    if(!replicateKey||replicateKey.length<5){debugBox.classList.add('show');debugBox.innerHTML=`<strong>❌ Debug:</strong> Key missing or too short`;return showToast('Error','API key not configured','error');}
+    const btn=document.getElementById('generateHandwritingBtn');const origHTML=btn.innerHTML;btn.disabled=true;btn.innerHTML='<i class="fas fa-spinner fa-spin"></i> Generating...';
     try{
         debugBox.innerHTML+=`<br>🔄 Sending prediction request...`;
-        const replicateRes=await fetch('https://api.replicate.com/v1/predictions',{
-            method:'POST',
-            headers:{'Content-Type':'application/json','Authorization':`Token ${replicateKey}`},
-            body:JSON.stringify({
-                version:'be04660a5b93ef2aff61e3668dedb4cbeb14941e62a3fd5998364a0b7e3a0d00',
-                input:{prompt:prompt,negative_prompt:'blurry, messy, low quality, text errors',width:768,height:768,num_outputs:1,scheduler:'K_EULER',num_inference_steps:30}
-            })
-        });
+        const replicateRes=await fetch('https://api.replicate.com/v1/predictions',{method:'POST',headers:{'Content-Type':'application/json','Authorization':`Token ${replicateKey}`},body:JSON.stringify({version:'be04660a5b93ef2aff61e3668dedb4cbeb14941e62a3fd5998364a0b7e3a0d00',input:{prompt:prompt,negative_prompt:'blurry, messy, low quality, text errors',width:768,height:768,num_outputs:1,scheduler:'K_EULER',num_inference_steps:30}})});
         const prediction=await replicateRes.json();
         debugBox.innerHTML+=`<br>✅ Prediction ID: ${prediction.id}<br>⏳ Polling for result...`;
-        
         let imageUrl=null;let attempts=0;
-        while(!imageUrl&&attempts<60){
-            await new Promise(r=>setTimeout(r,3000));
-            const pollRes=await fetch(`https://api.replicate.com/v1/predictions/${prediction.id}`,{headers:{'Authorization':`Token ${replicateKey}`}});
-            const pollData=await pollRes.json();
-            debugBox.innerHTML+=`<br>⏳ Poll #${attempts+1}: ${pollData.status}`;
-            if(pollData.status==='succeeded')imageUrl=pollData.output?.[0];
-            else if(pollData.status==='failed')throw new Error('Generation failed: '+(pollData.error||'Unknown'));
-            attempts++;
-        }
+        while(!imageUrl&&attempts<60){await new Promise(r=>setTimeout(r,3000));const pollRes=await fetch(`https://api.replicate.com/v1/predictions/${prediction.id}`,{headers:{'Authorization':`Token ${replicateKey}`}});const pollData=await pollRes.json();debugBox.innerHTML+=`<br>⏳ Poll #${attempts+1}: ${pollData.status}`;if(pollData.status==='succeeded')imageUrl=pollData.output?.[0];else if(pollData.status==='failed')throw new Error('Generation failed: '+(pollData.error||'Unknown'));attempts++;}
         if(!imageUrl)throw new Error('Timed out after 3 minutes');
-        
         debugBox.innerHTML+=`<br>🔄 Uploading to Cloudinary...`;
-        const formData=new FormData();
-        formData.append('file',imageUrl);
-        formData.append('upload_preset','Judahschool');
-        formData.append('folder','handwriting_notes');
-        const cloudRes=await fetch('https://api.cloudinary.com/v1_1/dda7kpir8/image/upload',{method:'POST',body:formData});
-        const cloudData=await cloudRes.json();
+        const formData=new FormData();formData.append('file',imageUrl);formData.append('upload_preset','Judahschool');formData.append('folder','handwriting_notes');
+        const cloudRes=await fetch('https://api.cloudinary.com/v1_1/dda7kpir8/image/upload',{method:'POST',body:formData});const cloudData=await cloudRes.json();
         if(!cloudRes.ok)throw new Error(cloudData.error?.message||'Upload failed');
-        
-        const finalUrl=cloudData.secure_url;
-        debugBox.innerHTML+=`<br>✅ Done! ${finalUrl.substring(0,50)}...`;
-        handwritingImages.push({url:finalUrl,prompt:prompt,createdAt:new Date().toISOString()});
-        renderHandwritingImages();
-        
-        const key=`${currentSubject}_${currentWeek}`;
-        const existing=lessonNotesMap[key]||{};
+        const finalUrl=cloudData.secure_url;debugBox.innerHTML+=`<br>✅ Done! ${finalUrl.substring(0,50)}...`;
+        handwritingImages.push({url:finalUrl,prompt:prompt,createdAt:new Date().toISOString()});renderHandwritingImages();
+        const key=`${currentSubject}_${currentWeek}`;const existing=lessonNotesMap[key]||{};
         if(existing.id)await db.collection('lessonNotes').doc(existing.id).update({handwritingImages,updatedAt:firebase.firestore.FieldValue.serverTimestamp()});
-        
-        showToast('Generated','Image saved!','success');
-        document.getElementById('handwritingPrompt').value='';
-    }catch(err){
-        debugBox.innerHTML+=`<br>❌ <strong>Error:</strong> ${err.message}`;
-        showToast('Error',err.message,'error');
-    }finally{
-        btn.disabled=false;
-        btn.innerHTML=origHTML;
-    }
+        showToast('Generated','Image saved!','success');document.getElementById('handwritingPrompt').value='';
+    }catch(err){debugBox.innerHTML+=`<br>❌ <strong>Error:</strong> ${err.message}`;showToast('Error',err.message,'error');}
+    finally{btn.disabled=false;btn.innerHTML=origHTML;}
 });
-
 document.getElementById('publishHandwritingBtn').addEventListener('click',async()=>{
     if(!handwritingImages.length)return showToast('Empty','No images to publish','warning');
     const key=`${currentSubject}_${currentWeek}`;const note=lessonNotesMap[key];if(!note?.id)return;
@@ -981,9 +900,6 @@ document.getElementById('publishHandwritingBtn').addEventListener('click',async(
     showToast('Published','Images published to students','success');
 });
 
-// ============================================
-// POST-APPROVAL RESOURCES
-// ============================================
 document.getElementById('saveTPBtn').addEventListener('click',async()=>{const key=`${currentSubject}_${currentWeek}`;const note=lessonNotesMap[key];if(!note?.id)return;await db.collection('lessonNotes').doc(note.id).update({teachingProcess:teachingProcessQuill.root.innerHTML});showToast('Saved','Teaching process saved','success');});
 document.getElementById('saveResourceBtn').addEventListener('click',async()=>{const key=`${currentSubject}_${currentWeek}`;const note=lessonNotesMap[key];if(!note?.id)return;await db.collection('lessonNotes').doc(note.id).update({studentResource:studentResourceQuill.root.innerHTML});showToast('Saved','Resources saved','success');});
 document.getElementById('publishTPBtn2').addEventListener('click',async()=>{const key=`${currentSubject}_${currentWeek}`;const note=lessonNotesMap[key];if(!note?.id)return;await db.collection('lessonNotes').doc(note.id).update({teachable:true,teachingProcess:teachingProcessQuill.root.innerHTML});showToast('Published','Teaching process published','success');});
@@ -993,9 +909,6 @@ function addVideoLink(){const url=document.getElementById('videoLinkInput').valu
 function renderVideoList(){document.getElementById('videoList').innerHTML=videoLinks.length?videoLinks.map((v,i)=>`<div style="display:flex;justify-content:space-between;padding:0.3rem 0;"><span>${escapeHtml(v)}</span><button class="btn btn-danger btn-sm" onclick="removeVideo(${i})">×</button></div>`).join(''):'<p style="color:var(--text-muted);">No videos.</p>';}
 function removeVideo(i){videoLinks.splice(i,1);renderVideoList();}
 
-// ============================================
-// CO-PLANNING
-// ============================================
 function openCoPlanModal(){document.getElementById('coPlanModal').classList.add('active');renderCoTeacherList();}
 function closeCoPlanModal(){document.getElementById('coPlanModal').classList.remove('active');}
 async function renderCoTeacherList(search=''){
@@ -1012,9 +925,6 @@ function confirmCoPlan(){coTeachers=selectedCoTeacherIds;coTeacherNames=selected
 document.getElementById('coPlanToggle').addEventListener('click',openCoPlanModal);
 document.getElementById('coTeacherSearch').addEventListener('input',e=>renderCoTeacherList(e.target.value));
 
-// ============================================
-// LIBRARY
-// ============================================
 async function renderLibrary(){
     const search=document.getElementById('librarySearch')?.value?.toLowerCase()||'';
     const snap=await db.collection('lessonNotes').where('isPublic','==',true).orderBy('createdAt','desc').limit(50).get();
@@ -1024,9 +934,6 @@ async function renderLibrary(){
 }
 async function importFromLibrary(id){const doc=await db.collection('lessonNotes').doc(id).get();if(!doc.exists)return;const data=doc.data();if(!subjects.includes(data.subject)){subjects.push(data.subject);await db.collection('users').doc(currentUser.uid).update({subjects});populateSubjectSelector();}const nd={...data,teacherId:currentUser.uid,teacherName:`${userData.firstName||''} ${userData.surname||''}`.trim(),status:'draft',createdAt:firebase.firestore.FieldValue.serverTimestamp(),isPublic:false};delete nd.id;const r=await db.collection('lessonNotes').add(nd);const key=`${data.subject}_${data.week}`;lessonNotesMap[key]={id:r.id,...nd};showToast('Imported','Note imported as draft','success');updateStats();currentSubject=data.subject;currentWeek=data.week;document.getElementById('lnSubject').value=data.subject;renderWeekSelector();selectWeek(data.week);}
 
-// ============================================
-// ANALYTICS / PLANNER / REPORTS / INSIGHTS
-// ============================================
 function renderAnalytics(){
     const subjectsArr=[...new Set(Object.values(lessonNotesMap).map(n=>n.subject))];
     document.getElementById('coverageAnalysis').innerHTML=subjectsArr.length?subjectsArr.map(sub=>{const syl=syllabusMap[sub];const total=syl?.weeks?.length||12;const notes=Object.values(lessonNotesMap).filter(n=>n.subject===sub);const done=notes.filter(n=>n.status==='approved'||n.teachable).length;const pct=Math.round((done/total)*100);return`<div style="margin-bottom:0.5rem;"><span>${escapeHtml(sub)}: ${done}/${total}</span><div class="coverage-bar"><div class="coverage-fill" style="width:${pct}%;background:${pct>=80?'var(--success-text)':pct>=50?'var(--warning-text)':'var(--danger-text)'};"></div></div></div>`;}).join(''):'<p>No data.</p>';
@@ -1040,25 +947,126 @@ function renderAnalytics(){
 }
 function renderPlanner(){document.getElementById('plannerTermLabel').textContent=currentTerm;const grid=document.getElementById('plannerGrid');grid.innerHTML='';for(let w=1;w<=12;w++){const key=`${currentSubject}_${w}`;const note=lessonNotesMap[key];let cls='empty',label=`Week ${w}`;if(note?.status==='approved'||note?.teachable){cls='done';label+=' ✅';}else if(note?.status==='pending'){cls='pending';label+=' ⏳';}else if(note?.lessonNote){cls='pending';label+=' 📝';}grid.innerHTML+=`<div class="planner-week ${cls}" onclick="currentWeek=${w};document.getElementById('mainTabs').querySelector('[data-panel=lessonNotes]').click();selectWeek(${w});">${label}</div>`;}}
 function renderReportsPanel(){const sel=document.getElementById('reportWeek');sel.innerHTML='';for(let w=1;w<=12;w++){const o=document.createElement('option');o.value=w;o.textContent=`Week ${w}`;sel.appendChild(o);}loadSubmittedReports();}
-document.getElementById('generateReportBtn').addEventListener('click',()=>{const week=parseInt(document.getElementById('reportWeek').value);const notes=Object.values(lessonNotesMap).filter(n=>n.week==week&&n.subject&&(n.status==='approved'||n.teachable));document.getElementById('reportPreview').innerHTML=notes.length?`<table><thead><tr><th>Subject</th><th>Topic</th></tr></thead><tbody>${notes.map(n=>`<tr><td>${escapeHtml(n.subject)}</td><td>${escapeHtml(n.topic||'—')}</td></tr>`).join('')}</tbody></table><p style="margin-top:0.5rem;"><strong>Total:</strong> ${notes.length} | Week ${week} | ${currentTerm}</p>`:'<p>No approved notes for this week.</p>';});
+document.getElementById('generateReportBtn').addEventListener('click',()=>{const week=parseInt(document.getElementById('reportWeek').value);const notes=Object.values(lessonNotesMap).filter(n=>n.week==week&&n.subject&&(n.status==='approved'||n.teachable));document.getElementById('reportPreview').innerHTML=notes.length?`<table><thead><tr><th>Subject</th><th>Topic</th></tr></thead><tbody>${notes.map(n=>`<tr><td>${escapeHtml(n.subject)}</td><td>${escapeHtml(n.topic||'—')}</td></tr>`).join('')}</tbody></table><p><strong>Total:</strong> ${notes.length} | Week ${week} | ${currentTerm}</p>`:'<p>No approved notes.</p>';});
 document.getElementById('submitReportBtn2').addEventListener('click',async()=>{const week=parseInt(document.getElementById('reportWeek').value);const notes=Object.values(lessonNotesMap).filter(n=>n.week==week&&(n.status==='approved'||n.teachable));if(!notes.length)return showToast('Error','No data','error');await db.collection('weeklyTeachingReports').add({teacherId:currentUser.uid,teacherName:`${userData.firstName||''} ${userData.surname||''}`.trim(),week,term:currentTerm,subjectsTaught:notes.map(n=>({subject:n.subject,topic:n.topic||''})),totalSubjects:notes.length,submittedAt:firebase.firestore.FieldValue.serverTimestamp(),status:'submitted'});await addPoints(3,'Report submitted');showToast('Submitted','Report sent','success');loadSubmittedReports();});
 async function loadSubmittedReports(){const snap=await db.collection('weeklyTeachingReports').where('teacherId','==',currentUser.uid).orderBy('submittedAt','desc').limit(20).get();document.getElementById('submittedReportsList').innerHTML=snap.empty?'<p>No reports.</p>':snap.docs.map(d=>{const r=d.data();return`<div class="card" style="padding:1rem;"><strong>Week ${r.week} — ${r.term}</strong> <span class="status-badge status-draft">${r.status}</span><p>${r.totalSubjects} subjects</p></div>`;}).join('');}
 function renderInsights(){const history=userData?.pointHistory||[];document.getElementById('ratingHistory').innerHTML=history.length?history.slice().reverse().slice(0,10).map(h=>`<div style="padding:0.3rem 0;border-bottom:1px solid var(--border);font-size:0.8rem;"><strong>${new Date(h.date).toLocaleDateString()}</strong>: ${h.points>0?'+':''}${h.points} pts — ${escapeHtml(h.reason)}</div>`).join(''):'<p>No history.</p>';const ctx=document.getElementById('pointsChart').getContext('2d');if(pointsChart)pointsChart.destroy();const ptsArr=history.map(h=>h.newPoints);const labels=history.map(h=>new Date(h.date).toLocaleDateString());pointsChart=new Chart(ctx,{type:'line',data:{labels:labels.length?labels:['Start'],datasets:[{label:'Points',data:ptsArr.length?ptsArr:[0],borderColor:'#C8963E',backgroundColor:'rgba(200,150,62,0.1)',fill:true,tension:0.4}]},options:{responsive:true,scales:{y:{beginAtZero:true}}}});const pub=userData?.publicProfile||{};document.getElementById('publicPreview').innerHTML=`<div style="display:flex;align-items:center;gap:1rem;"><div class="profile-pic" style="width:60px;height:60px;">${userData?.photoURL?`<img src="${userData.photoURL}" style="width:100%;height:100%;object-fit:cover;border-radius:50%;">`:(userData?.firstName?.[0]||'T')+(userData?.surname?.[0]||'')}</div><div><h3>${pub.name!==false?`${userData?.firstName||''} ${userData?.surname||''}`.trim():'Teacher'}</h3><p>${userData?.post||'Teacher'}</p></div></div><p><strong>Rating:</strong> ${pub.rating!==false?'★'.repeat(Math.min(5,Math.floor((userData?.points||0)/100))):'Private'}</p><p><strong>Published:</strong> ${Object.values(lessonNotesMap).filter(n=>n.teachable||n.resourcePublished).length} resources</p>`;}
 
-// ============================================
-// PARENT PREVIEW / PDF
-// ============================================
 function openParentPreview(){const content=quill.root.innerHTML;document.getElementById('parentPreviewContent').innerHTML=content||'<p>No content.</p>';document.getElementById('parentPreviewModal').classList.add('active');}
 function closeParentPreview(){document.getElementById('parentPreviewModal').classList.remove('active');}
 function exportToPDF(){window.print();}
 
-// ============================================
-// REALTIME LISTENERS
-// ============================================
 function setupRealtimeListeners(){db.collection('lessonNotes').where('teacherId','==',currentUser.uid).onSnapshot(snap=>{snap.docChanges().forEach(change=>{if(change.type==='modified'){const data=change.doc.data();const old=lessonNotesMap[`${data.subject}_${data.week}`];if(old&&old.status!==data.status){if(data.status==='approved')showToast('Approved!',`${data.subject} Wk ${data.week} approved!`,'success',6000);else if(data.status==='rejected')showToast('Rejected',`${data.subject} Wk ${data.week} rejected.`,'warning',6000);}}});loadAllData();});}
 
 async function loadNotifications(){document.getElementById('notifDot').classList.remove('show');}
 function toggleNotifications(){loadNotifications();}
+
+// ============================================
+// PERMISSION REQUESTS
+// ============================================
+function openPermissionModal(){
+    document.getElementById('permType').value = 'leave_request';
+    document.getElementById('permStartDate').value = new Date().toISOString().split('T')[0];
+    document.getElementById('permEndDate').value = '';
+    document.getElementById('permReason').value = '';
+    document.getElementById('permissionModal').classList.add('active');
+}
+function closePermissionModal(){
+    document.getElementById('permissionModal').classList.remove('active');
+}
+function openMyRequestsModal(){
+    document.getElementById('myRequestsModal').classList.add('active');
+    loadMyRequests();
+}
+function closeMyRequestsModal(){
+    document.getElementById('myRequestsModal').classList.remove('active');
+}
+
+document.getElementById('submitPermBtn').addEventListener('click', async () => {
+    const type = document.getElementById('permType').value;
+    const startDate = document.getElementById('permStartDate').value;
+    const endDate = document.getElementById('permEndDate').value;
+    const reason = document.getElementById('permReason').value.trim();
+    if (!startDate) return showToast('Required', 'Select a date.', 'warning');
+    if (!reason) return showToast('Required', 'Provide a reason.', 'warning');
+    
+    const typeLabels = {leave_request:'Leave of Absence',event_request:'School Event/Trip',resource_request:'Classroom Resource',schedule_change:'Schedule Change',other:'Other Request'};
+    if (!confirm(`Submit "${typeLabels[type]}" request for ${startDate}?`)) return;
+    
+    const btn = document.getElementById('submitPermBtn');
+    const origHTML = btn.innerHTML;
+    btn.disabled = true;
+    btn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Submitting...';
+    
+    try {
+        await db.collection('pendingActions').add({
+            teacherId: currentUser.uid,
+            teacherName: `${userData?.firstName || ''} ${userData?.surname || ''}`.trim(),
+            actionType: type,
+            classId: currentClass || '',
+            details: { startDate, endDate: endDate || null, reason },
+            status: 'pending',
+            requestedAt: firebase.firestore.FieldValue.serverTimestamp()
+        });
+        await logAudit('PERMISSION_REQUESTED', `${typeLabels[type]}: ${reason.substring(0, 50)}`);
+        await addPoints(1, 'Permission request submitted');
+        closePermissionModal();
+        showToast('Submitted!', 'Your request has been sent for review.', 'success');
+    } catch (err) {
+        showToast('Error', err.message, 'error');
+    } finally {
+        btn.disabled = false;
+        btn.innerHTML = origHTML;
+    }
+});
+
+async function loadMyRequests() {
+    if (!currentUser) return;
+    const container = document.getElementById('myRequestsList');
+    container.innerHTML = '<div style="text-align:center;padding:2rem;"><i class="fas fa-spinner fa-spin"></i> Loading...</div>';
+    
+    try {
+        const snap = await db.collection('pendingActions')
+            .where('teacherId', '==', currentUser.uid)
+            .orderBy('requestedAt', 'desc')
+            .get();
+        
+        if (snap.empty) {
+            container.innerHTML = '<div style="text-align:center;padding:2rem;color:var(--text-muted);"><i class="fas fa-inbox" style="font-size:2rem;display:block;margin-bottom:0.5rem;opacity:0.3;"></i><p>No permission requests submitted yet.</p></div>';
+            return;
+        }
+        
+        const typeLabels = {leave_request:'🏠 Leave',event_request:'🎉 Event',resource_request:'📦 Resource',schedule_change:'📅 Schedule',other:'📋 Other'};
+        
+        container.innerHTML = snap.docs.map(doc => {
+            const req = doc.data();
+            const statusClass = req.status === 'approved' ? 'status-approved' : req.status === 'rejected' ? 'status-rejected' : 'status-pending';
+            const statusIcon = req.status === 'approved' ? 'fa-check-circle' : req.status === 'rejected' ? 'fa-times-circle' : 'fa-clock';
+            const dateStr = req.requestedAt?.toDate ? req.requestedAt.toDate().toLocaleDateString('en-GB', {day:'numeric',month:'short',year:'numeric'}) : 'Unknown';
+            
+            return `<div class="card" style="padding:1rem;margin-bottom:0.75rem;">
+                <div style="display:flex;justify-content:space-between;align-items:flex-start;gap:1rem;flex-wrap:wrap;">
+                    <div style="flex:1;min-width:200px;">
+                        <div style="display:flex;gap:0.5rem;align-items:center;flex-wrap:wrap;margin-bottom:0.3rem;">
+                            <span style="font-weight:600;">${typeLabels[req.actionType] || req.actionType}</span>
+                            <span class="status-badge ${statusClass}"><i class="fas ${statusIcon}"></i> ${req.status?.toUpperCase() || 'PENDING'}</span>
+                        </div>
+                        ${req.details?.startDate ? `<p style="font-size:0.85rem;margin:0.3rem 0;"><strong>Date:</strong> ${escapeHtml(req.details.startDate)}${req.details.endDate ? ' → ' + escapeHtml(req.details.endDate) : ''}</p>` : ''}
+                        <p style="font-size:0.85rem;color:var(--text-secondary);margin:0.3rem 0;"><strong>Reason:</strong> ${escapeHtml((req.details?.reason || 'No reason').substring(0, 150))}</p>
+                        ${req.adminNote ? `<p style="font-size:0.8rem;color:var(--accent);margin-top:0.3rem;"><strong>Response:</strong> ${escapeHtml(req.adminNote)}</p>` : ''}
+                    </div>
+                    <small style="color:var(--text-muted);">${dateStr}</small>
+                </div>
+            </div>`;
+        }).join('');
+    } catch (e) {
+        container.innerHTML = '<p style="color:var(--danger-text);">Error loading requests.</p>';
+        console.error(e);
+    }
+}
+
+document.getElementById('permissionModal').addEventListener('click', function(e) { if (e.target === this) closePermissionModal(); });
+document.getElementById('myRequestsModal').addEventListener('click', function(e) { if (e.target === this) closeMyRequestsModal(); });
 
 // ============================================
 // INIT
@@ -1081,8 +1089,10 @@ window.publishNote=publishNote;window.importFromLibrary=importFromLibrary;
 window.renderCoTeacherList=renderCoTeacherList;window.toggleCoTeacher=toggleCoTeacher;
 window.removeCoTeacher=removeCoTeacher;window.onSubjectChange=onSubjectChange;
 window.onTermChange=onTermChange;
+window.openPermissionModal=openPermissionModal;window.closePermissionModal=closePermissionModal;
+window.openMyRequestsModal=openMyRequestsModal;window.closeMyRequestsModal=closeMyRequestsModal;
 
-console.log('📝 Teacher Lesson Notes — AI + Handwriting Ready ✅');
+console.log('📝 Teacher Lesson Notes — Full Featured Edition Ready ✅');
 </script>
 </body>
 </html>
