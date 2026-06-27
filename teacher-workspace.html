@@ -36,7 +36,6 @@
             --offline-bg: rgba(245,158,11,0.1); --offline-text: #b45309;
             --co-plan-bg: rgba(139,92,246,0.1); --co-plan-text: #7c3aed;
             --timer-bg: rgba(100,150,200,0.1); --timer-text: #3b82f6;
-            --request-bg: rgba(59,130,246,0.1); --request-text: #2563eb;
         }
         
         :root[data-theme="dark"] {
@@ -59,7 +58,6 @@
             --offline-bg: rgba(245,158,11,0.15); --offline-text: #fbbf24;
             --co-plan-bg: rgba(139,92,246,0.2); --co-plan-text: #a78bfa;
             --timer-bg: rgba(59,130,246,0.15); --timer-text: #60a5fa;
-            --request-bg: rgba(59,130,246,0.2); --request-text: #93c5fd;
         }
 
         body { font-family:'Inter',sans-serif; background:var(--bg-primary); color:var(--text-primary); min-height:100vh; transition:background 0.3s,color 0.3s; position:relative; overflow-x:hidden; }
@@ -76,7 +74,6 @@
         .nav-btn { background:transparent; border:1px solid var(--border); border-radius:2rem; padding:0.5rem 1rem; color:var(--text-primary); font-weight:500; font-size:0.85rem; cursor:pointer; transition:0.2s; text-decoration:none; display:flex; align-items:center; gap:0.4rem; white-space:nowrap; }
         .nav-btn:hover { background:var(--hover-bg); border-color:var(--accent); color:var(--accent); }
         .nav-btn.active-co { background:var(--co-plan-bg); border-color:var(--co-plan-text); color:var(--co-plan-text); }
-        .nav-btn.active-request { background:var(--request-bg); border-color:var(--request-text); color:var(--request-text); }
         .profile-dropdown { position:relative; cursor:pointer; }
         .profile-trigger { display:flex; align-items:center; gap:0.5rem; background:var(--card-bg); backdrop-filter:blur(8px); -webkit-backdrop-filter:blur(8px); border:1px solid var(--border); border-radius:3rem; padding:0.3rem 0.3rem 0.3rem 0.8rem; }
         .profile-name { font-weight:600; color:var(--text-primary); font-size:0.85rem; }
@@ -104,107 +101,6 @@
         .auto-save-indicator.saving { color:var(--warning-text); }
         .auto-save-indicator.unsaved { color:var(--danger-text); }
         .auto-save-indicator.error { color:var(--danger-text); }
-
-        /* Debug Button */
-        .debug-toggle-btn {
-            background: rgba(239,68,68,0.2);
-            border: 1px solid #ef4444;
-            color: #ef4444;
-            border-radius: 2rem;
-            padding: 0.5rem 1rem;
-            font-weight: 600;
-            font-size: 0.85rem;
-            cursor: pointer;
-            display: flex;
-            align-items: center;
-            gap: 0.4rem;
-            transition: all 0.2s;
-            white-space: nowrap;
-        }
-        .debug-toggle-btn.active {
-            background: #ef4444;
-            color: white;
-        }
-        .debug-toggle-btn:hover {
-            background: #ef4444;
-            color: white;
-        }
-
-        /* Debug Panel */
-        .debug-panel {
-            display: none;
-            position: fixed;
-            bottom: 0;
-            left: 0;
-            right: 0;
-            z-index: 9999;
-            background: rgba(15,23,42,0.98);
-            backdrop-filter: blur(20px);
-            -webkit-backdrop-filter: blur(20px);
-            border-top: 3px solid #ef4444;
-            max-height: 70vh;
-            overflow-y: auto;
-            padding: 1.5rem;
-            font-family: 'Courier New', monospace;
-            font-size: 0.8rem;
-            color: #f0f4fa;
-            box-shadow: 0 -10px 40px rgba(0,0,0,0.8);
-        }
-        .debug-panel.active {
-            display: block;
-            animation: slideUp 0.3s ease;
-        }
-        @keyframes slideUp { from{transform:translateY(100%)} to{transform:translateY(0)} }
-        .debug-panel h3 {
-            color: #ef4444;
-            margin-bottom: 1rem;
-            font-family: 'Inter', sans-serif;
-            font-size: 1.1rem;
-        }
-        .debug-item {
-            padding: 0.6rem 0.8rem;
-            margin: 0.4rem 0;
-            border-radius: 0.5rem;
-            background: rgba(30,41,59,0.8);
-            border-left: 4px solid #64748b;
-            word-wrap: break-word;
-        }
-        .debug-item.pass {
-            border-left-color: #22c55e;
-            background: rgba(34,197,94,0.1);
-        }
-        .debug-item.fail {
-            border-left-color: #ef4444;
-            background: rgba(239,68,68,0.15);
-        }
-        .debug-item.warn {
-            border-left-color: #f59e0b;
-            background: rgba(245,158,11,0.15);
-        }
-        .debug-item.info {
-            border-left-color: #3b82f6;
-            background: rgba(59,130,246,0.1);
-        }
-        .debug-refresh {
-            background: #C8963E;
-            color: white;
-            border: none;
-            padding: 0.5rem 1.2rem;
-            border-radius: 1.5rem;
-            cursor: pointer;
-            font-size: 0.85rem;
-            font-weight: 600;
-        }
-        .debug-close {
-            background: #64748b;
-            color: white;
-            border: none;
-            padding: 0.5rem 1.2rem;
-            border-radius: 1.5rem;
-            cursor: pointer;
-            font-size: 0.85rem;
-            font-weight: 600;
-        }
 
         /* Main Container */
         .main-container { max-width:1600px; margin:0 auto; padding:1rem; position:relative; z-index:5; }
@@ -362,14 +258,6 @@
         .empty-state { text-align:center; padding:2rem; color:var(--text-muted); }
         .empty-state i { font-size:2.5rem; margin-bottom:0.8rem; opacity:0.4; display:block; }
 
-        /* Request card */
-        .request-card { background:var(--card-bg); border:1px solid var(--border); border-radius:1rem; padding:1rem; margin-bottom:0.8rem; transition:0.2s; }
-        .request-card:hover { border-color:var(--accent); }
-        .request-type { display:inline-block; padding:0.2rem 0.6rem; border-radius:1rem; font-size:0.7rem; font-weight:600; }
-        .request-type.absence { background:var(--danger-bg); color:var(--danger-text); }
-        .request-type.late { background:var(--warning-bg); color:var(--warning-text); }
-        .request-type.early { background:var(--info-bg); color:var(--info-text); }
-
         @media(max-width:768px) {
             .top-nav { flex-direction:column; align-items:stretch; }
             .nav-left,.nav-right { justify-content:center; }
@@ -394,8 +282,6 @@
         <span class="co-indicator" id="coIndicator"><i class="fas fa-users"></i> Co-Planning</span>
         <span class="timer-display" id="timerDisplay"><i class="fas fa-clock"></i> <span id="timerValue">00:00</span></span>
         <button class="nav-btn active-co" id="coPlanToggle" style="display:none;"><i class="fas fa-users"></i> Co-Plan</button>
-        <button class="nav-btn active-request" id="teacherRequestBtn" onclick="openTeacherRequestModal()"><i class="fas fa-calendar-check"></i> Teacher Request</button>
-        <button class="debug-toggle-btn" id="debugToggleBtn" onclick="toggleDebugPanel()"><i class="fas fa-bug"></i> AI Debug</button>
     </div>
     <div class="nav-right">
         <div class="notif-btn" id="notifBtn" onclick="toggleNotifications()"><i class="fas fa-bell"></i><span class="notif-dot" id="notifDot"></span></div>
@@ -410,24 +296,9 @@
                 <div class="dropdown-item" onclick="window.location.href='teacher-profile.html'"><i class="fas fa-user"></i> Profile</div>
                 <div class="dropdown-item" onclick="window.location.href='teacher-class-hub.html'"><i class="fas fa-users"></i> Class Hub</div>
                 <div class="dropdown-item" onclick="window.location.href='timetable-syllabus.html'"><i class="fas fa-calendar-alt"></i> Timetable & Syllabus</div>
-                <div class="dropdown-item" onclick="openTeacherRequestModal()"><i class="fas fa-calendar-check"></i> Teacher Request</div>
                 <div class="dropdown-item danger" id="logoutBtn"><i class="fas fa-sign-out-alt"></i> Logout</div>
             </div>
         </div>
-    </div>
-</div>
-
-<!-- DEBUG PANEL -->
-<div class="debug-panel" id="debugPanel">
-    <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:1rem;flex-wrap:wrap;gap:0.5rem;">
-        <h3 style="margin:0;"><i class="fas fa-bug"></i> AI Debug Console</h3>
-        <div style="display:flex;gap:0.5rem;">
-            <button class="debug-refresh" onclick="runFullDebug()"><i class="fas fa-sync"></i> Refresh Checks</button>
-            <button class="debug-close" onclick="toggleDebugPanel()"><i class="fas fa-times"></i> Close</button>
-        </div>
-    </div>
-    <div id="debugResults">
-        <p style="color:#a0b3d9;">Click <strong style="color:#C8963E;">Refresh Checks</strong> to run full AI diagnostics...</p>
     </div>
 </div>
 
@@ -449,7 +320,6 @@
         <div class="main-tab" data-panel="analytics"><i class="fas fa-chart-line"></i> Analytics</div>
         <div class="main-tab" data-panel="planner"><i class="fas fa-calendar-week"></i> Planner</div>
         <div class="main-tab" data-panel="reports"><i class="fas fa-clipboard-list"></i> Reports</div>
-        <div class="main-tab" data-panel="requests"><i class="fas fa-calendar-check"></i> Requests</div>
         <div class="main-tab" data-panel="insights"><i class="fas fa-lightbulb"></i> Insights</div>
     </div>
 
@@ -498,7 +368,7 @@
                         <button class="btn btn-outline btn-sm" onclick="aiFormatEditor()"><i class="fas fa-magic"></i> Auto-Format</button>
                         <button class="btn btn-outline btn-sm" id="saveAsTemplateBtn2"><i class="fas fa-layer-group"></i> Save as Template</button>
                         <button class="btn btn-primary btn-sm" id="saveEditorBtn"><i class="fas fa-save"></i> Save Draft</button>
-                        <button class="btn btn-success btn-sm" id="submitEditorBtn"><i class="fas fa-paper-plane"></i> Send for Approval</button>
+                        <button class="btn btn-success btn-sm" id="submitEditorBtn" style="display:none;"><i class="fas fa-paper-plane"></i> Submit</button>
                     </div>
                 </div>
                 <div class="editor-container"><div id="editor"></div></div>
@@ -514,27 +384,18 @@
 
             <div id="postApprovalSection" style="display:none;">
                 <div class="card" id="teachingProcessCard">
-                    <div class="card-header"><h3><i class="fas fa-chalkboard-teacher"></i> Teaching Process (Teacher's Guide)</h3><button class="btn btn-outline btn-sm" onclick="aiFormatTP()"><i class="fas fa-magic"></i> Auto-Format</button></div>
-                    <button class="btn btn-primary btn-sm" id="aiGenerateTPBtn" style="margin-bottom:0.5rem;"><i class="fas fa-robot"></i> AI Generate Teaching Process</button>
+                    <div class="card-header"><h3><i class="fas fa-chalkboard-teacher"></i> Teaching Process</h3><button class="btn btn-outline btn-sm" onclick="aiFormatTP()"><i class="fas fa-magic"></i> Auto-Format</button></div>
+                    <button class="btn btn-primary btn-sm" id="aiGenerateTPBtn2" style="margin-bottom:0.5rem;"><i class="fas fa-robot"></i> AI Generate</button>
                     <div class="editor-container"><div id="teachingProcessEditor"></div></div>
                     <button class="btn btn-primary btn-sm" id="saveTPBtn" style="margin-top:0.5rem;">Save Teaching Process</button>
                     <button class="btn btn-success btn-sm" id="publishTPBtn2" style="margin-top:0.5rem;">📤 Publish to Students</button>
                 </div>
                 <div class="card" id="studentResourceCard">
-                    <div class="card-header"><h3><i class="fas fa-book-reader"></i> Student Resources (Handout / Textbook)</h3><button class="btn btn-outline btn-sm" onclick="aiFormatResource()"><i class="fas fa-magic"></i> Auto-Format</button></div>
-                    <button class="btn btn-primary btn-sm" id="aiGenerateResourceBtn" style="margin-bottom:0.5rem;"><i class="fas fa-robot"></i> AI Generate Student Handout</button>
+                    <div class="card-header"><h3><i class="fas fa-book-reader"></i> Student Resources</h3><button class="btn btn-outline btn-sm" onclick="aiFormatResource()"><i class="fas fa-magic"></i> Auto-Format</button></div>
+                    <button class="btn btn-primary btn-sm" id="aiGenerateResourceBtn2" style="margin-bottom:0.5rem;"><i class="fas fa-robot"></i> AI Generate</button>
                     <div class="editor-container"><div id="studentResourceEditor"></div></div>
                     <button class="btn btn-primary btn-sm" id="saveResourceBtn" style="margin-top:0.5rem;">Save Resources</button>
                     <button class="btn btn-success btn-sm" id="publishResourceBtn2" style="margin-top:0.5rem;">📤 Publish to Students</button>
-                </div>
-                <div class="card" id="handwritingCard">
-                    <div class="card-header"><h3><i class="fas fa-paint-brush"></i> Handwriting / Visual Notes</h3></div>
-                    <div style="display:flex;gap:0.5rem;margin-bottom:0.5rem;">
-                        <input type="text" id="handwritingPrompt" placeholder="Describe the image (e.g., 'Diagram of plant cell for JSS1')" class="form-control">
-                        <button class="btn btn-primary btn-sm" id="generateHandwritingBtn"><i class="fas fa-robot"></i> Generate Image</button>
-                    </div>
-                    <div id="aiImageDebug" style="font-size:0.75rem;padding:0.5rem;background:var(--input-bg);border-radius:0.5rem;margin-bottom:0.5rem;display:none;"></div>
-                    <div id="handwritingImagesGrid" style="display:flex;flex-wrap:wrap;gap:0.5rem;"></div>
                 </div>
                 <div class="card" id="videoCard">
                     <div class="card-header"><h3><i class="fas fa-video"></i> Video Links</h3></div>
@@ -570,87 +431,36 @@
     <!-- PANEL 3: ANALYTICS -->
     <div class="main-panel" id="panel-analytics">
         <div class="analytics-grid">
-            <div class="card">
-                <div class="card-header"><h3><i class="fas fa-chart-pie"></i> Coverage Analysis</h3></div>
-                <div id="coverageAnalysis"></div>
-            </div>
-            <div class="card">
-                <div class="card-header"><h3><i class="fas fa-exclamation-triangle"></i> Gap Detection</h3></div>
-                <div id="gapDetection"></div>
-            </div>
-            <div class="card">
-                <div class="card-header"><h3><i class="fas fa-star"></i> Quality Scores</h3></div>
-                <canvas id="qualityChart" style="max-height:200px;"></canvas>
-            </div>
-            <div class="card">
-                <div class="card-header"><h3><i class="fas fa-chart-bar"></i> Subject Heatmap</h3></div>
-                <div id="subjectHeatmap"></div>
-            </div>
+            <div class="card"><div class="card-header"><h3><i class="fas fa-chart-pie"></i> Coverage Analysis</h3></div><div id="coverageAnalysis"></div></div>
+            <div class="card"><div class="card-header"><h3><i class="fas fa-exclamation-triangle"></i> Gap Detection</h3></div><div id="gapDetection"></div></div>
+            <div class="card"><div class="card-header"><h3><i class="fas fa-star"></i> Quality Scores</h3></div><canvas id="qualityChart" style="max-height:200px;"></canvas></div>
+            <div class="card"><div class="card-header"><h3><i class="fas fa-chart-bar"></i> Subject Heatmap</h3></div><div id="subjectHeatmap"></div></div>
         </div>
     </div>
 
     <!-- PANEL 4: PLANNER -->
     <div class="main-panel" id="panel-planner">
-        <div class="card">
-            <div class="card-header"><h3><i class="fas fa-calendar-week"></i> Weekly Planner — <span id="plannerTermLabel">First Term</span></h3></div>
-            <div class="planner-grid" id="plannerGrid"></div>
-            <div style="margin-top:1rem;">
-                <span style="display:inline-flex;align-items:center;gap:0.3rem;margin-right:1rem;"><span style="width:16px;height:16px;border-radius:4px;background:var(--success-bg);border:1px solid var(--success-border);"></span> Complete</span>
-                <span style="display:inline-flex;align-items:center;gap:0.3rem;margin-right:1rem;"><span style="width:16px;height:16px;border-radius:4px;background:var(--warning-bg);border:1px solid var(--warning-border);"></span> Pending Approval</span>
-                <span style="display:inline-flex;align-items:center;gap:0.3rem;"><span style="width:16px;height:16px;border-radius:4px;background:var(--danger-bg);border:1px solid var(--danger-border);"></span> Not Started</span>
-            </div>
-        </div>
+        <div class="card"><div class="card-header"><h3><i class="fas fa-calendar-week"></i> Weekly Planner — <span id="plannerTermLabel">First Term</span></h3></div>
+        <div class="planner-grid" id="plannerGrid"></div>
+        <div style="margin-top:1rem;"><span style="display:inline-flex;align-items:center;gap:0.3rem;margin-right:1rem;"><span style="width:16px;height:16px;border-radius:4px;background:var(--success-bg);border:1px solid var(--success-border);"></span> Complete</span><span style="display:inline-flex;align-items:center;gap:0.3rem;margin-right:1rem;"><span style="width:16px;height:16px;border-radius:4px;background:var(--warning-bg);border:1px solid var(--warning-border);"></span> Pending</span><span style="display:inline-flex;align-items:center;gap:0.3rem;"><span style="width:16px;height:16px;border-radius:4px;background:var(--danger-bg);border:1px solid var(--danger-border);"></span> Not Started</span></div></div>
     </div>
 
     <!-- PANEL 5: REPORTS -->
     <div class="main-panel" id="panel-reports">
-        <div class="card">
-            <div class="card-header"><h3><i class="fas fa-clipboard-list"></i> Daily Teaching Report</h3></div>
-            <div class="form-group"><label>Date</label><input type="date" id="reportDate" class="form-control"></div>
-            <div class="form-group"><label>Subjects Taught Today</label><textarea id="reportDailySubjects" class="form-control" placeholder="List subjects and topics taught today..."></textarea></div>
-            <div class="form-group"><label>Notes / Observations</label><textarea id="reportDailyNotes" class="form-control" placeholder="Any observations, challenges, or highlights..."></textarea></div>
-            <div id="dailyReportPreview"></div>
-            <button class="btn btn-primary" id="generateDailyReportBtn"><i class="fas fa-sync"></i> Generate Daily Report</button>
-            <button class="btn btn-success" id="submitDailyReportBtn"><i class="fas fa-paper-plane"></i> Submit Daily Report</button>
-        </div>
-        <div class="card">
-            <div class="card-header"><h3><i class="fas fa-clipboard-list"></i> Weekly Teaching Report</h3></div>
-            <div class="form-group"><label>Week</label><select id="reportWeek" class="form-control"></select></div>
-            <div id="weeklyReportPreview"></div>
-            <button class="btn btn-primary" id="generateWeeklyReportBtn"><i class="fas fa-sync"></i> Generate Weekly Report</button>
-            <button class="btn btn-success" id="submitWeeklyReportBtn"><i class="fas fa-paper-plane"></i> Submit Weekly Report</button>
-        </div>
-        <div class="card">
-            <div class="card-header"><h3><i class="fas fa-history"></i> Submitted Reports</h3></div>
-            <div id="submittedReportsList"></div>
-        </div>
+        <div class="card"><div class="card-header"><h3><i class="fas fa-clipboard-list"></i> Weekly Teaching Report</h3></div>
+        <div class="form-group"><label>Week</label><select id="reportWeek" class="form-control"></select></div>
+        <div id="reportPreview"></div>
+        <button class="btn btn-primary" id="generateReportBtn"><i class="fas fa-sync"></i> Generate Report</button>
+        <button class="btn btn-success" id="submitReportBtn2"><i class="fas fa-paper-plane"></i> Submit Report</button></div>
+        <div class="card"><div class="card-header"><h3><i class="fas fa-history"></i> Submitted Reports</h3></div><div id="submittedReportsList"></div></div>
     </div>
 
-    <!-- PANEL 6: REQUESTS -->
-    <div class="main-panel" id="panel-requests">
-        <div class="card">
-            <div class="card-header"><h3><i class="fas fa-calendar-check"></i> Submit Teacher Request</h3></div>
-            <div class="form-group"><label>Request Type</label><select id="requestType" class="form-control"><option value="">Select type...</option><option value="absence">Absence (Full Day)</option><option value="late">Coming Late</option><option value="early">Leaving Early</option><option value="other">Other</option></select></div>
-            <div class="form-group"><label>Date</label><input type="date" id="requestDate" class="form-control"></div>
-            <div class="form-group"><label>Reason</label><textarea id="requestReason" class="form-control" placeholder="State your reason clearly..."></textarea></div>
-            <button class="btn btn-primary" onclick="submitTeacherRequest()"><i class="fas fa-paper-plane"></i> Submit Request</button>
-        </div>
-        <div class="card">
-            <div class="card-header"><h3><i class="fas fa-history"></i> My Requests</h3></div>
-            <div id="teacherRequestsList"></div>
-        </div>
-    </div>
-
-    <!-- PANEL 7: INSIGHTS -->
+    <!-- PANEL 6: INSIGHTS -->
     <div class="main-panel" id="panel-insights">
-        <div class="card">
-            <div class="card-header"><h3><i class="fas fa-chart-line"></i> Performance Insights</h3></div>
-            <canvas id="pointsChart" style="max-height:200px;"></canvas>
-            <h4 style="margin-top:1rem;">Rating History</h4>
-            <div id="ratingHistory"></div>
-            <h4 style="margin-top:1rem;">How Parents & Students See You</h4>
-            <div id="publicPreview" class="card" style="margin-top:0.5rem;"></div>
-        </div>
+        <div class="card"><div class="card-header"><h3><i class="fas fa-chart-line"></i> Performance Insights</h3></div>
+        <canvas id="pointsChart" style="max-height:200px;"></canvas>
+        <h4 style="margin-top:1rem;">Rating History</h4><div id="ratingHistory"></div>
+        <h4 style="margin-top:1rem;">How Parents & Students See You</h4><div id="publicPreview" class="card" style="margin-top:0.5rem;"></div></div>
     </div>
 </div>
 
@@ -658,40 +468,28 @@
 <div class="modal-overlay" id="coPlanModal">
     <div class="modal-content">
         <div class="modal-header"><h3><i class="fas fa-users"></i> Co-Plan Lesson Note</h3><i class="fas fa-times modal-close" onclick="closeCoPlanModal()"></i></div>
-        <div class="teacher-search"><input type="text" id="coTeacherSearch" class="form-control" placeholder="Search teachers by name or subject..." oninput="renderCoTeacherList()"></div>
+        <div class="teacher-search"><input type="text" id="coTeacherSearch" class="form-control" placeholder="Search teachers..." oninput="renderCoTeacherList()"></div>
         <div id="coTeacherList" style="max-height:300px;overflow-y:auto;"></div>
-        <div style="margin-top:1rem;padding-top:0.5rem;border-top:1px solid var(--border);"><strong>Selected Co-Teachers:</strong></div>
+        <div style="margin-top:1rem;padding-top:0.5rem;border-top:1px solid var(--border);"><strong>Selected:</strong></div>
         <div id="selectedCoTeachers" style="margin-top:0.5rem;"></div>
-        <div class="modal-actions">
-            <button class="btn btn-outline" onclick="closeCoPlanModal()">Cancel</button>
-            <button class="btn btn-primary" onclick="confirmCoPlan()"><i class="fas fa-check"></i> Start Co-Planning</button>
-        </div>
+        <div class="modal-actions"><button class="btn btn-outline" onclick="closeCoPlanModal()">Cancel</button><button class="btn btn-primary" onclick="confirmCoPlan()"><i class="fas fa-check"></i> Start</button></div>
     </div>
 </div>
 
 <!-- AI ASSISTANT MODAL -->
 <div class="modal-overlay" id="aiAssistantModal">
     <div class="modal-content" style="max-width:750px;height:85vh;display:flex;flex-direction:column;">
-        <div class="modal-header"><h3><i class="fas fa-robot"></i> AI Lesson Note Assistant</h3><i class="fas fa-times modal-close" onclick="closeAIAssistant()"></i></div>
-        <div id="aiChatHistory" style="flex:1;overflow-y:auto;padding:0.5rem;background:var(--input-bg);border-radius:0.8rem;margin-bottom:0.5rem;">
-            <div class="ai-message assistant">Hello! I can help you create a complete lesson note.<br>Tell me the <strong>Subject, Class, Week, and Topic</strong>.</div>
-        </div>
-        <div style="display:flex;gap:0.5rem;">
-            <input type="text" id="aiChatInput" placeholder="Type your message..." class="form-control" style="flex:1;">
-            <button class="btn btn-primary" id="aiSendBtn"><i class="fas fa-paper-plane"></i></button>
-            <button class="btn btn-outline btn-sm" id="aiThinkBtn" title="Ask the assistant to think first"><i class="fas fa-brain"></i> Think</button>
-        </div>
-        <div style="display:flex;justify-content:space-between;margin-top:0.5rem;">
-            <button class="btn btn-success btn-sm" id="aiCopyToEditorBtn">📄 Copy to Editor</button>
-            <button class="btn btn-outline btn-sm" id="aiClearChatBtn">Clear Chat</button>
-        </div>
+        <div class="modal-header"><h3><i class="fas fa-robot"></i> AI Assistant</h3><i class="fas fa-times modal-close" onclick="closeAIAssistant()"></i></div>
+        <div id="aiChatHistory" style="flex:1;overflow-y:auto;padding:0.5rem;background:var(--input-bg);border-radius:0.8rem;margin-bottom:0.5rem;"></div>
+        <div style="display:flex;gap:0.5rem;"><input type="text" id="aiChatInput" placeholder="Ask the AI..." class="form-control" style="flex:1;"><button class="btn btn-primary" id="aiSendBtn"><i class="fas fa-paper-plane"></i></button></div>
+        <div style="margin-top:0.5rem;display:flex;gap:0.5rem;"><button class="btn btn-success btn-sm" onclick="copyAIToEditor()">📄 Copy to Editor</button><button class="btn btn-outline btn-sm" onclick="clearAIChat()">Clear</button></div>
     </div>
 </div>
 
 <!-- PARENT PREVIEW MODAL -->
 <div class="modal-overlay" id="parentPreviewModal">
     <div class="modal-content" style="max-width:700px;">
-        <div class="modal-header"><h3><i class="fas fa-eye"></i> Parent View Preview</h3><i class="fas fa-times modal-close" onclick="closeParentPreview()"></i></div>
+        <div class="modal-header"><h3><i class="fas fa-eye"></i> Parent View</h3><i class="fas fa-times modal-close" onclick="closeParentPreview()"></i></div>
         <div id="parentPreviewContent"></div>
     </div>
 </div>
@@ -699,23 +497,8 @@
 <!-- CONFIRM MODAL -->
 <div class="modal-overlay" id="confirmModal">
     <div class="modal-content" style="text-align:center;">
-        <h3 id="confirmTitle">Confirm</h3>
-        <p id="confirmMessage"></p>
+        <h3 id="confirmTitle">Confirm</h3><p id="confirmMessage"></p>
         <div class="modal-actions" style="justify-content:center;"><button class="btn btn-outline" onclick="closeConfirmModal()">Cancel</button><button class="btn btn-primary" id="confirmActionBtn">Confirm</button></div>
-    </div>
-</div>
-
-<!-- TEACHER REQUEST MODAL -->
-<div class="modal-overlay" id="teacherRequestModal">
-    <div class="modal-content">
-        <div class="modal-header"><h3><i class="fas fa-calendar-check"></i> Teacher Request</h3><i class="fas fa-times modal-close" onclick="closeTeacherRequestModal()"></i></div>
-        <div class="form-group"><label>Request Type</label><select id="modalRequestType" class="form-control"><option value="">Select type...</option><option value="absence">Absence (Full Day)</option><option value="late">Coming Late</option><option value="early">Leaving Early</option><option value="other">Other</option></select></div>
-        <div class="form-group"><label>Date</label><input type="date" id="modalRequestDate" class="form-control"></div>
-        <div class="form-group"><label>Reason</label><textarea id="modalRequestReason" class="form-control" placeholder="State your reason clearly..."></textarea></div>
-        <div class="modal-actions">
-            <button class="btn btn-outline" onclick="closeTeacherRequestModal()">Cancel</button>
-            <button class="btn btn-primary" onclick="submitTeacherRequestFromModal()"><i class="fas fa-paper-plane"></i> Submit Request</button>
-        </div>
     </div>
 </div>
 
@@ -743,244 +526,34 @@ db.enablePersistence({synchronizeTabs:true}).catch(err=>{if(err.code==='failed-p
 // GLOBAL STATE
 // ============================================
 let currentUser=null,userData=null,currentClass=null,allAssignedClasses=[],subjects=[];
-let currentSubject=null,currentSubjectDraft=null,currentWeek=null,currentWeekDraft=null,currentTerm='First Term';
+let currentSubject=null,currentWeek=null,currentTerm='First Term';
 let lessonNotesMap={},syllabusMap={},coTeachers=[],coTeacherNames=[];
 let quill,teachingProcessQuill,studentResourceQuill;
-let videoLinks=[],handwritingImages=[],aiConversation=[],lastGeneratedLessonNote=null;
+let videoLinks=[],aiConversation=[],lastGeneratedLN=null;
 let editTimer=null,editSeconds=0,isOffline=!navigator.onLine;
 let selectedCoTeacherIds=[],selectedCoTeacherNames=[];
 let pointsChart=null,qualityChart=null;
 let confirmCallback=null;
-
-const NIGERIAN_SYSTEM_PROMPT = `You are a Nigerian teacher using the NERDC curriculum. Write lesson notes following this exact format:
-LESSON NOTE
-Subject: [subject]
-Class: [class]
-Week: [week number]
-Term: [term]
-Topic: [topic]
-Duration: [minutes]
-Instructional Materials: [list]
-Objectives: By the end of the lesson, pupils should be able to:
-1. [objective 1]
-2. [objective 2]
-Content / Presentation (Step‑by‑step):
-Introduction (5 mins):
-Teacher asks… Pupils respond…
-Main Activity (20 mins):
-Step 1 – … Step 2 – …
-Evaluation (5 mins):
-Teacher asks the following questions:
-1) …
-2) …
-Assignment:
-1) …
-2) …
-Include Nigerian names, locations, naira (₦), and references to Nigerian textbooks (e.g., New Concept Mathematics by J.A. Adegboye). Always state book titles and authors.`;
-
-// ============================================
-// DEBUG SYSTEM
-// ============================================
-function toggleDebugPanel() {
-    const panel = document.getElementById('debugPanel');
-    const btn = document.getElementById('debugToggleBtn');
-    const isActive = panel.classList.toggle('active');
-    btn.classList.toggle('active', isActive);
-    if (isActive) {
-        runFullDebug();
-    }
-}
-
-function debugLog(message, type) {
-    type = type || 'info';
-    const container = document.getElementById('debugResults');
-    const item = document.createElement('div');
-    item.className = 'debug-item ' + type;
-    const timestamp = new Date().toLocaleTimeString();
-    item.innerHTML = '<strong>[' + timestamp + ']</strong> ' + message;
-    container.appendChild(item);
-    container.scrollTop = container.scrollHeight;
-}
-
-async function runFullDebug() {
-    const container = document.getElementById('debugResults');
-    container.innerHTML = '<p style="color:#a0b3d9;">⏳ Running full AI diagnostics...</p>';
-    
-    await new Promise(function(resolve) { setTimeout(resolve, 300); });
-    container.innerHTML = '';
-    
-    // CHECK 1: Firebase
-    debugLog('🔍 CHECK 1: Firebase Initialization', 'info');
-    if (typeof firebase !== 'undefined' && firebase.apps && firebase.apps.length > 0) {
-        debugLog('✅ Firebase is initialized. Apps count: ' + firebase.apps.length, 'pass');
-    } else {
-        debugLog('❌ Firebase is NOT initialized properly', 'fail');
-    }
-    
-    // CHECK 2: Remote Config
-    debugLog('🔍 CHECK 2: Remote Config Availability', 'info');
-    if (typeof remoteConfig !== 'undefined' && remoteConfig && typeof remoteConfig.fetchAndActivate === 'function') {
-        debugLog('✅ Remote Config object exists', 'pass');
-    } else {
-        debugLog('❌ Remote Config is not available', 'fail');
-    }
-    
-    // CHECK 3: User Authentication
-    debugLog('🔍 CHECK 3: User Authentication', 'info');
-    if (currentUser) {
-        debugLog('✅ User is authenticated. UID: ' + currentUser.uid.substring(0, 8) + '...', 'pass');
-        debugLog('   Name: ' + (userData ? (userData.firstName || '') + ' ' + (userData.surname || '') : 'Unknown'), 'info');
-    } else {
-        debugLog('❌ No user is currently logged in', 'fail');
-    }
-    
-    // CHECK 4: Groq SDK
-    debugLog('🔍 CHECK 4: Groq SDK (window.groq)', 'info');
-    if (typeof window.groq !== 'undefined' && window.groq !== null) {
-        debugLog('✅ window.groq exists. Type: ' + typeof window.groq, 'pass');
-        if (window.groq.chat && window.groq.chat.completions && typeof window.groq.chat.completions.create === 'function') {
-            debugLog('✅ window.groq.chat.completions.create is available', 'pass');
-        } else {
-            debugLog('⚠️ window.groq exists but chat.completions.create might be missing', 'warn');
-        }
-    } else {
-        debugLog('❌ window.groq is undefined or null - Groq SDK NOT LOADED', 'fail');
-        debugLog('👉 Add this script tag to your HTML head:', 'info');
-        debugLog('   &lt;script src="https://cdn.jsdelivr.net/npm/groq-sdk@0.5.0/dist/index.global.js"&gt;&lt;/script&gt;', 'info');
-    }
-    
-    // CHECK 5: Remote Config Keys
-    debugLog('🔍 CHECK 5: Remote Config Key Fetch', 'info');
-    try {
-        await remoteConfig.fetchAndActivate();
-        var groqKey = remoteConfig.getString('groq_api_key');
-        var replicateKey = remoteConfig.getString('Judahimage');
-        
-        if (groqKey && groqKey.length > 10) {
-            debugLog('✅ groq_api_key found. Length: ' + groqKey.length + '. Starts with: ' + groqKey.substring(0, 6) + '...', 'pass');
-        } else if (groqKey && groqKey.length <= 10) {
-            debugLog('⚠️ groq_api_key exists but seems too short (length: ' + groqKey.length + ')', 'warn');
-        } else {
-            debugLog('❌ groq_api_key is MISSING or empty in Firebase Remote Config', 'fail');
-            debugLog('👉 Go to Firebase Console → Remote Config → Add parameter "groq_api_key"', 'info');
-        }
-        
-        if (replicateKey && replicateKey.length > 10) {
-            debugLog('✅ Judahimage key found. Length: ' + replicateKey.length + '. Starts with: ' + replicateKey.substring(0, 6) + '...', 'pass');
-        } else if (replicateKey && replicateKey.length <= 10) {
-            debugLog('⚠️ Judahimage key too short (length: ' + replicateKey.length + ')', 'warn');
-        } else {
-            debugLog('⚠️ Judahimage key missing (required for image generation only)', 'warn');
-        }
-    } catch (e) {
-        debugLog('❌ Remote Config fetch/activate failed: ' + e.message, 'fail');
-    }
-    
-    // CHECK 6: Direct Groq API Test
-    debugLog('🔍 CHECK 6: Direct Groq API Test', 'info');
-    if (window.groq && window.groq.chat && window.groq.chat.completions) {
-        try {
-            debugLog('⏳ Sending test request to Groq API...', 'info');
-            var testCompletion = await window.groq.chat.completions.create({
-                messages: [
-                    { role: 'system', content: 'You are a helpful assistant. Reply with only the word: OK' },
-                    { role: 'user', content: 'test' }
-                ],
-                model: 'llama-3.3-70b-versatile',
-                max_tokens: 10
-            });
-            if (testCompletion && testCompletion.choices && testCompletion.choices[0]) {
-                debugLog('✅ Groq API test SUCCESSFUL! Response: ' + testCompletion.choices[0].message.content, 'pass');
-            } else {
-                debugLog('⚠️ Groq API returned unexpected format', 'warn');
-            }
-        } catch (apiError) {
-            debugLog('❌ Groq API test FAILED: ' + apiError.message, 'fail');
-            if (apiError.message.indexOf('401') >= 0 || apiError.message.indexOf('Unauthorized') >= 0) {
-                debugLog('   👉 The API key is INVALID or EXPIRED. Check Firebase Remote Config.', 'fail');
-            } else if (apiError.message.indexOf('429') >= 0) {
-                debugLog('   👉 Rate limit exceeded. Too many requests. Wait and try again.', 'fail');
-            } else if (apiError.message.indexOf('fetch') >= 0 || apiError.message.indexOf('Network') >= 0 || apiError.message.indexOf('Failed to fetch') >= 0) {
-                debugLog('   👉 Network error. Check your internet connection or try a VPN.', 'fail');
-            } else if (apiError.message.indexOf('model') >= 0) {
-                debugLog('   👉 Model not found or not accessible with this API key.', 'fail');
-            }
-        }
-    } else {
-        debugLog('❌ Cannot test Groq API because window.groq is not available', 'fail');
-    }
-    
-    // CHECK 7: Network Status
-    debugLog('🔍 CHECK 7: Network Status', 'info');
-    if (navigator.onLine) {
-        debugLog('✅ Browser reports ONLINE', 'pass');
-    } else {
-        debugLog('❌ Browser reports OFFLINE - You have no internet connection!', 'fail');
-    }
-    
-    // CHECK 8: API Endpoint Connectivity
-    debugLog('🔍 CHECK 8: Groq API Endpoint Connectivity', 'info');
-    try {
-        var controller = new AbortController();
-        var timeoutId = setTimeout(function() { controller.abort(); }, 5000);
-        var response = await fetch('https://api.groq.com/openai/v1/models', {
-            method: 'GET',
-            headers: { 'Authorization': 'Bearer test' },
-            signal: controller.signal
-        });
-        clearTimeout(timeoutId);
-        debugLog('✅ Groq API endpoint is REACHABLE (HTTP ' + response.status + ' - expected 401 with test key)', 'pass');
-    } catch (fetchError) {
-        if (fetchError.name === 'AbortError') {
-            debugLog('⚠️ Groq API endpoint TIMED OUT after 5 seconds - possible network block or firewall', 'warn');
-        } else {
-            debugLog('❌ Cannot reach Groq API endpoint: ' + fetchError.message, 'fail');
-            debugLog('   👉 This could be CORS, firewall, or the API is down. Try a different network.', 'info');
-        }
-    }
-    
-    // CHECK 9: Subject & Class Selection
-    debugLog('🔍 CHECK 9: Current Selection Status', 'info');
-    debugLog('   Subject: ' + (currentSubject || 'NOT SELECTED ⚠️'), currentSubject ? 'pass' : 'warn');
-    debugLog('   Class: ' + (currentClass || 'NOT SELECTED ⚠️'), currentClass ? 'pass' : 'warn');
-    debugLog('   Week: ' + (currentWeek || 'NOT SELECTED'), currentWeek ? 'pass' : 'info');
-    debugLog('   Term: ' + (currentTerm || 'First Term'), 'info');
-    debugLog('   Subjects available: ' + (subjects.length || 0), subjects.length > 0 ? 'pass' : 'warn');
-    
-    // CHECK 10: Browser Info
-    debugLog('🔍 CHECK 10: Browser Environment', 'info');
-    debugLog('   User Agent: ' + navigator.userAgent.substring(0, 80) + '...', 'info');
-    debugLog('   Platform: ' + navigator.platform, 'info');
-    debugLog('   Language: ' + navigator.language, 'info');
-    
-    // SUMMARY
-    debugLog('📊 DIAGNOSTIC COMPLETE - Review results above', 'info');
-    debugLog('👉 Most common issues:', 'info');
-    debugLog('   1. Groq SDK script tag missing from HTML', 'info');
-    debugLog('   2. groq_api_key not set in Firebase Remote Config', 'info');
-    debugLog('   3. Invalid or expired API key', 'info');
-    debugLog('   4. Network blocking the API (try VPN or different WiFi)', 'info');
-    debugLog('   5. No subject/class selected', 'info');
-}
+let groq=null; // Groq SDK instance
 
 // ============================================
 // OFFLINE DETECTION
 // ============================================
-window.addEventListener('online',function(){isOffline=false;document.getElementById('offlineIndicator').classList.remove('show');showToast('Online','Connection restored','success');});
-window.addEventListener('offline',function(){isOffline=true;document.getElementById('offlineIndicator').classList.add('show');showToast('Offline','Changes saved locally','warning');});
+window.addEventListener('online',()=>{isOffline=false;document.getElementById('offlineIndicator').classList.remove('show');showToast('Online','Connection restored','success');});
+window.addEventListener('offline',()=>{isOffline=true;document.getElementById('offlineIndicator').classList.add('show');showToast('Offline','Changes saved locally','warning');});
 
 // ============================================
 // THEME
 // ============================================
-(function(){
-    var saved=localStorage.getItem('judah-theme')||'dark';
+(()=>{
+    const saved=localStorage.getItem('judah-theme')||'dark';
     document.documentElement.setAttribute('data-theme',saved);
-    var sp=document.getElementById('themeToggle').querySelector('span');
-    var icon=document.getElementById('themeToggle').querySelector('i');
+    const sp=document.getElementById('themeToggle').querySelector('span');
+    const icon=document.getElementById('themeToggle').querySelector('i');
     if(saved==='dark'){sp.textContent='Light';icon.className='fas fa-sun';}
     else{sp.textContent='Dark';icon.className='fas fa-moon';}
-    document.getElementById('themeToggle').addEventListener('click',function(){
-        var next=document.documentElement.getAttribute('data-theme')==='dark'?'light':'dark';
+    document.getElementById('themeToggle').addEventListener('click',()=>{
+        const next=document.documentElement.getAttribute('data-theme')==='dark'?'light':'dark';
         document.documentElement.setAttribute('data-theme',next);
         localStorage.setItem('judah-theme',next);
         if(next==='dark'){sp.textContent='Light';icon.className='fas fa-sun';}
@@ -991,66 +564,64 @@ window.addEventListener('offline',function(){isOffline=true;document.getElementB
 // ============================================
 // UTILITIES
 // ============================================
-function escapeHtml(s){var d=document.createElement('div');d.textContent=s||'';return d.innerHTML;}
+function escapeHtml(s){const d=document.createElement('div');d.textContent=s||'';return d.innerHTML;}
 function escapeAttr(s){return(s||'').replace(/"/g,'&quot;').replace(/'/g,'&#39;');}
-function showLoading(){}
-function hideLoading(){}
-function showToast(title,msg,type,duration){
-    type=type||'info';duration=duration||4000;
-    var icons={success:'fa-check-circle',error:'fa-exclamation-circle',warning:'fa-exclamation-triangle',info:'fa-info-circle'};
-    var toast=document.createElement('div');toast.className='toast';
-    toast.innerHTML='<i class="fas '+icons[type]+' toast-icon '+type+'"></i><div><strong>'+escapeHtml(title)+'</strong><div style="font-size:0.85rem;color:var(--text-secondary);">'+escapeHtml(msg)+'</div></div>';
+function showToast(title,msg,type='info',duration=4000){
+    const icons={success:'fa-check-circle',error:'fa-exclamation-circle',warning:'fa-exclamation-triangle',info:'fa-info-circle'};
+    const toast=document.createElement('div');toast.className='toast';
+    toast.innerHTML=`<i class="fas ${icons[type]} toast-icon ${type}"></i><div><strong>${escapeHtml(title)}</strong><div style="font-size:0.85rem;color:var(--text-secondary);">${escapeHtml(msg)}</div></div>`;
     document.getElementById('toastContainer').appendChild(toast);
-    setTimeout(function(){toast.style.opacity='0';toast.style.transform='translateX(120%)';toast.style.transition='0.3s';setTimeout(function(){toast.remove();},300);},duration);
+    setTimeout(()=>{toast.style.opacity='0';toast.style.transform='translateX(120%)';toast.style.transition='0.3s';setTimeout(()=>toast.remove(),300);},duration);
 }
 function setAutoSaveStatus(s){
-    var i=document.getElementById('autoSaveIndicator');
-    i.className='auto-save-indicator '+s;
-    var icon=i.querySelector('i'),span=i.querySelector('span');
-    if(s==='saved'){icon.className='fas fa-check-circle';span.textContent='Saved';}
-    else if(s==='saving'){icon.className='fas fa-spinner fa-spin';span.textContent='Saving...';}
-    else if(s==='unsaved'){icon.className='fas fa-exclamation-circle';span.textContent='Unsaved';}
-    else if(s==='error'){icon.className='fas fa-times-circle';span.textContent='Error';}
+    const i=document.getElementById('autoSaveIndicator');
+    i.className=`auto-save-indicator ${s}`;
+    const icon=i.querySelector('i'),span=i.querySelector('span');
+    switch(s){
+        case'saved':icon.className='fas fa-check-circle';span.textContent='Saved';break;
+        case'saving':icon.className='fas fa-spinner fa-spin';span.textContent='Saving...';break;
+        case'unsaved':icon.className='fas fa-exclamation-circle';span.textContent='Unsaved';break;
+        case'error':icon.className='fas fa-times-circle';span.textContent='Error';break;
+    }
 }
-async function logAudit(action,desc){if(!currentUser)return;try{await db.collection('auditLogs').add({userId:currentUser.uid,userName:(userData?userData.firstName||'':'')+' '+(userData?userData.surname||'':'').trim(),userRole:'teacher',action:action,description:desc,timestamp:firebase.firestore.FieldValue.serverTimestamp()});}catch(e){}}
-async function addPoints(amount,reason){if(!currentUser||amount===0)return;try{var ref=db.collection('users').doc(currentUser.uid);var snap=await ref.get();var data=snap.data()||{};var cur=data.points||0;var np=cur+amount;await ref.update({points:np,pointHistory:firebase.firestore.FieldValue.arrayUnion({points:amount,reason:reason,date:new Date().toISOString(),newPoints:np})});userData.points=np;updatePointsDisplay();}catch(e){}}
-function updatePointsDisplay(){if(!userData)return;var pts=userData.points||0;document.getElementById('statPoints').textContent=pts;document.getElementById('pointsDisplay').innerHTML='⭐ '+pts+' pts';document.getElementById('statStars').textContent=Math.min(5,Math.floor(pts/100));}
-function updateStats(){var all=Object.values(lessonNotesMap);document.getElementById('statLessons').textContent=all.length;document.getElementById('statPending').textContent=all.filter(function(n){return n.status==='pending';}).length;document.getElementById('statApproved').textContent=all.filter(function(n){return n.status==='approved';}).length;}
+async function logAudit(action,desc){if(!currentUser)return;try{await db.collection('auditLogs').add({userId:currentUser.uid,userName:`${userData?.firstName||''} ${userData?.surname||''}`.trim(),userRole:'teacher',action,description:desc,timestamp:firebase.firestore.FieldValue.serverTimestamp()});}catch(e){}}
+async function addPoints(amount,reason){if(!currentUser||amount===0)return;try{const ref=db.collection('users').doc(currentUser.uid);const snap=await ref.get();const data=snap.data()||{};const cur=data.points||0;const np=cur+amount;await ref.update({points:np,pointHistory:firebase.firestore.FieldValue.arrayUnion({points:amount,reason,date:new Date().toISOString(),newPoints:np})});userData.points=np;updatePointsDisplay();}catch(e){}}
+function updatePointsDisplay(){if(!userData)return;const pts=userData.points||0;document.getElementById('statPoints').textContent=pts;document.getElementById('pointsDisplay').innerHTML=`⭐ ${pts} pts`;document.getElementById('statStars').textContent=Math.min(5,Math.floor(pts/100));}
+function updateStats(){const all=Object.values(lessonNotesMap);document.getElementById('statLessons').textContent=all.length;document.getElementById('statPending').textContent=all.filter(n=>n.status==='pending').length;document.getElementById('statApproved').textContent=all.filter(n=>n.status==='approved').length;}
 function showConfirm(title,msg,cb){document.getElementById('confirmTitle').textContent=title;document.getElementById('confirmMessage').textContent=msg;document.getElementById('confirmModal').classList.add('active');confirmCallback=cb;}
 function closeConfirmModal(){document.getElementById('confirmModal').classList.remove('active');confirmCallback=null;}
-document.getElementById('confirmActionBtn').addEventListener('click',function(){if(confirmCallback)confirmCallback();closeConfirmModal();});
+document.getElementById('confirmActionBtn').addEventListener('click',()=>{if(confirmCallback)confirmCallback();closeConfirmModal();});
 
 // ============================================
 // TIMER
 // ============================================
-function startTimer(){if(editTimer)return;editTimer=setInterval(function(){editSeconds++;var m=Math.floor(editSeconds/60),s=editSeconds%60;document.getElementById('timerValue').textContent=String(m).padStart(2,'0')+':'+String(s).padStart(2,'0');},1000);}
+function startTimer(){if(editTimer)return;editTimer=setInterval(()=>{editSeconds++;const m=Math.floor(editSeconds/60),s=editSeconds%60;document.getElementById('timerValue').textContent=`${String(m).padStart(2,'0')}:${String(s).padStart(2,'0')}`;},1000);}
 function stopTimer(){if(editTimer){clearInterval(editTimer);editTimer=null;}}
 function resetTimer(){stopTimer();editSeconds=0;document.getElementById('timerValue').textContent='00:00';}
 
 // ============================================
 // MAIN TAB SWITCHING
 // ============================================
-document.getElementById('mainTabs').addEventListener('click',function(e){
-    var tab=e.target.closest('.main-tab');if(!tab)return;
-    document.querySelectorAll('#mainTabs .main-tab').forEach(function(t){t.classList.remove('active');});tab.classList.add('active');
-    document.querySelectorAll('.main-panel').forEach(function(p){p.classList.remove('active');});
-    var panel=document.getElementById('panel-'+tab.dataset.panel);if(panel)panel.classList.add('active');
+document.getElementById('mainTabs').addEventListener('click',e=>{
+    const tab=e.target.closest('.main-tab');if(!tab)return;
+    document.querySelectorAll('#mainTabs .main-tab').forEach(t=>t.classList.remove('active'));tab.classList.add('active');
+    document.querySelectorAll('.main-panel').forEach(p=>p.classList.remove('active'));
+    const panel=document.getElementById('panel-'+tab.dataset.panel);if(panel)panel.classList.add('active');
     if(tab.dataset.panel==='library')renderLibrary();
     else if(tab.dataset.panel==='analytics')renderAnalytics();
     else if(tab.dataset.panel==='planner')renderPlanner();
     else if(tab.dataset.panel==='reports')renderReportsPanel();
-    else if(tab.dataset.panel==='requests')renderRequestsPanel();
     else if(tab.dataset.panel==='insights')renderInsights();
 });
 
 // ============================================
 // SUB TAB SWITCHING
 // ============================================
-document.getElementById('lnSubTabs').addEventListener('click',function(e){
-    var tab=e.target.closest('.sub-tab');if(!tab)return;
-    document.querySelectorAll('#lnSubTabs .sub-tab').forEach(function(t){t.classList.remove('active');});tab.classList.add('active');
-    ['drafts','submitted','approved','published'].forEach(function(k){document.getElementById('ln-'+k).style.display=k===tab.dataset.sub?'block':'none';});
-    var sub=tab.dataset.sub;
+document.getElementById('lnSubTabs').addEventListener('click',e=>{
+    const tab=e.target.closest('.sub-tab');if(!tab)return;
+    document.querySelectorAll('#lnSubTabs .sub-tab').forEach(t=>t.classList.remove('active'));tab.classList.add('active');
+    ['drafts','submitted','approved','published'].forEach(k=>document.getElementById('ln-'+k).style.display=k===tab.dataset.sub?'block':'none');
+    const sub=tab.dataset.sub;
     if(sub==='submitted')renderSubmittedTab();
     else if(sub==='approved')renderApprovedTab();
     else if(sub==='published')renderPublishedTab();
@@ -1060,49 +631,49 @@ document.getElementById('lnSubTabs').addEventListener('click',function(e){
 // QUILL EDITORS
 // ============================================
 quill=new Quill('#editor',{theme:'snow',modules:{toolbar:[['bold','italic','underline'],[{header:[1,2,3,false]}],[{list:'ordered'},{list:'bullet'}],['link','blockquote'],['clean']]},placeholder:'Write your lesson note here...'});
-teachingProcessQuill=new Quill('#teachingProcessEditor',{theme:'snow',modules:{toolbar:[['bold','italic'],[{header:[1,2,false]}],[{list:'ordered'},{list:'bullet'}],['link'],['clean']]},placeholder:'Teaching process (step-by-step guide for the teacher)...'});
-studentResourceQuill=new Quill('#studentResourceEditor',{theme:'snow',modules:{toolbar:[['bold','italic'],[{header:[1,2,false]}],[{list:'ordered'},{list:'bullet'}],['link'],['clean']]},placeholder:'Student resources (handout / textbook-style explanation)...'});
-quill.on('text-change',function(){setAutoSaveStatus('unsaved');startTimer();});
+teachingProcessQuill=new Quill('#teachingProcessEditor',{theme:'snow',modules:{toolbar:[['bold','italic'],[{header:[1,2,false]}],[{list:'ordered'},{list:'bullet'}],['link'],['clean']]},placeholder:'Teaching process...'});
+studentResourceQuill=new Quill('#studentResourceEditor',{theme:'snow',modules:{toolbar:[['bold','italic'],[{header:[1,2,false]}],[{list:'ordered'},{list:'bullet'}],['link'],['clean']]},placeholder:'Student resources...'});
+quill.on('text-change',()=>{setAutoSaveStatus('unsaved');startTimer();});
 
 // ============================================
 // AUTH
 // ============================================
-auth.onAuthStateChanged(async function(user){
+auth.onAuthStateChanged(async user=>{
     if(!user){window.location.href='teacher-login.html';return;}
-    var doc=await db.collection('users').doc(user.uid).get();
+    const doc=await db.collection('users').doc(user.uid).get();
     if(!doc.exists||doc.data().role!=='teacher'){await auth.signOut();window.location.href='index.html';return;}
     currentUser=user;userData=doc.data();
     allAssignedClasses=userData.classesTeaching||(userData.classTeaching?[userData.classTeaching]:[]);
     currentClass=allAssignedClasses[0]||null;
     subjects=userData.subjects||[];
-    var pic=document.getElementById('profilePic');
-    if(userData.photoURL)pic.innerHTML='<img src="'+userData.photoURL+'" alt="Profile" style="width:100%;height:100%;object-fit:cover;border-radius:50%;">';
-    else pic.textContent=(userData.firstName?userData.firstName[0]:'T')+(userData.surname?userData.surname[0]:'E');
+    const pic=document.getElementById('profilePic');
+    if(userData.photoURL)pic.innerHTML=`<img src="${userData.photoURL}" alt="Profile" style="width:100%;height:100%;object-fit:cover;border-radius:50%;">`;
+    else pic.textContent=(userData.firstName?.[0]||'T')+(userData.surname?.[0]||'E');
     document.getElementById('profileName').textContent=userData.firstName||'Teacher';
     updatePointsDisplay();
     populateClassSelector();
     populateSubjectSelector();
     await loadAllData();
     setupRealtimeListeners();
-    try{await remoteConfig.fetchAndActivate();var key=remoteConfig.getString('groq_api_key');if(key)window.groq=new Groq({apiKey:key,dangerouslyAllowBrowser:true});else window.groq=null;}catch(e){window.groq=null;}
+    // Initialize Groq SDK
+    try{await remoteConfig.fetchAndActivate();const key=remoteConfig.getString('groq_api_key');if(key){const {default:Groq}=await import('groq-sdk');groq=new Groq({apiKey:key,dangerouslyAllowBrowser:true});}else{groq=null;}}catch(e){groq=null;console.error('Groq init error:',e);}
 });
-document.getElementById('logoutBtn').addEventListener('click',async function(){stopTimer();await auth.signOut();window.location.href='index.html';});
+document.getElementById('logoutBtn').addEventListener('click',async()=>{stopTimer();await auth.signOut();window.location.href='index.html';});
 
 function populateClassSelector(){
-    var sel=document.getElementById('classSelector');
+    const sel=document.getElementById('classSelector');
     sel.innerHTML='<option value="">Select Class</option>';
-    allAssignedClasses.forEach(function(c){var o=document.createElement('option');o.value=c;o.textContent=c;sel.appendChild(o);});
+    allAssignedClasses.forEach(c=>{const o=document.createElement('option');o.value=c;o.textContent=c;sel.appendChild(o);});
     if(currentClass)sel.value=currentClass;
-    sel.addEventListener('change',function(e){currentClass=e.target.value;if(currentClass)loadAllData();});
+    sel.addEventListener('change',e=>{currentClass=e.target.value;if(currentClass)loadAllData();});
 }
 function populateSubjectSelector(){
-    var sel=document.getElementById('lnSubject');
+    const sel=document.getElementById('lnSubject');
     sel.innerHTML='<option value="">Select Subject</option>';
-    subjects.forEach(function(s){var o=document.createElement('option');o.value=s;o.textContent=s;sel.appendChild(o);});
+    subjects.forEach(s=>{const o=document.createElement('option');o.value=s;o.textContent=s;sel.appendChild(o);});
 }
 function onSubjectChange(){
     currentSubject=document.getElementById('lnSubject').value;
-    currentSubjectDraft=currentSubject;
     currentTerm=document.getElementById('lnTerm').value;
     if(currentSubject)renderWeekSelector();
 }
@@ -1117,10 +688,10 @@ function onTermChange(){
 async function loadAllData(){
     if(!currentUser)return;
     try{
-        var lnSnap=await db.collection('lessonNotes').where('teacherId','==',currentUser.uid).get();
-        lessonNotesMap={};lnSnap.forEach(function(d){var dd=d.data();lessonNotesMap[dd.subject+'_'+dd.week]={id:d.id,...dd};});
-        var sylSnap=await db.collection('syllabi').where('classId','==',currentClass).where('status','==','published').get();
-        syllabusMap={};sylSnap.forEach(function(d){var dd=d.data();if(!syllabusMap[dd.subject])syllabusMap[dd.subject]=dd;});
+        const lnSnap=await db.collection('lessonNotes').where('teacherId','==',currentUser.uid).get();
+        lessonNotesMap={};lnSnap.forEach(d=>{const dd=d.data();lessonNotesMap[`${dd.subject}_${dd.week}`]={id:d.id,...dd};});
+        const sylSnap=await db.collection('syllabi').where('classId','==',currentClass).where('status','==','published').get();
+        syllabusMap={};sylSnap.forEach(d=>{const dd=d.data();if(!syllabusMap[dd.subject])syllabusMap[dd.subject]=dd;});
         updateStats();
         if(currentSubject)renderWeekSelector();
     }catch(e){console.error('Load error:',e);}
@@ -1129,110 +700,99 @@ async function loadAllData(){
 // ============================================
 // WEEK SELECTOR
 // ============================================
-function getSyllabusWeekCount(){
-    var syl=syllabusMap[currentSubject];
-    if(!syl||!syl.weeks||!syl.weeks.length)return 12;
-    var termWeeks=syl.weeks.filter(function(w){return w.term===currentTerm||!w.term;});
-    if(!termWeeks.length)return syl.weeks.length;
-    return Math.max.apply(null,termWeeks.map(function(w){return parseInt(w.week)||0;}),12);
-}
 function renderWeekSelector(){
-    var container=document.getElementById('weekSelector');
-    var syl=syllabusMap[currentSubject];
-    if(!syl||!syl.weeks){container.innerHTML='<p style="color:var(--text-muted);">No published syllabus found for this subject. Ask admin to approve the syllabus first.</p>';return;}
-    var termWeeks=syl.weeks.filter(function(w){return w.term===currentTerm||!w.term;});
-    if(!termWeeks.length){container.innerHTML='<p style="color:var(--text-muted);">No weeks found for this term.</p>';return;}
-    container.innerHTML=termWeeks.map(function(w){
-        var key=currentSubject+'_'+w.week;
-        var note=lessonNotesMap[key];
-        var cls='';
-        if(note&&(note.status==='approved'||note.teachable))cls='completed';
-        else if(note&&note.status==='pending')cls='pending-approval';
+    const container=document.getElementById('weekSelector');
+    const syl=syllabusMap[currentSubject];
+    if(!syl||!syl.weeks){container.innerHTML='<p style="color:var(--text-muted);">No published syllabus found.</p>';return;}
+    const termWeeks=syl.weeks.filter(w=>w.term===currentTerm||!w.term);
+    if(!termWeeks.length){container.innerHTML='<p style="color:var(--text-muted);">No weeks for this term.</p>';return;}
+    container.innerHTML=termWeeks.map(w=>{
+        const key=`${currentSubject}_${w.week}`;
+        const note=lessonNotesMap[key];
+        let cls='';
+        if(note?.status==='approved'||note?.teachable)cls='completed';
+        else if(note?.status==='pending')cls='pending-approval';
         else if(!note)cls='missing';
-        return '<div class="week-tab '+cls+'" onclick="selectWeek('+w.week+')">Week '+w.week+'<br><small>'+escapeHtml(w.topic||'')+'</small></div>';
+        return `<div class="week-tab ${cls}" onclick="selectWeek(${w.week})">Week ${w.week}<br><small>${escapeHtml(w.topic||'')}</small></div>`;
     }).join('');
     document.getElementById('syllabusBanner').style.display='block';
 }
 function selectWeek(week){
     currentWeek=week;
-    currentWeekDraft=week;
-    document.querySelectorAll('#weekSelector .week-tab').forEach(function(t){t.classList.remove('active');});
-    var tabs=document.querySelectorAll('#weekSelector .week-tab');
-    var syl=syllabusMap[currentSubject];
-    var termWeeks=syl&&syl.weeks?syl.weeks.filter(function(w){return w.term===currentTerm||!w.term;}):[];
-    var idx=termWeeks.findIndex(function(w){return parseInt(w.week)===week;});
-    if(idx>=0&&tabs[idx])tabs[idx].classList.add('active');
-    var topic=syl&&syl.weeks?syl.weeks.find(function(w){return w.week==week;})?syl.weeks.find(function(w){return w.week==week;}).topic:'No topic in syllabus':'No topic in syllabus';
-    document.getElementById('syllabusTopicDisplay').textContent=currentSubject+' — Week '+week+': '+topic;
-    document.getElementById('editorTitle').textContent='Week '+week+' — '+currentSubject;
-    var key=currentSubject+'_'+week;
-    var note=lessonNotesMap[key]||{};
+    document.querySelectorAll('#weekSelector .week-tab').forEach(t=>t.classList.remove('active'));
+    const tabs=document.querySelectorAll('#weekSelector .week-tab');
+    if(tabs[week-1])tabs[week-1].classList.add('active');
+    const syl=syllabusMap[currentSubject];
+    const topic=syl?.weeks?.find(w=>w.week===week)?.topic||'No topic';
+    document.getElementById('syllabusTopicDisplay').textContent=`${currentSubject} — Week ${week}: ${topic}`;
+    document.getElementById('editorTitle').textContent=`Week ${week} — ${currentSubject}`;
+    const key=`${currentSubject}_${week}`;
+    const note=lessonNotesMap[key]||{};
     quill.root.innerHTML=note.lessonNote||'';
-    var isApproved=note.status==='approved';
-    document.getElementById('submitEditorBtn').style.display='inline-block';
+    const isApproved=note.status==='approved';
+    document.getElementById('submitEditorBtn').style.display=isApproved?'none':'inline-block';
     document.getElementById('postApprovalSection').style.display=isApproved?'block':'none';
     document.getElementById('commentThread').style.display=isApproved||coTeachers.length?'block':'none';
-    document.getElementById('lessonNoteCard').classList.toggle('locked',isApproved);
     if(isApproved){
+        document.getElementById('lessonNoteCard').classList.add('locked');
         teachingProcessQuill.root.innerHTML=note.teachingProcess||'';
         studentResourceQuill.root.innerHTML=note.studentResource||'';
         videoLinks=note.videoLinks||[];renderVideoList();
-        handwritingImages=note.handwritingImages||[];renderHandwritingImages();
     }else{
-        teachingProcessQuill.root.innerHTML='';studentResourceQuill.root.innerHTML='';videoLinks=[];handwritingImages=[];renderVideoList();renderHandwritingImages();
+        document.getElementById('lessonNoteCard').classList.remove('locked');
+        teachingProcessQuill.root.innerHTML='';studentResourceQuill.root.innerHTML='';videoLinks=[];renderVideoList();
     }
     renderComments(note);
     resetTimer();startTimer();
 }
 function renderComments(note){
-    var list=document.getElementById('commentList');
-    var comments=note.comments||[];
-    list.innerHTML=comments.length?comments.map(function(c){return '<div class="comment-item"><span class="comment-author">'+escapeHtml(c.byName||'Unknown')+'</span>: '+escapeHtml(c.text)+'<div class="comment-time">'+new Date(c.at).toLocaleString()+'</div></div>';}).join(''):'<p style="color:var(--text-muted);font-size:0.8rem;">No comments yet.</p>';
+    const list=document.getElementById('commentList');
+    const comments=note.comments||[];
+    list.innerHTML=comments.length?comments.map(c=>`<div class="comment-item"><span class="comment-author">${escapeHtml(c.byName||'Unknown')}</span>: ${escapeHtml(c.text)}<div class="comment-time">${new Date(c.at).toLocaleString()}</div></div>`).join(''):'<p style="color:var(--text-muted);font-size:0.8rem;">No comments.</p>';
 }
 async function addComment(){
-    var text=document.getElementById('commentInput').value.trim();if(!text)return;
-    var key=currentSubject+'_'+currentWeek;
-    var note=lessonNotesMap[key]||{};
-    var comments=[].concat(note.comments||[],{by:currentUser.uid,byName:(userData?userData.firstName||'':'')+' '+(userData?userData.surname||'':'').trim(),text:text,at:new Date().toISOString()});
-    if(note.id)await db.collection('lessonNotes').doc(note.id).update({comments:comments});
-    else lessonNotesMap[key]={...note,comments:comments};
-    renderComments({...note,comments:comments});
+    const text=document.getElementById('commentInput').value.trim();if(!text)return;
+    const key=`${currentSubject}_${currentWeek}`;
+    const note=lessonNotesMap[key]||{};
+    const comments=[...(note.comments||[]),{by:currentUser.uid,byName:`${userData.firstName||''} ${userData.surname||''}`.trim(),text,at:new Date().toISOString()}];
+    if(note.id)await db.collection('lessonNotes').doc(note.id).update({comments});
+    else lessonNotesMap[key]={...note,comments};
+    renderComments({...note,comments});
     document.getElementById('commentInput').value='';
 }
 
 // ============================================
 // SAVE / SUBMIT
 // ============================================
-document.getElementById('saveEditorBtn').addEventListener('click',async function(){
+document.getElementById('saveEditorBtn').addEventListener('click',async()=>{
     if(!currentSubject||!currentWeek)return showToast('Error','Select subject and week','warning');
-    var lnHtml=quill.root.innerHTML;if(!quill.getText().trim())return showToast('Empty','Write something','warning');
+    const lnHtml=quill.root.innerHTML;if(!quill.getText().trim())return showToast('Empty','Write something','warning');
     setAutoSaveStatus('saving');
-    var key=currentSubject+'_'+currentWeek;
-    var existing=lessonNotesMap[key]||{};
-    var topic=syllabusMap[currentSubject]&&syllabusMap[currentSubject].weeks?syllabusMap[currentSubject].weeks.find(function(w){return w.week==currentWeek;})?syllabusMap[currentSubject].weeks.find(function(w){return w.week==currentWeek;}).topic:'':'';
-    var d={teacherId:currentUser.uid,teacherName:(userData?userData.firstName||'':'')+' '+(userData?userData.surname||'':'').trim(),subject:currentSubject,week:currentWeek,topic:topic,lessonNote:lnHtml,classId:currentClass,term:currentTerm,status:existing.status||'draft',coTeachers:(existing.coTeachers||[]).length?existing.coTeachers:[currentUser.uid],coTeacherNames:(existing.coTeacherNames||[]).length?existing.coTeacherNames:[(userData?userData.firstName||'':'')+' '+(userData?userData.surname||'':'').trim()],lastEditedBy:currentUser.uid,lastEditedByName:(userData?userData.firstName||'':'')+' '+(userData?userData.surname||'':'').trim(),timeSpent:(existing.timeSpent||0)+editSeconds,updatedAt:firebase.firestore.FieldValue.serverTimestamp(),editHistory:firebase.firestore.FieldValue.arrayUnion({by:currentUser.uid,byName:(userData?userData.firstName||'':'')+' '+(userData?userData.surname||'':'').trim(),at:new Date().toISOString(),action:'saved'})};
+    const key=`${currentSubject}_${currentWeek}`;
+    const existing=lessonNotesMap[key]||{};
+    const topic=syllabusMap[currentSubject]?.weeks?.find(w=>w.week==currentWeek)?.topic||'';
+    const d={teacherId:currentUser.uid,teacherName:`${userData.firstName||''} ${userData.surname||''}`.trim(),subject:currentSubject,week:currentWeek,topic,lessonNote:lnHtml,classId:currentClass,term:currentTerm,status:existing.status||'draft',updatedAt:firebase.firestore.FieldValue.serverTimestamp()};
     try{
         if(existing.id)await db.collection('lessonNotes').doc(existing.id).update(d);
-        else{var r=await db.collection('lessonNotes').add(d);lessonNotesMap[key]={id:r.id,...d};}
+        else{const r=await db.collection('lessonNotes').add(d);lessonNotesMap[key]={id:r.id,...d};}
         setAutoSaveStatus('saved');showToast('Saved','Draft saved','success');resetTimer();updateStats();
     }catch(e){setAutoSaveStatus('error');showToast('Error',e.message,'error');}
 });
 
-document.getElementById('submitEditorBtn').addEventListener('click',async function(){
+document.getElementById('submitEditorBtn').addEventListener('click',async()=>{
     if(!currentSubject||!currentWeek)return showToast('Error','Select subject and week','warning');
-    var lnHtml=quill.root.innerHTML;var lnText=quill.getText();
-    if(lnText.trim().split(/\s+/).length<200)return showToast('Incomplete','Minimum 200 words required','warning');
-    var combined=(lnHtml+' '+lnText).toLowerCase();
-    if(combined.indexOf('objective')<0||combined.indexOf('evaluation')<0)return showToast('Missing','Include Objectives and Evaluation sections','warning');
-    var key=currentSubject+'_'+currentWeek;
-    var existing=lessonNotesMap[key]||{};
-    var topic=syllabusMap[currentSubject]&&syllabusMap[currentSubject].weeks?syllabusMap[currentSubject].weeks.find(function(w){return w.week==currentWeek;})?syllabusMap[currentSubject].weeks.find(function(w){return w.week==currentWeek;}).topic:'':'';
-    var d={teacherId:currentUser.uid,teacherName:(userData?userData.firstName||'':'')+' '+(userData?userData.surname||'':'').trim(),subject:currentSubject,week:currentWeek,topic:topic,lessonNote:lnHtml,classId:currentClass,term:currentTerm,status:'pending',submittedAt:firebase.firestore.FieldValue.serverTimestamp(),coTeachers:existing.coTeachers||[currentUser.uid],coTeacherNames:existing.coTeacherNames||[(userData?userData.firstName||'':'')+' '+(userData?userData.surname||'':'').trim()]};
+    const lnHtml=quill.root.innerHTML;const lnText=quill.getText();
+    if(lnText.trim().split(/\s+/).length<200)return showToast('Incomplete','Min 200 words','warning');
+    const combined=(lnHtml+' '+lnText).toLowerCase();
+    if(!combined.includes('objective')||!combined.includes('evaluation'))return showToast('Missing','Include Objectives and Evaluation','warning');
+    const key=`${currentSubject}_${currentWeek}`;
+    const existing=lessonNotesMap[key]||{};
+    const topic=syllabusMap[currentSubject]?.weeks?.find(w=>w.week==currentWeek)?.topic||'';
+    const d={teacherId:currentUser.uid,teacherName:`${userData.firstName||''} ${userData.surname||''}`.trim(),subject:currentSubject,week:currentWeek,topic,lessonNote:lnHtml,classId:currentClass,term:currentTerm,status:'pending',submittedAt:firebase.firestore.FieldValue.serverTimestamp()};
     try{
         if(existing.id)await db.collection('lessonNotes').doc(existing.id).update(d);
-        else{var r=await db.collection('lessonNotes').add(d);lessonNotesMap[key]={id:r.id,...d};}
-        await addPoints(2,'Lesson note submitted');await logAudit('SUBMIT_LN',currentSubject+' Week '+currentWeek);
-        showToast('Submitted','Sent for approval','success');updateStats();renderWeekSelector();
+        else{const r=await db.collection('lessonNotes').add(d);lessonNotesMap[key]={id:r.id,...d};}
+        await addPoints(2,'Lesson note submitted');showToast('Submitted','Sent for approval','success');updateStats();renderWeekSelector();
     }catch(e){showToast('Error',e.message,'error');}
 });
 
@@ -1240,309 +800,160 @@ document.getElementById('submitEditorBtn').addEventListener('click',async functi
 // BULK OPERATIONS
 // ============================================
 async function generateAllWeeks(){
-    if(!window.groq)return showToast('Error','AI not available','error');
+    if(!groq)return showToast('Error','AI not available','error');
     if(!currentSubject)return showToast('Error','Select a subject','warning');
-    var syl=syllabusMap[currentSubject];if(!syl||!syl.weeks)return showToast('Error','No syllabus found','error');
-    var termWeeks=syl.weeks.filter(function(w){return w.term===currentTerm||!w.term;});
-    if(!confirm('AI generate lesson notes for all '+termWeeks.length+' weeks? This may take a few minutes.'))return;
+    const syl=syllabusMap[currentSubject];if(!syl?.weeks)return showToast('Error','No syllabus','error');
+    const termWeeks=syl.weeks.filter(w=>w.term===currentTerm||!w.term);
+    if(!confirm(`Generate all ${termWeeks.length} weeks?`))return;
     showToast('Generating','Please wait...','info',10000);
-    for(var i=0;i<termWeeks.length;i++){
-        var w=termWeeks[i];
-        var key=currentSubject+'_'+w.week;
-        if(lessonNotesMap[key]&&lessonNotesMap[key].lessonNote)continue;
+    for(const w of termWeeks){
+        const key=`${currentSubject}_${w.week}`;
+        if(lessonNotesMap[key]?.lessonNote)continue;
         try{
-            var prompt='Write a complete NERDC lesson note for '+currentSubject+' Week '+w.week+' Topic: '+w.topic+' for '+currentClass+'. Include Objectives, Presentation, Evaluation, and Assignment.';
-            var completion=await window.groq.chat.completions.create({messages:[{role:'system',content:NIGERIAN_SYSTEM_PROMPT},{role:'user',content:prompt}],model:'llama-3.3-70b-versatile',temperature:0.5,max_tokens:3000});
-            var content=completion.choices[0].message.content;
-            var d={teacherId:currentUser.uid,teacherName:(userData?userData.firstName||'':'')+' '+(userData?userData.surname||'':'').trim(),subject:currentSubject,week:w.week,topic:w.topic,lessonNote:content,classId:currentClass,term:currentTerm,status:'draft',createdAt:firebase.firestore.FieldValue.serverTimestamp()};
-            var r=await db.collection('lessonNotes').add(d);lessonNotesMap[key]={id:r.id,...d};
-        }catch(e){console.error('Week '+w.week+' error:',e);}
+            const completion=await groq.chat.completions.create({messages:[{role:'system',content:'You are a Nigerian teacher. Write complete NERDC lesson notes.'},{role:'user',content:`Write lesson note for ${currentSubject} Week ${w.week}: ${w.topic} for ${currentClass}.`}],model:'llama-3.3-70b-versatile',temperature:0.5,max_tokens:3000});
+            const content=completion.choices[0].message.content;
+            const d={teacherId:currentUser.uid,teacherName:`${userData.firstName||''} ${userData.surname||''}`.trim(),subject:currentSubject,week:w.week,topic:w.topic,lessonNote:content,classId:currentClass,term:currentTerm,status:'draft',createdAt:firebase.firestore.FieldValue.serverTimestamp()};
+            const r=await db.collection('lessonNotes').add(d);lessonNotesMap[key]={id:r.id,...d};
+        }catch(e){console.error(`Week ${w.week}:`,e);}
     }
     await addPoints(5,'AI generated all weeks');showToast('Done','All weeks generated','success');updateStats();renderWeekSelector();
     if(currentWeek)selectWeek(currentWeek);
 }
 async function copyFromPreviousTerm(){
     if(!currentSubject)return showToast('Error','Select a subject','warning');
-    var terms=['First Term','Second Term','Third Term'];var idx=terms.indexOf(currentTerm);if(idx<=0)return showToast('Error','No previous term available','warning');
-    var prevTerm=terms[idx-1];
-    var snap=await db.collection('lessonNotes').where('teacherId','==',currentUser.uid).where('subject','==',currentSubject).where('term','==',prevTerm).get();
-    if(snap.empty)return showToast('Info','No lesson notes found in previous term','info');
-    var count=0;
-    for(var i=0;i<snap.docs.length;i++){var d=snap.docs[i];var data=d.data();var key=currentSubject+'_'+data.week;if(!lessonNotesMap[key]){var nd={...data,term:currentTerm,status:'draft',createdAt:firebase.firestore.FieldValue.serverTimestamp()};delete nd.id;var r=await db.collection('lessonNotes').add(nd);lessonNotesMap[key]={id:r.id,...nd};count++;}}
-    showToast('Copied',count+' lesson notes copied from '+prevTerm,'success');updateStats();renderWeekSelector();
+    const terms=['First Term','Second Term','Third Term'];const idx=terms.indexOf(currentTerm);if(idx<=0)return showToast('Error','No previous term','warning');
+    const prevTerm=terms[idx-1];
+    const snap=await db.collection('lessonNotes').where('teacherId','==',currentUser.uid).where('subject','==',currentSubject).where('term','==',prevTerm).get();
+    if(snap.empty)return showToast('Info','No notes in previous term','info');
+    let count=0;
+    for(const d of snap.docs){const data=d.data();const key=`${currentSubject}_${data.week}`;if(!lessonNotesMap[key]){const nd={...data,term:currentTerm,status:'draft',createdAt:firebase.firestore.FieldValue.serverTimestamp()};delete nd.id;const r=await db.collection('lessonNotes').add(nd);lessonNotesMap[key]={id:r.id,...nd};count++;}}
+    showToast('Copied',`${count} notes copied from ${prevTerm}`,'success');updateStats();renderWeekSelector();
 }
 async function bulkSubmit(){
     if(!currentSubject)return showToast('Error','Select a subject','warning');
-    var drafts=Object.values(lessonNotesMap).filter(function(n){return n.subject===currentSubject&&n.status==='draft'&&n.lessonNote;});
-    if(!drafts.length)return showToast('Info','No drafts to submit','info');
-    if(!confirm('Submit all '+drafts.length+' drafts for approval?'))return;
-    for(var i=0;i<drafts.length;i++){var n=drafts[i];if(n.id)await db.collection('lessonNotes').doc(n.id).update({status:'pending',submittedAt:firebase.firestore.FieldValue.serverTimestamp()});}
-    await addPoints(drafts.length,'Bulk submitted lesson notes');showToast('Submitted',drafts.length+' notes submitted','success');updateStats();renderWeekSelector();
+    const drafts=Object.values(lessonNotesMap).filter(n=>n.subject===currentSubject&&n.status==='draft'&&n.lessonNote);
+    if(!drafts.length)return showToast('Info','No drafts','info');
+    if(!confirm(`Submit ${drafts.length} drafts?`))return;
+    for(const n of drafts){if(n.id)await db.collection('lessonNotes').doc(n.id).update({status:'pending',submittedAt:firebase.firestore.FieldValue.serverTimestamp()});}
+    await addPoints(drafts.length,'Bulk submitted');showToast('Submitted',`${drafts.length} notes submitted`,'success');updateStats();renderWeekSelector();
 }
 
 // ============================================
 // SUBMITTED / APPROVED / PUBLISHED TABS
 // ============================================
 function renderSubmittedTab(){
-    var notes=Object.values(lessonNotesMap).filter(function(n){return n.status==='pending';});
+    const notes=Object.values(lessonNotesMap).filter(n=>n.status==='pending');
     document.getElementById('submittedCount').textContent=notes.length;
-    document.getElementById('submittedList').innerHTML=notes.length?notes.map(function(n){return '<div class="card" style="padding:1rem;margin-bottom:0.5rem;"><strong>'+escapeHtml(n.subject)+' Week '+n.week+'</strong> <span class="status-badge status-pending">Pending</span><p style="font-size:0.8rem;color:var(--text-secondary);">'+escapeHtml(n.topic||'')+'</p><button class="btn btn-warning btn-sm" onclick="cancelSubmission(\''+n.id+'\')">Cancel</button></div>';}).join(''):'<p style="color:var(--text-muted);">No submitted notes.</p>';
+    document.getElementById('submittedList').innerHTML=notes.length?notes.map(n=>`<div class="card" style="padding:1rem;"><strong>${escapeHtml(n.subject)} Wk ${n.week}</strong> <span class="status-badge status-pending">Pending</span><p>${escapeHtml(n.topic||'')}</p><button class="btn btn-warning btn-sm" onclick="cancelSubmission('${n.id}')">Cancel</button></div>`).join(''):'<p style="color:var(--text-muted);">No submitted notes.</p>';
 }
 function renderApprovedTab(){
-    var notes=Object.values(lessonNotesMap).filter(function(n){return n.status==='approved';});
+    const notes=Object.values(lessonNotesMap).filter(n=>n.status==='approved');
     document.getElementById('approvedCount').textContent=notes.length;
-    document.getElementById('approvedList').innerHTML=notes.length?notes.map(function(n){return '<div class="card" style="padding:1rem;margin-bottom:0.5rem;"><strong>'+escapeHtml(n.subject)+' Week '+n.week+'</strong> <span class="status-badge status-approved">Approved</span>'+(n.adminRating?' '+'★'.repeat(n.adminRating):'')+'<p style="font-size:0.8rem;color:var(--text-secondary);">'+escapeHtml(n.topic||'')+'</p><button class="btn btn-success btn-sm" onclick="publishNote(\''+n.id+'\')">Publish</button></div>';}).join(''):'<p style="color:var(--text-muted);">No approved notes.</p>';
+    document.getElementById('approvedList').innerHTML=notes.length?notes.map(n=>`<div class="card" style="padding:1rem;"><strong>${escapeHtml(n.subject)} Wk ${n.week}</strong> <span class="status-badge status-approved">Approved</span>${n.adminRating?` ${'★'.repeat(n.adminRating)}`:''}<p>${escapeHtml(n.topic||'')}</p><button class="btn btn-success btn-sm" onclick="publishNote('${n.id}')">Publish</button></div>`).join(''):'<p style="color:var(--text-muted);">No approved notes.</p>';
 }
 function renderPublishedTab(){
-    var notes=Object.values(lessonNotesMap).filter(function(n){return n.teachable||n.resourcePublished;});
+    const notes=Object.values(lessonNotesMap).filter(n=>n.teachable||n.resourcePublished);
     document.getElementById('publishedCount').textContent=notes.length;
-    document.getElementById('publishedList').innerHTML=notes.length?notes.map(function(n){return '<div class="card" style="padding:1rem;margin-bottom:0.5rem;"><strong>'+escapeHtml(n.subject)+' Week '+n.week+'</strong> <span class="status-badge status-published">Published</span></div>';}).join(''):'<p style="color:var(--text-muted);">No published notes.</p>';
+    document.getElementById('publishedList').innerHTML=notes.length?notes.map(n=>`<div class="card" style="padding:1rem;"><strong>${escapeHtml(n.subject)} Wk ${n.week}</strong> <span class="status-badge status-published">Published</span></div>`).join(''):'<p style="color:var(--text-muted);">No published notes.</p>';
 }
-async function cancelSubmission(id){await db.collection('lessonNotes').doc(id).update({status:'draft'});await loadAllData();renderWeekSelector();renderSubmittedTab();showToast('Cancelled','Moved back to drafts','info');}
+async function cancelSubmission(id){await db.collection('lessonNotes').doc(id).update({status:'draft'});await loadAllData();renderWeekSelector();renderSubmittedTab();showToast('Cancelled','Moved to drafts','info');}
 async function publishNote(id){await db.collection('lessonNotes').doc(id).update({teachable:true});await loadAllData();renderApprovedTab();renderPublishedTab();showToast('Published','Visible to students','success');}
 
 // ============================================
-// AI CORE FUNCTIONS
-// ============================================
-async function generateAI(prompt, role) {
-    if (!window.groq) throw new Error('AI service not available. Check your connection.');
-    var completion = await window.groq.chat.completions.create({ 
-        messages: [
-            { role: 'system', content: (role || NIGERIAN_SYSTEM_PROMPT) }, 
-            { role: 'user', content: prompt }
-        ], 
-        model: 'llama-3.3-70b-versatile', 
-        temperature: 0.5, 
-        max_tokens: 3000 
-    });
-    return completion.choices[0].message.content;
-}
-
-// ============================================
-// AI ASSISTANT CHAT
+// AI ASSISTANT
 // ============================================
 function openAIAssistant(){
-    if(!window.groq)return showToast('Error','AI not available','error');
+    if(!groq)return showToast('Error','AI not available','error');
     document.getElementById('aiAssistantModal').classList.add('active');
-    document.getElementById('aiChatInput').focus();
     if(!aiConversation.length){
-        var subject=currentSubjectDraft||currentSubject||'Not selected';
-        var week=currentWeekDraft||'Not selected';
-        var topic=(syllabusMap[currentSubjectDraft]&&syllabusMap[currentSubjectDraft].weeks||[]).find(function(w){return w.week==currentWeekDraft;})?syllabusMap[currentSubjectDraft].weeks.find(function(w){return w.week==currentWeekDraft;}).topic:'Not specified';
-        var className=currentClass||'JSS 1';
-        var term=currentTerm||'First Term';
-        var autoMsg='Generate a complete, detailed, professional NERDC-style lesson note for the following:\nSubject: '+subject+'\nClass: '+className+'\nWeek: '+week+'\nTerm: '+term+'\nTopic: '+topic+'\n\nUse the exact structure shown in the Nigerian NERDC lesson plan. Include all sections, be very thorough and detailed.';
-        addChatMessage('user',autoMsg);
-        aiConversation=[{role:'user',content:autoMsg}];
-        sendAIMessage();
+        const topic=syllabusMap[currentSubject]?.weeks?.find(w=>w.week==currentWeek)?.topic||'Not specified';
+        const msg=`Generate a complete NERDC lesson note for:\nSubject: ${currentSubject||'Not selected'}\nClass: ${currentClass||'JSS 1'}\nWeek: ${currentWeek||'?'}\nTerm: ${currentTerm}\nTopic: ${topic}`;
+        addChatMessage('user',msg);aiConversation=[{role:'user',content:msg}];sendAIMessage();
     }
 }
 function closeAIAssistant(){document.getElementById('aiAssistantModal').classList.remove('active');}
-function addChatMessage(role,html){
-    var div=document.createElement('div');
-    div.className='ai-message '+role;
-    div.innerHTML=html;
-    document.getElementById('aiChatHistory').appendChild(div);
-    document.getElementById('aiChatHistory').scrollTop=document.getElementById('aiChatHistory').scrollHeight;
-    return div;
-}
+function addChatMessage(role,html){const div=document.createElement('div');div.className=`ai-message ${role}`;div.innerHTML=html;document.getElementById('aiChatHistory').appendChild(div);document.getElementById('aiChatHistory').scrollTop=document.getElementById('aiChatHistory').scrollHeight;return div;}
 async function sendAIMessage(){
-    var input=document.getElementById('aiChatInput');var text=input.value.trim();
-    if(!text)return;input.value='';
+    const input=document.getElementById('aiChatInput');const text=input.value.trim();if(!text)return;input.value='';
     addChatMessage('user',text);aiConversation.push({role:'user',content:text});
-    var thinking=document.getElementById('aiThinkBtn')&&document.getElementById('aiThinkBtn').classList.contains('active');
-    var assistantMsg=addChatMessage('assistant',thinking?'🤔 Thinking...':'✍️ Writing...');
+    const msg=addChatMessage('assistant','✍️ Writing...');
     try{
-        var systemPrompt='You are a professional Nigerian teacher who writes complete, extremely detailed lesson notes using NERDC curriculum. Follow this structure: LESSON NOTE header, BEHAVIOURAL OBJECTIVES, ENTRY BEHAVIOUR, PRESENTATION steps, CLASS ACTIVITY, EVALUATION, ASSIGNMENT, SUMMARY, BOARD SUMMARY. Return the entire lesson note in plain text with clear headings.';
-        var messages=[{role:'system',content:systemPrompt}].concat(aiConversation);
-        if(thinking)messages.push({role:'system',content:'Now think step-by-step, output your reasoning, then provide the final answer.'});
-        var completion=await window.groq.chat.completions.create({messages:messages,model:'llama-3.3-70b-versatile',temperature:0.5,max_tokens:4000});
-        var reply=completion.choices[0].message.content;
-        assistantMsg.innerHTML=reply;aiConversation.push({role:'assistant',content:reply});lastGeneratedLessonNote=reply;
-    }catch(err){assistantMsg.innerHTML='❌ Error: '+err.message;aiConversation.pop();}
+        const completion=await groq.chat.completions.create({messages:[{role:'system',content:'You are a Nigerian teacher. Write complete NERDC lesson notes.'},...aiConversation],model:'llama-3.3-70b-versatile',temperature:0.5,max_tokens:4000});
+        const reply=completion.choices[0].message.content;msg.innerHTML=reply;aiConversation.push({role:'assistant',content:reply});lastGeneratedLN=reply;
+    }catch(e){msg.innerHTML='❌ Error: '+e.message;}
 }
-function copyAIToEditor(){
-    if(lastGeneratedLessonNote){quill.setText(lastGeneratedLessonNote);showToast('Copied','AI content copied to editor','success');closeAIAssistant();}
-    else showToast('Nothing','Generate content first','warning');
-}
-function clearAIChat(){aiConversation=[];lastGeneratedLessonNote=null;document.getElementById('aiChatHistory').innerHTML='<div class="ai-message assistant">Hello! I can help you create a complete lesson note.<br>Tell me the <strong>Subject, Class, Week, and Topic</strong>.</div>';}
+function copyAIToEditor(){if(lastGeneratedLN){quill.setText(lastGeneratedLN);showToast('Copied','AI content copied','success');closeAIAssistant();}else showToast('Nothing','Generate first','warning');}
+function clearAIChat(){aiConversation=[];lastGeneratedLN=null;document.getElementById('aiChatHistory').innerHTML='';}
+document.getElementById('aiSendBtn').addEventListener('click',sendAIMessage);
+document.getElementById('aiChatInput').addEventListener('keypress',e=>{if(e.key==='Enter')sendAIMessage();});
 
 // ============================================
 // TEMPLATE / AI FORMAT
 // ============================================
 function useTemplate(){
-    var topic=syllabusMap[currentSubject]&&syllabusMap[currentSubject].weeks?syllabusMap[currentSubject].weeks.find(function(w){return w.week==currentWeek;})?syllabusMap[currentSubject].weeks.find(function(w){return w.week==currentWeek;}).topic:'___':'___';
-    quill.root.innerHTML='<h2>LESSON NOTE</h2><p><strong>Subject:</strong> '+(currentSubject||'___')+' &nbsp; <strong>Class:</strong> '+(currentClass||'___')+'</p><p><strong>Week:</strong> '+(currentWeek||'___')+' &nbsp; <strong>Topic:</strong> '+topic+'</p><p><strong>Duration:</strong> 40 minutes</p><h3>Instructional Materials:</h3><ul><li>...</li></ul><h3>Objectives:</h3><ol><li>...</li></ol><h3>Presentation:</h3><p>...</p><h3>Evaluation:</h3><ol><li>...</li></ol><h3>Assignment:</h3><ol><li>...</li></ol>';
+    const topic=syllabusMap[currentSubject]?.weeks?.find(w=>w.week==currentWeek)?.topic||'___';
+    quill.root.innerHTML=`<h2>LESSON NOTE</h2><p><strong>Subject:</strong> ${currentSubject||'___'} &nbsp; <strong>Class:</strong> ${currentClass||'___'}</p><p><strong>Week:</strong> ${currentWeek||'___'} &nbsp; <strong>Topic:</strong> ${topic}</p><p><strong>Duration:</strong> 40 minutes</p><h3>Instructional Materials:</h3><ul><li>...</li></ul><h3>Objectives:</h3><ol><li>...</li></ol><h3>Presentation:</h3><p>...</p><h3>Evaluation:</h3><ol><li>...</li></ol><h3>Assignment:</h3><ol><li>...</li></ol>`;
 }
 async function aiFormatEditor(){
-    if(!window.groq)return showToast('Error','AI not available','error');
-    var content=quill.getText();if(!content.trim())return;
-    showLoading();
-    try{
-        var formatted=await generateAI(content,'Apply professional HTML formatting. Return ONLY the HTML.');
-        var cleaned=formatted.replace(/```html|```/g,'').trim();
-        if(cleaned){quill.root.innerHTML=cleaned;showToast('Formatted','Document formatted successfully','success');}
-        else showToast('Error','AI returned empty response','error');
-    }catch(e){showToast('Error',e.message,'error');}
-    finally{hideLoading();}
+    if(!groq)return showToast('Error','AI not available','error');
+    const content=quill.getText();if(!content.trim())return;
+    try{const f=await groq.chat.completions.create({messages:[{role:'system',content:'Format with proper HTML headings, lists, bold.'},{role:'user',content}],model:'llama-3.3-70b-versatile',temperature:0.3,max_tokens:2000});const c=f.choices[0].message.content.replace(/```html|```/g,'').trim();if(c){quill.root.innerHTML=c;showToast('Formatted','Done','success');}}catch(e){showToast('Error',e.message,'error');}
 }
-async function aiFormatTP(){
-    var content=teachingProcessQuill.getText();if(!content.trim()||!window.groq)return;
-    try{
-        var formatted=await generateAI(content,'Apply professional HTML formatting. Return ONLY the HTML.');
-        teachingProcessQuill.root.innerHTML=formatted.replace(/```html|```/g,'').trim();
-        showToast('Formatted','Teaching process formatted','success');
-    }catch(e){showToast('Error',e.message,'error');}
-}
-async function aiFormatResource(){
-    var content=studentResourceQuill.getText();if(!content.trim()||!window.groq)return;
-    try{
-        var formatted=await generateAI(content,'Apply professional HTML formatting. Return ONLY the HTML.');
-        studentResourceQuill.root.innerHTML=formatted.replace(/```html|```/g,'').trim();
-        showToast('Formatted','Student resources formatted','success');
-    }catch(e){showToast('Error',e.message,'error');}
-}
+async function aiFormatTP(){const c=teachingProcessQuill.getText();if(!c.trim()||!groq)return;try{const f=await groq.chat.completions.create({messages:[{role:'system',content:'Format with HTML.'},{role:'user',content:c}],model:'llama-3.3-70b-versatile',temperature:0.3,max_tokens:2000});teachingProcessQuill.root.innerHTML=f.choices[0].message.content.replace(/```html|```/g,'').trim();}catch(e){}}
+async function aiFormatResource(){const c=studentResourceQuill.getText();if(!c.trim()||!groq)return;try{const f=await groq.chat.completions.create({messages:[{role:'system',content:'Format with HTML.'},{role:'user',content:c}],model:'llama-3.3-70b-versatile',temperature:0.3,max_tokens:2000});studentResourceQuill.root.innerHTML=f.choices[0].message.content.replace(/```html|```/g,'').trim();}catch(e){}}
 
-// ============================================
-// AI TEACHING PROCESS GENERATION
-// ============================================
-document.getElementById('aiGenerateTPBtn').addEventListener('click',async function(e){
-    e.preventDefault();
-    if(!window.groq)return showToast('Error','AI service not available','error');
-    var topic=syllabusMap[currentSubject]&&syllabusMap[currentSubject].weeks?syllabusMap[currentSubject].weeks.find(function(w){return w.week==currentWeek;})?syllabusMap[currentSubject].weeks.find(function(w){return w.week==currentWeek;}).topic:'this topic':'this topic';
-    var btn=document.getElementById('aiGenerateTPBtn');
-    var origHTML=btn.innerHTML;
-    btn.disabled=true;
-    btn.innerHTML='<i class="fas fa-spinner fa-spin"></i> Generating...';
+// AI Generate Teaching Process
+document.getElementById('aiGenerateTPBtn2').addEventListener('click',async()=>{
+    if(!groq)return showToast('Error','AI not available','error');
+    const topic=syllabusMap[currentSubject]?.weeks?.find(w=>w.week==currentWeek)?.topic||'this topic';
     try{
-        var content=await generateAI('Create a detailed teaching process for '+currentSubject+' Week '+currentWeek+' topic "'+topic+'". Include step-by-step activities, timing, materials, teaching methods, and evaluation.',NIGERIAN_SYSTEM_PROMPT);
-        teachingProcessQuill.root.innerHTML=content;
-        showToast('Generated','Teaching process generated','success');
-    }catch(err){showToast('Error',err.message,'error');}
-    finally{btn.disabled=false;btn.innerHTML=origHTML;}
+        const completion=await groq.chat.completions.create({messages:[{role:'system',content:'You are a Nigerian teacher. Write a step-by-step teaching process.'},{role:'user',content:`Create teaching process for ${currentSubject} Week ${currentWeek}: ${topic}`}],model:'llama-3.3-70b-versatile',temperature:0.5,max_tokens:2000});
+        teachingProcessQuill.root.innerHTML=completion.choices[0].message.content;
+        showToast('Generated','Teaching process ready','success');
+    }catch(e){showToast('Error',e.message,'error');}
 });
 
-// ============================================
-// AI STUDENT RESOURCES GENERATION
-// ============================================
-document.getElementById('aiGenerateResourceBtn').addEventListener('click',async function(e){
-    e.preventDefault();
-    if(!window.groq)return showToast('Error','AI service not available','error');
-    var topic=syllabusMap[currentSubject]&&syllabusMap[currentSubject].weeks?syllabusMap[currentSubject].weeks.find(function(w){return w.week==currentWeek;})?syllabusMap[currentSubject].weeks.find(function(w){return w.week==currentWeek;}).topic:'this topic':'this topic';
-    var btn=document.getElementById('aiGenerateResourceBtn');
-    var origHTML=btn.innerHTML;
-    btn.disabled=true;
-    btn.innerHTML='<i class="fas fa-spinner fa-spin"></i> Generating...';
+// AI Generate Student Resources
+document.getElementById('aiGenerateResourceBtn2').addEventListener('click',async()=>{
+    if(!groq)return showToast('Error','AI not available','error');
+    const topic=syllabusMap[currentSubject]?.weeks?.find(w=>w.week==currentWeek)?.topic||'this topic';
     try{
-        var content=await generateAI('Create comprehensive student resources for '+currentSubject+' Week '+currentWeek+' topic "'+topic+'" for '+(currentClass||'JSS1')+' level. Include explanations, examples, key points, diagrams descriptions, practice questions, and summary.',NIGERIAN_SYSTEM_PROMPT);
-        studentResourceQuill.root.innerHTML=content;
-        showToast('Generated','Student resources generated','success');
-    }catch(err){showToast('Error',err.message,'error');}
-    finally{btn.disabled=false;btn.innerHTML=origHTML;}
+        const completion=await groq.chat.completions.create({messages:[{role:'system',content:'You are a Nigerian teacher. Write textbook-style student resources.'},{role:'user',content:`Create student resources for ${currentSubject} Week ${currentWeek}: ${topic}`}],model:'llama-3.3-70b-versatile',temperature:0.5,max_tokens:2000});
+        studentResourceQuill.root.innerHTML=completion.choices[0].message.content;
+        showToast('Generated','Resources ready','success');
+    }catch(e){showToast('Error',e.message,'error');}
 });
-
-// ============================================
-// HANDWRITING / IMAGE GENERATION
-// ============================================
-document.getElementById('generateHandwritingBtn').addEventListener('click',async function(){
-    var prompt=document.getElementById('handwritingPrompt').value.trim();
-    var debugBox=document.getElementById('aiImageDebug');
-    debugBox.style.display='none';
-    if(!prompt)return showToast('Error','Write a prompt first','warning');
-    if(!currentSubject||!currentWeek)return showToast('Error','Select a subject and week first','error');
-    var replicateKey=null;
-    try{
-        replicateKey=remoteConfig.getString('Judahimage');
-        debugBox.style.display='block';
-        debugBox.innerHTML='<strong>🔍 Debug:</strong> Key fetched. Length: '+(replicateKey?replicateKey.length:0);
-    }catch(e){
-        debugBox.style.display='block';
-        debugBox.innerHTML='<strong>❌ Debug:</strong> Remote Config error: '+e.message;
-        return showToast('Error','Config error','error');
-    }
-    if(!replicateKey||replicateKey.length<5){
-        debugBox.style.display='block';
-        debugBox.innerHTML='<strong>❌ Debug:</strong> Key missing or too short';
-        return showToast('Error','API key not configured','error');
-    }
-    showLoading();
-    try{
-        debugBox.innerHTML+='<br>🔄 Sending prediction request...';
-        var replicateRes=await fetch('https://api.replicate.com/v1/predictions',{
-            method:'POST',
-            headers:{'Content-Type':'application/json','Authorization':'Token '+replicateKey},
-            body:JSON.stringify({version:'be04660a5b93ef2aff61e3668dedb4cbeb14941e62a3fd5998364a0b7e3a0d00',input:{prompt:prompt,negative_prompt:'blurry, messy, low quality',width:768,height:768,num_outputs:1,scheduler:'K_EULER',num_inference_steps:30}})
-        });
-        var prediction=await replicateRes.json();
-        debugBox.innerHTML+='<br>✅ Prediction ID: '+prediction.id+'<br>⏳ Polling...';
-        var imageUrl=null;var attempts=0;
-        while(!imageUrl&&attempts<60){
-            await new Promise(function(r){setTimeout(r,3000);});
-            var pollRes=await fetch('https://api.replicate.com/v1/predictions/'+prediction.id,{headers:{'Authorization':'Token '+replicateKey}});
-            var pollData=await pollRes.json();
-            if(pollData.status==='succeeded')imageUrl=pollData.output&&pollData.output[0];
-            else if(pollData.status==='failed')throw new Error('Generation failed: '+(pollData.error||'Unknown'));
-            attempts++;
-        }
-        if(!imageUrl)throw new Error('Timed out after 3 minutes');
-        debugBox.innerHTML+='<br>🔄 Uploading to Cloudinary...';
-        var formData=new FormData();
-        formData.append('file',imageUrl);
-        formData.append('upload_preset','Judahschool');
-        formData.append('folder','handwriting_notes');
-        var cloudRes=await fetch('https://api.cloudinary.com/v1_1/dda7kpir8/image/upload',{method:'POST',body:formData});
-        var cloudData=await cloudRes.json();
-        if(!cloudRes.ok)throw new Error(cloudData.error&&cloudData.error.message||'Upload failed');
-        var finalUrl=cloudData.secure_url;
-        debugBox.innerHTML+='<br>✅ Done! '+finalUrl.substring(0,50)+'...';
-        handwritingImages.push({url:finalUrl,prompt:prompt,createdAt:new Date().toISOString()});
-        renderHandwritingImages();
-        var key=currentSubject+'_'+currentWeek;
-        var existing=lessonNotesMap[key]||{};
-        if(existing.id)await db.collection('lessonNotes').doc(existing.id).update({handwritingImages:handwritingImages,updatedAt:firebase.firestore.FieldValue.serverTimestamp()});
-        showToast('Generated','Handwriting image saved!','success');
-        document.getElementById('handwritingPrompt').value='';
-    }catch(err){
-        debugBox.innerHTML+='<br>❌ <strong>Error:</strong> '+err.message;
-        showToast('Error',err.message,'error');
-    }finally{hideLoading();}
-});
-
-function renderHandwritingImages(){
-    document.getElementById('handwritingImagesGrid').innerHTML=handwritingImages.length?handwritingImages.map(function(img,i){return '<div style="position:relative;display:inline-block;"><img src="'+img.url+'" alt="'+escapeHtml(img.prompt)+'" style="width:150px;height:150px;object-fit:cover;border-radius:0.5rem;border:1px solid var(--border);"><button class="btn btn-danger btn-sm" style="position:absolute;top:5px;right:5px;" onclick="removeHandwritingImage('+i+')">×</button></div>';}).join(''):'<p style="color:var(--text-muted);font-size:0.8rem;">No images generated yet.</p>';
-}
-function removeHandwritingImage(i){handwritingImages.splice(i,1);renderHandwritingImages();}
 
 // ============================================
 // POST-APPROVAL RESOURCES
 // ============================================
-document.getElementById('saveTPBtn').addEventListener('click',async function(){
-    var key=currentSubject+'_'+currentWeek;var note=lessonNotesMap[key];if(!note||!note.id)return;
+document.getElementById('saveTPBtn').addEventListener('click',async()=>{
+    const key=`${currentSubject}_${currentWeek}`;const note=lessonNotesMap[key];if(!note?.id)return;
     await db.collection('lessonNotes').doc(note.id).update({teachingProcess:teachingProcessQuill.root.innerHTML});
     showToast('Saved','Teaching process saved','success');
 });
-document.getElementById('saveResourceBtn').addEventListener('click',async function(){
-    var key=currentSubject+'_'+currentWeek;var note=lessonNotesMap[key];if(!note||!note.id)return;
+document.getElementById('saveResourceBtn').addEventListener('click',async()=>{
+    const key=`${currentSubject}_${currentWeek}`;const note=lessonNotesMap[key];if(!note?.id)return;
     await db.collection('lessonNotes').doc(note.id).update({studentResource:studentResourceQuill.root.innerHTML});
     showToast('Saved','Resources saved','success');
 });
-document.getElementById('publishTPBtn2').addEventListener('click',async function(){
-    var key=currentSubject+'_'+currentWeek;var note=lessonNotesMap[key];if(!note||!note.id)return;
+document.getElementById('publishTPBtn2').addEventListener('click',async()=>{
+    const key=`${currentSubject}_${currentWeek}`;const note=lessonNotesMap[key];if(!note?.id)return;
     await db.collection('lessonNotes').doc(note.id).update({teachable:true,teachingProcess:teachingProcessQuill.root.innerHTML});
-    showToast('Published','Teaching process published to students','success');
+    showToast('Published','Teaching process published','success');
 });
-document.getElementById('publishResourceBtn2').addEventListener('click',async function(){
-    var key=currentSubject+'_'+currentWeek;var note=lessonNotesMap[key];if(!note||!note.id)return;
+document.getElementById('publishResourceBtn2').addEventListener('click',async()=>{
+    const key=`${currentSubject}_${currentWeek}`;const note=lessonNotesMap[key];if(!note?.id)return;
     await db.collection('lessonNotes').doc(note.id).update({resourcePublished:true,studentResource:studentResourceQuill.root.innerHTML});
-    showToast('Published','Resources published to students','success');
+    showToast('Published','Resources published','success');
 });
-document.getElementById('publishVideoBtn2').addEventListener('click',async function(){
-    var key=currentSubject+'_'+currentWeek;var note=lessonNotesMap[key];if(!note||!note.id)return;
-    await db.collection('lessonNotes').doc(note.id).update({videosPublished:true,videoLinks:videoLinks});
-    showToast('Published','Videos published to students','success');
+document.getElementById('publishVideoBtn2').addEventListener('click',async()=>{
+    const key=`${currentSubject}_${currentWeek}`;const note=lessonNotesMap[key];if(!note?.id)return;
+    await db.collection('lessonNotes').doc(note.id).update({videosPublished:true,videoLinks});
+    showToast('Published','Videos published','success');
 });
-function addVideoLink(){var url=document.getElementById('videoLinkInput').value.trim();if(!url)return;videoLinks.push(url);renderVideoList();document.getElementById('videoLinkInput').value='';}
-function renderVideoList(){document.getElementById('videoList').innerHTML=videoLinks.length?videoLinks.map(function(v,i){return '<div style="display:flex;justify-content:space-between;padding:0.3rem 0;"><span>'+escapeHtml(v)+'</span><button class="btn btn-danger btn-sm" onclick="removeVideo('+i+')">×</button></div>';}).join(''):'<p style="color:var(--text-muted);">No videos.</p>';}
+function addVideoLink(){const url=document.getElementById('videoLinkInput').value.trim();if(!url)return;videoLinks.push(url);renderVideoList();document.getElementById('videoLinkInput').value='';}
+function renderVideoList(){document.getElementById('videoList').innerHTML=videoLinks.length?videoLinks.map((v,i)=>`<div style="display:flex;justify-content:space-between;padding:0.3rem 0;"><span>${escapeHtml(v)}</span><button class="btn btn-danger btn-sm" onclick="removeVideo(${i})">×</button></div>`).join(''):'<p style="color:var(--text-muted);">No videos.</p>';}
 function removeVideo(i){videoLinks.splice(i,1);renderVideoList();}
 
 // ============================================
@@ -1550,235 +961,80 @@ function removeVideo(i){videoLinks.splice(i,1);renderVideoList();}
 // ============================================
 function openCoPlanModal(){document.getElementById('coPlanModal').classList.add('active');renderCoTeacherList();}
 function closeCoPlanModal(){document.getElementById('coPlanModal').classList.remove('active');}
-async function renderCoTeacherList(search){
-    search=search||'';
-    var snap=await db.collection('users').where('role','==','teacher').where('approved','==',true).get();
-    var teachers=snap.docs.map(function(d){return {id:d.id,...d.data()};}).filter(function(t){return t.id!==currentUser.uid;});
-    var filtered=search?teachers.filter(function(t){return (t.firstName||''+' '+t.surname||'').toLowerCase().indexOf(search.toLowerCase())>=0||(t.subjects||[]).some(function(s){return s.toLowerCase().indexOf(search.toLowerCase())>=0;});}):teachers;
-    document.getElementById('coTeacherList').innerHTML=filtered.map(function(t){
-        var name=(t.firstName||'')+' '+(t.surname||'').trim();var ini=(t.firstName?t.firstName[0]:'')+(t.surname?t.surname[0]:'');
-        var sel=selectedCoTeacherIds.indexOf(t.id)>=0;
-        return '<div class="teacher-list-item'+(sel?' selected':'')+'" onclick="toggleCoTeacher(\''+t.id+'\',\''+escapeAttr(name)+'\')"><div class="teacher-avatar-sm">'+ini+'</div><div><strong>'+escapeHtml(name)+'</strong><br><small>'+((t.subjects||[]).join(', '))+'</small></div>'+(sel?'<i class="fas fa-check" style="margin-left:auto;color:var(--success-text);"></i>':'')+'</div>';
+async function renderCoTeacherList(search=''){
+    const snap=await db.collection('users').where('role','==','teacher').where('approved','==',true).get();
+    const teachers=snap.docs.map(d=>({id:d.id,...d.data()})).filter(t=>t.id!==currentUser.uid);
+    const filtered=search?teachers.filter(t=>`${t.firstName||''} ${t.surname||''}`.toLowerCase().includes(search.toLowerCase())||(t.subjects||[]).some(s=>s.toLowerCase().includes(search.toLowerCase()))):teachers;
+    document.getElementById('coTeacherList').innerHTML=filtered.map(t=>{
+        const name=`${t.firstName||''} ${t.surname||''}`.trim();const ini=(t.firstName?.[0]||'')+(t.surname?.[0]||'');
+        const sel=selectedCoTeacherIds.includes(t.id);
+        return `<div class="teacher-list-item ${sel?'selected':''}" onclick="toggleCoTeacher('${t.id}','${escapeAttr(name)}')"><div class="teacher-avatar-sm">${ini}</div><div><strong>${escapeHtml(name)}</strong><br><small>${(t.subjects||[]).join(', ')}</small></div>${sel?'<i class="fas fa-check" style="margin-left:auto;color:var(--success-text);"></i>':''}</div>`;
     }).join('');
     renderSelectedCoTeachers();
 }
-function toggleCoTeacher(id,name){
-    var idx=selectedCoTeacherIds.indexOf(id);
-    if(idx>=0){selectedCoTeacherIds.splice(idx,1);selectedCoTeacherNames.splice(idx,1);}
-    else{selectedCoTeacherIds.push(id);selectedCoTeacherNames.push(name);}
-    renderCoTeacherList(document.getElementById('coTeacherSearch')?document.getElementById('coTeacherSearch').value:'');
-}
-function renderSelectedCoTeachers(){
-    document.getElementById('selectedCoTeachers').innerHTML=selectedCoTeacherNames.length?selectedCoTeacherNames.map(function(n){return '<span class="status-badge status-draft" style="margin:0.2rem;">'+escapeHtml(n)+' <i class="fas fa-times" style="cursor:pointer;" onclick="removeCoTeacher(\''+escapeAttr(n)+'\')"></i></span>';}).join(''):'<p style="color:var(--text-muted);">No co-teachers selected.</p>';
-}
-function removeCoTeacher(name){var idx=selectedCoTeacherNames.indexOf(name);if(idx>=0){selectedCoTeacherIds.splice(idx,1);selectedCoTeacherNames.splice(idx,1);}renderCoTeacherList();renderSelectedCoTeachers();}
-function confirmCoPlan(){
-    coTeachers=selectedCoTeacherIds;coTeacherNames=selectedCoTeacherNames;
-    if(coTeachers.length){document.getElementById('coIndicator').classList.add('show');document.getElementById('coIndicator').innerHTML='<i class="fas fa-users"></i> Co-planning with: '+coTeacherNames.join(', ');}
-    else{document.getElementById('coIndicator').classList.remove('show');}
-    closeCoPlanModal();showToast('Co-Plan',coTeachers.length?'Now co-planning with '+coTeacherNames.length+' teacher(s)':'Co-planning disabled','success');
-}
+function toggleCoTeacher(id,name){const idx=selectedCoTeacherIds.indexOf(id);if(idx>=0){selectedCoTeacherIds.splice(idx,1);selectedCoTeacherNames.splice(idx,1);}else{selectedCoTeacherIds.push(id);selectedCoTeacherNames.push(name);}renderCoTeacherList(document.getElementById('coTeacherSearch')?.value||'');}
+function renderSelectedCoTeachers(){document.getElementById('selectedCoTeachers').innerHTML=selectedCoTeacherNames.length?selectedCoTeacherNames.map(n=>`<span class="status-badge status-draft" style="margin:0.2rem;">${escapeHtml(n)} <i class="fas fa-times" style="cursor:pointer;" onclick="removeCoTeacher('${escapeAttr(n)}')"></i></span>`).join(''):'<p style="color:var(--text-muted);">None selected.</p>';}
+function removeCoTeacher(name){const idx=selectedCoTeacherNames.indexOf(name);if(idx>=0){selectedCoTeacherIds.splice(idx,1);selectedCoTeacherNames.splice(idx,1);}renderCoTeacherList();renderSelectedCoTeachers();}
+function confirmCoPlan(){coTeachers=selectedCoTeacherIds;coTeacherNames=selectedCoTeacherNames;if(coTeachers.length){document.getElementById('coIndicator').classList.add('show');document.getElementById('coIndicator').innerHTML=`<i class="fas fa-users"></i> Co-planning: ${coTeacherNames.join(', ')}`;}else{document.getElementById('coIndicator').classList.remove('show');}closeCoPlanModal();showToast('Co-Plan',coTeachers.length?`Co-planning with ${coTeacherNames.length} teacher(s)`:'Disabled','success');}
 document.getElementById('coPlanToggle').addEventListener('click',openCoPlanModal);
-document.getElementById('coTeacherSearch').addEventListener('input',function(e){renderCoTeacherList(e.target.value);});
+document.getElementById('coTeacherSearch').addEventListener('input',e=>renderCoTeacherList(e.target.value));
 
 // ============================================
 // LIBRARY
 // ============================================
 async function renderLibrary(){
-    var search=document.getElementById('librarySearch')?document.getElementById('librarySearch').value.toLowerCase():'';
-    var snap=await db.collection('lessonNotes').where('isPublic','==',true).orderBy('createdAt','desc').limit(50).get();
-    var notes=snap.docs.map(function(d){return {id:d.id,...d.data()};});
-    if(search)notes=notes.filter(function(n){return (n.subject||'').toLowerCase().indexOf(search)>=0||(n.topic||'').toLowerCase().indexOf(search)>=0||(n.teacherName||'').toLowerCase().indexOf(search)>=0;});
-    document.getElementById('libraryGrid').innerHTML=notes.length?notes.map(function(n){return '<div class="library-card"><div style="display:flex;justify-content:space-between;align-items:start;"><div><strong>'+escapeHtml(n.subject)+' Week '+n.week+'</strong><br><small>'+escapeHtml(n.topic||'')+'</small><br><small style="color:var(--text-muted);">By '+escapeHtml(n.teacherName||'Unknown')+' • '+(n.adminRating?'★'.repeat(n.adminRating):'No rating')+'</small></div><button class="btn btn-primary btn-sm" onclick="importFromLibrary(\''+n.id+'\')">Import</button></div></div>';}).join(''):'<p style="color:var(--text-muted);">No public lesson notes found.</p>';
+    const search=document.getElementById('librarySearch')?.value?.toLowerCase()||'';
+    const snap=await db.collection('lessonNotes').where('isPublic','==',true).orderBy('createdAt','desc').limit(50).get();
+    let notes=snap.docs.map(d=>({id:d.id,...d.data()}));
+    if(search)notes=notes.filter(n=>(n.subject||'').toLowerCase().includes(search)||(n.topic||'').toLowerCase().includes(search)||(n.teacherName||'').toLowerCase().includes(search));
+    document.getElementById('libraryGrid').innerHTML=notes.length?notes.map(n=>`<div class="library-card"><div style="display:flex;justify-content:space-between;align-items:start;"><div><strong>${escapeHtml(n.subject)} Wk ${n.week}</strong><br><small>${escapeHtml(n.topic||'')}</small><br><small style="color:var(--text-muted);">By ${escapeHtml(n.teacherName||'Unknown')} • ${n.adminRating?('★'.repeat(n.adminRating)):'No rating'}</small></div><button class="btn btn-primary btn-sm" onclick="importFromLibrary('${n.id}')">Import</button></div></div>`).join(''):'<p>No public notes.</p>';
 }
-async function importFromLibrary(id){
-    var doc=await db.collection('lessonNotes').doc(id).get();if(!doc.exists)return;
-    var data=doc.data();
-    if(subjects.indexOf(data.subject)<0){subjects.push(data.subject);await db.collection('users').doc(currentUser.uid).update({subjects:subjects});populateSubjectSelector();}
-    var nd={...data,teacherId:currentUser.uid,teacherName:(userData?userData.firstName||'':'')+' '+(userData?userData.surname||'':'').trim(),status:'draft',createdAt:firebase.firestore.FieldValue.serverTimestamp(),isPublic:false};delete nd.id;
-    var r=await db.collection('lessonNotes').add(nd);
-    var key=data.subject+'_'+data.week;lessonNotesMap[key]={id:r.id,...nd};
-    showToast('Imported',data.subject+' Week '+data.week+' imported as draft','success');updateStats();
-    currentSubject=data.subject;currentWeek=data.week;document.getElementById('lnSubject').value=data.subject;
-    renderWeekSelector();selectWeek(data.week);
-}
+async function importFromLibrary(id){const doc=await db.collection('lessonNotes').doc(id).get();if(!doc.exists)return;const data=doc.data();if(!subjects.includes(data.subject)){subjects.push(data.subject);await db.collection('users').doc(currentUser.uid).update({subjects});populateSubjectSelector();}const nd={...data,teacherId:currentUser.uid,teacherName:`${userData.firstName||''} ${userData.surname||''}`.trim(),status:'draft',createdAt:firebase.firestore.FieldValue.serverTimestamp(),isPublic:false};delete nd.id;const r=await db.collection('lessonNotes').add(nd);const key=`${data.subject}_${data.week}`;lessonNotesMap[key]={id:r.id,...nd};showToast('Imported','Note imported as draft','success');updateStats();currentSubject=data.subject;currentWeek=data.week;document.getElementById('lnSubject').value=data.subject;renderWeekSelector();selectWeek(data.week);}
 
 // ============================================
 // ANALYTICS
 // ============================================
 function renderAnalytics(){
-    var subjectsArr=[...new Set(Object.values(lessonNotesMap).map(function(n){return n.subject;}))];
-    document.getElementById('coverageAnalysis').innerHTML=subjectsArr.length?subjectsArr.map(function(sub){
-        var syl=syllabusMap[sub];var total=syl&&syl.weeks?syl.weeks.length:getSyllabusWeekCount();
-        var notes=Object.values(lessonNotesMap).filter(function(n){return n.subject===sub;});
-        var done=notes.filter(function(n){return n.status==='approved'||n.teachable;}).length;
-        var pct=total?Math.round((done/total)*100):0;
-        return '<div style="margin-bottom:0.5rem;"><span>'+escapeHtml(sub)+': '+done+'/'+total+' weeks</span><div class="coverage-bar"><div class="coverage-fill" style="width:'+pct+'%;background:'+(pct>=80?'var(--success-text)':pct>=50?'var(--warning-text)':'var(--danger-text)')+';"></div></div></div>';
-    }).join(''):'<p>No data.</p>';
-    var gaps=[];subjectsArr.forEach(function(sub){var syl=syllabusMap[sub];if(syl&&syl.weeks){syl.weeks.forEach(function(w){var key=sub+'_'+w.week;if(!lessonNotesMap[key]||!lessonNotesMap[key].lessonNote)gaps.push({subject:sub,week:w.week,topic:w.topic});});}});
-    document.getElementById('gapDetection').innerHTML=gaps.length?gaps.slice(0,10).map(function(g){return '<div style="padding:0.3rem 0;border-bottom:1px solid var(--border);"><span style="color:var(--danger-text);">⚠️</span> '+escapeHtml(g.subject)+' Week '+g.week+': '+escapeHtml(g.topic||'No topic')+'</div>';}).join('')+'<p style="font-size:0.75rem;color:var(--text-muted);">'+(gaps.length>10?'+'+((gaps.length)-10)+' more gaps':'')+'</p>':'<p style="color:var(--success-text);">✅ All topics covered!</p>';
-    var ctx=document.getElementById('qualityChart').getContext('2d');if(qualityChart)qualityChart.destroy();
-    var ratings=Object.values(lessonNotesMap).filter(function(n){return n.adminRating;}).map(function(n){return {subject:n.subject,rating:n.adminRating};});
-    var subNames=[...new Set(ratings.map(function(r){return r.subject;}))];
-    qualityChart=new Chart(ctx,{type:'bar',data:{labels:subNames.length?subNames:['No ratings'],datasets:[{label:'Avg Rating',data:subNames.map(function(s){var rs=ratings.filter(function(r){return r.subject===s;});return rs.length?Math.round(rs.reduce(function(a,b){return a+b.rating;},0)/rs.length*10)/10:0;}),backgroundColor:'#C8963E'}]},options:{responsive:true,scales:{y:{beginAtZero:true,max:5}}}});
-    document.getElementById('subjectHeatmap').innerHTML=subjectsArr.length?subjectsArr.map(function(sub){var notes=Object.values(lessonNotesMap).filter(function(n){return n.subject===sub;});var pct=notes.length?Math.round((notes.filter(function(n){return n.status==='approved'||n.teachable;}).length/notes.length)*100):0;return '<div style="display:inline-block;padding:0.5rem 0.8rem;margin:0.2rem;border-radius:0.5rem;background:'+(pct>=80?'var(--success-bg)':pct>=50?'var(--warning-bg)':'var(--danger-bg)')+';font-size:0.75rem;">'+escapeHtml(sub)+': '+pct+'%</div>';}).join(''):'<p>No data.</p>';
+    const subjectsArr=[...new Set(Object.values(lessonNotesMap).map(n=>n.subject))];
+    document.getElementById('coverageAnalysis').innerHTML=subjectsArr.length?subjectsArr.map(sub=>{const syl=syllabusMap[sub];const total=syl?.weeks?.length||12;const notes=Object.values(lessonNotesMap).filter(n=>n.subject===sub);const done=notes.filter(n=>n.status==='approved'||n.teachable).length;const pct=Math.round((done/total)*100);return `<div style="margin-bottom:0.5rem;"><span>${escapeHtml(sub)}: ${done}/${total}</span><div class="coverage-bar"><div class="coverage-fill" style="width:${pct}%;background:${pct>=80?'var(--success-text)':pct>=50?'var(--warning-text)':'var(--danger-text)'};"></div></div></div>`;}).join(''):'<p>No data.</p>';
+    const gaps=[];subjectsArr.forEach(sub=>{const syl=syllabusMap[sub];if(syl?.weeks){syl.weeks.forEach(w=>{const key=`${sub}_${w.week}`;if(!lessonNotesMap[key]||!lessonNotesMap[key].lessonNote)gaps.push({subject:sub,week:w.week,topic:w.topic});});}});
+    document.getElementById('gapDetection').innerHTML=gaps.length?gaps.slice(0,10).map(g=>`<div style="padding:0.3rem 0;border-bottom:1px solid var(--border);"><span style="color:var(--danger-text);">⚠️</span> ${escapeHtml(g.subject)} Wk ${g.week}: ${escapeHtml(g.topic||'No topic')}</div>`).join('')+'<p>'+(gaps.length>10?`+${gaps.length-10} more`:'')+'</p>':'<p style="color:var(--success-text);">✅ All covered!</p>';
+    const ctx=document.getElementById('qualityChart').getContext('2d');if(qualityChart)qualityChart.destroy();
+    const ratings=Object.values(lessonNotesMap).filter(n=>n.adminRating).map(n=>({subject:n.subject,rating:n.adminRating}));
+    const subNames=[...new Set(ratings.map(r=>r.subject))];
+    qualityChart=new Chart(ctx,{type:'bar',data:{labels:subNames.length?subNames:['No ratings'],datasets:[{label:'Avg Rating',data:subNames.map(s=>{const rs=ratings.filter(r=>r.subject===s);return rs.length?Math.round(rs.reduce((a,b)=>a+b.rating,0)/rs.length*10)/10:0;}),backgroundColor:'#C8963E'}]},options:{responsive:true,scales:{y:{beginAtZero:true,max:5}}}});
+    document.getElementById('subjectHeatmap').innerHTML=subjectsArr.length?subjectsArr.map(sub=>{const notes=Object.values(lessonNotesMap).filter(n=>n.subject===sub);const pct=notes.length?Math.round((notes.filter(n=>n.status==='approved'||n.teachable).length/notes.length)*100):0;return `<div style="display:inline-block;padding:0.5rem 0.8rem;margin:0.2rem;border-radius:0.5rem;background:${pct>=80?'var(--success-bg)':pct>=50?'var(--warning-bg)':'var(--danger-bg)'};font-size:0.75rem;">${escapeHtml(sub)}: ${pct}%</div>`;}).join(''):'<p>No data.</p>';
 }
 
 // ============================================
 // PLANNER
 // ============================================
-function renderPlanner(){
-    document.getElementById('plannerTermLabel').textContent=currentTerm;
-    var grid=document.getElementById('plannerGrid');grid.innerHTML='';
-    var weekCount=getSyllabusWeekCount();
-    for(var w=1;w<=weekCount;w++){
-        var key=currentSubject+'_'+w;var note=lessonNotesMap[key];
-        var cls='empty',label='Week '+w;
-        if(note&&(note.status==='approved'||note.teachable)){cls='done';label+=' ✅';}
-        else if(note&&note.status==='pending'){cls='pending';label+=' ⏳';}
-        else if(note&&note.lessonNote){cls='pending';label+=' 📝';}
-        grid.innerHTML+='<div class="planner-week '+cls+'" onclick="currentWeek='+w+';document.getElementById(\'mainTabs\').querySelector(\'[data-panel=lessonNotes]\').click();selectWeek('+w+');">'+label+'</div>';
-    }
-}
+function renderPlanner(){document.getElementById('plannerTermLabel').textContent=currentTerm;const grid=document.getElementById('plannerGrid');grid.innerHTML='';for(let w=1;w<=12;w++){const key=`${currentSubject}_${w}`;const note=lessonNotesMap[key];let cls='empty',label=`Week ${w}`;if(note?.status==='approved'||note?.teachable){cls='done';label+=' ✅';}else if(note?.status==='pending'){cls='pending';label+=' ⏳';}else if(note?.lessonNote){cls='pending';label+=' 📝';}grid.innerHTML+=`<div class="planner-week ${cls}" onclick="currentWeek=${w};document.getElementById('mainTabs').querySelector('[data-panel=lessonNotes]').click();selectWeek(${w});">${label}</div>`;}}
 
 // ============================================
 // REPORTS
 // ============================================
-function renderReportsPanel(){
-    var sel=document.getElementById('reportWeek');
-    var weekCount=getSyllabusWeekCount();
-    sel.innerHTML='';for(var w=1;w<=weekCount;w++){var o=document.createElement('option');o.value=w;o.textContent='Week '+w;sel.appendChild(o);}
-    document.getElementById('reportDate').value=new Date().toISOString().split('T')[0];
-    loadSubmittedReports();
-}
-document.getElementById('generateDailyReportBtn').addEventListener('click',function(){
-    var date=document.getElementById('reportDate').value||new Date().toISOString().split('T')[0];
-    var subjects=document.getElementById('reportDailySubjects').value.trim();
-    var notes=document.getElementById('reportDailyNotes').value.trim();
-    document.getElementById('dailyReportPreview').innerHTML='<div class="card" style="margin-top:0.5rem;background:var(--info-bg);"><h4>📅 Daily Report Preview — '+date+'</h4><p><strong>Subjects Taught:</strong><br>'+(subjects||'None listed')+'</p><p><strong>Notes:</strong><br>'+(notes||'None')+'</p></div>';
-});
-document.getElementById('submitDailyReportBtn').addEventListener('click',async function(){
-    var date=document.getElementById('reportDate').value;
-    var subjects=document.getElementById('reportDailySubjects').value.trim();
-    var notes=document.getElementById('reportDailyNotes').value.trim();
-    if(!date)return showToast('Error','Select a date','warning');
-    if(!subjects&&!notes)return showToast('Error','Fill in some details','warning');
-    await db.collection('dailyTeachingReports').add({teacherId:currentUser.uid,teacherName:(userData?userData.firstName||'':'')+' '+(userData?userData.surname||'':'').trim(),date:date,subjects:subjects,notes:notes,submittedAt:firebase.firestore.FieldValue.serverTimestamp(),term:currentTerm,academicYear:'2025/2026',status:'submitted'});
-    await addPoints(1,'Daily report submitted');showToast('Submitted','Daily report sent','success');
-    document.getElementById('reportDailySubjects').value='';document.getElementById('reportDailyNotes').value='';document.getElementById('dailyReportPreview').innerHTML='';loadSubmittedReports();
-});
-document.getElementById('generateWeeklyReportBtn').addEventListener('click',function(){
-    var week=parseInt(document.getElementById('reportWeek').value);
-    var notes=Object.values(lessonNotesMap).filter(function(n){return n.week==week&&n.subject&&(n.status==='approved'||n.teachable);});
-    document.getElementById('weeklyReportPreview').innerHTML=notes.length?'<div class="card" style="margin-top:0.5rem;background:var(--info-bg);"><h4>📊 Weekly Report Preview — Week '+week+'</h4><table><thead><tr><th>Subject</th><th>Topic</th><th>Class</th></tr></thead><tbody>'+notes.map(function(n){return '<tr><td>'+escapeHtml(n.subject)+'</td><td>'+escapeHtml(n.topic||'—')+'</td><td>'+escapeHtml(n.classId||currentClass)+'</td></tr>';}).join('')+'</tbody></table><p style="margin-top:0.5rem;"><strong>Total subjects taught:</strong> '+notes.length+' | <strong>Week:</strong> '+week+' | <strong>Term:</strong> '+currentTerm+'</p></div>':'<p>No approved lesson notes for this week.</p>';
-});
-document.getElementById('submitWeeklyReportBtn').addEventListener('click',async function(){
-    var week=parseInt(document.getElementById('reportWeek').value);
-    var notes=Object.values(lessonNotesMap).filter(function(n){return n.week==week&&(n.status==='approved'||n.teachable);});
-    if(!notes.length)return showToast('Error','No data for this week','error');
-    await db.collection('weeklyTeachingReports').add({teacherId:currentUser.uid,teacherName:(userData?userData.firstName||'':'')+' '+(userData?userData.surname||'':'').trim(),week:week,term:currentTerm,academicYear:'2025/2026',subjectsTaught:notes.map(function(n){return {subject:n.subject,topic:n.topic||'',classId:n.classId||currentClass};}),totalSubjects:notes.length,submittedAt:firebase.firestore.FieldValue.serverTimestamp(),status:'submitted'});
-    await addPoints(3,'Weekly report submitted');showToast('Submitted','Weekly report sent','success');
-    document.getElementById('weeklyReportPreview').innerHTML='';loadSubmittedReports();
-});
-async function loadSubmittedReports(){
-    var dailySnap=await db.collection('dailyTeachingReports').where('teacherId','==',currentUser.uid).orderBy('submittedAt','desc').limit(10).get();
-    var weeklySnap=await db.collection('weeklyTeachingReports').where('teacherId','==',currentUser.uid).orderBy('submittedAt','desc').limit(10).get();
-    var html='<h4 style="margin-top:1rem;">📅 Daily Reports</h4>';
-    html+=dailySnap.empty?'<p style="color:var(--text-muted);">No daily reports.</p>':dailySnap.docs.map(function(d){var r=d.data();return '<div class="card" style="padding:1rem;margin-bottom:0.5rem;"><strong>Daily — '+r.date+'</strong> <span class="status-badge status-draft">'+r.status+'</span><p>'+escapeHtml(r.subjects||'No subjects listed')+'</p></div>';}).join('');
-    html+='<h4 style="margin-top:1rem;">📊 Weekly Reports</h4>';
-    html+=weeklySnap.empty?'<p style="color:var(--text-muted);">No weekly reports.</p>':weeklySnap.docs.map(function(d){var r=d.data();return '<div class="card" style="padding:1rem;margin-bottom:0.5rem;"><strong>Week '+r.week+' — '+r.term+'</strong> <span class="status-badge status-draft">'+r.status+'</span><p>'+r.totalSubjects+' subjects taught</p></div>';}).join('');
-    document.getElementById('submittedReportsList').innerHTML=html;
-}
-
-// ============================================
-// TEACHER REQUESTS
-// ============================================
-function openTeacherRequestModal(){document.getElementById('teacherRequestModal').classList.add('active');document.getElementById('modalRequestDate').value=new Date().toISOString().split('T')[0];}
-function closeTeacherRequestModal(){document.getElementById('teacherRequestModal').classList.remove('active');}
-async function submitTeacherRequestFromModal(){
-    var type=document.getElementById('modalRequestType').value;
-    var date=document.getElementById('modalRequestDate').value;
-    var reason=document.getElementById('modalRequestReason').value.trim();
-    if(!type)return showToast('Error','Select request type','warning');
-    if(!date)return showToast('Error','Select a date','warning');
-    if(!reason)return showToast('Error','State your reason','warning');
-    await db.collection('teacherRequests').add({teacherId:currentUser.uid,teacherName:(userData?userData.firstName||'':'')+' '+(userData?userData.surname||'':'').trim(),type:type,date:date,reason:reason,status:'pending',submittedAt:firebase.firestore.FieldValue.serverTimestamp(),classId:currentClass});
-    await logAudit('TEACHER_REQUEST',type+': '+reason);showToast('Submitted','Request sent for admin approval','success');
-    closeTeacherRequestModal();document.getElementById('modalRequestType').value='';document.getElementById('modalRequestReason').value='';
-}
-async function submitTeacherRequest(){
-    var type=document.getElementById('requestType').value;
-    var date=document.getElementById('requestDate').value;
-    var reason=document.getElementById('requestReason').value.trim();
-    if(!type)return showToast('Error','Select request type','warning');
-    if(!date)return showToast('Error','Select a date','warning');
-    if(!reason)return showToast('Error','State your reason','warning');
-    await db.collection('teacherRequests').add({teacherId:currentUser.uid,teacherName:(userData?userData.firstName||'':'')+' '+(userData?userData.surname||'':'').trim(),type:type,date:date,reason:reason,status:'pending',submittedAt:firebase.firestore.FieldValue.serverTimestamp(),classId:currentClass});
-    await logAudit('TEACHER_REQUEST',type+': '+reason);showToast('Submitted','Request sent for admin approval','success');
-    document.getElementById('requestType').value='';document.getElementById('requestDate').value='';document.getElementById('requestReason').value='';renderRequestsPanel();
-}
-async function renderRequestsPanel(){
-    var snap=await db.collection('teacherRequests').where('teacherId','==',currentUser.uid).orderBy('submittedAt','desc').limit(20).get();
-    var typeLabels={absence:'Absence',late:'Coming Late',early:'Leaving Early',other:'Other'};
-    var typeClasses={absence:'absence',late:'late',early:'early',other:'other'};
-    document.getElementById('teacherRequestsList').innerHTML=snap.empty?'<p style="color:var(--text-muted);">No requests submitted.</p>':snap.docs.map(function(d){var r=d.data();return '<div class="request-card"><div style="display:flex;justify-content:space-between;align-items:start;flex-wrap:wrap;gap:0.5rem;"><div><span class="request-type '+(typeClasses[r.type]||'other')+'">'+(typeLabels[r.type]||r.type)+'</span><strong style="margin-left:0.5rem;">'+r.date+'</strong><span class="status-badge '+(r.status==='approved'?'status-approved':r.status==='rejected'?'status-rejected':'status-pending')+'">'+r.status+'</span></div></div><p style="font-size:0.85rem;margin-top:0.3rem;">'+escapeHtml(r.reason)+'</p>'+(r.adminNote?'<p style="font-size:0.75rem;color:var(--text-muted);"><strong>Admin Note:</strong> '+escapeHtml(r.adminNote)+'</p>':'')+'<div style="font-size:0.7rem;color:var(--text-muted);margin-top:0.3rem;">Submitted: '+new Date(r.submittedAt&&r.submittedAt.toDate?r.submittedAt.toDate():r.submittedAt).toLocaleString()+'</div></div>';}).join('');
-}
+function renderReportsPanel(){const sel=document.getElementById('reportWeek');sel.innerHTML='';for(let w=1;w<=12;w++){const o=document.createElement('option');o.value=w;o.textContent=`Week ${w}`;sel.appendChild(o);}loadSubmittedReports();}
+document.getElementById('generateReportBtn').addEventListener('click',()=>{const week=parseInt(document.getElementById('reportWeek').value);const notes=Object.values(lessonNotesMap).filter(n=>n.week==week&&n.subject&&(n.status==='approved'||n.teachable));document.getElementById('reportPreview').innerHTML=notes.length?`<table><thead><tr><th>Subject</th><th>Topic</th></tr></thead><tbody>${notes.map(n=>`<tr><td>${escapeHtml(n.subject)}</td><td>${escapeHtml(n.topic||'—')}</td></tr>`).join('')}</tbody></table><p style="margin-top:0.5rem;"><strong>Total:</strong> ${notes.length} | Week ${week} | ${currentTerm}</p>`:'<p>No approved notes for this week.</p>';});
+document.getElementById('submitReportBtn2').addEventListener('click',async()=>{const week=parseInt(document.getElementById('reportWeek').value);const notes=Object.values(lessonNotesMap).filter(n=>n.week==week&&(n.status==='approved'||n.teachable));if(!notes.length)return showToast('Error','No data','error');await db.collection('weeklyTeachingReports').add({teacherId:currentUser.uid,teacherName:`${userData.firstName||''} ${userData.surname||''}`.trim(),week,term:currentTerm,subjectsTaught:notes.map(n=>({subject:n.subject,topic:n.topic||''})),totalSubjects:notes.length,submittedAt:firebase.firestore.FieldValue.serverTimestamp(),status:'submitted'});await addPoints(3,'Report submitted');showToast('Submitted','Report sent','success');loadSubmittedReports();});
+async function loadSubmittedReports(){const snap=await db.collection('weeklyTeachingReports').where('teacherId','==',currentUser.uid).orderBy('submittedAt','desc').limit(20).get();document.getElementById('submittedReportsList').innerHTML=snap.empty?'<p>No reports.</p>':snap.docs.map(d=>{const r=d.data();return`<div class="card" style="padding:1rem;"><strong>Week ${r.week} — ${r.term}</strong> <span class="status-badge status-draft">${r.status}</span><p>${r.totalSubjects} subjects</p></div>`;}).join('');}
 
 // ============================================
 // INSIGHTS
 // ============================================
-function renderInsights(){
-    var history=userData&&userData.pointHistory||[];
-    document.getElementById('ratingHistory').innerHTML=history.length?history.slice().reverse().slice(0,10).map(function(h){return '<div style="padding:0.3rem 0;border-bottom:1px solid var(--border);font-size:0.8rem;"><strong>'+new Date(h.date).toLocaleDateString()+'</strong>: '+(h.points>0?'+':'')+h.points+' pts — '+escapeHtml(h.reason)+'</div>';}).join(''):'<p>No history.</p>';
-    var ctx=document.getElementById('pointsChart').getContext('2d');if(pointsChart)pointsChart.destroy();
-    var ptsArr=history.map(function(h){return h.newPoints;});var labels=history.map(function(h){return new Date(h.date).toLocaleDateString();});
-    pointsChart=new Chart(ctx,{type:'line',data:{labels:labels.length?labels:['Start'],datasets:[{label:'Points',data:ptsArr.length?ptsArr:[0],borderColor:'#C8963E',backgroundColor:'rgba(200,150,62,0.1)',fill:true,tension:0.4}]},options:{responsive:true,scales:{y:{beginAtZero:true}}}});
-    var pub=userData&&userData.publicProfile||{};
-    document.getElementById('publicPreview').innerHTML='<div style="display:flex;align-items:center;gap:1rem;"><div class="profile-pic" style="width:60px;height:60px;">'+(userData&&userData.photoURL?'<img src="'+userData.photoURL+'" style="width:100%;height:100%;object-fit:cover;border-radius:50%;">':(userData?userData.firstName?userData.firstName[0]:'T':'T')+(userData?userData.surname?userData.surname[0]:'E':'E'))+'</div><div><h3>'+(pub.name!==false?(userData?userData.firstName||'':'')+' '+(userData?userData.surname||'':'').trim():'Teacher')+'</h3><p>'+(userData?userData.post||'Teacher':'Teacher')+'</p></div></div><p><strong>Rating:</strong> '+(pub.rating!==false?'★'.repeat(Math.min(5,Math.floor((userData?userData.points||0:0)/100))):'Private')+'</p><p><strong>Published:</strong> '+Object.values(lessonNotesMap).filter(function(n){return n.teachable||n.resourcePublished;}).length+' resources</p>';
-}
+function renderInsights(){const history=userData?.pointHistory||[];document.getElementById('ratingHistory').innerHTML=history.length?history.slice().reverse().slice(0,10).map(h=>`<div style="padding:0.3rem 0;border-bottom:1px solid var(--border);font-size:0.8rem;"><strong>${new Date(h.date).toLocaleDateString()}</strong>: ${h.points>0?'+':''}${h.points} pts — ${escapeHtml(h.reason)}</div>`).join(''):'<p>No history.</p>';const ctx=document.getElementById('pointsChart').getContext('2d');if(pointsChart)pointsChart.destroy();const ptsArr=history.map(h=>h.newPoints);const labels=history.map(h=>new Date(h.date).toLocaleDateString());pointsChart=new Chart(ctx,{type:'line',data:{labels:labels.length?labels:['Start'],datasets:[{label:'Points',data:ptsArr.length?ptsArr:[0],borderColor:'#C8963E',backgroundColor:'rgba(200,150,62,0.1)',fill:true,tension:0.4}]},options:{responsive:true,scales:{y:{beginAtZero:true}}}});const pub=userData?.publicProfile||{};document.getElementById('publicPreview').innerHTML=`<div style="display:flex;align-items:center;gap:1rem;"><div class="profile-pic" style="width:60px;height:60px;">${userData?.photoURL?`<img src="${userData.photoURL}" style="width:100%;height:100%;object-fit:cover;border-radius:50%;">`:(userData?.firstName?.[0]||'T')+(userData?.surname?.[0]||'')}</div><div><h3>${pub.name!==false?`${userData?.firstName||''} ${userData?.surname||''}`.trim():'Teacher'}</h3><p>${userData?.post||'Teacher'}</p></div></div><p><strong>Rating:</strong> ${pub.rating!==false?'★'.repeat(Math.min(5,Math.floor((userData?.points||0)/100))):'Private'}</p><p><strong>Published:</strong> ${Object.values(lessonNotesMap).filter(n=>n.teachable||n.resourcePublished).length} resources</p>`;}
 
 // ============================================
 // PARENT PREVIEW
 // ============================================
-function openParentPreview(){
-    var content=quill.root.innerHTML;
-    document.getElementById('parentPreviewContent').innerHTML=content||'<p>No content to preview.</p>';
-    document.getElementById('parentPreviewModal').classList.add('active');
-}
+function openParentPreview(){const content=quill.root.innerHTML;document.getElementById('parentPreviewContent').innerHTML=content||'<p>No content.</p>';document.getElementById('parentPreviewModal').classList.add('active');}
 function closeParentPreview(){document.getElementById('parentPreviewModal').classList.remove('active');}
-
-// ============================================
-// EXPORT PDF
-// ============================================
 function exportToPDF(){window.print();}
 
 // ============================================
 // REALTIME LISTENERS
 // ============================================
-function setupRealtimeListeners(){
-    db.collection('lessonNotes').where('teacherId','==',currentUser.uid).onSnapshot(function(snap){
-        snap.docChanges().forEach(function(change){
-            if(change.type==='modified'){
-                var data=change.doc.data();
-                var old=lessonNotesMap[data.subject+'_'+data.week];
-                if(old&&old.status!==data.status){
-                    if(data.status==='approved')showToast('Approved!',data.subject+' Week '+data.week+' approved!','success',6000);
-                    else if(data.status==='rejected')showToast('Rejected',data.subject+' Week '+data.week+' rejected.','warning',6000);
-                }
-            }
-        });
-        loadAllData();
-    });
-    db.collection('teacherRequests').where('teacherId','==',currentUser.uid).onSnapshot(function(snap){
-        snap.docChanges().forEach(function(change){
-            if(change.type==='modified'){
-                var data=change.doc.data();
-                if(data.status==='approved')showToast('Request Approved!','Your '+data.type+' request for '+data.date+' has been approved.','success',6000);
-                else if(data.status==='rejected')showToast('Request Rejected','Your '+data.type+' request for '+data.date+' was rejected.','warning',6000);
-            }
-        });
-    });
-}
+function setupRealtimeListeners(){db.collection('lessonNotes').where('teacherId','==',currentUser.uid).onSnapshot(snap=>{snap.docChanges().forEach(change=>{if(change.type==='modified'){const data=change.doc.data();const old=lessonNotesMap[`${data.subject}_${data.week}`];if(old&&old.status!==data.status){if(data.status==='approved')showToast('Approved!',`${data.subject} Wk ${data.week} approved!`,'success',6000);else if(data.status==='rejected')showToast('Rejected',`${data.subject} Wk ${data.week} rejected.`,'warning',6000);}}});loadAllData();});}
 
 // ============================================
 // NOTIFICATIONS
@@ -1787,38 +1043,10 @@ async function loadNotifications(){document.getElementById('notifDot').classList
 function toggleNotifications(){loadNotifications();}
 
 // ============================================
-// AI EVENT LISTENERS
-// ============================================
-document.getElementById('aiSendBtn').addEventListener('click',sendAIMessage);
-document.getElementById('aiChatInput').addEventListener('keypress',function(e){if(e.key==='Enter')sendAIMessage();});
-document.getElementById('aiThinkBtn').addEventListener('click',function(){
-    this.classList.toggle('active');
-    this.innerHTML=this.classList.contains('active')?'<i class="fas fa-check"></i> Thinking Mode ON':'<i class="fas fa-brain"></i> Think';
-});
-document.getElementById('aiCopyToEditorBtn').addEventListener('click',function(){
-    if(lastGeneratedLessonNote){quill.setText(lastGeneratedLessonNote);showToast('Copied','AI content copied to Lesson Note Editor','success');closeAIAssistant();}
-    else showToast('Nothing','No AI content to copy. Generate content first.','warning');
-});
-document.getElementById('aiClearChatBtn').addEventListener('click',function(){
-    aiConversation=[];lastGeneratedLessonNote=null;
-    document.getElementById('aiChatHistory').innerHTML='<div class="ai-message assistant">Hello! I can help you create a complete lesson note.<br>Tell me the <strong>Subject, Class, Week, and Topic</strong>.</div>';
-});
-
-// Library sub-tab switching
-document.querySelector('#panel-library .sub-tabs')&&document.querySelector('#panel-library .sub-tabs').addEventListener('click',function(e){
-    var tab=e.target.closest('.sub-tab');if(!tab)return;
-    document.querySelectorAll('#panel-library .sub-tab').forEach(function(t){t.classList.remove('active');});
-    tab.classList.add('active');
-    renderLibrary();
-});
-
-// ============================================
 // INIT
 // ============================================
 document.getElementById('coPlanToggle').style.display='inline-flex';
 document.getElementById('coPlanBtn').style.display='inline-flex';
-document.getElementById('teacherRequestBtn').style.display='inline-flex';
-document.getElementById('submitEditorBtn').style.display='inline-block';
 
 // Export functions to window
 window.openAIAssistant=openAIAssistant;window.closeAIAssistant=closeAIAssistant;
@@ -1836,19 +1064,8 @@ window.publishNote=publishNote;window.importFromLibrary=importFromLibrary;
 window.renderCoTeacherList=renderCoTeacherList;window.toggleCoTeacher=toggleCoTeacher;
 window.removeCoTeacher=removeCoTeacher;window.onSubjectChange=onSubjectChange;
 window.onTermChange=onTermChange;
-window.openTeacherRequestModal=openTeacherRequestModal;window.closeTeacherRequestModal=closeTeacherRequestModal;
-window.submitTeacherRequest=submitTeacherRequest;window.submitTeacherRequestFromModal=submitTeacherRequestFromModal;
-window.removeHandwritingImage=removeHandwritingImage;
-window.toggleDebugPanel=toggleDebugPanel;
-window.runFullDebug=runFullDebug;
 
-console.log('📝 Teacher Lesson Notes — Full Featured Edition Ready');
-console.log('✅ AI Logic: Lesson Notes, Teaching Process, Student Resources, Handwriting');
-console.log('✅ Send for Approval button active');
-console.log('✅ Daily & Weekly Reports');
-console.log('✅ Dynamic Week Count from Syllabus');
-console.log('✅ Teacher Request System');
-console.log('🔍 AI Debug Panel — Click "AI Debug" button to diagnose AI issues');
+console.log('📝 Teacher Lesson Notes — AI Ready');
 </script>
 </body>
 </html>
