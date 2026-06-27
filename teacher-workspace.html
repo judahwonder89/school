@@ -4,260 +4,270 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=yes, viewport-fit=cover">
     <title>Judah Wonders Model School · Lesson Notes</title>
-    <!-- ... keep all existing CSS and head content ... -->
     
-    <!-- Add Debug Styles -->
+    <!-- Load Firebase with fallback and error detection -->
+    <script>
+        // Firebase loading tracker
+        window.firebaseLoadStatus = {
+            app: false,
+            auth: false,
+            firestore: false,
+            remoteConfig: false,
+            errors: []
+        };
+        
+        function onFirebaseScriptError(scriptName) {
+            window.firebaseLoadStatus.errors.push(`Failed to load: ${scriptName}`);
+            console.error(`❌ Firebase script failed to load: ${scriptName}`);
+            document.getElementById('debugContent')?.insertAdjacentHTML('beforeend', 
+                `<div class="debug-log error"><span class="debug-timestamp">[${new Date().toTimeString().split(' ')[0]}]</span> ❌ Failed to load: ${scriptName}</div>`);
+        }
+    </script>
+    
+    <!-- Firebase SDK with error handling -->
+    <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-app-compat.js" 
+            onerror="onFirebaseScriptError('firebase-app-compat.js')"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-auth-compat.js" 
+            onerror="onFirebaseScriptError('firebase-auth-compat.js')"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-firestore-compat.js" 
+            onerror="onFirebaseScriptError('firebase-firestore-compat.js')"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-remote-config-compat.js" 
+            onerror="onFirebaseScriptError('firebase-remote-config-compat.js')"></script>
+    
+    <!-- Groq SDK (for AI) -->
+    <script src="https://cdn.jsdelivr.net/npm/groq-sdk@0.5.0/dist/index.min.js" 
+            onerror="console.error('Failed to load Groq SDK')"></script>
+    
+    <!-- ... rest of your head content (CSS, other scripts) ... -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:opsz,wght@14..32,400;500;600;700;800&family=Playfair+Display:wght@600;700&family=Space+Grotesk:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <link href="https://cdn.quilljs.com/1.3.6/quill.snow.css" rel="stylesheet">
+    <script src="https://cdn.quilljs.com/1.3.6/quill.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    
     <style>
-        /* Debug Panel */
-        .debug-panel {
+        /* ... keep all your existing styles ... */
+        
+        /* Add critical warning banner */
+        .critical-warning {
             position: fixed;
-            bottom: 20px;
-            right: 20px;
-            z-index: 9999;
-            font-family: 'Courier New', monospace;
-        }
-        
-        .debug-toggle {
-            background: linear-gradient(135deg, #ff6b6b, #ee5a24);
-            color: white;
-            border: none;
-            border-radius: 50%;
-            width: 50px;
-            height: 50px;
-            cursor: pointer;
-            box-shadow: 0 4px 15px rgba(255,107,107,0.4);
-            font-size: 1.2rem;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            transition: transform 0.3s;
-        }
-        
-        .debug-toggle:hover {
-            transform: scale(1.1);
-        }
-        
-        .debug-toggle.active {
-            background: linear-gradient(135deg, #4ecb71, #2ecc71);
-        }
-        
-        .debug-window {
-            display: none;
-            position: fixed;
-            bottom: 80px;
-            right: 20px;
-            width: 380px;
-            max-width: 90vw;
-            max-height: 70vh;
-            background: rgba(15, 23, 42, 0.98);
-            backdrop-filter: blur(20px);
-            border: 1px solid rgba(255,255,255,0.1);
-            border-radius: 1rem;
-            box-shadow: 0 20px 60px rgba(0,0,0,0.5);
-            overflow: hidden;
-            z-index: 9998;
-            animation: slideUp 0.3s ease;
-        }
-        
-        @keyframes slideUp {
-            from { transform: translateY(20px); opacity: 0; }
-            to { transform: translateY(0); opacity: 1; }
-        }
-        
-        .debug-window.visible {
-            display: flex;
-            flex-direction: column;
-        }
-        
-        .debug-header {
-            padding: 0.8rem 1rem;
-            background: rgba(30, 41, 59, 0.9);
-            border-bottom: 1px solid rgba(255,255,255,0.1);
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            font-size: 0.8rem;
-            font-weight: 600;
-            color: #a0b3d9;
-        }
-        
-        .debug-content {
-            flex: 1;
-            overflow-y: auto;
-            padding: 1rem;
-            font-size: 0.75rem;
-            line-height: 1.6;
-        }
-        
-        .debug-content::-webkit-scrollbar {
-            width: 4px;
-        }
-        
-        .debug-content::-webkit-scrollbar-thumb {
-            background: rgba(255,255,255,0.2);
-            border-radius: 2px;
-        }
-        
-        .debug-log {
-            margin-bottom: 0.5rem;
-            padding: 0.4rem 0.5rem;
-            border-radius: 0.3rem;
-            border-left: 3px solid #666;
-            background: rgba(255,255,255,0.05);
-            word-wrap: break-word;
-        }
-        
-        .debug-log.info {
-            border-left-color: #3b82f6;
-            background: rgba(59,130,246,0.1);
-        }
-        
-        .debug-log.success {
-            border-left-color: #22c55e;
-            background: rgba(34,197,94,0.1);
-        }
-        
-        .debug-log.warning {
-            border-left-color: #f59e0b;
-            background: rgba(245,158,11,0.1);
-        }
-        
-        .debug-log.error {
-            border-left-color: #ef4444;
-            background: rgba(239,68,68,0.1);
-        }
-        
-        .debug-log.verbose {
-            border-left-color: #8b5cf6;
-            background: rgba(139,92,246,0.1);
-            font-size: 0.65rem;
-        }
-        
-        .debug-section {
-            margin-bottom: 0.8rem;
-            padding: 0.6rem;
-            border-radius: 0.5rem;
-            background: rgba(255,255,255,0.03);
-            border: 1px solid rgba(255,255,255,0.05);
-        }
-        
-        .debug-section h4 {
-            margin: 0 0 0.4rem 0;
-            font-size: 0.75rem;
-            color: #a0b3d9;
-            display: flex;
-            align-items: center;
-            gap: 0.3rem;
-        }
-        
-        .debug-status {
-            display: inline-block;
-            width: 8px;
-            height: 8px;
-            border-radius: 50%;
-            margin-right: 0.3rem;
-        }
-        
-        .debug-status.green { background: #22c55e; box-shadow: 0 0 6px #22c55e; }
-        .debug-status.yellow { background: #f59e0b; box-shadow: 0 0 6px #f59e0b; }
-        .debug-status.red { background: #ef4444; box-shadow: 0 0 6px #ef4444; }
-        .debug-status.gray { background: #666; }
-        
-        .debug-actions {
-            padding: 0.8rem 1rem;
-            border-top: 1px solid rgba(255,255,255,0.1);
-            display: flex;
-            gap: 0.5rem;
-            flex-wrap: wrap;
-        }
-        
-        .debug-actions button {
-            padding: 0.3rem 0.7rem;
-            border-radius: 1rem;
-            border: 1px solid rgba(255,255,255,0.2);
-            background: rgba(255,255,255,0.05);
-            color: #a0b3d9;
-            font-size: 0.7rem;
-            cursor: pointer;
-            transition: 0.2s;
-        }
-        
-        .debug-actions button:hover {
-            background: rgba(255,255,255,0.1);
-            border-color: #a0b3d9;
-        }
-        
-        .debug-actions button.clear-btn {
-            border-color: #ef4444;
-            color: #ef4444;
-        }
-        
-        .debug-count {
-            position: absolute;
-            top: -5px;
-            right: -5px;
+            top: 0;
+            left: 0;
+            right: 0;
             background: #ef4444;
             color: white;
-            border-radius: 50%;
-            width: 20px;
-            height: 20px;
-            font-size: 0.6rem;
+            padding: 12px 20px;
+            z-index: 10000;
+            text-align: center;
+            font-weight: 600;
+            font-size: 14px;
+            display: none;
+            box-shadow: 0 4px 12px rgba(239, 68, 68, 0.4);
+        }
+        
+        .critical-warning.show {
+            display: block;
+            animation: slideDown 0.3s ease;
+        }
+        
+        @keyframes slideDown {
+            from { transform: translateY(-100%); }
+            to { transform: translateY(0); }
+        }
+        
+        .loading-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: rgba(0,0,0,0.7);
+            z-index: 9999;
             display: flex;
             align-items: center;
             justify-content: center;
-            font-family: 'Courier New', monospace;
+            flex-direction: column;
+            gap: 1rem;
+            color: white;
+            font-family: 'Inter', sans-serif;
         }
         
-        .debug-timestamp {
-            color: #64748b;
-            font-size: 0.6rem;
+        .loading-spinner {
+            width: 50px;
+            height: 50px;
+            border: 4px solid rgba(255,255,255,0.3);
+            border-top-color: #C8963E;
+            border-radius: 50%;
+            animation: spin 0.8s linear infinite;
         }
         
-        .error-detail {
-            margin-top: 0.3rem;
-            padding: 0.4rem;
-            background: rgba(239,68,68,0.15);
-            border-radius: 0.3rem;
-            font-size: 0.65rem;
-            color: #f87171;
-            white-space: pre-wrap;
-            max-height: 100px;
-            overflow-y: auto;
+        @keyframes spin {
+            to { transform: rotate(360deg); }
         }
     </style>
 </head>
 <body>
-    <!-- ... keep all existing body content ... -->
-    
-    <!-- Add Debug Panel -->
-    <div class="debug-panel" id="debugPanel">
-        <button class="debug-toggle" id="debugToggle" onclick="toggleDebugWindow()">
-            🐛
-            <span class="debug-count" id="debugErrorCount" style="display:none;">0</span>
-        </button>
-        <div class="debug-window" id="debugWindow">
-            <div class="debug-header">
-                <span>🔍 Debug Console</span>
-                <span style="font-size:0.65rem;color:#64748b;" id="debugTime">00:00:00</span>
-            </div>
-            <div class="debug-content" id="debugContent">
-                <div class="debug-log info">
-                    <span class="debug-timestamp">[00:00:00]</span> Debug console initialized
-                </div>
-            </div>
-            <div class="debug-actions">
-                <button onclick="runDiagnostics()">🔬 Run Diagnostics</button>
-                <button onclick="testAIConnection()">🤖 Test AI</button>
-                <button onclick="testFirebaseConnection()">🔥 Test Firebase</button>
-                <button onclick="showEnvironmentInfo()">📋 Env Info</button>
-                <button class="clear-btn" onclick="clearDebugLogs()">🗑️ Clear</button>
-            </div>
-        </div>
+    <!-- Critical Warning Banner -->
+    <div class="critical-warning" id="criticalWarning">
+        ⚠️ <span id="criticalWarningText">Firebase failed to load</span> — 
+        <a href="javascript:location.reload()" style="color:white;text-decoration:underline;">Reload Page</a>
     </div>
-
+    
+    <!-- Loading Overlay -->
+    <div class="loading-overlay" id="loadingOverlay">
+        <div class="loading-spinner"></div>
+        <div id="loadingText">Loading Firebase...</div>
+        <div style="font-size:12px;opacity:0.7;" id="loadingDetail"></div>
+    </div>
+    
+    <!-- ... rest of your body content ... -->
+    
     <script>
         // ============================================
-        // DEBUG SYSTEM
+        // FIREBASE LOADING WITH RETRY LOGIC
+        // ============================================
+        (function checkFirebase() {
+            const maxRetries = 10;
+            const retryDelay = 2000; // 2 seconds
+            let retryCount = 0;
+            
+            function updateLoading(message, detail = '') {
+                const loadingText = document.getElementById('loadingText');
+                const loadingDetail = document.getElementById('loadingDetail');
+                if (loadingText) loadingText.textContent = message;
+                if (loadingDetail) loadingDetail.textContent = detail;
+                DebugSystem?.log(message, 'info');
+            }
+            
+            function showCriticalWarning(message) {
+                const warning = document.getElementById('criticalWarning');
+                const warningText = document.getElementById('criticalWarningText');
+                if (warning && warningText) {
+                    warningText.textContent = message;
+                    warning.classList.add('show');
+                }
+            }
+            
+            function hideLoading() {
+                const overlay = document.getElementById('loadingOverlay');
+                if (overlay) {
+                    overlay.style.opacity = '0';
+                    overlay.style.transition = 'opacity 0.5s';
+                    setTimeout(() => overlay.remove(), 500);
+                }
+            }
+            
+            async function attemptFirebaseInit() {
+                updateLoading(`Checking Firebase (attempt ${retryCount + 1}/${maxRetries})...`);
+                
+                // Check if Firebase SDKs loaded
+                if (typeof firebase === 'undefined') {
+                    throw new Error('Firebase not defined - SDK scripts may be blocked');
+                }
+                
+                if (typeof firebase.initializeApp === 'undefined') {
+                    throw new Error('Firebase app module not loaded');
+                }
+                
+                if (typeof firebase.auth === 'undefined') {
+                    throw new Error('Firebase auth module not loaded');
+                }
+                
+                if (typeof firebase.firestore === 'undefined') {
+                    throw new Error('Firebase firestore module not loaded');
+                }
+                
+                // All modules available, initialize
+                const firebaseConfig = {
+                    apiKey: "AIzaSyADXHEiaSQ146QsGsaOCElARtpwrLE8svs",
+                    authDomain: "judah-c737e.firebaseapp.com",
+                    projectId: "judah-c737e",
+                    storageBucket: "judah-c737e.firebasestorage.app",
+                    messagingSenderId: "739196063078",
+                    appId: "1:739196063078:web:c0ee1c1da2cc3794ca8ca7",
+                    measurementId: "G-YEM22F1C39"
+                };
+                
+                try {
+                    firebase.initializeApp(firebaseConfig);
+                    updateLoading('Firebase initialized successfully! ✅', 'Setting up services...');
+                    
+                    // Test the connection
+                    const db = firebase.firestore();
+                    db.enablePersistence({ synchronizeTabs: true }).catch(err => {
+                        if (err.code === 'failed-precondition') {
+                            console.warn('Multi-tab offline limited.');
+                        }
+                    });
+                    
+                    // Test write access
+                    await db.collection('_connection_test').doc('test').set({
+                        timestamp: firebase.firestore.FieldValue.serverTimestamp(),
+                        userAgent: navigator.userAgent
+                    });
+                    
+                    updateLoading('Firebase connection verified! ✅', 'Starting application...');
+                    hideLoading();
+                    
+                    // Initialize the debug system
+                    if (typeof DebugSystem !== 'undefined') {
+                        DebugSystem.log('✅ Firebase initialized and connected successfully', 'success');
+                    }
+                    
+                    return true;
+                    
+                } catch (initError) {
+                    throw new Error(`Firebase init failed: ${initError.message}`);
+                }
+            }
+            
+            async function retryInit() {
+                while (retryCount < maxRetries) {
+                    try {
+                        const success = await attemptFirebaseInit();
+                        if (success) return;
+                    } catch (error) {
+                        retryCount++;
+                        console.error(`Firebase init attempt ${retryCount} failed:`, error.message);
+                        
+                        if (retryCount >= maxRetries) {
+                            updateLoading('❌ Firebase failed to load after multiple attempts');
+                            showCriticalWarning(`Firebase failed: ${error.message}. Check your internet connection or try reloading.`);
+                            
+                            // Keep loading overlay but show retry button
+                            const overlay = document.getElementById('loadingOverlay');
+                            if (overlay) {
+                                overlay.innerHTML = `
+                                    <div style="color:#ef4444;font-size:2rem;">❌</div>
+                                    <div style="text-align:center;">
+                                        <h3>Connection Failed</h3>
+                                        <p style="font-size:14px;opacity:0.8;">${error.message}</p>
+                                        <p style="font-size:12px;opacity:0.6;">Check your internet connection or try:</p>
+                                        <button onclick="location.reload()" style="margin:10px;padding:10px 20px;background:#C8963E;color:white;border:none;border-radius:20px;cursor:pointer;font-size:14px;">
+                                            🔄 Reload Page
+                                        </button>
+                                        <br>
+                                        <a href="https://www.gstatic.com/firebasejs/9.22.0/firebase-app-compat.js" target="_blank" style="color:#93c5fd;font-size:11px;">
+                                            Test if Firebase CDN is accessible
+                                        </a>
+                                    </div>
+                                `;
+                            }
+                            return;
+                        }
+                        
+                        updateLoading(`Retrying... (${retryCount}/${maxRetries})`, `Error: ${error.message}`);
+                        await new Promise(resolve => setTimeout(resolve, retryDelay));
+                    }
+                }
+            }
+            
+            // Start the initialization
+            retryInit();
+        })();
+        
+        // ============================================
+        // ENHANCED DEBUG SYSTEM
         // ============================================
         const DebugSystem = {
             logs: [],
@@ -273,7 +283,7 @@
                     timeStr,
                     message,
                     type,
-                    data: data ? JSON.stringify(data, null, 2) : null
+                    data: data ? (typeof data === 'object' ? JSON.stringify(data, null, 2) : String(data)) : null
                 };
                 
                 this.logs.push(logEntry);
@@ -286,7 +296,6 @@
                 this.renderLog(logEntry);
                 this.updateTimeDisplay();
                 
-                // Also output to console for mobile debugging
                 const consoleMethod = type === 'error' ? 'error' : 
                                      type === 'warning' ? 'warn' : 
                                      type === 'success' ? 'log' : 'log';
@@ -300,10 +309,10 @@
                 const logDiv = document.createElement('div');
                 logDiv.className = `debug-log ${logEntry.type}`;
                 
-                let logHTML = `<span class="debug-timestamp">[${logEntry.timeStr}]</span> ${logEntry.message}`;
+                let logHTML = `<span class="debug-timestamp">[${logEntry.timeStr}]</span> ${escapeHtml(logEntry.message)}`;
                 
                 if (logEntry.data) {
-                    logHTML += `<div class="error-detail">${logEntry.data}</div>`;
+                    logHTML += `<div class="error-detail">${escapeHtml(logEntry.data)}</div>`;
                 }
                 
                 logDiv.innerHTML = logHTML;
@@ -338,518 +347,172 @@
                 this.updateErrorBadge();
             }
         };
-
-        // Override existing showToast to also log to debug
-        const originalShowToast = showToast;
-        showToast = function(title, msg, type = 'info', duration = 4000) {
-            DebugSystem.log(`Toast: ${title} - ${msg}`, type);
-            return originalShowToast(title, msg, type, duration);
-        };
-
-        // Override console.error to capture errors
-        const originalConsoleError = console.error;
-        console.error = function(...args) {
-            DebugSystem.log(args.join(' '), 'error');
-            originalConsoleError.apply(console, args);
-        };
-
-        // Override console.warn to capture warnings
-        const originalConsoleWarn = console.warn;
-        console.warn = function(...args) {
-            DebugSystem.log(args.join(' '), 'warning');
-            originalConsoleWarn.apply(console, args);
-        };
-
-        // Debug window toggle
-        function toggleDebugWindow() {
-            const window = document.getElementById('debugWindow');
-            const toggle = document.getElementById('debugToggle');
+        
+        // Helper for HTML escaping
+        function escapeHtml(s) {
+            const d = document.createElement('div');
+            d.textContent = s || '';
+            return d.innerHTML;
+        }
+        
+        function escapeAttr(s) {
+            return (s || '').replace(/"/g, '&quot;').replace(/'/g, '&#39;');
+        }
+        
+        // ============================================
+        // FIREBASE CONNECTION CHECKER
+        // ============================================
+        function checkFirebaseStatus() {
+            const status = {
+                firebaseLoaded: typeof firebase !== 'undefined',
+                firebaseInitialized: typeof firebase !== 'undefined' && firebase.apps && firebase.apps.length > 0,
+                authAvailable: typeof firebase !== 'undefined' && typeof firebase.auth === 'function',
+                firestoreAvailable: typeof firebase !== 'undefined' && typeof firebase.firestore === 'function',
+                remoteConfigAvailable: typeof firebase !== 'undefined' && typeof firebase.remoteConfig === 'function',
+                currentUser: null,
+                networkOnline: navigator.onLine,
+                errors: window.firebaseLoadStatus?.errors || []
+            };
             
-            if (window.classList.contains('visible')) {
-                window.classList.remove('visible');
-                toggle.classList.remove('active');
-            } else {
-                window.classList.add('visible');
-                toggle.classList.add('active');
-                DebugSystem.updateTimeDisplay();
+            DebugSystem.log('📊 Firebase Status Check:', 'info');
+            DebugSystem.log(`   SDK Loaded: ${status.firebaseLoaded ? '✅ Yes' : '❌ No'}`, status.firebaseLoaded ? 'success' : 'error');
+            DebugSystem.log(`   Initialized: ${status.firebaseInitialized ? '✅ Yes' : '❌ No'}`, status.firebaseInitialized ? 'success' : 'error');
+            DebugSystem.log(`   Auth: ${status.authAvailable ? '✅ Available' : '❌ Not available'}`, status.authAvailable ? 'success' : 'error');
+            DebugSystem.log(`   Firestore: ${status.firestoreAvailable ? '✅ Available' : '❌ Not available'}`, status.firestoreAvailable ? 'success' : 'error');
+            DebugSystem.log(`   Remote Config: ${status.remoteConfigAvailable ? '✅ Available' : '❌ Not available'}`, status.remoteConfigAvailable ? 'success' : 'error');
+            DebugSystem.log(`   Network: ${status.networkOnline ? '✅ Online' : '❌ Offline'}`, status.networkOnline ? 'success' : 'error');
+            
+            if (status.errors.length > 0) {
+                DebugSystem.log(`   Script Load Errors: ${status.errors.length}`, 'error');
+                status.errors.forEach(err => DebugSystem.log(`     - ${err}`, 'error'));
             }
+            
+            // Check if gstatic.com is accessible
+            DebugSystem.log('🔍 Testing CDN accessibility...', 'info');
+            fetch('https://www.gstatic.com/firebasejs/9.22.0/firebase-app-compat.js', { method: 'HEAD', mode: 'no-cors' })
+                .then(() => DebugSystem.log('   Firebase CDN: ✅ Accessible', 'success'))
+                .catch(() => DebugSystem.log('   Firebase CDN: ❌ BLOCKED - Check your network/firewall', 'error'));
+            
+            return status;
         }
-
-        // Clear debug logs
-        function clearDebugLogs() {
-            DebugSystem.clear();
-        }
-
-        // Run comprehensive diagnostics
+        
+        // Auto-check status after a delay (to allow Firebase to load)
+        setTimeout(checkFirebaseStatus, 5000);
+        setTimeout(checkFirebaseStatus, 15000);
+        
+        // ============================================
+        // FIXED DIAGNOSTICS
+        // ============================================
         async function runDiagnostics() {
             DebugSystem.log('========================================', 'info');
             DebugSystem.log('🔬 RUNNING COMPREHENSIVE DIAGNOSTICS', 'info');
             DebugSystem.log('========================================', 'info');
             
-            // Test 1: Check if Firebase is initialized
-            DebugSystem.log('Test 1: Firebase Initialization', 'verbose');
-            try {
-                if (typeof firebase !== 'undefined' && firebase.apps.length > 0) {
-                    DebugSystem.log('✅ Firebase is initialized', 'success');
-                    DebugSystem.log(`   App name: ${firebase.app().name}`, 'verbose');
-                } else {
-                    DebugSystem.log('❌ Firebase is NOT initialized', 'error');
-                }
-            } catch (e) {
-                DebugSystem.log(`❌ Firebase check failed: ${e.message}`, 'error', e);
-            }
-            
-            // Test 2: Check Firebase Auth
-            DebugSystem.log('Test 2: Firebase Authentication', 'verbose');
-            try {
-                if (typeof firebase !== 'undefined' && firebase.auth) {
-                    const user = firebase.auth().currentUser;
-                    if (user) {
-                        DebugSystem.log(`✅ User authenticated: ${user.email || user.uid}`, 'success');
-                        DebugSystem.log(`   UID: ${user.uid}`, 'verbose');
-                        DebugSystem.log(`   Email Verified: ${user.emailVerified}`, 'verbose');
-                    } else {
-                        DebugSystem.log('⚠️ No authenticated user found', 'warning');
-                    }
-                } else {
-                    DebugSystem.log('❌ Firebase Auth not available', 'error');
-                }
-            } catch (e) {
-                DebugSystem.log(`❌ Auth check failed: ${e.message}`, 'error', e);
-            }
-            
-            // Test 3: Check Firestore
-            DebugSystem.log('Test 3: Firestore Database', 'verbose');
-            try {
-                if (typeof firebase !== 'undefined' && firebase.firestore) {
-                    const db = firebase.firestore();
-                    await db.collection('lessonNotes').limit(1).get();
-                    DebugSystem.log('✅ Firestore is accessible', 'success');
-                } else {
-                    DebugSystem.log('❌ Firestore not available', 'error');
-                }
-            } catch (e) {
-                DebugSystem.log(`❌ Firestore check failed: ${e.message}`, 'error', e);
-                DebugSystem.log(`   Error code: ${e.code}`, 'error');
-                DebugSystem.log(`   This may indicate permission issues or network problems`, 'verbose');
-            }
-            
-            // Test 4: Check Groq API
-            DebugSystem.log('Test 4: Groq AI API', 'verbose');
-            if (typeof window.groq !== 'undefined' && window.groq !== null) {
-                DebugSystem.log('✅ Groq SDK is loaded', 'success');
+            // Test 1: Check if Firebase is defined
+            DebugSystem.log('Test 1: Firebase SDK Loading', 'verbose');
+            if (typeof firebase !== 'undefined') {
+                DebugSystem.log('✅ Firebase SDK is loaded', 'success');
                 
-                // Test actual API call
-                try {
-                    const testCompletion = await window.groq.chat.completions.create({
-                        messages: [
-                            { role: 'system', content: 'You are a helpful assistant. Reply with only "OK".' },
-                            { role: 'user', content: 'Test connection' }
-                        ],
-                        model: 'llama-3.3-70b-versatile',
-                        max_tokens: 10
-                    });
-                    
-                    if (testCompletion.choices && testCompletion.choices[0]) {
-                        DebugSystem.log('✅ Groq API test successful', 'success');
-                        DebugSystem.log(`   Response: "${testCompletion.choices[0].message.content}"`, 'verbose');
-                    } else {
-                        DebugSystem.log('⚠️ Groq API returned unexpected format', 'warning', testCompletion);
-                    }
-                } catch (apiError) {
-                    DebugSystem.log(`❌ Groq API call failed: ${apiError.message}`, 'error', apiError);
-                    
-                    // Detailed error analysis
-                    if (apiError.message.includes('401') || apiError.message.includes('Unauthorized')) {
-                        DebugSystem.log('   → API Key is invalid or expired', 'error');
-                        DebugSystem.log('   → Check remote config for groq_api_key', 'verbose');
-                    } else if (apiError.message.includes('429')) {
-                        DebugSystem.log('   → Rate limit exceeded', 'error');
-                        DebugSystem.log('   → Wait and try again later', 'verbose');
-                    } else if (apiError.message.includes('Network') || apiError.message.includes('fetch')) {
-                        DebugSystem.log('   → Network error - check internet connection', 'error');
-                    }
+                if (firebase.apps && firebase.apps.length > 0) {
+                    DebugSystem.log(`✅ Firebase is initialized (${firebase.apps.length} app(s))`, 'success');
+                } else {
+                    DebugSystem.log('⚠️ Firebase SDK loaded but NOT initialized', 'warning');
                 }
             } else {
-                DebugSystem.log('❌ Groq SDK is NOT loaded', 'error');
-                DebugSystem.log('   → Remote Config may not have fetched the API key', 'verbose');
-                DebugSystem.log('   → Check if Remote Config is working', 'verbose');
+                DebugSystem.log('❌ Firebase SDK is NOT loaded', 'error');
+                DebugSystem.log('   → Check if gstatic.com is accessible from your network', 'error');
+                DebugSystem.log('   → Try: https://www.gstatic.com/firebasejs/9.22.0/firebase-app-compat.js', 'verbose');
                 
-                // Check Remote Config
+                // Check network
+                if (!navigator.onLine) {
+                    DebugSystem.log('   → You are OFFLINE', 'error');
+                } else {
+                    DebugSystem.log('   → You are online but CDN may be blocked', 'error');
+                    DebugSystem.log('   → Check firewall, VPN, or mobile data restrictions', 'verbose');
+                }
+            }
+            
+            // Test 2: Check Groq SDK
+            DebugSystem.log('Test 2: Groq AI SDK', 'verbose');
+            if (typeof Groq !== 'undefined') {
+                DebugSystem.log('✅ Groq SDK is loaded', 'success');
+            } else {
+                DebugSystem.log('⚠️ Groq SDK not loaded (AI features will not work)', 'warning');
+                DebugSystem.log('   → Check if cdn.jsdelivr.net is accessible', 'verbose');
+            }
+            
+            // Test 3: Network diagnostics
+            DebugSystem.log('Test 3: Network Diagnostics', 'verbose');
+            DebugSystem.log(`   Online: ${navigator.onLine}`, navigator.onLine ? 'success' : 'error');
+            DebugSystem.log(`   Connection type: ${navigator.connection?.effectiveType || 'Unknown'}`, 'verbose');
+            DebugSystem.log(`   Downlink: ${navigator.connection?.downlink || 'Unknown'} Mbps`, 'verbose');
+            DebugSystem.log(`   RTT: ${navigator.connection?.rtt || 'Unknown'} ms`, 'verbose');
+            
+            // Test 4: Try to access Firebase directly
+            if (typeof firebase !== 'undefined') {
+                DebugSystem.log('Test 4: Firebase Services', 'verbose');
+                
                 try {
-                    const remoteConfig = firebase.remoteConfig();
-                    const key = remoteConfig.getString('groq_api_key');
-                    DebugSystem.log(`   Remote Config key exists: ${key && key.length > 0 ? 'Yes (length: ' + key.length + ')' : 'No'}`, 'verbose');
-                    if (!key || key.length === 0) {
-                        DebugSystem.log('   ❌ API key is missing from Remote Config!', 'error');
-                        DebugSystem.log('   → Admin needs to add groq_api_key to Firebase Remote Config', 'verbose');
-                    }
-                } catch (rcError) {
-                    DebugSystem.log(`   Remote Config check failed: ${rcError.message}`, 'error');
+                    const auth = firebase.auth();
+                    DebugSystem.log('   Auth service: ✅ Available', 'success');
+                } catch (e) {
+                    DebugSystem.log(`   Auth service: ❌ ${e.message}`, 'error');
+                }
+                
+                try {
+                    const db = firebase.firestore();
+                    DebugSystem.log('   Firestore service: ✅ Available', 'success');
+                } catch (e) {
+                    DebugSystem.log(`   Firestore service: ❌ ${e.message}`, 'error');
+                }
+                
+                try {
+                    const rc = firebase.remoteConfig();
+                    DebugSystem.log('   Remote Config service: ✅ Available', 'success');
+                } catch (e) {
+                    DebugSystem.log(`   Remote Config service: ❌ ${e.message}`, 'error');
                 }
             }
-            
-            // Test 5: Check Remote Config
-            DebugSystem.log('Test 5: Remote Config', 'verbose');
-            try {
-                const remoteConfig = firebase.remoteConfig();
-                const keys = ['groq_api_key', 'Judahimage'];
-                for (const key of keys) {
-                    try {
-                        const value = remoteConfig.getString(key);
-                        DebugSystem.log(`   ${key}: ${value && value.length > 0 ? '✅ Present (length: ' + value.length + ')' : '❌ Missing'}`, 
-                            value && value.length > 0 ? 'success' : 'error');
-                    } catch (e) {
-                        DebugSystem.log(`   ${key}: ❌ Error fetching - ${e.message}`, 'error');
-                    }
-                }
-            } catch (e) {
-                DebugSystem.log(`❌ Remote Config check failed: ${e.message}`, 'error');
-            }
-            
-            // Test 6: Check current state
-            DebugSystem.log('Test 6: Application State', 'verbose');
-            DebugSystem.log(`   Current User: ${currentUser ? '✅ ' + currentUser.uid : '❌ None'}`, 
-                currentUser ? 'success' : 'error');
-            DebugSystem.log(`   User Data: ${userData ? '✅ Loaded' : '❌ Not loaded'}`, 
-                userData ? 'success' : 'error');
-            DebugSystem.log(`   Current Class: ${currentClass || '❌ Not selected'}`, 
-                currentClass ? 'success' : 'warning');
-            DebugSystem.log(`   Current Subject: ${currentSubject || '❌ Not selected'}`, 
-                currentSubject ? 'success' : 'warning');
-            DebugSystem.log(`   Current Week: ${currentWeek || '❌ Not selected'}`, 
-                currentWeek ? 'success' : 'warning');
-            DebugSystem.log(`   Subjects Available: ${subjects.length}`, 'verbose');
-            DebugSystem.log(`   Online Status: ${navigator.onLine ? '✅ Online' : '⚠️ Offline'}`, 
-                navigator.onLine ? 'success' : 'warning');
-            DebugSystem.log(`   Lesson Notes in Memory: ${Object.keys(lessonNotesMap).length}`, 'verbose');
-            
-            // Test 7: Check browser compatibility
-            DebugSystem.log('Test 7: Browser Compatibility', 'verbose');
-            DebugSystem.log(`   User Agent: ${navigator.userAgent}`, 'verbose');
-            DebugSystem.log(`   Platform: ${navigator.platform}`, 'verbose');
-            DebugSystem.log(`   Language: ${navigator.language}`, 'verbose');
-            DebugSystem.log(`   Cookies Enabled: ${navigator.cookieEnabled}`, 'verbose');
-            DebugSystem.log(`   IndexedDB: ${window.indexedDB ? '✅ Supported' : '❌ Not supported'}`, 
-                window.indexedDB ? 'success' : 'error');
             
             DebugSystem.log('========================================', 'info');
             DebugSystem.log('✅ DIAGNOSTICS COMPLETE', 'success');
             DebugSystem.log('========================================', 'info');
+            DebugSystem.log('💡 TIP: If Firebase SDK is NOT loaded, check:', 'info');
+            DebugSystem.log('   1. Your internet connection', 'info');
+            DebugSystem.log('   2. If gstatic.com is blocked by your ISP', 'info');
+            DebugSystem.log('   3. If you have a firewall/VPN blocking CDN scripts', 'info');
+            DebugSystem.log('   4. Try using WiFi instead of mobile data', 'info');
         }
-
-        // Test AI Connection specifically
-        async function testAIConnection() {
-            DebugSystem.log('🤖 Testing AI Connection...', 'info');
-            
-            // Check Remote Config first
-            try {
-                const remoteConfig = firebase.remoteConfig();
-                await remoteConfig.fetchAndActivate();
-                const key = remoteConfig.getString('groq_api_key');
-                
-                if (!key || key.length === 0) {
-                    DebugSystem.log('❌ No API key found in Remote Config', 'error');
-                    DebugSystem.log('   → Admin needs to set groq_api_key in Firebase Remote Config', 'error');
-                    DebugSystem.log('   → Go to Firebase Console > Remote Config > Add parameter "groq_api_key"', 'verbose');
-                    return;
-                }
-                
-                DebugSystem.log('✅ API key found in Remote Config', 'success');
-                
-                // Initialize Groq
-                if (typeof Groq === 'undefined') {
-                    DebugSystem.log('❌ Groq SDK not loaded', 'error');
-                    DebugSystem.log('   → Check if CDN is accessible', 'verbose');
-                    DebugSystem.log('   → Try adding: <script src="https://cdn.jsdelivr.net/npm/groq-sdk@0.5.0/dist/index.min.js">', 'verbose');
-                    return;
-                }
-                
-                const groq = new Groq({
-                    apiKey: key,
-                    dangerouslyAllowBrowser: true
-                });
-                
-                DebugSystem.log('✅ Groq SDK initialized', 'success');
-                
-                // Test API call
-                DebugSystem.log('🔄 Making test API call...', 'info');
-                const completion = await groq.chat.completions.create({
-                    messages: [
-                        { role: 'system', content: 'Reply with only "AI is working!" if you can read this.' },
-                        { role: 'user', content: 'Test' }
-                    ],
-                    model: 'llama-3.3-70b-versatile',
-                    max_tokens: 20,
-                    temperature: 0
-                });
-                
-                const response = completion.choices[0].message.content;
-                DebugSystem.log(`✅ AI Response: "${response}"`, 'success');
-                DebugSystem.log('✅ AI connection is working properly!', 'success');
-                showToast('AI Test', 'AI is working correctly!', 'success');
-                
-            } catch (error) {
-                DebugSystem.log(`❌ AI test failed: ${error.message}`, 'error');
-                
-                // Detailed error analysis
-                if (error.message.includes('401') || error.message.includes('Unauthorized')) {
-                    DebugSystem.log('   → API Key is invalid or expired', 'error');
-                    DebugSystem.log('   → Generate a new key at https://console.groq.com/keys', 'verbose');
-                } else if (error.message.includes('429')) {
-                    DebugSystem.log('   → Rate limit exceeded', 'error');
-                    DebugSystem.log('   → Free tier: 30 requests/min, 14,400 requests/day', 'verbose');
-                } else if (error.message.includes('fetch')) {
-                    DebugSystem.log('   → Network error', 'error');
-                    DebugSystem.log('   → Check if api.groq.com is accessible', 'verbose');
-                }
-                
-                DebugSystem.log('Full error details:', 'error', error);
-            }
-        }
-
-        // Test Firebase Connection specifically
-        async function testFirebaseConnection() {
-            DebugSystem.log('🔥 Testing Firebase Connection...', 'info');
-            
-            try {
-                // Test Auth
-                const user = firebase.auth().currentUser;
-                if (user) {
-                    DebugSystem.log(`✅ Auth: Logged in as ${user.email || user.uid}`, 'success');
-                } else {
-                    DebugSystem.log('⚠️ Auth: Not logged in', 'warning');
-                }
-                
-                // Test Firestore Write (to a test collection)
-                const testDoc = await db.collection('_debug_tests').add({
-                    timestamp: firebase.firestore.FieldValue.serverTimestamp(),
-                    userAgent: navigator.userAgent,
-                    test: 'connection_test'
-                });
-                
-                DebugSystem.log(`✅ Firestore Write: Document ${testDoc.id} created`, 'success');
-                
-                // Test Firestore Read
-                const readDoc = await db.collection('_debug_tests').doc(testDoc.id).get();
-                if (readDoc.exists) {
-                    DebugSystem.log('✅ Firestore Read: Document retrieved successfully', 'success');
-                    DebugSystem.log(`   Data: ${JSON.stringify(readDoc.data())}`, 'verbose');
-                }
-                
-                // Clean up test document
-                await db.collection('_debug_tests').doc(testDoc.id).delete();
-                DebugSystem.log('✅ Cleanup: Test document deleted', 'success');
-                
-                // Test specific collections
-                const collections = ['lessonNotes', 'users', 'syllabi', 'teacherRequests'];
-                for (const col of collections) {
-                    try {
-                        const snap = await db.collection(col).limit(1).get();
-                        DebugSystem.log(`   Collection '${col}': ${snap.size} documents accessible`, 'success');
-                    } catch (colError) {
-                        DebugSystem.log(`   Collection '${col}': ❌ ${colError.message}`, 'error');
-                    }
-                }
-                
-                DebugSystem.log('✅ Firebase connection test complete', 'success');
-                showToast('Firebase Test', 'Firebase is working correctly!', 'success');
-                
-            } catch (error) {
-                DebugSystem.log(`❌ Firebase test failed: ${error.message}`, 'error');
-                DebugSystem.log(`   Error code: ${error.code || 'Unknown'}`, 'error');
-                
-                if (error.code === 'permission-denied') {
-                    DebugSystem.log('   → Firestore security rules are blocking access', 'error');
-                    DebugSystem.log('   → Check your Firestore rules in Firebase Console', 'verbose');
-                } else if (error.code === 'unavailable') {
-                    DebugSystem.log('   → Firebase services are temporarily unavailable', 'error');
-                    DebugSystem.log('   → Check https://status.firebase.google.com/', 'verbose');
-                }
-            }
-        }
-
-        // Show environment information
-        function showEnvironmentInfo() {
-            DebugSystem.log('📋 Environment Information', 'info');
-            
-            const info = {
-                'Browser': navigator.userAgent,
-                'Platform': navigator.platform,
-                'Language': navigator.language,
-                'Online': navigator.onLine,
-                'Screen': `${window.screen.width}x${window.screen.height}`,
-                'Viewport': `${window.innerWidth}x${window.innerHeight}`,
-                'Device Pixel Ratio': window.devicePixelRatio,
-                'Cookies Enabled': navigator.cookieEnabled,
-                'Do Not Track': navigator.doNotTrack,
-                'Memory': navigator.deviceMemory ? `${navigator.deviceMemory}GB` : 'Unknown',
-                'Connection': navigator.connection ? navigator.connection.effectiveType : 'Unknown',
-                'IndexedDB': !!window.indexedDB,
-                'LocalStorage': !!window.localStorage,
-                'SessionStorage': !!window.sessionStorage,
-                'ServiceWorker': 'serviceWorker' in navigator,
-                'WebSocket': 'WebSocket' in window,
-                'Fetch API': 'fetch' in window
-            };
-            
-            for (const [key, value] of Object.entries(info)) {
-                DebugSystem.log(`   ${key}: ${value}`, 'verbose');
-            }
-            
-            // Firebase info
-            if (typeof firebase !== 'undefined') {
-                DebugSystem.log('Firebase Info:', 'info');
-                DebugSystem.log(`   Apps: ${firebase.apps.length}`, 'verbose');
-                DebugSystem.log(`   SDK Version: ${firebase.SDK_VERSION || 'Unknown'}`, 'verbose');
-                DebugSystem.log(`   Auth: ${firebase.auth ? 'Available' : 'Not available'}`, 'verbose');
-                DebugSystem.log(`   Firestore: ${firebase.firestore ? 'Available' : 'Not available'}`, 'verbose');
-                DebugSystem.log(`   Remote Config: ${firebase.remoteConfig ? 'Available' : 'Not available'}`, 'verbose');
-            }
-            
-            DebugSystem.log('✅ Environment info displayed', 'success');
-        }
-
-        // Enhanced AI generation with detailed error logging
-        const originalGenerateAI = generateAI;
-        generateAI = async function(prompt, role = '') {
-            DebugSystem.log('🤖 AI Generation Requested', 'info');
-            DebugSystem.log(`   Prompt length: ${prompt.length} characters`, 'verbose');
-            DebugSystem.log(`   First 100 chars: "${prompt.substring(0, 100)}..."`, 'verbose');
-            
-            try {
-                if (!window.groq) {
-                    const error = new Error('Groq SDK not initialized');
-                    DebugSystem.log('❌ Groq SDK not available', 'error');
-                    DebugSystem.log('   → Attempting to re-initialize from Remote Config...', 'verbose');
-                    
-                    // Try to re-initialize
-                    try {
-                        const remoteConfig = firebase.remoteConfig();
-                        await remoteConfig.fetchAndActivate();
-                        const key = remoteConfig.getString('groq_api_key');
-                        if (key && key.length > 0) {
-                            window.groq = new Groq({
-                                apiKey: key,
-                                dangerouslyAllowBrowser: true
-                            });
-                            DebugSystem.log('✅ Groq SDK re-initialized successfully', 'success');
-                        } else {
-                            DebugSystem.log('❌ Still no API key available', 'error');
-                            throw error;
-                        }
-                    } catch (reinitError) {
-                        DebugSystem.log(`❌ Re-initialization failed: ${reinitError.message}`, 'error');
-                        throw error;
-                    }
-                }
-                
-                DebugSystem.log('🔄 Sending request to Groq API...', 'info');
-                const startTime = Date.now();
-                
-                const result = await originalGenerateAI(prompt, role);
-                
-                const duration = Date.now() - startTime;
-                DebugSystem.log(`✅ AI Response received in ${duration}ms`, 'success');
-                DebugSystem.log(`   Response length: ${result.length} characters`, 'verbose');
-                DebugSystem.log(`   First 100 chars: "${result.substring(0, 100)}..."`, 'verbose');
-                
-                return result;
-                
-            } catch (error) {
-                const duration = Date.now() - (window._aiStartTime || Date.now());
-                DebugSystem.log(`❌ AI Generation failed after ${duration}ms: ${error.message}`, 'error');
-                
-                // Detailed error analysis
-                if (error.message.includes('401')) {
-                    DebugSystem.log('   → API key is invalid', 'error');
-                } else if (error.message.includes('403')) {
-                    DebugSystem.log('   → Access forbidden - check API key permissions', 'error');
-                } else if (error.message.includes('429')) {
-                    DebugSystem.log('   → Rate limit exceeded - too many requests', 'error');
-                } else if (error.message.includes('500')) {
-                    DebugSystem.log('   → Server error - Groq may be experiencing issues', 'error');
-                } else if (error.message.includes('Network') || error.message.includes('fetch')) {
-                    DebugSystem.log('   → Network error - check internet connection', 'error');
-                } else if (error.message.includes('timeout')) {
-                    DebugSystem.log('   → Request timed out', 'error');
-                }
-                
-                DebugSystem.log('Full error:', 'error', error);
-                throw error;
+        
+        // Export functions
+        window.toggleDebugWindow = function() {
+            const debugWindow = document.getElementById('debugWindow');
+            const toggle = document.getElementById('debugToggle');
+            if (debugWindow.classList.contains('visible')) {
+                debugWindow.classList.remove('visible');
+                toggle.classList.remove('active');
+            } else {
+                debugWindow.classList.add('visible');
+                toggle.classList.add('active');
+                DebugSystem.updateTimeDisplay();
             }
         };
-
-        // Enhanced Firebase operations with debug logging
-        const dbAdd = db.collection.bind(db);
-        const originalCollection = db.collection;
-        db.collection = function(collectionName) {
-            DebugSystem.log(`📝 Firestore: Accessing collection '${collectionName}'`, 'verbose');
-            return originalCollection.call(db, collectionName);
-        };
-
-        // Log when lesson notes are saved
-        const originalSaveHandler = document.getElementById('saveEditorBtn')?.onclick;
-        if (document.getElementById('saveEditorBtn')) {
-            document.getElementById('saveEditorBtn').addEventListener('click', function(e) {
-                DebugSystem.log('💾 Save button clicked', 'info');
-                DebugSystem.log(`   Subject: ${currentSubject || 'Not selected'}`, 'verbose');
-                DebugSystem.log(`   Week: ${currentWeek || 'Not selected'}`, 'verbose');
-                DebugSystem.log(`   Content length: ${quill.getText().length} chars`, 'verbose');
-            }, true);
-        }
-
-        // Log when lesson notes are submitted
-        if (document.getElementById('submitEditorBtn')) {
-            document.getElementById('submitEditorBtn').addEventListener('click', function(e) {
-                DebugSystem.log('📤 Submit button clicked', 'info');
-                DebugSystem.log(`   Subject: ${currentSubject || 'Not selected'}`, 'verbose');
-                DebugSystem.log(`   Week: ${currentWeek || 'Not selected'}`, 'verbose');
-                DebugSystem.log(`   Word count: ${quill.getText().trim().split(/\s+/).length}`, 'verbose');
-            }, true);
-        }
-
-        // Initialize debug system
+        window.runDiagnostics = runDiagnostics;
+        window.clearDebugLogs = () => DebugSystem.clear();
+        window.checkFirebaseStatus = checkFirebaseStatus;
+        
+        // Initialize debug
         DebugSystem.log('🐛 Debug system initialized', 'success');
         DebugSystem.log('Click the 🐛 button to open debug panel', 'info');
-        DebugSystem.log('Use the buttons below to test different components', 'info');
-
-        // Auto-run quick diagnostics on load
+        DebugSystem.log(`Network: ${navigator.onLine ? 'Online' : 'OFFLINE'}`, navigator.onLine ? 'success' : 'error');
+        
+        // Auto-check Firebase after delay
         setTimeout(() => {
-            DebugSystem.log('Running auto-diagnostics...', 'info');
-            
-            // Quick checks
-            DebugSystem.log(`Online: ${navigator.onLine ? '✅ Yes' : '❌ No'}`, navigator.onLine ? 'success' : 'error');
-            DebugSystem.log(`Firebase: ${typeof firebase !== 'undefined' ? '✅ Loaded' : '❌ Not loaded'}`, 
-                typeof firebase !== 'undefined' ? 'success' : 'error');
-            DebugSystem.log(`User: ${currentUser ? '✅ ' + currentUser.uid : '❌ Not authenticated'}`, 
-                currentUser ? 'success' : 'error');
-            DebugSystem.log(`Groq SDK: ${typeof window.groq !== 'undefined' && window.groq ? '✅ Loaded' : '❌ Not loaded'}`, 
-                typeof window.groq !== 'undefined' && window.groq ? 'success' : 'error');
-            DebugSystem.log(`Subjects: ${subjects.length} loaded`, 'info');
-            
-            if (!navigator.onLine) {
-                DebugSystem.log('⚠️ You are offline! AI features require internet connection.', 'warning');
-            }
-            
-            if (typeof window.groq === 'undefined' || !window.groq) {
-                DebugSystem.log('⚠️ Groq SDK not loaded! AI will not work.', 'warning');
-                DebugSystem.log('Possible causes:', 'verbose');
-                DebugSystem.log('   1. Remote Config not fetched yet', 'verbose');
-                DebugSystem.log('   2. groq_api_key not set in Firebase Remote Config', 'verbose');
-                DebugSystem.log('   3. Groq SDK script not loaded from CDN', 'verbose');
-            }
-        }, 2000);
-
-        // Export debug functions to window
-        window.toggleDebugWindow = toggleDebugWindow;
-        window.runDiagnostics = runDiagnostics;
-        window.testAIConnection = testAIConnection;
-        window.testFirebaseConnection = testFirebaseConnection;
-        window.showEnvironmentInfo = showEnvironmentInfo;
-        window.clearDebugLogs = clearDebugLogs;
-
-        // ... rest of your existing JavaScript code ...
+            DebugSystem.log('Running auto-check...', 'info');
+            checkFirebaseStatus();
+        }, 3000);
+        
+        console.log('✅ Debug and Firebase loader initialized');
     </script>
 </body>
 </html>
