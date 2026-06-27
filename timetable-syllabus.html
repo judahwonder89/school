@@ -26,7 +26,7 @@
             --published-text:#16a34a; --rejected-text:#b91c1c;
             --tt-header-bg:#0A2540; --tt-header-text:#ffffff;
             --tt-day-bg:rgba(200,150,62,0.15); --tt-day-text:#b8860b;
-            --tt-cell-bg:#ffffff; --tt-border:#e2e8f0;
+            --tt-cell-bg:#ffffff;
         }
         :root[data-theme="dark"] {
             --bg-primary:#0a0f1e; --bg-surface:rgba(15,23,42,0.85); --text-primary:#f0f4fa;
@@ -44,7 +44,7 @@
             --published-text:#4ade80; --rejected-text:#f87171;
             --tt-header-bg:#0A2540; --tt-header-text:#ffffff;
             --tt-day-bg:rgba(200,150,62,0.2); --tt-day-text:#D4AF37;
-            --tt-cell-bg:rgba(30,41,59,0.6); --tt-border:rgba(255,255,255,0.08);
+            --tt-cell-bg:rgba(30,41,59,0.6);
         }
         body { font-family:'Inter',sans-serif; background:var(--bg-primary); color:var(--text-primary); min-height:100vh; display:flex; position:relative; overflow-x:hidden; transition:background 0.3s; }
         .bg-logo { position:fixed; top:50%; left:50%; transform:translate(-50%,-50%); width:400px; max-width:70vw; opacity:0.03; pointer-events:none; z-index:0; animation:breathe 6s ease-in-out infinite; }
@@ -78,7 +78,6 @@
         .page-title p { color:var(--text-secondary); font-size:0.85rem; }
         .profile-area { display:flex; align-items:center; gap:1rem; }
         .theme-toggle { background:var(--card-bg); border:1px solid var(--border); border-radius:2rem; padding:0.4rem 1rem; display:flex; align-items:center; gap:0.4rem; cursor:pointer; color:var(--text-secondary); font-size:0.8rem; }
-        .theme-toggle:hover { border-color:var(--accent); }
         .profile-pic { width:38px; height:38px; border-radius:50%; background:linear-gradient(135deg,var(--gradient-start),var(--gradient-end)); display:flex; align-items:center; justify-content:center; color:white; font-weight:600; font-size:0.9rem; overflow:hidden; }
         .profile-pic img { width:100%; height:100%; object-fit:cover; border-radius:50%; }
         .dropdown-menu { position:absolute; right:0; top:50px; background:var(--card-bg); border:1px solid var(--border); border-radius:1rem; padding:0.4rem; min-width:160px; display:none; z-index:1000; box-shadow:var(--shadow-lg); }
@@ -91,7 +90,6 @@
 
         .controls-bar { display:flex; gap:0.8rem; margin-bottom:1.5rem; flex-wrap:wrap; align-items:center; background:var(--card-bg); border:1px solid var(--border); border-radius:1.5rem; padding:0.8rem 1.2rem; box-shadow:var(--shadow); }
         .controls-bar select { padding:0.5rem 1rem; background:var(--input-bg); border:2px solid var(--border); border-radius:2rem; color:var(--text-primary); font-family:inherit; font-size:0.85rem; cursor:pointer; min-width:160px; }
-        .controls-bar select:focus { outline:none; border-color:var(--accent); }
 
         .main-tabs { display:flex; gap:0.4rem; margin-bottom:1.5rem; background:var(--card-bg); border:1px solid var(--border); border-radius:1.5rem; padding:0.4rem; overflow-x:auto; box-shadow:var(--shadow); }
         .main-tab-btn { padding:0.7rem 1.5rem; border-radius:1.25rem; border:none; background:transparent; color:var(--text-secondary); cursor:pointer; font-weight:600; font-size:0.85rem; white-space:nowrap; display:flex; align-items:center; gap:0.5rem; font-family:inherit; transition:all 0.3s; }
@@ -114,7 +112,7 @@
 
         .card { background:var(--card-bg); border:1px solid var(--border); border-radius:1.5rem; padding:1.5rem; box-shadow:var(--shadow); margin-bottom:1rem; }
         .card-header { display:flex; justify-content:space-between; align-items:center; margin-bottom:1rem; flex-wrap:wrap; gap:0.5rem; padding-bottom:0.8rem; border-bottom:1px solid var(--border); }
-        .card-header h3 { font-size:1.05rem; font-weight:700; display:flex; align-items:center; gap:0.5rem; }
+        .card-header h3 { font-size:1.05rem; font-weight:700; }
 
         .badge { padding:0.2rem 0.7rem; border-radius:2rem; font-size:0.7rem; font-weight:700; display:inline-flex; align-items:center; gap:0.3rem; }
         .badge-draft { background:rgba(100,116,139,0.2); color:var(--draft-text); }
@@ -135,7 +133,7 @@
 
         .tt-wrapper { overflow-x:auto; border-radius:1rem; border:1px solid var(--border); }
         .tt-table { width:100%; border-collapse:collapse; min-width:600px; }
-        .tt-table th, .tt-table td { border:1px solid var(--tt-border); padding:0.5rem 0.4rem; text-align:center; font-size:0.75rem; vertical-align:middle; }
+        .tt-table th, .tt-table td { border:1px solid var(--border); padding:0.5rem 0.4rem; text-align:center; font-size:0.75rem; vertical-align:middle; }
         .tt-table thead th { background:var(--tt-header-bg); color:var(--tt-header-text); font-weight:700; font-size:0.7rem; text-transform:uppercase; position:sticky; top:0; z-index:2; }
         .tt-table thead th:first-child { min-width:90px; }
         .tt-table tbody td:first-child { background:var(--tt-day-bg); color:var(--tt-day-text); font-weight:700; font-size:0.72rem; min-width:90px; position:sticky; left:0; z-index:1; }
@@ -157,8 +155,8 @@
         @keyframes slideUp { from{transform:translateY(30px);opacity:0} to{transform:translateY(0);opacity:1} }
         .modal-header { display:flex; justify-content:space-between; align-items:center; margin-bottom:1rem; padding-bottom:1rem; border-bottom:1px solid var(--border); }
         .modal-header h3 { font-size:1.1rem; font-weight:700; }
-        .modal-close { cursor:pointer; font-size:1.3rem; color:var(--text-secondary); padding:0.3rem; border-radius:0.5rem; }
-        .modal-close:hover { color:var(--danger-text); background:var(--danger-bg); }
+        .modal-close { cursor:pointer; font-size:1.3rem; color:var(--text-secondary); }
+        .modal-close:hover { color:var(--danger-text); }
         .modal-actions { display:flex; gap:1rem; justify-content:flex-end; margin-top:1.5rem; padding-top:1rem; border-top:1px solid var(--border); }
         .form-group { margin-bottom:1rem; }
         .form-group label { display:block; margin-bottom:0.3rem; color:var(--text-secondary); font-weight:600; font-size:0.85rem; }
@@ -175,7 +173,7 @@
         .checkbox-item { display:flex; align-items:center; gap:0.4rem; cursor:pointer; padding:0.3rem 0.7rem; border:1px solid var(--border); border-radius:2rem; font-size:0.75rem; background:var(--input-bg); user-select:none; }
         .checkbox-item:hover { border-color:var(--accent); }
         .checkbox-item input[type="checkbox"] { display:none; }
-        .checkbox-item.checked { background:var(--success-bg); border-color:var(--success-border,var(--success-text)); color:var(--success-text); font-weight:600; }
+        .checkbox-item.checked { background:var(--success-bg); color:var(--success-text); font-weight:600; }
 
         .teacher-list-item { display:flex; align-items:center; gap:0.8rem; padding:0.6rem 0.8rem; border-radius:0.8rem; cursor:pointer; }
         .teacher-list-item:hover { background:var(--hover-bg); }
@@ -198,15 +196,14 @@
         .contributor-tag { font-size:0.65rem; padding:0.1rem 0.5rem; border-radius:1rem; background:var(--info-bg); color:var(--info-text); }
         .admin-feedback { background:var(--warning-bg); border-left:3px solid var(--warning-text); padding:0.5rem 0.8rem; border-radius:0.5rem; font-size:0.8rem; margin-top:0.5rem; }
 
-        .debug-panel { position:fixed; bottom:80px; right:1rem; z-index:9999; background:#0a0f1e; border:1px solid #C8963E; border-radius:1rem; padding:1rem; width:450px; max-width:calc(100vw - 2rem); max-height:60vh; overflow-y:auto; box-shadow:0 10px 40px rgba(0,0,0,0.8); font-family:'Space Grotesk',monospace; font-size:0.7rem; display:none; }
+        .debug-panel { position:fixed; bottom:80px; right:1rem; z-index:9999; background:#0a0f1e; border:1px solid #C8963E; border-radius:1rem; padding:1rem; width:420px; max-width:calc(100vw-2rem); max-height:55vh; overflow-y:auto; font-family:'Space Grotesk',monospace; font-size:0.68rem; display:none; }
         .debug-panel.show { display:block; }
         .debug-panel h4 { color:#C8963E; margin-bottom:0.5rem; }
-        .debug-line { padding:0.2rem 0; border-bottom:1px solid rgba(255,255,255,0.05); word-break:break-all; }
+        .debug-line { padding:0.15rem 0; border-bottom:1px solid rgba(255,255,255,0.04); word-break:break-all; }
         .debug-line .key { color:#60a5fa; }
         .debug-line .val { color:#4ade80; }
         .debug-line .err { color:#f87171; }
-        .debug-btn { position:fixed; bottom:1.5rem; right:1.5rem; z-index:10000; width:48px; height:48px; border-radius:50%; background:#0A2540; border:2px solid #C8963E; color:#C8963E; cursor:pointer; font-size:1.2rem; display:flex; align-items:center; justify-content:center; box-shadow:0 4px 15px rgba(200,150,62,0.4); }
-        .debug-btn:hover { background:#C8963E; color:#0A2540; transform:scale(1.1); }
+        .debug-btn { position:fixed; bottom:1.5rem; right:1.5rem; z-index:10000; width:44px; height:44px; border-radius:50%; background:#0A2540; border:2px solid #C8963E; color:#C8963E; cursor:pointer; font-size:1rem; display:flex; align-items:center; justify-content:center; }
 
         @media(max-width:768px) { .sidebar { width:85px; } .sidebar .logo-area h2,.sidebar .nav-item span { display:none; } .sidebar .nav-item { justify-content:center; padding:0.7rem; } .main-content { margin-left:85px; max-width:calc(100vw - 85px); padding:1rem; } }
     </style>
@@ -216,8 +213,8 @@
 <div class="orb orb-1"></div><div class="orb orb-2"></div>
 <div class="toast-container" id="toastContainer"></div>
 
-<button class="debug-btn" id="debugToggleBtn" title="Debug Panel"><i class="fas fa-bug"></i></button>
-<div class="debug-panel" id="debugPanel"><h4><i class="fas fa-bug"></i> Debug Panel</h4><div id="debugContent"></div></div>
+<button class="debug-btn" id="debugToggleBtn" title="Debug"><i class="fas fa-bug"></i></button>
+<div class="debug-panel" id="debugPanel"><h4><i class="fas fa-bug"></i> Debug</h4><div id="debugContent"></div></div>
 
 <div class="sidebar" id="sidebar">
     <a href="index.html" class="logo-area"><img src="https://res.cloudinary.com/dda7kpir8/image/upload/q_auto/f_auto/v1781038310/ChatGPT_Image_Jun_9_2026_09_25_06_AM_elnine.png" alt="JWMS Logo"><h2>Judah Wonders<span>Model School</span></h2></a>
@@ -287,7 +284,6 @@
 
 <div class="modal-overlay" id="ttModal"><div class="modal-content" id="ttModalContent"></div></div>
 <div class="modal-overlay" id="sylModal"><div class="modal-content" id="sylModalContent"></div></div>
-<div class="modal-overlay" id="coPlanModal"><div class="modal-content" style="max-width:600px;"><div class="modal-header"><h3><i class="fas fa-users"></i> Co-Plan</h3><i class="fas fa-times modal-close" onclick="closeCoPlanModal()"></i></div><div class="form-group"><input type="text" id="coTeacherSearch" class="form-control" placeholder="Search teachers..." oninput="renderCoTeacherList()"></div><div id="coTeacherList" style="max-height:300px;overflow-y:auto;"></div><div style="margin-top:1rem;"><strong>Selected:</strong></div><div id="selectedCoTeachers" style="margin-top:0.5rem;"></div><div class="modal-actions"><button class="btn btn-outline" onclick="closeCoPlanModal()">Cancel</button><button class="btn btn-primary" onclick="confirmCoPlan()"><i class="fas fa-check"></i> Add</button></div></div></div>
 
 <script>
 const firebaseConfig = { apiKey: "AIzaSyADXHEiaSQ146QsGsaOCElARtpwrLE8svs", authDomain: "judah-c737e.firebaseapp.com", projectId: "judah-c737e", storageBucket: "judah-c737e.firebasestorage.app", messagingSenderId: "739196063078", appId: "1:739196063078:web:c0ee1c1da2cc3794ca8ca7", measurementId: "G-YEM22F1C39" };
@@ -299,10 +295,10 @@ const debugLogs = [];
 function debugLog(key, value, type = 'info') {
     const cssClass = type === 'error' ? 'err' : type === 'warn' ? 'warn' : 'val';
     debugLogs.push({ key, value, cssClass, time: new Date().toLocaleTimeString() });
-    console.log(`[DEBUG][${type}] ${key}:`, value);
+    console.log(`[${type}] ${key}:`, value);
     updateDebugPanel();
 }
-function updateDebugPanel() { const c = document.getElementById('debugContent'); if (!c) return; c.innerHTML = debugLogs.slice(-40).map(d => `<div class="debug-line"><span style="color:#64748b;">${d.time}</span> <span class="key">${d.key}:</span> <span class="${d.cssClass}">${typeof d.value==='object'?JSON.stringify(d.value):d.value}</span></div>`).join(''); }
+function updateDebugPanel() { const c = document.getElementById('debugContent'); if (!c) return; c.innerHTML = debugLogs.slice(-25).map(d => `<div class="debug-line"><span style="color:#64748b;">${d.time}</span> <span class="key">${d.key}:</span> <span class="${d.cssClass}">${typeof d.value==='object'?JSON.stringify(d.value):d.value}</span></div>`).join(''); }
 document.getElementById('debugToggleBtn').addEventListener('click', () => { document.getElementById('debugPanel').classList.toggle('show'); });
 
 let currentUser = null, userData = null, userRole = null;
@@ -311,8 +307,6 @@ let allTimetables = [], allSyllabi = [];
 let ttStatusFilter = 'draft', sylStatusFilter = 'draft';
 let selectedClass = '', selectedYear = '2025/2026';
 let editingTtId = null, editingSylId = null;
-let coPlanItemId = null, coPlanItemType = null;
-let selectedCoTeacherIds = [], selectedCoTeacherNames = [];
 
 const ALL_DAYS = ['monday','tuesday','wednesday','thursday','friday','saturday','sunday'];
 const ALL_DAY_LABELS = ['Monday','Tuesday','Wednesday','Thursday','Friday','Saturday','Sunday'];
@@ -328,6 +322,7 @@ function showToast(title, msg, type='info') {
     document.getElementById('toastContainer').appendChild(toast);
     setTimeout(()=>{ toast.classList.add('removing'); setTimeout(()=>toast.remove(),300); },4000);
 }
+async function logAudit(action, desc) { if(!currentUser) return; try { await db.collection('auditLogs').add({ userId:currentUser.uid, userName:`${userData?.firstName||''} ${userData?.surname||''}`.trim(), userRole:userRole, action, description:desc, timestamp:firebase.firestore.FieldValue.serverTimestamp() }); } catch(e){} }
 function statusBadge(s) { const labels = { draft:'Draft', submitted:'Submitted', approved:'Approved', published:'Published', rejected:'Rejected' }; return `<span class="badge badge-${s}">${labels[s]||s}</span>`; }
 
 const sidebar = document.getElementById('sidebar'), mainContent = document.getElementById('mainContent');
@@ -388,28 +383,32 @@ function onYearFilterChange(){ selectedYear = document.getElementById('yearFilte
 
 async function loadData() {
     if(!selectedClass) return;
-    debugLog('Loading data', `Class: ${selectedClass}, Year: ${selectedYear}`);
+    debugLog('Loading', `Class: ${selectedClass}, Year: ${selectedYear}`);
     try {
         const ttSnap = await db.collection('timetables').where('classId','==',selectedClass).where('academicYear','==',selectedYear).orderBy('createdAt','desc').get();
         allTimetables = []; ttSnap.forEach(d=>allTimetables.push({id:d.id,...d.data()}));
         const sylSnap = await db.collection('syllabi').where('classId','==',selectedClass).where('academicYear','==',selectedYear).orderBy('createdAt','desc').get();
         allSyllabi = []; sylSnap.forEach(d=>allSyllabi.push({id:d.id,...d.data()}));
-        debugLog('Data loaded', `Timetables: ${allTimetables.length}, Syllabi: ${allSyllabi.length}`);
-        
-        if(allTimetables.length) {
-            allTimetables.forEach((t, i) => {
-                debugLog(`TT#${i+1}`, `"${t.title}" | status:${t.status} | type:${t.type||'none'} | days:${t.days?.length||0} | slots:${t.timeSlots?.length||0} | periodKeys:${t.periods?Object.keys(t.periods).length:0} | isPublished:${t.status==='published'}`);
-            });
-            const published = allTimetables.filter(t => t.status === 'published');
-            debugLog('Published', `${published.length} of ${allTimetables.length}`);
-        }
-        
+        debugLog('Loaded', `TT:${allTimetables.length}, SYL:${allSyllabi.length}`);
+        if(allTimetables.length) allTimetables.forEach((t,i)=>debugLog(`TT#${i+1}`,`"${t.title}" st:${t.status} tp:${t.type||'none'} pub:${t.status==='published'}`));
         renderTimetableGrids(); renderSyllabusGrids();
     } catch(e){ debugLog('Load error', e.message, 'error'); }
 }
 
-function setTtStatusFilter(s) { ttStatusFilter = s; document.querySelectorAll('#ttStatusTabs .status-tab').forEach(b=>b.classList.remove('active')); document.querySelector(`#ttStatusTabs .status-tab.${s}`)?.classList.add('active'); renderTimetableGrids(); }
-function setSylStatusFilter(s) { sylStatusFilter = s; document.querySelectorAll('#sylStatusTabs .status-tab').forEach(b=>b.classList.remove('active')); document.querySelector(`#sylStatusTabs .status-tab.${s}`)?.classList.add('active'); renderSyllabusGrids(); }
+function setTtStatusFilter(s) { 
+    ttStatusFilter = s; 
+    document.querySelectorAll('#ttStatusTabs .status-tab').forEach(b=>b.classList.remove('active')); 
+    const tab = document.querySelector(`#ttStatusTabs .status-tab.${s}`);
+    if(tab) tab.classList.add('active'); 
+    renderTimetableGrids(); 
+}
+function setSylStatusFilter(s) { 
+    sylStatusFilter = s; 
+    document.querySelectorAll('#sylStatusTabs .status-tab').forEach(b=>b.classList.remove('active')); 
+    const tab = document.querySelector(`#sylStatusTabs .status-tab.${s}`);
+    if(tab) tab.classList.add('active'); 
+    renderSyllabusGrids(); 
+}
 
 function renderTimetableGrids() {
     const typeFilter = document.getElementById('ttTypeFilter')?.value || 'all';
@@ -417,20 +416,17 @@ function renderTimetableGrids() {
     if(typeFilter !== 'all') filtered = filtered.filter(t => t.type === typeFilter);
     if(userRole==='student') {
         filtered = filtered.filter(t=>t.status==='published');
-        debugLog('Student view', `Filtering published only. Found: ${filtered.length}`);
     } else {
         filtered = filtered.filter(t=>t.status===ttStatusFilter);
     }
 
+    // Update counts
     const counts = {}; ['draft','submitted','approved','published','rejected'].forEach(s=>{ counts[s]=allTimetables.filter(t=>t.status===s).length; });
     document.querySelectorAll('#ttStatusTabs .status-tab').forEach(b=>{ const s=b.dataset.status; const c=b.querySelector('.count'); if(c) c.textContent=counts[s]||0; });
     if(userRole==='student'){ document.getElementById('ttStatusTabs').style.display='none'; } else { document.getElementById('ttStatusTabs').style.display='flex'; }
     
     const container = document.getElementById('timetableGrids');
-    if(!filtered.length){ 
-        container.innerHTML='<div class="empty-state"><i class="fas fa-calendar-alt"></i><p>No timetables found. '+(userRole==='student'?'Ask your teacher to publish a timetable.':'')+'</p></div>'; 
-        return; 
-    }
+    if(!filtered.length){ container.innerHTML='<div class="empty-state"><i class="fas fa-calendar-alt"></i><p>No timetables found.</p></div>'; return; }
     container.innerHTML = filtered.map(t=>renderTimetableCard(t)).join('');
 }
 
@@ -442,33 +438,24 @@ function renderTimetableCard(t) {
     const canPublish = isTeacher && t.status==='approved' && isContributor;
     const typeLabel = TYPE_LABELS[t.type] || '📅 Academic';
     
-    // Handle OLD format (type + periods array) and NEW format (days + timeSlots + periods object)
+    // Handle both old and new format
     let days, dayLabels, timeSlots, periods;
-    
     if(t.days && t.timeSlots) {
-        // NEW format
-        days = t.days;
-        dayLabels = t.dayLabels || days;
-        timeSlots = t.timeSlots;
-        periods = t.periods || {};
+        days = t.days; dayLabels = t.dayLabels || days; timeSlots = t.timeSlots; periods = t.periods || {};
     } else if(Array.isArray(t.periods)) {
-        // OLD format - convert to new format for display
         const oldPeriods = t.periods || [];
         days = ['monday','tuesday','wednesday','thursday','friday'];
         dayLabels = ['Monday','Tuesday','Wednesday','Thursday','Friday'];
-        timeSlots = [...new Set(oldPeriods.map(p=>p.startTime+' - '+p.endTime))].sort();
+        timeSlots = [...new Set(oldPeriods.map(p=>(p.startTime||'')+' - '+(p.endTime||'')))].filter(x=>x.trim()).sort();
         periods = {};
         oldPeriods.forEach(p => {
-            const key = `${p.day||'monday'}_${p.startTime+' - '+p.endTime}`;
+            const key = `${p.day||'monday'}_${(p.startTime||'')+' - '+(p.endTime||'')}`;
             periods[key] = { subject: p.subject, teacherName: p.teacherName };
         });
-        debugLog('Converted old format', `TT: ${t.title}, periods: ${oldPeriods.length}`);
     } else {
-        // Fallback
         days = ['monday','tuesday','wednesday','thursday','friday'];
         dayLabels = ['Monday','Tuesday','Wednesday','Thursday','Friday'];
-        timeSlots = [];
-        periods = {};
+        timeSlots = []; periods = {};
     }
     
     let gridHTML = '';
@@ -488,7 +475,7 @@ function renderTimetableCard(t) {
         gridHTML += '</tbody></table></div>';
     } else {
         if(!timeSlots.length) {
-            gridHTML = '<p style="color:var(--text-muted);text-align:center;padding:1rem;">No time slots defined. Please edit this timetable.</p>';
+            gridHTML = '<p style="text-align:center;color:var(--text-muted);padding:1rem;">No time slots. Edit to add periods.</p>';
         } else {
             gridHTML = '<div class="tt-wrapper"><table class="tt-table"><thead><tr><th>Day</th>';
             timeSlots.forEach(ts => { gridHTML += `<th>${escapeHtml(ts)}</th>`; });
@@ -506,7 +493,7 @@ function renderTimetableCard(t) {
         }
     }
     
-    return `<div class="card"><div class="card-header"><h3><i class="fas fa-calendar-alt"></i> ${typeLabel} — ${escapeHtml(t.title||'Untitled')} (${days.length}d · ${timeSlots.length}p)</h3>${statusBadge(t.status)}</div><div class="text-muted">Term: ${escapeHtml(t.term||'—')} | Class: ${escapeHtml(t.classId)} | Contributors: ${(t.contributorNames||[t.createdByName||'Unknown']).map(n=>`<span class="contributor-tag">${escapeHtml(n)}</span>`).join(' ')}</div>${t.adminFeedback?`<div class="admin-feedback"><strong>Feedback:</strong> ${escapeHtml(t.adminFeedback)}</div>`:''}${gridHTML}<div class="btn-group" style="margin-top:0.8rem;">${canEdit?`<button class="btn btn-outline btn-sm" onclick="openTimetableModal('${t.id}')"><i class="fas fa-edit"></i> Edit</button>`:''}${canSubmit?`<button class="btn btn-warning btn-sm" onclick="changeTtStatus('${t.id}','submitted')"><i class="fas fa-paper-plane"></i> Submit</button>`:''}${canPublish?`<button class="btn btn-success btn-sm" onclick="changeTtStatus('${t.id}','published')"><i class="fas fa-bullhorn"></i> Publish</button>`:''}<button class="btn btn-outline btn-sm" onclick="openCoPlanModal('timetables','${t.id}')"><i class="fas fa-users"></i> Co-Plan</button>${isTeacher?`<button class="btn btn-outline btn-sm" onclick="duplicateTimetable('${t.id}')"><i class="fas fa-copy"></i></button>`:''}<button class="btn btn-outline btn-sm" onclick="printTimetable('${t.id}')"><i class="fas fa-print"></i></button>${isTeacher&&t.status==='draft'?`<button class="btn btn-danger btn-sm" onclick="deleteTimetable('${t.id}')"><i class="fas fa-trash"></i></button>`:''}</div></div>`;
+    return `<div class="card"><div class="card-header"><h3>${typeLabel} — ${escapeHtml(t.title||'Untitled')} (${days.length}d·${timeSlots.length}p)</h3>${statusBadge(t.status)}</div><div class="text-muted">Term: ${escapeHtml(t.term||'—')} | Class: ${escapeHtml(t.classId)} | ${(t.contributorNames||[t.createdByName||'Unknown']).map(n=>`<span class="contributor-tag">${escapeHtml(n)}</span>`).join(' ')}</div>${t.adminFeedback?`<div class="admin-feedback"><strong>Feedback:</strong> ${escapeHtml(t.adminFeedback)}</div>`:''}${gridHTML}<div class="btn-group" style="margin-top:0.8rem;">${canEdit?`<button class="btn btn-outline btn-sm" onclick="openTimetableModal('${t.id}')"><i class="fas fa-edit"></i> Edit</button>`:''}${canSubmit?`<button class="btn btn-warning btn-sm" onclick="changeTtStatus('${t.id}','submitted')"><i class="fas fa-paper-plane"></i> Submit for Approval</button>`:''}${canPublish?`<button class="btn btn-success btn-sm" onclick="changeTtStatus('${t.id}','published')"><i class="fas fa-bullhorn"></i> Publish to Students</button>`:''}${isTeacher?`<button class="btn btn-outline btn-sm" onclick="duplicateTimetable('${t.id}')"><i class="fas fa-copy"></i></button>`:''}<button class="btn btn-outline btn-sm" onclick="printTimetable('${t.id}')"><i class="fas fa-print"></i></button>${isTeacher&&t.status==='draft'?`<button class="btn btn-danger btn-sm" onclick="deleteTimetable('${t.id}')"><i class="fas fa-trash"></i></button>`:''}</div></div>`;
 }
 
 function renderSyllabusGrids() {
@@ -530,7 +517,7 @@ function renderSyllabusCard(s) {
     const canEdit = isTeacher && (s.status==='draft'||s.status==='rejected') && isContributor;
     const canSubmit = isTeacher && s.status==='draft' && isContributor;
     const canPublish = isTeacher && s.status==='approved' && isContributor;
-    return `<div class="card"><div class="card-header"><h3><i class="fas fa-book"></i> ${escapeHtml(s.subject)} — ${escapeHtml(s.term)}</h3>${statusBadge(s.status)}</div><div class="text-muted">Class: ${escapeHtml(s.classId)} | Contributors: ${(s.contributorNames||[s.createdByName||'Unknown']).map(n=>`<span class="contributor-tag">${escapeHtml(n)}</span>`).join(' ')}</div>${s.adminFeedback?`<div class="admin-feedback"><strong>Feedback:</strong> ${escapeHtml(s.adminFeedback)}</div>`:''}<div style="overflow-x:auto;margin-top:0.8rem;"><table class="syl-table"><thead><tr><th>Week</th><th>Topic</th><th>By</th></tr></thead><tbody>${(s.weeks||[]).sort((a,b)=>a.week-b.week).map(w=>`<tr><td><strong>Wk ${w.week}</strong></td><td>${escapeHtml(w.topic||'—')}</td><td>${escapeHtml(w.addedByName||'—')}</td></tr>`).join('')}</tbody></table></div><div class="btn-group" style="margin-top:0.8rem;">${canEdit?`<button class="btn btn-outline btn-sm" onclick="openSyllabusModal('${s.id}')"><i class="fas fa-edit"></i> Edit</button>`:''}${canSubmit?`<button class="btn btn-warning btn-sm" onclick="changeSylStatus('${s.id}','submitted')"><i class="fas fa-paper-plane"></i> Submit</button>`:''}${canPublish?`<button class="btn btn-success btn-sm" onclick="changeSylStatus('${s.id}','published')"><i class="fas fa-bullhorn"></i> Publish</button>`:''}<button class="btn btn-outline btn-sm" onclick="openCoPlanModal('syllabi','${s.id}')"><i class="fas fa-users"></i> Co-Plan</button>${isTeacher?`<button class="btn btn-outline btn-sm" onclick="duplicateSyllabus('${s.id}')"><i class="fas fa-copy"></i></button>`:''}<button class="btn btn-outline btn-sm" onclick="printSyllabus('${s.id}')"><i class="fas fa-print"></i></button>${isTeacher&&s.status==='draft'?`<button class="btn btn-danger btn-sm" onclick="deleteSyllabus('${s.id}')"><i class="fas fa-trash"></i></button>`:''}</div></div>`;
+    return `<div class="card"><div class="card-header"><h3><i class="fas fa-book"></i> ${escapeHtml(s.subject)} — ${escapeHtml(s.term)}</h3>${statusBadge(s.status)}</div><div class="text-muted">Class: ${escapeHtml(s.classId)} | ${(s.contributorNames||[s.createdByName||'Unknown']).map(n=>`<span class="contributor-tag">${escapeHtml(n)}</span>`).join(' ')}</div>${s.adminFeedback?`<div class="admin-feedback"><strong>Feedback:</strong> ${escapeHtml(s.adminFeedback)}</div>`:''}<div style="overflow-x:auto;margin-top:0.8rem;"><table class="syl-table"><thead><tr><th>Week</th><th>Topic</th><th>By</th></tr></thead><tbody>${(s.weeks||[]).sort((a,b)=>a.week-b.week).map(w=>`<tr><td><strong>Wk ${w.week}</strong></td><td>${escapeHtml(w.topic||'—')}</td><td>${escapeHtml(w.addedByName||'—')}</td></tr>`).join('')}</tbody></table></div><div class="btn-group" style="margin-top:0.8rem;">${canEdit?`<button class="btn btn-outline btn-sm" onclick="openSyllabusModal('${s.id}')"><i class="fas fa-edit"></i> Edit</button>`:''}${canSubmit?`<button class="btn btn-warning btn-sm" onclick="changeSylStatus('${s.id}','submitted')"><i class="fas fa-paper-plane"></i> Submit for Approval</button>`:''}${canPublish?`<button class="btn btn-success btn-sm" onclick="changeSylStatus('${s.id}','published')"><i class="fas fa-bullhorn"></i> Publish to Students</button>`:''}${isTeacher?`<button class="btn btn-outline btn-sm" onclick="duplicateSyllabus('${s.id}')"><i class="fas fa-copy"></i></button>`:''}<button class="btn btn-outline btn-sm" onclick="printSyllabus('${s.id}')"><i class="fas fa-print"></i></button>${isTeacher&&s.status==='draft'?`<button class="btn btn-danger btn-sm" onclick="deleteSyllabus('${s.id}')"><i class="fas fa-trash"></i></button>`:''}</div></div>`;
 }
 
 // ============================================
@@ -624,7 +611,7 @@ function renderTtModalContent() {
 
 function toggleTtDay(day) { const idx = window._ttDays.indexOf(day); if(idx >= 0) { window._ttDays.splice(idx, 1); window._ttDayLabels.splice(idx, 1); } else { window._ttDays.push(day); window._ttDayLabels.push(ALL_DAY_LABELS[ALL_DAYS.indexOf(day)]); } renderTtModalContent(); }
 function addTtTimeSlot() { window._ttTimeSlots.push(''); renderTtModalContent(); }
-function removeTtTimeSlot(idx) { if(window._ttTimeSlots.length <= 1) return showToast('Required','Need at least 1','warning'); window._ttTimeSlots.splice(idx, 1); renderTtModalContent(); }
+function removeTtTimeSlot(idx) { if(window._ttTimeSlots.length <= 1) return; window._ttTimeSlots.splice(idx, 1); renderTtModalContent(); }
 function updateTtCell(key, field, value) { if(!window._ttPeriods[key]) window._ttPeriods[key] = {}; window._ttPeriods[key][field] = value; }
 
 async function saveTimetable() {
@@ -642,7 +629,7 @@ async function saveTimetable() {
     try {
         const data = { type: ttType, title, term: ttTerm, classId: ttClass, days, dayLabels, timeSlots, periods, academicYear: selectedYear, updatedAt:firebase.firestore.FieldValue.serverTimestamp() };
         
-        // CHECK FOR EXISTING timetable of same type/class/term/year to overwrite
+        // Check for existing timetable of same type/class/term/year (not published)
         const existingSnap = await db.collection('timetables')
             .where('classId','==',ttClass)
             .where('academicYear','==',selectedYear)
@@ -652,9 +639,8 @@ async function saveTimetable() {
             .get();
         
         if(!editingTtId && !existingSnap.empty) {
-            // Overwrite the existing one instead of creating new
             const existingDoc = existingSnap.docs[0];
-            if(!confirm(`A ${ttType} timetable for ${ttClass} (${ttTerm}) already exists. Overwrite it?`)) {
+            if(!confirm(`A ${TYPE_LABELS[ttType]} timetable for ${ttClass} (${ttTerm}) already exists. Overwrite it?`)) {
                 btn.disabled=false; btn.innerHTML='<i class="fas fa-save"></i> Save as Draft';
                 return;
             }
@@ -663,8 +649,8 @@ async function saveTimetable() {
             const contributors = [...new Set([...(existing.contributors||[]), currentUser.uid])];
             const contributorNames = [...new Set([...(existing.contributorNames||[]), `${userData.firstName||''} ${userData.surname||''}`.trim()])];
             await ref.update({...data, contributors, contributorNames});
-            debugLog('Overwritten', `${ttType} timetable for ${ttClass} ${ttTerm}`);
-            showToast('Updated!', `Existing ${ttType} timetable overwritten.`,'success');
+            debugLog('Overwritten', `${ttType} for ${ttClass} ${ttTerm}`);
+            showToast('Updated!','Existing timetable overwritten.','success');
         } else if(editingTtId) {
             const ref = db.collection('timetables').doc(editingTtId);
             const doc = await ref.get(); const existing = doc.data()||{};
@@ -677,7 +663,7 @@ async function saveTimetable() {
             showToast('Saved','Timetable saved as draft','success');
         }
         closeTtModal(); loadData();
-    } catch(e){ showToast('Error',e.message,'error'); debugLog('Save error', e.message, 'error'); }
+    } catch(e){ showToast('Error',e.message,'error'); }
     finally { btn.disabled=false; btn.innerHTML='<i class="fas fa-save"></i> Save as Draft'; }
 }
 function closeTtModal(){ document.getElementById('ttModal').classList.remove('active'); editingTtId=null; }
@@ -693,10 +679,10 @@ async function openSyllabusModal(id=null) {
     document.getElementById('sylModal').classList.add('active');
     window._sylWeeks = s.weeks||[]; renderSylWeeks();
 }
-function addSylWeek() { if(!window._sylWeeks) window._sylWeeks = []; const nextWeek = window._sylWeeks.length ? Math.max(...window._sylWeeks.map(w=>w.week))+1 : 1; window._sylWeeks.push({ week:nextWeek, topic:'', addedBy:currentUser?.uid, addedByName:`${userData?.firstName||''} ${userData?.surname||''}`.trim() }); renderSylWeeks(); }
-function addBulkWeeks() { if(!window._sylWeeks) window._sylWeeks = []; const existing = new Set(window._sylWeeks.map(w=>w.week)); for(let i=1;i<=12;i++){ if(!existing.has(i)) window._sylWeeks.push({ week:i, topic:'', addedBy:currentUser?.uid, addedByName:`${userData?.firstName||''} ${userData?.surname||''}`.trim() }); } window._sylWeeks.sort((a,b)=>a.week-b.week); renderSylWeeks(); }
+function addSylWeek() { if(!window._sylWeeks) window._sylWeeks = []; const nw = window._sylWeeks.length ? Math.max(...window._sylWeeks.map(w=>w.week))+1 : 1; window._sylWeeks.push({ week:nw, topic:'', addedBy:currentUser?.uid, addedByName:`${userData?.firstName||''} ${userData?.surname||''}`.trim() }); renderSylWeeks(); }
+function addBulkWeeks() { if(!window._sylWeeks) window._sylWeeks = []; const ex = new Set(window._sylWeeks.map(w=>w.week)); for(let i=1;i<=12;i++){ if(!ex.has(i)) window._sylWeeks.push({ week:i, topic:'', addedBy:currentUser?.uid, addedByName:`${userData?.firstName||''} ${userData?.surname||''}`.trim() }); } window._sylWeeks.sort((a,b)=>a.week-b.week); renderSylWeeks(); }
 function removeSylWeek(idx){ window._sylWeeks.splice(idx,1); renderSylWeeks(); }
-function renderSylWeeks() { const container = document.getElementById('sylWeeksContainer'); if(!container) return; const weeks = window._sylWeeks||[]; container.innerHTML = weeks.sort((a,b)=>a.week-b.week).map((w,i)=>`<div class="week-row"><span class="week-num">Week ${w.week}</span><input type="text" class="week-topic" value="${escapeHtml(w.topic||'')}" placeholder="Topic for week ${w.week}..." onchange="window._sylWeeks[${i}].topic=this.value"><span class="text-muted">${escapeHtml(w.addedByName||'')}</span><button class="btn btn-danger btn-sm" onclick="removeSylWeek(${i})">×</button></div>`).join(''); if(!weeks.length) container.innerHTML = '<p class="text-muted">No weeks added.</p>'; }
+function renderSylWeeks() { const c = document.getElementById('sylWeeksContainer'); if(!c) return; const w = window._sylWeeks||[]; c.innerHTML = w.sort((a,b)=>a.week-b.week).map((wk,i)=>`<div class="week-row"><span class="week-num">Week ${wk.week}</span><input type="text" class="week-topic" value="${escapeHtml(wk.topic||'')}" placeholder="Topic..." onchange="window._sylWeeks[${i}].topic=this.value"><span class="text-muted">${escapeHtml(wk.addedByName||'')}</span><button class="btn btn-danger btn-sm" onclick="removeSylWeek(${i})">×</button></div>`).join(''); if(!w.length) c.innerHTML = '<p class="text-muted">No weeks added.</p>'; }
 async function saveSyllabus() {
     const subject = document.getElementById('sylSubject').value, term = document.getElementById('sylTerm').value;
     if(!subject) return showToast('Required','Subject is required','warning');
@@ -714,56 +700,30 @@ async function saveSyllabus() {
 function closeSylModal(){ document.getElementById('sylModal').classList.remove('active'); editingSylId=null; }
 
 // ============================================
-// CO-PLAN
-// ============================================
-function openCoPlanModal(type, id) { coPlanItemId = id; coPlanItemType = type; selectedCoTeacherIds = []; selectedCoTeacherNames = []; document.getElementById('coPlanModal').classList.add('active'); renderCoTeacherList(); }
-function closeCoPlanModal() { document.getElementById('coPlanModal').classList.remove('active'); }
-async function renderCoTeacherList(search='') {
-    const snap = await db.collection('users').where('role','==','teacher').where('approved','==',true).get();
-    const teachers = snap.docs.map(d=>({id:d.id,...d.data()})).filter(t=>t.id!==currentUser.uid);
-    const filtered = search ? teachers.filter(t=>`${t.firstName||''} ${t.surname||''}`.toLowerCase().includes(search.toLowerCase())) : teachers;
-    document.getElementById('coTeacherList').innerHTML = filtered.map(t=>{ const name=`${t.firstName||''} ${t.surname||''}`.trim(); const ini=(t.firstName?.[0]||'')+(t.surname?.[0]||''); const sel=selectedCoTeacherIds.includes(t.id); return`<div class="teacher-list-item ${sel?'selected':''}" onclick="toggleCoTeacher('${t.id}','${escapeHtml(name)}')"><div class="teacher-avatar-sm">${ini}</div><div><strong>${escapeHtml(name)}</strong><br><small>${(t.subjects||[]).join(', ')}</small></div>${sel?'<i class="fas fa-check" style="margin-left:auto;color:var(--success-text);"></i>':''}</div>`; }).join('');
-    renderSelectedCoTeachers();
-}
-function toggleCoTeacher(id, name) { const idx = selectedCoTeacherIds.indexOf(id); if(idx >= 0) { selectedCoTeacherIds.splice(idx, 1); selectedCoTeacherNames.splice(idx, 1); } else { selectedCoTeacherIds.push(id); selectedCoTeacherNames.push(name); } renderCoTeacherList(document.getElementById('coTeacherSearch')?.value||''); }
-function renderSelectedCoTeachers() { document.getElementById('selectedCoTeachers').innerHTML = selectedCoTeacherNames.length ? selectedCoTeacherNames.map(n=>`<span class="badge badge-info" style="margin:0.2rem;">${escapeHtml(n)} <i class="fas fa-times" style="cursor:pointer;" onclick="removeCoTeacher('${escapeHtml(n)}')"></i></span>`).join('') : '<p class="text-muted">None selected.</p>'; }
-function removeCoTeacher(name) { const idx = selectedCoTeacherNames.indexOf(name); if(idx >= 0) { selectedCoTeacherIds.splice(idx, 1); selectedCoTeacherNames.splice(idx, 1); } renderCoTeacherList(); renderSelectedCoTeachers(); }
-async function confirmCoPlan() {
-    if(!coPlanItemId) return;
-    const collection = coPlanItemType === 'syllabi' ? 'syllabi' : 'timetables';
-    const doc = await db.collection(collection).doc(coPlanItemId).get();
-    if(!doc.exists) return;
-    const data = doc.data();
-    const contributors = [...new Set([...(data.contributors||[data.createdBy]), ...selectedCoTeacherIds])];
-    const contributorNames = [...new Set([...(data.contributorNames||[data.createdByName||'Unknown']), ...selectedCoTeacherNames])];
-    await db.collection(collection).doc(coPlanItemId).update({ contributors, contributorNames });
-    showToast('Added', `${selectedCoTeacherNames.length} collaborator(s)`,'success');
-    closeCoPlanModal(); loadData();
-}
-
-// ============================================
 // STATUS CHANGES
 // ============================================
 async function changeTtStatus(id, newStatus) {
-    const labels = { submitted:'Submit for Approval', published:'Publish to Students' };
+    const labels = { submitted:'Submit for Admin Approval', published:'Publish to Students' };
     if(!confirm(`${labels[newStatus]||newStatus}?`)) return;
     try {
         const update = { status:newStatus, updatedAt:firebase.firestore.FieldValue.serverTimestamp() };
         if(newStatus==='submitted') update.submittedAt = firebase.firestore.FieldValue.serverTimestamp();
         if(newStatus==='published') update.publishedAt = firebase.firestore.FieldValue.serverTimestamp();
         await db.collection('timetables').doc(id).update(update);
+        await logAudit('TT_STATUS',`Changed to ${newStatus}`);
         showToast('Updated',newStatus==='submitted'?'Submitted for admin approval':newStatus,'success');
         loadData();
     } catch(e){ showToast('Error',e.message,'error'); }
 }
 async function changeSylStatus(id, newStatus) {
-    const labels = { submitted:'Submit for Approval', published:'Publish to Students' };
+    const labels = { submitted:'Submit for Admin Approval', published:'Publish to Students' };
     if(!confirm(`${labels[newStatus]||newStatus}?`)) return;
     try {
         const update = { status:newStatus, updatedAt:firebase.firestore.FieldValue.serverTimestamp() };
         if(newStatus==='submitted') update.submittedAt = firebase.firestore.FieldValue.serverTimestamp();
         if(newStatus==='published') update.publishedAt = firebase.firestore.FieldValue.serverTimestamp();
         await db.collection('syllabi').doc(id).update(update);
+        await logAudit('SYL_STATUS',`Changed to ${newStatus}`);
         showToast('Updated',newStatus==='submitted'?'Submitted for admin approval':newStatus,'success');
         loadData();
     } catch(e){ showToast('Error',e.message,'error'); }
@@ -776,31 +736,26 @@ async function duplicateTimetable(id) { const doc = await db.collection('timetab
 async function duplicateSyllabus(id) { const doc = await db.collection('syllabi').doc(id).get(); if(!doc.exists) return; const data = doc.data(); await db.collection('syllabi').add({...data, status:'draft', createdBy:currentUser.uid, createdByName:`${userData.firstName||''} ${userData.surname||''}`.trim(), contributors:[currentUser.uid], contributorNames:[`${userData.firstName||''} ${userData.surname||''}`.trim()], createdAt:firebase.firestore.FieldValue.serverTimestamp(), submittedAt:null, approvedAt:null, publishedAt:null, adminFeedback:'' }); showToast('Duplicated','Done','success'); loadData(); }
 async function deleteTimetable(id) { if(!confirm('Delete?')) return; await db.collection('timetables').doc(id).delete(); showToast('Deleted','Done','success'); loadData(); }
 async function deleteSyllabus(id) { if(!confirm('Delete?')) return; await db.collection('syllabi').doc(id).delete(); showToast('Deleted','Done','success'); loadData(); }
-function printTimetable(id) { const t = allTimetables.find(x=>x.id===id); if(!t) return; const w = window.open('','_blank','width=900,height=600'); let h = `<html><head><title>${t.title||'Timetable'}</title><style>body{font-family:sans-serif;padding:20px;}table{width:100%;border-collapse:collapse;}th,td{border:1px solid #000;padding:8px;text-align:center;font-size:12px;}th{background:#0A2540;color:white;}</style></head><body><h2>${t.title||'Timetable'} (${t.type||'academic'})</h2>`; if(t.type==='hairstyle'){ h+='<table><tr><th>Day</th><th>Hairstyle</th><th>Description</th></tr>'; (t.days||['monday','tuesday','wednesday','thursday','friday']).forEach((day,di)=>{ const key=`${day}_Hairstyle`; const e=(t.periods||{})[key]||{}; h+=`<tr><td>${(t.dayLabels||[])[di]||day}</td><td>${e.subject||'—'}</td><td>${e.description||'—'}</td></tr>`; }); h+='</table>'; } else if(t.type==='test'||t.type==='exam'){ h+='<table><tr><th>Date</th><th>Subject</th><th>Start</th><th>End</th><th>Duration</th></tr>'; (t.days||['monday']).forEach((day,di)=>{ const key=`${day}_Slot 1`; const e=(t.periods||{})[key]||{}; h+=`<tr><td>${(t.dayLabels||[])[di]||day}</td><td>${e.subject||'—'}</td><td>${e.startTime||'—'}</td><td>${e.endTime||'—'}</td><td>${e.duration||'—'}</td></tr>`; }); h+='</table>'; } else { h+='<table><tr><th>Day</th>'; (t.timeSlots||[]).forEach(ts=>h+=`<th>${ts}</th>`); h+='</tr>'; (t.days||['monday']).forEach((day,di)=>{ h+=`<tr><td>${(t.dayLabels||[])[di]||day}</td>`; (t.timeSlots||[]).forEach(ts=>{ const key=`${day}_${ts}`; const e=(t.periods||{})[key]; h+=`<td>${e&&e.subject?e.subject+(e.teacherName?'<br><small>'+e.teacherName+'</small>':''):'—'}</td>`; }); h+='</tr>'; }); h+='</table>'; } h+='</body></html>'; w.document.write(h); w.document.close(); w.print(); }
+function printTimetable(id) { const t = allTimetables.find(x=>x.id===id); if(!t) return; const w = window.open('','_blank','width=900,height=600'); let h = `<html><head><title>${t.title||'TT'}</title><style>body{font-family:sans-serif;padding:20px;}table{width:100%;border-collapse:collapse;}th,td{border:1px solid #000;padding:8px;text-align:center;font-size:11px;}th{background:#0A2540;color:white;}</style></head><body><h2>${t.title||'Timetable'}</h2>`; if(t.type==='hairstyle'){ h+='<table><tr><th>Day</th><th>Hairstyle</th><th>Desc</th></tr>'; (t.days||['mon','tue','wed','thu','fri']).forEach((day,di)=>{ const e=(t.periods||{})[`${day}_Hairstyle`]||{}; h+=`<tr><td>${(t.dayLabels||[])[di]||day}</td><td>${e.subject||'—'}</td><td>${e.description||'—'}</td></tr>`; }); h+='</table>'; } else if(t.type==='test'||t.type==='exam'){ h+='<table><tr><th>Date</th><th>Subject</th><th>Start</th><th>End</th><th>Dur</th></tr>'; (t.days||['mon']).forEach((day,di)=>{ const e=(t.periods||{})[`${day}_Slot 1`]||{}; h+=`<tr><td>${(t.dayLabels||[])[di]||day}</td><td>${e.subject||'—'}</td><td>${e.startTime||'—'}</td><td>${e.endTime||'—'}</td><td>${e.duration||'—'}</td></tr>`; }); h+='</table>'; } else { h+='<table><tr><th>Day</th>'; (t.timeSlots||[]).forEach(ts=>h+=`<th>${ts}</th>`); h+='</tr>'; (t.days||['mon']).forEach((day,di)=>{ h+=`<tr><td>${(t.dayLabels||[])[di]||day}</td>`; (t.timeSlots||[]).forEach(ts=>{ const e=(t.periods||{})[`${day}_${ts}`]; h+=`<td>${e&&e.subject?e.subject+(e.teacherName?'<br><small>'+e.teacherName+'</small>':''):'—'}</td>`; }); h+='</tr>'; }); h+='</table>'; } h+='</body></html>'; w.document.write(h); w.document.close(); w.print(); }
 function printSyllabus(id) { const s = allSyllabi.find(x=>x.id===id); if(!s) return; const w = window.open('','_blank','width=800,height=600'); w.document.write(`<html><head><title>${s.subject} - ${s.term}</title><style>body{font-family:sans-serif;padding:20px;}table{width:100%;border-collapse:collapse;}th,td{border:1px solid #000;padding:8px;}th{background:#0A2540;color:white;}</style></head><body><h2>${s.subject} — ${s.term}</h2><table><tr><th>Week</th><th>Topic</th><th>By</th></tr>${(s.weeks||[]).sort((a,b)=>a.week-b.week).map(w=>`<tr><td>${w.week}</td><td>${w.topic||''}</td><td>${w.addedByName||''}</td></tr>`).join('')}</table></body></html>`); w.document.close(); w.print(); }
 
 document.addEventListener('click', function(e) { const cb = e.target.closest('[data-checkbox]'); if(cb) { const input = cb.querySelector('input[type="checkbox"]'); if(input && e.target !== input) { input.checked = !input.checked; cb.classList.toggle('checked', input.checked); if(input.onchange) input.onchange(); } } });
 
-window.openTimetableModal = openTimetableModal; window.openSyllabusModal = openSyllabusModal;
-window.closeTtModal = closeTtModal; window.closeSylModal = closeSylModal;
-window.saveTimetable = saveTimetable; window.saveSyllabus = saveSyllabus;
-window.addTtTimeSlot = addTtTimeSlot; window.removeTtTimeSlot = removeTtTimeSlot;
-window.updateTtCell = updateTtCell; window.toggleTtDay = toggleTtDay;
-window.onTtTypeChange = onTtTypeChange;
-window.addSylWeek = addSylWeek; window.addBulkWeeks = addBulkWeeks; window.removeSylWeek = removeSylWeek;
-window.changeTtStatus = changeTtStatus; window.changeSylStatus = changeSylStatus;
-window.duplicateTimetable = duplicateTimetable; window.duplicateSyllabus = duplicateSyllabus;
-window.deleteTimetable = deleteTimetable; window.deleteSyllabus = deleteSyllabus;
-window.printTimetable = printTimetable; window.printSyllabus = printSyllabus;
-window.renderTimetableGrids = renderTimetableGrids; window.renderSyllabusGrids = renderSyllabusGrids;
-window.setTtStatusFilter = setTtStatusFilter; window.setSylStatusFilter = setSylStatusFilter;
-window.onClassFilterChange = onClassFilterChange; window.onYearFilterChange = onYearFilterChange;
-window.openCoPlanModal = openCoPlanModal; window.closeCoPlanModal = closeCoPlanModal;
-window.confirmCoPlan = confirmCoPlan; window.renderCoTeacherList = renderCoTeacherList;
-window.toggleCoTeacher = toggleCoTeacher; window.removeCoTeacher = removeCoTeacher;
+window.openTimetableModal=openTimetableModal; window.openSyllabusModal=openSyllabusModal;
+window.closeTtModal=closeTtModal; window.closeSylModal=closeSylModal;
+window.saveTimetable=saveTimetable; window.saveSyllabus=saveSyllabus;
+window.addTtTimeSlot=addTtTimeSlot; window.removeTtTimeSlot=removeTtTimeSlot;
+window.updateTtCell=updateTtCell; window.toggleTtDay=toggleTtDay; window.onTtTypeChange=onTtTypeChange;
+window.addSylWeek=addSylWeek; window.addBulkWeeks=addBulkWeeks; window.removeSylWeek=removeSylWeek;
+window.changeTtStatus=changeTtStatus; window.changeSylStatus=changeSylStatus;
+window.duplicateTimetable=duplicateTimetable; window.duplicateSyllabus=duplicateSyllabus;
+window.deleteTimetable=deleteTimetable; window.deleteSyllabus=deleteSyllabus;
+window.printTimetable=printTimetable; window.printSyllabus=printSyllabus;
+window.renderTimetableGrids=renderTimetableGrids; window.renderSyllabusGrids=renderSyllabusGrids;
+window.setTtStatusFilter=setTtStatusFilter; window.setSylStatusFilter=setSylStatusFilter;
+window.onClassFilterChange=onClassFilterChange; window.onYearFilterChange=onYearFilterChange;
 
-debugLog('Page ready', 'Timetable & Syllabus with auto-overwrite + old format support');
-console.log('📅 Ready — Auto-overwrite same type/class/term + Backward compatible');
+console.log('📅 Timetable & Syllabus ready — Draft→Submit→Admin→Approved→Publish + Type selector + Auto-overwrite');
 </script>
 </body>
 </html>
