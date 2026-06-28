@@ -67,7 +67,6 @@
         .nav-btn { background:transparent; border:1px solid var(--border); border-radius:2rem; padding:0.5rem 1.2rem; color:var(--text-primary); font-weight:500; font-size:0.85rem; cursor:pointer; transition:0.2s; text-decoration:none; display:inline-flex; align-items:center; gap:0.4rem; white-space:nowrap; }
         .nav-btn:hover { background:var(--hover-bg); border-color:var(--accent); color:var(--accent); }
         .theme-toggle { display:inline-flex; align-items:center; gap:0.5rem; background:var(--card-bg); border:1px solid var(--border); border-radius:2rem; padding:0.4rem 1rem; cursor:pointer; font-size:0.85rem; color:var(--text-secondary); }
-        .theme-toggle:hover { border-color:var(--accent); }
         .profile-dropdown { position:relative; cursor:pointer; }
         .profile-trigger { display:flex; align-items:center; gap:0.7rem; background:var(--card-bg); border:1px solid var(--border); border-radius:3rem; padding:0.3rem 0.3rem 0.3rem 0.9rem; }
         .profile-name { font-weight:600; font-size:0.85rem; }
@@ -107,6 +106,11 @@
         @keyframes pulseLive { 0%,100%{opacity:1;transform:scale(1)} 50%{opacity:0.5;transform:scale(1.5)} }
         .classroom-controls { display:flex; gap:0.5rem; flex-wrap:wrap; }
         .classroom-participant-count { background:var(--hover-bg); padding:0.3rem 0.8rem; border-radius:2rem; font-size:0.8rem; display:flex; align-items:center; gap:0.3rem; }
+
+        /* Permission prompt */
+        .permission-prompt { background:var(--info-bg); border:2px solid var(--accent); border-radius:1rem; padding:1.5rem; text-align:center; margin-bottom:0; }
+        .permission-prompt h4 { margin-bottom:0.5rem; font-size:1rem; }
+        .permission-prompt p { font-size:0.85rem; color:var(--text-secondary); margin-bottom:1rem; }
 
         .resource-grid { display:grid; grid-template-columns:repeat(auto-fill,minmax(380px,1fr)); gap:1.5rem; }
         .resource-card { background:var(--card-bg); border:1px solid var(--border); border-radius:1rem; padding:1.5rem; box-shadow:var(--shadow-sm); display:flex; flex-direction:column; transition:0.3s; }
@@ -168,8 +172,8 @@
         .badge { display:inline-flex; align-items:center; gap:0.3rem; padding:0.2rem 0.8rem; border-radius:2rem; font-size:0.75rem; font-weight:600; }
         .badge-published { background:var(--success-bg); color:var(--success-text); border:1px solid var(--success-text); }
         .badge-pending { background:var(--warning-bg); color:var(--warning-text); }
-        .badge-live { background:rgba(34,197,94,0.2); color:#22c55e; border:1px solid #22c55e; animation:pulseLive 1.5s infinite; }
         .badge-teach { background:var(--info-bg); color:var(--info-text); border:1px solid rgba(59,130,246,0.3); }
+        .badge-scheduled { background:rgba(139,92,246,0.15); color:#8b5cf6; }
 
         .modal-overlay { position:fixed; inset:0; background:var(--overlay-bg); backdrop-filter:blur(4px); -webkit-backdrop-filter:blur(4px); z-index:400; display:none; align-items:center; justify-content:center; padding:1rem; }
         .modal-overlay.active { display:flex; animation:fadeIn 0.2s; }
@@ -220,8 +224,8 @@
         .section-badge.workspace { background:rgba(200,150,62,0.2); color:var(--accent); }
         .section-badge.student { background:rgba(139,92,246,0.2); color:#a78bfa; }
 
-        .past-session-item { display:flex; justify-content:space-between; align-items:center; padding:0.8rem; border-bottom:1px solid var(--border); flex-wrap:wrap; gap:0.5rem; }
-        .past-session-item:last-child { border-bottom:none; }
+        .past-session-item,.scheduled-session-item { display:flex; justify-content:space-between; align-items:center; padding:0.8rem; border-bottom:1px solid var(--border); flex-wrap:wrap; gap:0.5rem; }
+        .past-session-item:last-child,.scheduled-session-item:last-child { border-bottom:none; }
 
         .debug-panel { position:fixed; bottom:80px; right:1rem; z-index:9999; background:var(--debug-bg); border:2px solid var(--debug-border); border-radius:1rem; padding:1rem; width:450px; max-width:calc(100vw - 2rem); max-height:55vh; overflow-y:auto; box-shadow:0 10px 40px rgba(0,0,0,0.8); font-family:'Space Grotesk',monospace; font-size:0.7rem; display:none; color:var(--debug-text); }
         .debug-panel.show { display:block; }
@@ -311,7 +315,8 @@
 
     <div style="display:flex;gap:0.5rem;margin-bottom:1.5rem;flex-wrap:wrap;">
         <button class="btn btn-teach" id="teachModeBtn"><i class="fas fa-chalkboard"></i> Teach Mode <small style="opacity:0.7;">Ctrl+T</small></button>
-        <button class="btn btn-start-class" id="startClassBtn"><i class="fas fa-video"></i> Start Live Classroom</button>
+        <button class="btn btn-start-class" id="startClassBtn"><i class="fas fa-video"></i> Start Live Class Now</button>
+        <button class="btn btn-outline btn-sm" id="scheduleClassBtn"><i class="fas fa-calendar-plus"></i> Schedule Future Class</button>
         <button class="btn btn-outline btn-sm" id="guestInviteBtn"><i class="fas fa-user-plus"></i> Invite Guest</button>
         <button class="btn btn-outline btn-sm" id="studentViewBtn"><i class="fas fa-eye"></i> Student View</button>
         <button class="btn btn-outline btn-sm" id="printBtn"><i class="fas fa-print"></i> Print</button>
@@ -327,90 +332,121 @@
             </div>
         </div>
         <div class="jitsi-container" id="jitsiContainer">
-            <div class="empty-state" style="background:#000;color:white;"><i class="fas fa-video" style="opacity:0.3;"></i><h3>Loading classroom...</h3><p style="color:#94a3b8;">Everything stays in your browser — no app needed</p></div>
+            <!-- Permission prompt shown before loading Jitsi -->
+            <div class="permission-prompt" id="permissionPrompt">
+                <i class="fas fa-video" style="font-size:2.5rem;color:var(--accent);margin-bottom:0.5rem;display:block;"></i>
+                <h4>Ready to Start the Classroom?</h4>
+                <p>Your browser will ask for camera & microphone permission. This is needed for the live class. Everything happens in your browser — no downloads needed.</p>
+                <button class="btn btn-start-class" onclick="grantPermissionAndStart()" id="grantPermissionBtn">
+                    <i class="fas fa-check-circle"></i> Allow Camera & Mic — Start Classroom
+                </button>
+            </div>
         </div>
         <div class="classroom-info-bar">
-            <div class="classroom-status"><span class="live-dot"></span> <span>Session Active — All in-browser, no downloads</span></div>
+            <div class="classroom-status"><span class="live-dot"></span> <span>Session Active — In Browser</span></div>
             <div class="classroom-controls">
                 <button class="btn btn-sm btn-outline" onclick="toggleClassroomChat()" title="Chat"><i class="fas fa-comments"></i> Chat</button>
                 <button class="btn btn-sm btn-outline" onclick="toggleClassroomParticipants()" title="Participants"><i class="fas fa-users"></i> People</button>
                 <button class="btn btn-sm btn-outline" onclick="toggleClassroomTileView()" title="Tile View"><i class="fas fa-th"></i> Tile</button>
+                <button class="btn btn-sm btn-outline" onclick="inviteGuestToLiveClass()" title="Invite Guest"><i class="fas fa-user-plus"></i> Invite</button>
                 <button class="btn btn-end-class btn-sm" id="endClassBtn" title="End Classroom"><i class="fas fa-stop"></i> End Class</button>
             </div>
         </div>
     </div>
 
-    <!-- SECTION 1: Teaching Resources -->
+    <!-- SECTION 1: Scheduled Classes -->
+    <div class="card" id="scheduledClassesCard">
+        <div class="card-header"><h3><i class="fas fa-calendar-alt"></i> Scheduled & Upcoming Classes</h3></div>
+        <div id="scheduledClassesList"><div class="empty-state"><i class="fas fa-calendar"></i><h3>No scheduled classes</h3><p>Click "Schedule Future Class" to plan ahead.</p></div></div>
+    </div>
+
+    <!-- SECTION 2: Teaching Resources -->
     <div class="card" id="teachingResourcesCard">
         <div class="card-header">
             <h3><i class="fas fa-book-open"></i> Teaching Resources <span class="section-badge workspace">From Workspace</span></h3>
             <span id="resourceTitle" style="color:var(--accent);font-weight:600;">Select a subject and week</span>
         </div>
-        <div id="resourcesContainer"><div class="empty-state"><i class="fas fa-folder-open"></i><h3>Select Subject & Week</h3><p>Content published from your Workspace appears here.</p></div></div>
+        <div id="resourcesContainer"><div class="empty-state"><i class="fas fa-folder-open"></i><h3>Select Subject & Week</h3></div></div>
     </div>
 
-    <!-- SECTION 2: Past Sessions -->
+    <!-- SECTION 3: Past Sessions -->
     <div class="card" id="pastSessionsCard">
         <div class="card-header"><h3><i class="fas fa-history"></i> Past Live Sessions</h3></div>
-        <div id="pastSessionsList"><div class="empty-state"><i class="fas fa-history"></i><h3>No past sessions</h3><p>Completed live classrooms will appear here.</p></div></div>
+        <div id="pastSessionsList"><div class="empty-state"><i class="fas fa-history"></i><h3>No past sessions</h3></div></div>
     </div>
 
-    <!-- SECTION 3: Student Submissions -->
+    <!-- SECTION 4: Student Submissions -->
     <div class="card" id="studentSubmissionsCard">
         <div class="card-header">
             <h3><i class="fas fa-inbox"></i> Student Submissions <span class="section-badge student">From Students</span></h3>
             <span class="badge badge-pending" id="submissionCountBadge" style="display:none;">0 new</span>
         </div>
-        <div id="studentSubmissionsList"><div class="empty-state"><i class="fas fa-inbox"></i><h3>No student submissions yet</h3><p>Students can send images and voice notes from their classroom.</p></div></div>
+        <div id="studentSubmissionsList"><div class="empty-state"><i class="fas fa-inbox"></i><h3>No submissions</h3></div></div>
     </div>
 
-    <!-- SECTION 4: Student Chat -->
+    <!-- SECTION 5: Student Chat -->
     <div class="card" id="chatCard">
         <div class="card-header">
             <h3><i class="fas fa-comments"></i> Student Messages <span class="section-badge student">From Students</span></h3>
             <button class="btn btn-outline btn-sm" onclick="loadChatMessages()"><i class="fas fa-sync-alt"></i> Refresh</button>
         </div>
         <div class="chat-container">
-            <div class="chat-messages" id="chatMessages"><div class="empty-state"><i class="fas fa-comments"></i><h3>No messages yet</h3><p>Chat with your students here.</p></div></div>
+            <div class="chat-messages" id="chatMessages"><div class="empty-state"><i class="fas fa-comments"></i><h3>No messages</h3></div></div>
             <div class="chat-input-area">
-                <input type="text" id="chatInput" placeholder="Type a reply to students..." onkeypress="if(event.key==='Enter')sendChatMessage()">
+                <input type="text" id="chatInput" placeholder="Reply to students..." onkeypress="if(event.key==='Enter')sendChatMessage()">
                 <button onclick="sendChatMessage()"><i class="fas fa-paper-plane"></i> Send</button>
             </div>
         </div>
     </div>
 </main>
 
-<!-- START CLASSROOM MODAL -->
+<!-- START CLASS MODAL (Live Now) -->
 <div class="modal-overlay" id="startClassModal">
     <div class="modal-content">
-        <div class="modal-header"><h3><i class="fas fa-video"></i> Start Live Classroom</h3><button class="modal-close" id="startClassModalClose">✕</button></div>
+        <div class="modal-header"><h3><i class="fas fa-video"></i> Start Live Classroom Now</h3><button class="modal-close" id="startClassModalClose">✕</button></div>
         <form id="startClassForm">
-            <div class="form-group"><label class="form-label">Class Topic / Title</label><input type="text" id="classTopic" class="form-control" placeholder="e.g., Mathematics - Fractions" required></div>
-            <div class="form-group"><label class="form-label">Duration</label><select id="classDuration" class="form-control"><option value="20">20 minutes</option><option value="30">30 minutes</option><option value="45">45 minutes</option><option value="60" selected>1 hour</option><option value="90">1.5 hours</option><option value="120">2 hours</option></select></div>
-            <p style="font-size:0.8rem;color:var(--text-secondary);margin-bottom:1rem;"><i class="fas fa-info-circle"></i> Everything stays <strong>in your browser</strong>. No app downloads, no external logins. Raise hand ✋, chat 💬, screen share 📹 — all built in.</p>
-            <div class="modal-actions"><button type="button" class="btn btn-outline" id="startClassCancelBtn">Cancel</button><button type="submit" class="btn btn-start-class"><i class="fas fa-play"></i> Start Live Classroom</button></div>
+            <div class="form-group"><label class="form-label">Topic</label><input type="text" id="classTopic" class="form-control" placeholder="e.g., Mathematics - Fractions" required></div>
+            <div class="form-group"><label class="form-label">Duration</label><select id="classDuration" class="form-control"><option value="20">20 min</option><option value="30">30 min</option><option value="45">45 min</option><option value="60" selected>1 hour</option><option value="90">1.5 hours</option></select></div>
+            <div class="modal-actions"><button type="button" class="btn btn-outline" id="startClassCancelBtn">Cancel</button><button type="submit" class="btn btn-start-class"><i class="fas fa-play"></i> Start Now</button></div>
         </form>
     </div>
 </div>
 
-<!-- GUEST MODAL -->
+<!-- SCHEDULE CLASS MODAL (Future) -->
+<div class="modal-overlay" id="scheduleClassModal">
+    <div class="modal-content">
+        <div class="modal-header"><h3><i class="fas fa-calendar-plus"></i> Schedule Future Class</h3><button class="modal-close" id="scheduleClassModalClose">✕</button></div>
+        <form id="scheduleClassForm">
+            <div class="form-group"><label class="form-label">Topic</label><input type="text" id="schedTopic" class="form-control" placeholder="e.g., Science - Plants" required></div>
+            <div class="form-group"><label class="form-label">Date</label><input type="date" id="schedDate" class="form-control" required></div>
+            <div class="form-group"><label class="form-label">Time</label><input type="time" id="schedTime" class="form-control" required></div>
+            <div class="form-group"><label class="form-label">Duration</label><select id="schedDuration" class="form-control"><option value="20">20 min</option><option value="30">30 min</option><option value="45">45 min</option><option value="60" selected>1 hour</option><option value="90">1.5 hours</option><option value="120">2 hours</option></select></div>
+            <div class="form-group"><label class="form-label">Invite Guest (Optional)</label><input type="text" id="schedGuestName" class="form-control" placeholder="Guest name (leave empty if none)"></div>
+            <div class="form-group" id="schedGuestPurposeGroup" style="display:none;"><label class="form-label">Guest Topic/Purpose</label><input type="text" id="schedGuestPurpose" class="form-control" placeholder="e.g., Health talk"></div>
+            <div class="modal-actions"><button type="button" class="btn btn-outline" id="scheduleClassCancelBtn">Cancel</button><button type="submit" class="btn btn-primary"><i class="fas fa-calendar-check"></i> Schedule Class</button></div>
+        </form>
+    </div>
+</div>
+
+<!-- GUEST MODAL (Invite to live or scheduled) -->
 <div class="modal-overlay" id="guestModal">
     <div class="modal-content" style="max-width:550px;">
         <div class="modal-header"><h3><i class="fas fa-user-plus"></i> Invite Guest Teacher</h3><button class="modal-close" id="guestModalClose">✕</button></div>
         <form id="guestForm">
             <div class="form-group"><label class="form-label">Guest Name</label><input type="text" id="guestName" class="form-control" placeholder="e.g., Dr. Adeola" required></div>
-            <div class="form-group"><label class="form-label">Purpose / Topic</label><input type="text" id="guestPurpose" class="form-control" placeholder="e.g., Health talk on hygiene" required></div>
-            <div class="form-group"><label class="form-label">Classroom Duration</label><select id="guestDuration" class="form-control"><option value="20">20 minutes</option><option value="30">30 minutes</option><option value="45">45 minutes</option><option value="60" selected>1 hour</option><option value="120">2 hours</option></select></div>
-            <p style="font-size:0.8rem;color:var(--text-secondary);margin-bottom:1rem;"><i class="fas fa-info-circle"></i> Guest gets a <strong>link + one-time code</strong>. No sign-up, no app download. Everything works in their browser.</p>
+            <div class="form-group"><label class="form-label">Purpose/Topic</label><input type="text" id="guestPurpose" class="form-control" placeholder="e.g., Health talk on hygiene" required></div>
+            <div class="form-group"><label class="form-label">For</label><select id="guestForType" class="form-control"><option value="now">Current Live Class</option><option value="scheduled">Scheduled Future Class</option></select></div>
+            <div class="form-group" id="guestScheduledSelect" style="display:none;"><label class="form-label">Select Scheduled Class</label><select id="guestScheduledClass" class="form-control"></select></div>
+            <div class="form-group"><label class="form-label">Access Duration</label><select id="guestDuration" class="form-control"><option value="30">30 minutes</option><option value="60" selected>1 hour</option><option value="120">2 hours</option><option value="360">6 hours</option><option value="1440">24 hours</option></select></div>
             <div class="modal-actions"><button type="button" class="btn btn-outline" id="guestCancelBtn">Cancel</button><button type="submit" class="btn btn-primary"><i class="fas fa-link"></i> Generate Invite</button></div>
         </form>
         <div class="guest-link-box" id="guestLinkBox">
-            <strong><i class="fas fa-link"></i> Share with your guest:</strong>
-            <p style="margin-top:0.5rem;"><strong>Link:</strong><br><span id="guestLinkText" style="word-break:break-all;"></span></p>
-            <p style="margin-top:0.8rem;"><strong>One-Time Access Code:</strong></p>
+            <strong><i class="fas fa-link"></i> Share with guest:</strong>
+            <p style="margin-top:0.5rem;"><strong>Link:</strong><br><span id="guestLinkText"></span></p>
+            <p style="margin-top:0.8rem;"><strong>One-Time Code:</strong></p>
             <div class="guest-code-display" id="guestCodeDisplay">------</div>
-            <p style="font-size:0.75rem;color:var(--text-secondary);">No account, no app — just open the link, enter the code, and start teaching.</p>
-            <button class="btn btn-primary btn-sm" id="copyGuestInviteBtn" style="margin-top:0.5rem;"><i class="fas fa-copy"></i> Copy Link + Code</button>
+            <p style="font-size:0.75rem;color:var(--text-secondary);">No account needed. Opens in browser.</p>
+            <button class="btn btn-primary btn-sm" id="copyGuestInviteBtn" style="margin-top:0.5rem;"><i class="fas fa-copy"></i> Copy</button>
         </div>
     </div>
 </div>
@@ -452,11 +488,12 @@ let lessonNotesMap={},currentNote=null;
 let teachActive=false,teachPanels={lessonNote:true,teachingProcess:true};
 let teachModes={lessonNote:'scroll',teachingProcess:'scroll'};
 let bookPages={lessonNote:{pages:[],current:0},teachingProcess:{pages:[],current:0}};
-let selectedVideoIdx=0,unsubChat=null,unsubSubmissions=null,unsubLiveSession=null;
+let selectedVideoIdx=0,unsubChat=null,unsubSubmissions=null,unsubLiveSession=null,unsubScheduled=null;
 let jitsiApi=null,currentLiveSessionId=null,classTimerInterval=null,classSeconds=0,classDuration=0;
+let pendingRoomName=null,pendingTopic=null,pendingDuration=null;
 
-// FREE PUBLIC JITSI SERVERS — no login, no moderator approval, no time limit, no app prompts
-const JITSI_DOMAINS=['meet.ffmuc.net','framatalk.org','meet.mayfirst.org'];
+// TRY THESE DOMAINS IN ORDER — framatalk is most reliable for embedded
+const JITSI_DOMAINS=['framatalk.org','meet.ffmuc.net','meet.mayfirst.org'];
 let currentJitsiDomainIdx=0;
 
 function escapeHtml(s){const d=document.createElement('div');d.textContent=s||'';return d.innerHTML;}
@@ -473,14 +510,9 @@ function generateRoomName(base){return`judah-${base}-${Date.now().toString(36)}-
 
 (function(){
     const html=document.documentElement,tt=document.getElementById('themeToggle');
-    const saved=localStorage.getItem('judah-theme')||'dark';
-    html.setAttribute('data-theme',saved);
+    const saved=localStorage.getItem('judah-theme')||'dark';html.setAttribute('data-theme',saved);
     tt.querySelector('span').textContent=saved==='dark'?'Light':'Dark';
-    tt.addEventListener('click',()=>{
-        const n=html.getAttribute('data-theme')==='dark'?'light':'dark';
-        html.setAttribute('data-theme',n);localStorage.setItem('judah-theme',n);
-        tt.querySelector('span').textContent=n==='dark'?'Light':'Dark';
-    });
+    tt.addEventListener('click',()=>{const n=html.getAttribute('data-theme')==='dark'?'light':'dark';html.setAttribute('data-theme',n);localStorage.setItem('judah-theme',n);tt.querySelector('span').textContent=n==='dark'?'Light':'Dark';});
 })();
 
 function openImagePopup(url){document.getElementById('imagePopupImg').src=url;document.getElementById('imagePopup').classList.add('active');}
@@ -488,35 +520,54 @@ function closeImagePopup(){document.getElementById('imagePopup').classList.remov
 document.addEventListener('keydown',e=>{if(e.key==='Escape'&&!teachActive)closeImagePopup();});
 
 // ═══════════════════════════════════════════
-// LIVE CLASSROOM — NO APP, NO LOGIN, ALL IN BROWSER
+// PERMISSION PROMPT + LIVE CLASSROOM
 // ═══════════════════════════════════════════
-function startClassTimer(){
-    classSeconds=0;updateTimerDisplay();
-    classTimerInterval=setInterval(()=>{classSeconds++;updateTimerDisplay();
-        if(classDuration>0&&classSeconds>=classDuration*60)endLiveClass('Time expired');
-    },1000);
+function grantPermissionAndStart(){
+    // First request camera/mic permission explicitly
+    navigator.mediaDevices.getUserMedia({audio:true,video:true})
+    .then(stream=>{
+        // Permission granted — stop the test stream and start Jitsi
+        stream.getTracks().forEach(t=>t.stop());
+        debugLog('Permissions granted','Starting Jitsi');
+        document.getElementById('permissionPrompt').style.display='none';
+        actuallyStartJitsi();
+    })
+    .catch(err=>{
+        debugLog('Permission denied',err.message,'error');
+        // Try anyway — Jitsi will show its own prompt
+        document.getElementById('permissionPrompt').style.display='none';
+        actuallyStartJitsi();
+    });
 }
-function updateTimerDisplay(){
-    const m=Math.floor(classSeconds/60),s=classSeconds%60;
-    const d=document.getElementById('timerDisplay');if(d)d.textContent=`${String(m).padStart(2,'0')}:${String(s).padStart(2,'0')}`;
-    const t=document.getElementById('classroomTimer');
-    if(t&&classDuration>0){const r=classDuration*60-classSeconds;t.classList.toggle('urgent',r<300);}
-}
-function stopClassTimer(){if(classTimerInterval){clearInterval(classTimerInterval);classTimerInterval=null;}}
 
-function initJitsiMeet(roomName,topic){
+function actuallyStartJitsi(){
+    if(!pendingRoomName)return;
+    const roomName=pendingRoomName,topic=pendingTopic;
     const container=document.getElementById('jitsiContainer');
-    container.innerHTML='<div class="empty-state" style="background:#000;color:white;"><i class="fas fa-spinner fa-spin" style="opacity:0.5;"></i><h3>Connecting to classroom...</h3><p style="color:#94a3b8;">Allow camera & microphone when prompted</p></div>';
+    container.innerHTML='<div class="empty-state" style="background:#000;color:white;"><i class="fas fa-spinner fa-spin" style="opacity:0.5;"></i><h3>Loading classroom...</h3></div>';
     
-    const domain=JITSI_DOMAINS[currentJitsiDomainIdx];
-    debugLog('Jitsi connecting',`Domain: ${domain}, Room: ${roomName}`);
+    tryJitsiDomain(roomName,topic,0);
+}
+
+function tryJitsiDomain(roomName,topic,domainIdx){
+    if(domainIdx>=JITSI_DOMAINS.length){
+        document.getElementById('jitsiContainer').innerHTML='<div class="empty-state" style="background:#000;color:white;"><i class="fas fa-exclamation-triangle" style="color:#f59e0b;"></i><h3>Could not connect</h3><p style="color:#94a3b8;">Please check your internet and try again.</p><button class="btn btn-primary btn-sm" onclick="retryJitsi()">Retry</button></div>';
+        showToast('Connection failed','Please try again','error');
+        return;
+    }
+    
+    const domain=JITSI_DOMAINS[domainIdx];
+    currentJitsiDomainIdx=domainIdx;
+    debugLog('Trying Jitsi domain',domain);
+    
+    const container=document.getElementById('jitsiContainer');
     
     const options={
         roomName:roomName,
         width:'100%',
         height:'100%',
         parentNode:container,
-        userInfo:{displayName:userData?`${userData.firstName||'Teacher'} ${userData.surname||''}`.trim():(document.getElementById('profileName')?.textContent||'Teacher')},
+        userInfo:{displayName:userData?`${userData.firstName||'Teacher'} ${userData.surname||''}`.trim():'Teacher'},
         configOverrides:{
             startWithAudioMuted:false,
             startWithVideoMuted:false,
@@ -544,35 +595,52 @@ function initJitsiMeet(roomName,topic){
             SHOW_CHROME_EXTENSION_BANNER:false,
             MOBILE_APP_PROMO:false,
             HIDE_INVITE_MORE_HEADER:true,
-            DISABLE_FOCUS_INDICATOR:false,
             SHOW_JITSI_WATERMARK:false,
             JITSI_WATERMARK_LINK:'',
-            APP_NAME:'Judah Wonders Classroom',
-            NATIVE_APP_NAME:'Judah Classroom',
-            PROVIDER_NAME:'Judah Wonders Model School',
-            FILM_STRIP_MAX_HEIGHT:120,
-            DEFAULT_BACKGROUND:'#0a0f1e',
-            DISABLE_VIDEO_BACKGROUND:false
+            APP_NAME:'Judah Classroom',
+            PROVIDER_NAME:'Judah Wonders'
         }
     };
     
     try{
+        if(jitsiApi){try{jitsiApi.dispose();}catch(e){}}
         jitsiApi=new JitsiMeetExternalAPI(domain,options);
+        
         jitsiApi.addListener('participantJoined',(p)=>{debugLog('Joined',p.displayName);updateParticipantCount();});
         jitsiApi.addListener('participantLeft',(p)=>{debugLog('Left',p.displayName);updateParticipantCount();});
-        jitsiApi.addListener('videoConferenceJoined',()=>{debugLog('Conference','Ready');updateParticipantCount();const empty=container.querySelector('.empty-state');if(empty)empty.remove();});
-        jitsiApi.addListener('videoConferenceLeft',()=>debugLog('Conference','Disconnected'));
+        jitsiApi.addListener('videoConferenceJoined',()=>{
+            debugLog('Conference connected','Success on '+domain);
+            updateParticipantCount();
+            const empty=container.querySelector('.empty-state');
+            if(empty)empty.remove();
+        });
+        jitsiApi.addListener('videoConferenceLeft',()=>debugLog('Conference left',''));
+        
+        // Set a timeout — if it doesn't connect in 10 seconds, try next domain
+        setTimeout(()=>{
+            const iframe=container.querySelector('iframe');
+            if(iframe){
+                try{
+                    const iframeDoc=iframe.contentDocument||iframe.contentWindow?.document;
+                    if(iframeDoc&&iframeDoc.querySelector('.empty-state')){
+                        debugLog('Jitsi not loaded on '+domain,'Trying next','warn');
+                        tryJitsiDomain(roomName,topic,domainIdx+1);
+                    }
+                }catch(e){/* cross-origin, iframe likely loaded */}
+            }
+        },12000);
+        
     }catch(e){
-        debugLog('Jitsi init ERROR',e.message,'error');
-        currentJitsiDomainIdx++;
-        if(currentJitsiDomainIdx<JITSI_DOMAINS.length){
-            debugLog('Trying fallback',JITSI_DOMAINS[currentJitsiDomainIdx]);
-            showToast('Switching server...','Trying alternative classroom server','warning',3000);
-            setTimeout(()=>initJitsiMeet(roomName,topic),1500);
-        }else{
-            container.innerHTML='<div class="empty-state" style="background:#000;color:white;"><i class="fas fa-exclamation-triangle" style="color:#f59e0b;"></i><h3>Classroom Unavailable</h3><p style="color:#94a3b8;">Please try again in a moment.</p></div>';
-            showToast('Error','Could not start classroom','error');
-        }
+        debugLog('Jitsi init error on '+domain,e.message,'error');
+        tryJitsiDomain(roomName,topic,domainIdx+1);
+    }
+}
+
+function retryJitsi(){
+    if(pendingRoomName){
+        currentJitsiDomainIdx=0;
+        document.getElementById('jitsiContainer').innerHTML='<div class="empty-state" style="background:#000;color:white;"><i class="fas fa-spinner fa-spin"></i><h3>Retrying...</h3></div>';
+        tryJitsiDomain(pendingRoomName,pendingTopic,0);
     }
 }
 
@@ -583,30 +651,66 @@ function toggleClassroomChat(){if(jitsiApi)jitsiApi.executeCommand('toggleChat')
 function toggleClassroomParticipants(){if(jitsiApi)jitsiApi.executeCommand('toggleFilmStrip');}
 function toggleClassroomTileView(){if(jitsiApi)jitsiApi.executeCommand('toggleTileView');}
 
-async function startLiveClass(topic,duration){
+function startClassTimer(){
+    classSeconds=0;updateTimerDisplay();
+    classTimerInterval=setInterval(()=>{classSeconds++;updateTimerDisplay();
+        if(classDuration>0&&classSeconds>=classDuration*60)endLiveClass('Time expired');
+    },1000);
+}
+function updateTimerDisplay(){
+    const m=Math.floor(classSeconds/60),s=classSeconds%60;
+    const d=document.getElementById('timerDisplay');if(d)d.textContent=`${String(m).padStart(2,'0')}:${String(s).padStart(2,'0')}`;
+    const t=document.getElementById('classroomTimer');
+    if(t&&classDuration>0){t.classList.toggle('urgent',(classDuration*60-classSeconds)<300);}
+}
+function stopClassTimer(){if(classTimerInterval){clearInterval(classTimerInterval);classTimerInterval=null;}}
+
+async function startLiveClass(topic,duration,isScheduled=false,scheduledId=null){
     if(currentLiveSessionId){showToast('Class already running','End current class first','warning');return;}
     const roomName=generateRoomName(currentClass||'classroom');
-    currentLiveSessionId=roomName;classDuration=duration;currentJitsiDomainIdx=0;
-    debugLog('Starting live class',{roomName,topic,duration});
+    currentLiveSessionId=scheduledId||roomName;
+    pendingRoomName=roomName;pendingTopic=topic;pendingDuration=duration;
+    classDuration=duration;currentJitsiDomainIdx=0;
+    debugLog('Starting live class',{roomName,topic,duration,isScheduled});
+    
+    // Save/update in Firestore
+    const sessionData={
+        roomName,topic,classId:currentClass,subject:currentSubject||'',week:currentWeek||null,
+        teacherId:currentUser?currentUser.uid:'guest',
+        teacherName:userData?`${userData.firstName||''} ${userData.surname||''}`.trim():'Teacher',
+        durationMinutes:duration,status:'live',participantCount:0,
+        startedAt:firebase.firestore.FieldValue.serverTimestamp()
+    };
     
     try{
-        const ref=await db.collection('liveClassSessions').add({
-            roomName,topic,classId:currentClass,subject:currentSubject||'',week:currentWeek||null,
-            teacherId:currentUser?currentUser.uid:'guest',
-            teacherName:userData?`${userData.firstName||''} ${userData.surname||''}`.trim():'Teacher',
-            startedAt:firebase.firestore.FieldValue.serverTimestamp(),
-            durationMinutes:duration,status:'live',participantCount:0
-        });
-        currentLiveSessionId=ref.id;
-        debugLog('Session saved',ref.id);
+        if(isScheduled&&scheduledId){
+            await db.collection('scheduledClasses').doc(scheduledId).update({status:'live',roomName,startedAt:firebase.firestore.FieldValue.serverTimestamp()});
+            // Also add to live sessions
+            const ref=await db.collection('liveClassSessions').add(sessionData);
+            currentLiveSessionId=ref.id;
+        }else{
+            const ref=await db.collection('liveClassSessions').add(sessionData);
+            currentLiveSessionId=ref.id;
+        }
+        debugLog('Session saved');
     }catch(e){debugLog('Save error',e.message,'error');}
     
+    // Show classroom card with permission prompt
     document.getElementById('liveClassroomCard').style.display='block';
     document.getElementById('liveClassName').textContent=topic;
-    initJitsiMeet(roomName,topic);
+    document.getElementById('jitsiContainer').innerHTML=`
+        <div class="permission-prompt" id="permissionPrompt">
+            <i class="fas fa-video" style="font-size:2.5rem;color:var(--accent);margin-bottom:0.5rem;display:block;"></i>
+            <h4>Ready to Start the Classroom?</h4>
+            <p>Your browser will ask for camera & microphone permission. This is needed for the live class.<br>Everything happens in your browser — no downloads needed.</p>
+            <button class="btn btn-start-class" onclick="grantPermissionAndStart()">
+                <i class="fas fa-check-circle"></i> Allow Camera & Mic — Start Classroom
+            </button>
+        </div>`;
+    
     startClassTimer();
     document.getElementById('liveClassroomCard').scrollIntoView({behavior:'smooth'});
-    showToast('Live Classroom Started!','Students can join from their page. Raise hand ✋, chat 💬, screen share 📹 — all in browser.','success',8000);
+    showToast('Live Classroom Ready!','Click the button to allow camera & mic and start.','success',8000);
 }
 
 async function endLiveClass(reason='Teacher ended class'){
@@ -621,13 +725,161 @@ async function endLiveClass(reason='Teacher ended class'){
                 status:'ended',endedAt:firebase.firestore.FieldValue.serverTimestamp(),
                 endedReason:reason,durationActual:classSeconds
             });
-        }catch(e){debugLog('End error',e.message,'error');}
+        }catch(e){}
     }
-    currentLiveSessionId=null;classSeconds=0;classDuration=0;
+    currentLiveSessionId=null;pendingRoomName=null;pendingTopic=null;
+    classSeconds=0;classDuration=0;
     showToast('Class Ended','Session saved to history.','info');
-    loadPastSessions();
+    loadPastSessions();loadScheduledClasses();
 }
 
+// ═══════════════════════════════════════════
+// SCHEDULING SYSTEM
+// ═══════════════════════════════════════════
+function setupScheduledListener(){
+    if(unsubScheduled)unsubScheduled();if(!currentUser||!currentClass)return;
+    unsubScheduled=db.collection('scheduledClasses')
+        .where('teacherId','==',currentUser.uid)
+        .where('classId','==',currentClass)
+        .where('status','in',['scheduled','live'])
+        .onSnapshot(()=>loadScheduledClasses(),e=>debugLog('Sched ERROR',e.message,'error'));
+}
+
+async function loadScheduledClasses(){
+    if(!currentClass)return;
+    const c=document.getElementById('scheduledClassesList');
+    try{
+        const snap=await db.collection('scheduledClasses')
+            .where('teacherId','==',currentUser.uid)
+            .where('classId','==',currentClass)
+            .where('status','in',['scheduled','live'])
+            .orderBy('date','asc').orderBy('time','asc')
+            .get();
+        
+        if(snap.empty){c.innerHTML='<div class="empty-state"><i class="fas fa-calendar"></i><h3>No scheduled classes</h3></div>';return;}
+        
+        const now=new Date();
+        c.innerHTML=snap.docs.map(d=>{
+            const s=d.data();
+            const dt=new Date(`${s.date}T${s.time}`);
+            const isPast=dt<now&&s.status!=='live';
+            const isNow=dt<=now&&(dt.getTime()+s.durationMinutes*60000)>now.getTime();
+            const statusLabel=s.status==='live'?'🔴 Live':isNow?'🟡 Now':'📅 Scheduled';
+            const statusCls=s.status==='live'?'badge-pending':isNow?'badge-pending':'badge-scheduled';
+            const guestInfo=s.guestName?` | Guest: ${s.guestName}`:'';
+            return`<div class="scheduled-session-item">
+                <div>
+                    <strong>${escapeHtml(s.topic||'Untitled')}</strong>
+                    <span class="badge ${statusCls}">${statusLabel}</span>
+                    <span style="font-size:0.8rem;color:var(--text-secondary);margin-left:0.3rem;">${s.date} ${s.time} · ${s.durationMinutes}min${guestInfo}</span>
+                </div>
+                <div style="display:flex;gap:0.3rem;">
+                    ${s.status!=='live'?`<button class="btn btn-start-class btn-sm" onclick="startScheduledClass('${d.id}')"><i class="fas fa-play"></i> Start</button>`:''}
+                    ${s.guestCode?`<button class="btn btn-outline btn-sm" onclick="copyGuestInfo('${d.id}')"><i class="fas fa-copy"></i> Guest</button>`:''}
+                    <button class="btn btn-outline btn-sm" onclick="deleteScheduled('${d.id}')"><i class="fas fa-trash"></i></button>
+                </div>
+            </div>`;
+        }).join('');
+    }catch(e){debugLog('Load sched error',e.message,'error');}
+}
+
+async function scheduleClass(topic,date,time,duration,guestName,guestPurpose){
+    const data={
+        teacherId:currentUser.uid,teacherName:`${userData.firstName||''} ${userData.surname||''}`.trim(),
+        classId:currentClass,subject:currentSubject||'',week:currentWeek||null,
+        topic,date,time,durationMinutes:duration,
+        status:'scheduled',createdAt:firebase.firestore.FieldValue.serverTimestamp()
+    };
+    
+    // If guest invited, generate code
+    if(guestName&&guestName.trim()){
+        const guestId=Math.random().toString(36).substring(2,14);
+        const guestCode=Math.random().toString(36).substring(2,8).toUpperCase();
+        data.guestName=guestName.trim();
+        data.guestPurpose=guestPurpose||'';
+        data.guestId=guestId;
+        data.guestCode=guestCode;
+        data.guestUsed=false;
+    }
+    
+    try{
+        const ref=await db.collection('scheduledClasses').add(data);
+        debugLog('Class scheduled',ref.id);
+        showToast('Scheduled!',`Class for ${date} at ${time}.${guestName?' Guest '+guestName+' invited.':''}`,'success',6000);
+        if(guestName)showGuestInviteInfo(ref.id,data);
+    }catch(e){showToast('Error',e.message,'error');}
+}
+
+async function startScheduledClass(id){
+    const doc=await db.collection('scheduledClasses').doc(id).get();
+    if(!doc.exists)return;
+    const s=doc.data();
+    startLiveClass(s.topic,s.durationMinutes,true,id);
+}
+
+async function deleteScheduled(id){
+    if(!confirm('Delete this scheduled class?'))return;
+    await db.collection('scheduledClasses').doc(id).delete();
+    showToast('Deleted','Scheduled class removed','info');
+}
+
+function showGuestInviteInfo(scheduledId,data){
+    const link=`${window.location.origin}/teacher-teach.html?guest=${data.guestId}&code=${data.guestCode}&scheduled=${scheduledId}`;
+    document.getElementById('guestLinkText').textContent=link;
+    document.getElementById('guestCodeDisplay').textContent=data.guestCode;
+    document.getElementById('guestLinkBox').classList.add('show');
+    document.getElementById('guestModal').classList.add('active');
+}
+
+async function copyGuestInfo(id){
+    const doc=await db.collection('scheduledClasses').doc(id).get();
+    if(!doc.exists)return;
+    const s=doc.data();
+    const link=`${window.location.origin}/teacher-teach.html?guest=${s.guestId}&code=${s.guestCode}&scheduled=${id}`;
+    navigator.clipboard.writeText(`Link: ${link}\nCode: ${s.guestCode}\nDate: ${s.date} at ${s.time}`)
+        .then(()=>showToast('Copied!','Guest info copied','success'))
+        .catch(()=>showToast('Failed','error'));
+}
+
+// ═══════════════════════════════════════════
+// INVITE GUEST TO LIVE CLASS
+// ═══════════════════════════════════════════
+function inviteGuestToLiveClass(){
+    if(!currentLiveSessionId){
+        // No live class — open guest modal for scheduling
+        document.getElementById('guestForType').value='scheduled';
+        document.getElementById('guestScheduledSelect').parentElement.style.display='block';
+        populateGuestScheduledSelect();
+    }else{
+        document.getElementById('guestForType').value='now';
+        document.getElementById('guestScheduledSelect').parentElement.style.display='none';
+    }
+    document.getElementById('guestModal').classList.add('active');
+    document.getElementById('guestLinkBox').classList.remove('show');
+}
+
+async function populateGuestScheduledSelect(){
+    const sel=document.getElementById('guestScheduledClass');
+    sel.innerHTML='<option value="">Select...</option>';
+    if(!currentClass)return;
+    const snap=await db.collection('scheduledClasses')
+        .where('teacherId','==',currentUser.uid)
+        .where('classId','==',currentClass)
+        .where('status','==','scheduled')
+        .orderBy('date','asc')
+        .get();
+    snap.forEach(d=>{
+        const s=d.data();
+        const o=document.createElement('option');
+        o.value=d.id;
+        o.textContent=`${s.topic} — ${s.date} ${s.time}`;
+        sel.appendChild(o);
+    });
+}
+
+// ═══════════════════════════════════════════
+// PAST SESSIONS
+// ═══════════════════════════════════════════
 async function loadPastSessions(){
     if(!currentClass)return;
     const c=document.getElementById('pastSessionsList');
@@ -636,18 +888,15 @@ async function loadPastSessions(){
         if(snap.empty){c.innerHTML='<div class="empty-state"><i class="fas fa-history"></i><h3>No past sessions</h3></div>';return;}
         c.innerHTML=snap.docs.map(d=>{
             const s=d.data();
-            const startDate=s.startedAt?.toDate?new Date(s.startedAt.toDate()).toLocaleString():'Unknown';
-            const dur=s.durationActual?`${Math.floor(s.durationActual/60)}m ${s.durationActual%60}s`:s.durationMinutes+'m';
-            return`<div class="past-session-item">
-                <div><strong>${escapeHtml(s.topic||'Untitled')}</strong><span style="font-size:0.8rem;color:var(--text-secondary);margin-left:0.5rem;">${startDate}</span></div>
-                <div style="display:flex;align-items:center;gap:0.5rem;"><span style="font-size:0.75rem;color:var(--text-secondary);">${dur}</span><span class="badge">Room: ${(s.roomName||'').substring(0,12)}...</span></div>
-            </div>`;
+            const d2=s.startedAt?.toDate?new Date(s.startedAt.toDate()).toLocaleString():'Unknown';
+            const dur=s.durationActual?`${Math.floor(s.durationActual/60)}m`:s.durationMinutes+'m';
+            return`<div class="past-session-item"><div><strong>${escapeHtml(s.topic||'Untitled')}</strong><span style="font-size:0.8rem;color:var(--text-secondary);margin-left:0.5rem;">${d2}</span></div><span style="font-size:0.75rem;color:var(--text-secondary);">${dur}</span></div>`;
         }).join('');
-    }catch(e){debugLog('Past sessions error',e.message,'error');}
+    }catch(e){}
 }
 
 // ═══════════════════════════════════════════
-// TEACH MODE (LESSON NOTE FLIP-THROUGH)
+// TEACH MODE (unchanged)
 // ═══════════════════════════════════════════
 function paginateContent(text,wordsPerPage=150){
     if(!text||!text.trim())return['No content available.'];
@@ -657,8 +906,7 @@ function paginateContent(text,wordsPerPage=150){
     return pages.length?pages:['No content available.'];
 }
 function renderBookMode(container,pages,current,panelKey){
-    container.innerHTML='';
-    const fc=document.createElement('div');fc.className='book-container';
+    container.innerHTML='';const fc=document.createElement('div');fc.className='book-container';
     const pd=document.createElement('div');pd.className='book-page';pd.textContent=pages[current]||'';fc.appendChild(pd);
     const nav=document.createElement('div');nav.className='book-nav';
     nav.innerHTML=`<button class="book-nav-btn" data-action="prev" data-panel="${panelKey}" ${current===0?'disabled':''}><i class="fas fa-chevron-left"></i></button><span class="page-indicator">Page ${current+1}/${pages.length}</span><button class="book-nav-btn" data-action="next" data-panel="${panelKey}" ${current>=pages.length-1?'disabled':''}><i class="fas fa-chevron-right"></i></button>`;
@@ -667,8 +915,7 @@ function renderBookMode(container,pages,current,panelKey){
 }
 function flipBookPage(panelKey,dir){const bp=bookPages[panelKey],np=bp.current+dir;if(np<0||np>=bp.pages.length)return;bp.current=np;const ck=panelKey==='lessonNote'?'teachContentLN':'teachContentTP';if(document.getElementById(ck).classList.contains('book-mode'))renderBookMode(document.getElementById(ck),bp.pages,bp.current,panelKey);}
 function setReadingMode(panelKey,mode){
-    teachModes[panelKey]=mode;
-    const ck=panelKey==='lessonNote'?'teachContentLN':'teachContentTP',container=document.getElementById(ck);
+    teachModes[panelKey]=mode;const ck=panelKey==='lessonNote'?'teachContentLN':'teachContentTP',container=document.getElementById(ck);
     container.classList.remove('scroll-mode','book-mode');if(!currentNote)return;
     const content=panelKey==='lessonNote'?(currentNote.lessonNote||''):(currentNote.teachingProcess||'');
     if(mode==='book'){const pages=paginateContent(content);bookPages[panelKey]={pages,current:0};container.classList.add('book-mode');renderBookMode(container,pages,0,panelKey);}
@@ -676,8 +923,7 @@ function setReadingMode(panelKey,mode){
 }
 function setupReadingToggles(){
     ['lessonNote','teachingProcess'].forEach(pk=>{
-        const toggle=document.getElementById(pk==='lessonNote'?'readingToggleLN':'readingToggleTP');
-        if(!toggle)return;
+        const toggle=document.getElementById(pk==='lessonNote'?'readingToggleLN':'readingToggleTP');if(!toggle)return;
         toggle.querySelectorAll('.reading-opt').forEach(opt=>opt.addEventListener('click',function(){toggle.querySelectorAll('.reading-opt').forEach(o=>o.classList.remove('active'));this.classList.add('active');setReadingMode(pk,this.dataset.mode);}));
     });
 }
@@ -699,12 +945,10 @@ function populateTeachPanels(){if(!currentNote)return;['lessonNote','teachingPro
 // LOAD TEACH DATA
 // ═══════════════════════════════════════════
 async function loadTeachData(){
-    if(!currentUser||!currentClass){debugLog('loadTeachData skipped','No user/class','warn');return;}
-    debugLog('loadTeachData','Class: '+currentClass);
+    if(!currentUser||!currentClass)return;
     try{
         const snap=await db.collection('lessonNotes').where('teacherId','==',currentUser.uid).where('classId','==',currentClass).get();
         lessonNotesMap={};snap.forEach(d=>{const dd=d.data();lessonNotesMap[`${dd.subject}_${dd.week}`]={id:d.id,...dd};});
-        debugLog('Notes loaded',Object.keys(lessonNotesMap).length);
         const weeks=new Set();
         Object.values(lessonNotesMap).forEach(n=>{if(n.teachable||n.lessonNote||n.teachingProcess||n.studentResource||n.videoLinks?.length||n.handwritingImages?.length)weeks.add(n.week);});
         const wSel=document.getElementById('weekSelect');wSel.innerHTML='<option value="">Select Week</option>';
@@ -715,9 +959,6 @@ async function loadTeachData(){
 function onSubjectChange(){currentSubject=document.getElementById('subjectSelect').value;document.getElementById('weekSelect').value='';currentWeek=null;currentNote=null;renderResources();}
 function onWeekChange(){currentWeek=parseInt(document.getElementById('weekSelect').value)||null;renderResources();}
 
-// ═══════════════════════════════════════════
-// RENDER RESOURCES
-// ═══════════════════════════════════════════
 function renderResources(){
     const container=document.getElementById('resourcesContainer'),title=document.getElementById('resourceTitle');
     if(!currentSubject||!currentWeek){container.innerHTML='<div class="empty-state"><i class="fas fa-folder-open"></i><h3>Select Subject & Week</h3></div>';title.textContent='Select a subject and week';currentNote=null;return;}
@@ -742,9 +983,6 @@ function renderResources(){
     container.querySelectorAll('.pub-btn').forEach(b=>b.addEventListener('click',async function(){const d=this.dataset.doc,f=this.dataset.f,o=this.innerHTML;this.disabled=true;this.innerHTML='<i class="fas fa-spinner fa-spin"></i>';try{await db.collection('lessonNotes').doc(d).update({[f]:true,updatedAt:firebase.firestore.FieldValue.serverTimestamp()});showToast('Published!','success');await loadTeachData();renderResources();}catch(e){showToast('Error',e.message,'error');this.disabled=false;this.innerHTML=o;}}));
 }
 
-// ═══════════════════════════════════════════
-// STUDENT SUBMISSIONS
-// ═══════════════════════════════════════════
 function setupSubmissionsListener(){
     if(unsubSubmissions)unsubSubmissions();if(!currentUser||!currentClass)return;
     unsubSubmissions=db.collection('studentSubmissions').where('teacherId','==',currentUser.uid).where('classId','==',currentClass).orderBy('createdAt','desc').limit(50).onSnapshot(s=>renderStudentSubmissions(s),e=>debugLog('Subs ERROR',e.message,'error'));
@@ -759,9 +997,6 @@ function renderStudentSubmissions(snap){
 }
 async function markSubmissionViewed(id){await db.collection('studentSubmissions').doc(id).update({viewedByTeacher:true,viewedAt:firebase.firestore.FieldValue.serverTimestamp()});showToast('Marked','Done','success');}
 
-// ═══════════════════════════════════════════
-// STUDENT CHAT
-// ═══════════════════════════════════════════
 function setupChatListener(){
     if(unsubChat)unsubChat();if(!currentUser||!currentClass)return;
     unsubChat=db.collection('teacherStudentChats').where('teacherId','==',currentUser.uid).where('classId','==',currentClass).orderBy('createdAt','asc').onSnapshot(s=>renderChatMessages(s),e=>debugLog('Chat ERROR',e.message,'error'));
@@ -771,16 +1006,8 @@ function renderChatMessages(snap){
     const msgs=[];snap.forEach(d=>msgs.push({id:d.id,...d.data()}));
     c.innerHTML=msgs.map(m=>{const isT=m.senderRole==='teacher',cls=isT?'sent':'received',sender=isT?'You':(m.studentName||'Student'),t=m.createdAt?.toDate?new Date(m.createdAt.toDate()).toLocaleTimeString([],{hour:'2-digit',minute:'2-digit'}):'';return`<div class="chat-bubble ${cls}"><div class="chat-sender">${escapeHtml(sender)}</div><div>${escapeHtml(m.message||'')}</div><div class="chat-time">${t}</div></div>`;}).join('');c.scrollTop=c.scrollHeight;
 }
-async function sendChatMessage(){const i=document.getElementById('chatInput'),m=i.value.trim();if(!m||!currentUser||!currentClass)return;i.value='';try{await db.collection('teacherStudentChats').add({teacherId:currentUser.uid,teacherName:`${userData?.firstName||''} ${userData?.surname||''}`.trim(),studentId:null,studentName:'Teacher',classId:currentClass,subject:currentSubject||'',week:currentWeek||null,message:m,senderRole:'teacher',createdAt:firebase.firestore.FieldValue.serverTimestamp(),readByStudent:false});}catch(e){showToast('Error','error');}}
+async function sendChatMessage(){const i=document.getElementById('chatInput'),m=i.value.trim();if(!m||!currentUser||!currentClass)return;i.value='';try{await db.collection('teacherStudentChats').add({teacherId:currentUser.uid,teacherName:`${userData?.firstName||''} ${userData?.surname||''}`.trim(),studentId:null,studentName:'Teacher',classId:currentClass,subject:currentSubject||'',week:currentWeek||null,message:m,senderRole:'teacher',createdAt:firebase.firestore.FieldValue.serverTimestamp(),readByStudent:false});}catch(e){}}
 function loadChatMessages(){if(!currentClass)return;db.collection('teacherStudentChats').where('teacherId','==',currentUser.uid).where('classId','==',currentClass).orderBy('createdAt','asc').get().then(s=>renderChatMessages(s)).catch(()=>{});}
-
-// ═══════════════════════════════════════════
-// LIVE SESSION MONITOR
-// ═══════════════════════════════════════════
-function setupLiveSessionListener(){
-    if(unsubLiveSession)unsubLiveSession();if(!currentClass)return;
-    unsubLiveSession=db.collection('liveClassSessions').where('classId','==',currentClass).where('status','==','live').limit(1).onSnapshot(()=>{},()=>{});
-}
 
 // ═══════════════════════════════════════════
 // AUTH
@@ -788,97 +1015,201 @@ function setupLiveSessionListener(){
 auth.onAuthStateChanged(async user=>{
     debugLog('Auth',user?'User: '+user.uid:'No user');
     const params=new URLSearchParams(window.location.search);
-    const guestId=params.get('guest'),guestCode=params.get('code');
-    if(guestId&&guestCode){await handleGuestAccess(guestId,guestCode);return;}
+    const guestId=params.get('guest'),guestCode=params.get('code'),scheduledId=params.get('scheduled');
+    if(guestId&&guestCode){await handleGuestAccess(guestId,guestCode,scheduledId);return;}
     if(!user){window.location.href='teacher-login.html';return;}
     try{
         const doc=await db.collection('users').doc(user.uid).get();
         if(!doc.exists||doc.data().role!=='teacher'){await auth.signOut();window.location.href='index.html';return;}
         currentUser=user;userData=doc.data();allClasses=userData.classesTeaching||(userData.classTeaching?[userData.classTeaching]:[]);currentClass=allClasses[0]||null;subjects=userData.subjects||[];
-        debugLog('User loaded',{name:userData.firstName,classes:allClasses});
         const pic=document.getElementById('profilePic');if(userData.photoURL)pic.innerHTML=`<img src="${userData.photoURL}" alt="Profile">`;else pic.textContent=(userData.firstName?.[0]||'T')+(userData.surname?.[0]||'E');
         document.getElementById('profileName').textContent=userData.firstName||'Teacher';
         const cs=document.getElementById('classSelect');cs.innerHTML='';allClasses.forEach(c=>{const o=document.createElement('option');o.value=c;o.textContent=c;cs.appendChild(o);});if(currentClass)cs.value=currentClass;
-        cs.addEventListener('change',function(){currentClass=this.value;debugLog('Class changed',currentClass);loadTeachData();setupSubmissionsListener();setupChatListener();setupLiveSessionListener();loadPastSessions();});
+        cs.addEventListener('change',function(){currentClass=this.value;loadTeachData();setupSubmissionsListener();setupChatListener();setupScheduledListener();loadPastSessions();loadScheduledClasses();});
         const ss=document.getElementById('subjectSelect');ss.innerHTML='<option value="">Select Subject</option>';subjects.forEach(s=>{const o=document.createElement('option');o.value=s;o.textContent=s;ss.appendChild(o);});ss.addEventListener('change',onSubjectChange);
         document.getElementById('weekSelect').addEventListener('change',onWeekChange);
         setupReadingToggles();
-        if(currentClass){await loadTeachData();setupSubmissionsListener();setupChatListener();setupLiveSessionListener();loadPastSessions();}
+        if(currentClass){await loadTeachData();setupSubmissionsListener();setupChatListener();setupScheduledListener();loadPastSessions();loadScheduledClasses();}
     }catch(e){debugLog('Auth ERROR',e.message,'error');}
 });
-document.getElementById('logoutBtn').addEventListener('click',async()=>{stopClassTimer();if(jitsiApi)try{jitsiApi.dispose();}catch(e){}if(unsubChat)unsubChat();if(unsubSubmissions)unsubSubmissions();if(unsubLiveSession)unsubLiveSession();await auth.signOut();window.location.href='index.html';});
+document.getElementById('logoutBtn').addEventListener('click',async()=>{stopClassTimer();if(jitsiApi)try{jitsiApi.dispose();}catch(e){}if(unsubChat)unsubChat();if(unsubSubmissions)unsubSubmissions();if(unsubScheduled)unsubScheduled();await auth.signOut();window.location.href='index.html';});
 
 // ═══════════════════════════════════════════
-// BUTTON BINDINGS
+// BUTTONS
 // ═══════════════════════════════════════════
 document.getElementById('teachModeBtn').addEventListener('click',toggleTeachMode);
-document.getElementById('startClassBtn').addEventListener('click',()=>{document.getElementById('classTopic').value=currentSubject?`${currentSubject} - Week ${currentWeek||'?'}`:'';document.getElementById('startClassModal').classList.add('active');});
-document.getElementById('startClassModalClose').addEventListener('click',()=>document.getElementById('startClassModal').classList.remove('active'));
-document.getElementById('startClassCancelBtn').addEventListener('click',()=>document.getElementById('startClassModal').classList.remove('active'));
-document.getElementById('startClassForm').addEventListener('submit',function(e){e.preventDefault();const t=document.getElementById('classTopic').value.trim(),d=parseInt(document.getElementById('classDuration').value);if(!t)return;document.getElementById('startClassModal').classList.remove('active');startLiveClass(t,d);this.reset();});
-document.getElementById('endClassBtn').addEventListener('click',()=>{if(confirm('End this live classroom session?'))endLiveClass('Teacher ended class');});
-document.getElementById('guestInviteBtn').addEventListener('click',()=>{if(!currentSubject||!currentWeek)return showToast('Select subject and week first','warning');document.getElementById('guestModal').classList.add('active');document.getElementById('guestLinkBox').classList.remove('show');});
-document.getElementById('studentViewBtn').addEventListener('click',()=>{if(!currentSubject||!currentWeek)return showToast('Select subject and week first','warning');window.open(`student-classroom.html?class=${encodeURIComponent(currentClass||'')}&subject=${encodeURIComponent(currentSubject)}&week=${currentWeek}`,'_blank','noopener');});
+
+document.getElementById('startClassBtn').addEventListener('click',()=>{
+    document.getElementById('classTopic').value=currentSubject?`${currentSubject} - Week ${currentWeek||'?'}`:'';
+    document.getElementById('startClassModal').classList.add('active');
+});
+document.getElementById('scheduleClassBtn').addEventListener('click',()=>{
+    document.getElementById('schedTopic').value=currentSubject?`${currentSubject} - Week ${currentWeek||'?'}`:'';
+    document.getElementById('schedDate').value='';
+    document.getElementById('schedTime').value='';
+    document.getElementById('schedGuestName').value='';
+    document.getElementById('schedGuestPurpose').value='';
+    document.getElementById('schedGuestPurposeGroup').style.display='none';
+    document.getElementById('scheduleClassModal').classList.add('active');
+});
+document.getElementById('guestInviteBtn').addEventListener('click',()=>{
+    document.getElementById('guestForType').value='now';
+    document.getElementById('guestScheduledSelect').parentElement.style.display='none';
+    document.getElementById('guestModal').classList.add('active');
+    document.getElementById('guestLinkBox').classList.remove('show');
+});
+document.getElementById('studentViewBtn').addEventListener('click',()=>{
+    window.open(`student-classroom.html?class=${encodeURIComponent(currentClass||'')}&subject=${encodeURIComponent(currentSubject||'')}&week=${currentWeek||''}`,'_blank','noopener');
+});
 document.getElementById('printBtn').addEventListener('click',()=>window.print());
 
-// ═══════════════════════════════════════════
-// GUEST MODAL
-// ═══════════════════════════════════════════
+// Modal close handlers
+document.getElementById('startClassModalClose').addEventListener('click',()=>document.getElementById('startClassModal').classList.remove('active'));
+document.getElementById('startClassCancelBtn').addEventListener('click',()=>document.getElementById('startClassModal').classList.remove('active'));
+document.getElementById('scheduleClassModalClose').addEventListener('click',()=>document.getElementById('scheduleClassModal').classList.remove('active'));
+document.getElementById('scheduleClassCancelBtn').addEventListener('click',()=>document.getElementById('scheduleClassModal').classList.remove('active'));
 document.getElementById('guestModalClose').addEventListener('click',()=>{document.getElementById('guestModal').classList.remove('active');document.getElementById('guestLinkBox').classList.remove('show');});
 document.getElementById('guestCancelBtn').addEventListener('click',()=>{document.getElementById('guestModal').classList.remove('active');document.getElementById('guestLinkBox').classList.remove('show');});
-document.getElementById('guestForm').addEventListener('submit',async function(e){
-    e.preventDefault();const name=document.getElementById('guestName').value.trim(),purpose=document.getElementById('guestPurpose').value.trim(),dur=parseInt(document.getElementById('guestDuration').value);if(!name||!purpose)return;
-    const guestId=Math.random().toString(36).substring(2,14),code=Math.random().toString(36).substring(2,8).toUpperCase(),expires=new Date(Date.now()+dur*60000),roomName=generateRoomName('guest');
-    try{await db.collection('guestAccess').add({guestId,oneTimeCode:code,guestName:name,purpose,roomName,teacherId:currentUser.uid,teacherName:`${userData.firstName||''} ${userData.surname||''}`.trim(),classId:currentClass,subject:currentSubject,week:currentWeek,durationMinutes:dur,expiresAt:firebase.firestore.Timestamp.fromDate(expires),createdAt:firebase.firestore.FieldValue.serverTimestamp(),used:false,usedAt:null});
-        const link=`${window.location.origin}${window.location.pathname}?guest=${guestId}&code=${code}`;document.getElementById('guestLinkText').textContent=link;document.getElementById('guestCodeDisplay').textContent=code;document.getElementById('guestLinkBox').classList.add('show');
-        showToast('Invite Ready!','Guest uses link + code to enter live classroom. No login, no app needed.','success',8000);
-    }catch(e){debugLog('Guest ERROR',e.message,'error');showToast('Error',e.message,'error');}
+
+// Start class form
+document.getElementById('startClassForm').addEventListener('submit',function(e){
+    e.preventDefault();const t=document.getElementById('classTopic').value.trim(),d=parseInt(document.getElementById('classDuration').value);
+    if(!t)return;document.getElementById('startClassModal').classList.remove('active');startLiveClass(t,d);this.reset();
 });
-document.getElementById('copyGuestInviteBtn').addEventListener('click',()=>{const l=document.getElementById('guestLinkText').textContent,c=document.getElementById('guestCodeDisplay').textContent;navigator.clipboard.writeText(`Link: ${l}\nOne-Time Code: ${c}\n\nNo login needed — open the link, enter the code.`).then(()=>showToast('Copied!','success')).catch(()=>showToast('Failed','error'));});
+
+// Schedule class form
+document.getElementById('schedGuestName').addEventListener('input',function(){
+    document.getElementById('schedGuestPurposeGroup').style.display=this.value.trim()?'block':'none';
+});
+document.getElementById('scheduleClassForm').addEventListener('submit',function(e){
+    e.preventDefault();
+    const topic=document.getElementById('schedTopic').value.trim();
+    const date=document.getElementById('schedDate').value;
+    const time=document.getElementById('schedTime').value;
+    const duration=parseInt(document.getElementById('schedDuration').value);
+    const guestName=document.getElementById('schedGuestName').value.trim();
+    const guestPurpose=document.getElementById('schedGuestPurpose').value.trim();
+    if(!topic||!date||!time)return showToast('Fill all required fields','warning');
+    document.getElementById('scheduleClassModal').classList.remove('active');
+    scheduleClass(topic,date,time,duration,guestName,guestPurpose);
+    this.reset();
+    document.getElementById('schedGuestPurposeGroup').style.display='none';
+});
+
+// Guest form
+document.getElementById('guestForType').addEventListener('change',function(){
+    document.getElementById('guestScheduledSelect').parentElement.style.display=this.value==='scheduled'?'block':'none';
+    if(this.value==='scheduled')populateGuestScheduledSelect();
+});
+document.getElementById('guestForm').addEventListener('submit',async function(e){
+    e.preventDefault();
+    const name=document.getElementById('guestName').value.trim();
+    const purpose=document.getElementById('guestPurpose').value.trim();
+    const forType=document.getElementById('guestForType').value;
+    const duration=parseInt(document.getElementById('guestDuration').value);
+    if(!name||!purpose)return;
+    
+    const guestId=Math.random().toString(36).substring(2,14);
+    const code=Math.random().toString(36).substring(2,8).toUpperCase();
+    const expires=new Date(Date.now()+duration*60000);
+    
+    if(forType==='now'&&currentLiveSessionId){
+        // Add guest to current live session
+        const roomName=pendingRoomName||generateRoomName('guest');
+        await db.collection('guestAccess').add({
+            guestId,oneTimeCode:code,guestName:name,purpose,roomName,
+            teacherId:currentUser.uid,teacherName:`${userData.firstName||''} ${userData.surname||''}`.trim(),
+            classId:currentClass,subject:currentSubject,week:currentWeek,
+            durationMinutes:duration,expiresAt:firebase.firestore.Timestamp.fromDate(expires),
+            createdAt:firebase.firestore.FieldValue.serverTimestamp(),used:false
+        });
+        const link=`${window.location.origin}/teacher-teach.html?guest=${guestId}&code=${code}`;
+        document.getElementById('guestLinkText').textContent=link;
+        document.getElementById('guestCodeDisplay').textContent=code;
+        document.getElementById('guestLinkBox').classList.add('show');
+        showToast('Guest invited to live class!','Share link + code','success',8000);
+    }else if(forType==='scheduled'){
+        const schedId=document.getElementById('guestScheduledClass').value;
+        if(!schedId)return showToast('Select a scheduled class','warning');
+        await db.collection('scheduledClasses').doc(schedId).update({
+            guestName:name,guestPurpose:purpose,guestId,guestCode:code,guestUsed:false
+        });
+        const link=`${window.location.origin}/teacher-teach.html?guest=${guestId}&code=${code}&scheduled=${schedId}`;
+        document.getElementById('guestLinkText').textContent=link;
+        document.getElementById('guestCodeDisplay').textContent=code;
+        document.getElementById('guestLinkBox').classList.add('show');
+        showToast('Guest invited to scheduled class!','They will join when class starts.','success',8000);
+    }
+});
+document.getElementById('copyGuestInviteBtn').addEventListener('click',()=>{
+    const l=document.getElementById('guestLinkText').textContent,c=document.getElementById('guestCodeDisplay').textContent;
+    navigator.clipboard.writeText(`Link: ${l}\nCode: ${c}`).then(()=>showToast('Copied!','success')).catch(()=>showToast('Failed','error'));
+});
+
+document.getElementById('endClassBtn').addEventListener('click',()=>{if(confirm('End this live classroom?'))endLiveClass('Teacher ended class');});
 
 // ═══════════════════════════════════════════
 // GUEST ACCESS
 // ═══════════════════════════════════════════
-async function handleGuestAccess(guestId,guestCode){
-    debugLog('Guest access',{guestId,guestCode});
+async function handleGuestAccess(guestId,guestCode,scheduledId){
     try{
+        // Check guestAccess first
         const snap=await db.collection('guestAccess').where('guestId','==',guestId).limit(1).get();
-        if(snap.empty){showToast('Invalid link','error',10000);return;}
-        const g=snap.docs[0].data();
+        let g=null;
+        if(!snap.empty){g=snap.docs[0].data();g.docId=snap.docs[0].id;}
+        
+        // Also check scheduledClasses
+        if(!g&&scheduledId){
+            const schedSnap=await db.collection('scheduledClasses').doc(scheduledId).get();
+            if(schedSnap.exists){g=schedSnap.data();g.docId=scheduledId;g.fromScheduled=true;}
+        }
+        
+        if(!g){showToast('Invalid link','error',10000);return;}
         if(g.oneTimeCode!==guestCode){showToast('Wrong code','error',10000);return;}
-        if(g.used){showToast('Already used','error',10000);return;}
-        if(g.expiresAt.toDate()<new Date()){showToast('Expired','error',10000);return;}
-        await db.collection('guestAccess').doc(snap.docs[0].id).update({used:true,usedAt:firebase.firestore.FieldValue.serverTimestamp()});
+        if(g.used&&!g.fromScheduled){showToast('Already used','error',10000);return;}
+        if(g.expiresAt?.toDate()<new Date()&&!g.fromScheduled){showToast('Expired','error',10000);return;}
+        
+        if(!g.fromScheduled)await db.collection('guestAccess').doc(g.docId).update({used:true,usedAt:firebase.firestore.FieldValue.serverTimestamp()});
+        
         currentClass=g.classId;currentSubject=g.subject;currentWeek=g.week;
-        document.getElementById('classSelect').innerHTML=`<option selected>${g.classId}</option>`;document.getElementById('subjectSelect').innerHTML=`<option selected>${g.subject}</option>`;document.getElementById('weekSelect').innerHTML=`<option selected>Week ${g.week}</option>`;
-        document.getElementById('profileName').textContent=`Guest: ${g.guestName}`;document.getElementById('profilePic').textContent=g.guestName.charAt(0).toUpperCase();
+        document.getElementById('classSelect').innerHTML=`<option selected>${g.classId}</option>`;
+        document.getElementById('subjectSelect').innerHTML=`<option selected>${g.subject}</option>`;
+        document.getElementById('weekSelect').innerHTML=`<option selected>Week ${g.week}</option>`;
+        document.getElementById('profileName').textContent=`Guest: ${g.guestName}`;
+        document.getElementById('profilePic').textContent=g.guestName.charAt(0).toUpperCase();
         document.getElementById('resourceTitle').textContent=`${g.subject} — Week ${g.week}`;
+        
         const lnSnap=await db.collection('lessonNotes').where('teacherId','==',g.teacherId).where('classId','==',g.classId).get();
         lessonNotesMap={};lnSnap.forEach(d=>{const dd=d.data();lessonNotesMap[`${dd.subject}_${dd.week}`]={id:d.id,...dd};});
         renderResources();setupReadingToggles();
-        if(g.roomName){startLiveClass(`${g.subject||'Class'} - ${g.purpose}`,g.durationMinutes);}
-        showToast(`Welcome ${g.guestName}!`,'Live classroom is ready — all in your browser.','info',12000);
-    }catch(e){debugLog('Guest handler ERROR',e.message,'error');}
+        
+        if(g.roomName)startLiveClass(`${g.subject||'Class'} - ${g.purpose||'Guest Session'}`,g.durationMinutes||60);
+        showToast(`Welcome ${g.guestName}!`,'Classroom is ready.','info',12000);
+    }catch(e){debugLog('Guest error',e.message,'error');}
 }
 
 document.addEventListener('keydown',function(e){
     if((e.ctrlKey||e.metaKey)&&e.key==='t'){e.preventDefault();toggleTeachMode();}
     if(e.key==='Escape'&&teachActive){e.preventDefault();closeTeachMode();}
-    if(teachActive&&e.key==='ArrowLeft'){if(teachModes.lessonNote==='book')flipBookPage('lessonNote',-1);if(teachModes.teachingProcess==='book')flipBookPage('teachingProcess',-1);}
-    if(teachActive&&e.key==='ArrowRight'){if(teachModes.lessonNote==='book')flipBookPage('lessonNote',1);if(teachModes.teachingProcess==='book')flipBookPage('teachingProcess',1);}
 });
 
 document.getElementById('startClassModal').addEventListener('click',function(e){if(e.target===this)this.classList.remove('active');});
+document.getElementById('scheduleClassModal').addEventListener('click',function(e){if(e.target===this)this.classList.remove('active');});
 document.getElementById('guestModal').addEventListener('click',function(e){if(e.target===this){this.classList.remove('active');document.getElementById('guestLinkBox').classList.remove('show');}});
 document.getElementById('teachOverlay').addEventListener('click',closeTeachMode);
 
-window.toggleTeachMode=toggleTeachMode;window.toggleTeachPanel=toggleTeachPanel;window.flipBookPage=flipBookPage;
-window.openImagePopup=openImagePopup;window.closeImagePopup=closeImagePopup;window.setReadingMode=setReadingMode;
-window.markSubmissionViewed=markSubmissionViewed;window.sendChatMessage=sendChatMessage;window.loadChatMessages=loadChatMessages;
+window.grantPermissionAndStart=grantPermissionAndStart;window.retryJitsi=retryJitsi;
+window.startScheduledClass=startScheduledClass;window.deleteScheduled=deleteScheduled;
+window.copyGuestInfo=copyGuestInfo;window.inviteGuestToLiveClass=inviteGuestToLiveClass;
+window.toggleTeachMode=toggleTeachMode;window.toggleTeachPanel=toggleTeachPanel;
+window.flipBookPage=flipBookPage;window.openImagePopup=openImagePopup;window.closeImagePopup=closeImagePopup;
+window.setReadingMode=setReadingMode;window.markSubmissionViewed=markSubmissionViewed;
+window.sendChatMessage=sendChatMessage;window.loadChatMessages=loadChatMessages;
 window.startLiveClass=startLiveClass;window.endLiveClass=endLiveClass;
-window.toggleClassroomChat=toggleClassroomChat;window.toggleClassroomParticipants=toggleClassroomParticipants;window.toggleClassroomTileView=toggleClassroomTileView;
+window.toggleClassroomChat=toggleClassroomChat;window.toggleClassroomParticipants=toggleClassroomParticipants;
+window.toggleClassroomTileView=toggleClassroomTileView;
 
-console.log('🎓 Judah Wonders Teach Mode — Browser-Only Live Classroom Ready ✅');
+console.log('🎓 Teach Mode — Permission Prompt + Scheduling + Guest System Ready ✅');
 </script>
 </body>
 </html>
