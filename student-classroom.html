@@ -30,6 +30,7 @@
             --progress-bg:#e2e8f0; --progress-fill:linear-gradient(90deg,#0A2540,#C8963E);
             --sidebar-bg:rgba(255,255,255,0.9);
             --debug-bg:#fef3c7; --debug-border:#f59e0b; --debug-text:#92400e;
+            --pin-bg:rgba(200,150,62,0.12); --pin-border:#C8963E;
         }
         :root[data-theme="dark"] {
             --bg-primary:#0a0f1e; --bg-secondary:#0f1729; --text-primary:#f1f5f9;
@@ -49,6 +50,7 @@
             --progress-bg:#1e293b; --progress-fill:linear-gradient(90deg,#C8963E,#D4AF37);
             --sidebar-bg:rgba(15,23,42,0.9);
             --debug-bg:rgba(245,158,11,0.2); --debug-border:#f59e0b; --debug-text:#fbbf24;
+            --pin-bg:rgba(200,150,62,0.18); --pin-border:#D4AF37;
         }
 
         body { font-family:'Inter',sans-serif; background:var(--bg-primary); color:var(--text-primary); min-height:100vh; transition:background 0.3s,color 0.3s; position:relative; overflow-x:hidden; display:flex; flex-direction:column; }
@@ -184,6 +186,7 @@
         .form-control { width:100%; padding:0.5rem 0.8rem; background:var(--input-bg); border:1px solid var(--border); border-radius:0.5rem; color:var(--text-primary); font-size:0.85rem; font-family:inherit; }
         .form-control:focus { outline:none; border-color:var(--accent); }
         textarea.form-control { min-height:60px; resize:vertical; }
+        .pin-input-lg { font-size:1.5rem; text-align:center; letter-spacing:0.5rem; padding:0.8rem; }
         .modal-actions { display:flex; gap:0.5rem; justify-content:flex-end; margin-top:1rem; }
 
         .toast-container { position:fixed; top:1rem; right:1rem; z-index:5000; display:flex; flex-direction:column; gap:0.5rem; pointer-events:none; }
@@ -195,7 +198,7 @@
         .debug-btn { position:fixed; bottom:1.5rem; right:1.5rem; z-index:10000; width:44px; height:44px; border-radius:50%; background:#0A2540; border:2px solid #C8963E; color:#C8963E; cursor:pointer; font-size:1.1rem; display:flex; align-items:center; justify-content:center; }
         .debug-btn:hover { background:#C8963E; color:#0A2540; }
 
-        .teacher-info-badge { background:var(--info-bg); border:1px solid var(--accent); border-radius:0.5rem; padding:0.3rem 0.8rem; font-size:0.75rem; display:inline-flex; align-items:center; gap:0.3rem; margin-left:0.5rem; }
+        .teacher-info-badge { background:var(--info-bg); border:1px solid var(--accent); border-radius:0.5rem; padding:0.3rem 0.8rem; font-size:0.75rem; display:inline-flex; align-items:center; gap:0.3rem; margin-left:0.5rem; white-space:nowrap; }
 
         @media(max-width:768px){
             .main-content{padding:0.8rem;}
@@ -249,12 +252,13 @@
     </div>
 
     <div class="live-classroom-card" id="liveClassroomCard">
-        <div class="live-header"><h3><span class="live-dot-sm"></span> Live Class — <span id="liveClassTopic">...</span></h3></div>
+        <div class="live-header"><h3><span class="live-dot-sm"></span> Live Class In Progress — <span id="liveClassTopic">...</span></h3></div>
         <div class="live-classroom-content">
             <i class="fas fa-video" style="font-size:3rem;color:var(--accent);margin-bottom:1rem;display:block;"></i>
             <h3 style="margin-bottom:0.5rem;">Your Teacher is Live!</h3>
-            <p style="color:#94a3b8;margin-bottom:1rem;">Join the live classroom — opens in a new tab, no login needed.</p>
-            <button class="btn-join-live" onclick="joinLiveClass()"><i class="fas fa-external-link-alt"></i> Join Live Classroom</button>
+            <p style="color:#94a3b8;margin-bottom:1rem;">Click below to join. You'll need the class PIN from your teacher.</p>
+            <button class="btn-join-live" onclick="joinLiveClass()"><i class="fas fa-key"></i> Enter PIN & Join Classroom</button>
+            <p style="color:var(--accent);margin-top:0.8rem;font-size:0.8rem;"><i class="fas fa-shield-alt"></i> Your teacher controls who can join. No login, no app needed.</p>
         </div>
     </div>
 
@@ -300,6 +304,19 @@
     </div>
 </main>
 
+<!-- PIN ENTRY MODAL -->
+<div class="modal-overlay" id="pinModal">
+    <div class="modal-content" style="text-align:center;">
+        <div class="modal-header"><h3><i class="fas fa-key"></i> Enter Class PIN</h3><button class="modal-close" onclick="closePinModal()">✕</button></div>
+        <p style="color:var(--text-secondary);margin-bottom:0.5rem;">Your teacher has set a PIN for this class.</p>
+        <p style="font-weight:600;margin-bottom:1rem;">Topic: <span id="pinClassTopic" style="color:var(--accent);">...</span></p>
+        <div class="form-group"><input type="text" id="studentPinInput" class="form-control pin-input-lg" placeholder="0000" maxlength="6" onkeypress="if(event.key==='Enter')verifyPIN()"></div>
+        <p style="font-size:0.75rem;color:var(--text-secondary);margin-bottom:1rem;">Enter the 4-6 digit PIN shared by your teacher</p>
+        <div class="modal-actions" style="justify-content:center;"><button class="btn btn-outline" onclick="closePinModal()">Cancel</button><button class="btn btn-primary" onclick="verifyPIN()"><i class="fas fa-check"></i> Join Classroom</button></div>
+    </div>
+</div>
+
+<!-- SEND NOTE MODAL -->
 <div class="modal-overlay" id="noteModal">
     <div class="modal-content">
         <div class="modal-header"><h3>Send Note to Teacher</h3><button class="modal-close" onclick="closeNoteModal()">✕</button></div>
@@ -323,29 +340,64 @@ const CLOUD_NAME='dda7kpir8',UPLOAD_PRESET='Judahschool';
 
 // ═══════════════════════ DEBUG SYSTEM ═══════════════════════
 const debugLogs=[];
-function debugLog(k,v,t='info'){debugLogs.push({k,v,t,time:new Date().toLocaleTimeString()});console.log(`[${t}] ${k}:`,v);updateDebug();}
-function updateDebug(){const c=document.getElementById('debugContent');if(!c)return;c.innerHTML=debugLogs.slice(-50).map(d=>{const color=d.t==='error'?'#f87171':d.t==='warn'?'#fbbf24':'#4ade80';const val=typeof d.v==='object'?JSON.stringify(d.v).substring(0,200):String(d.v).substring(0,200);return`<div style="padding:0.1rem 0;border-bottom:1px solid rgba(255,255,255,0.05);"><span style="color:#94a3b8;font-size:0.6rem;">${d.time}</span> <b style="color:#f59e0b;">${d.k}:</b> <span style="color:${color};">${val}</span></div>`;}).join('');}
+function debugLog(k,v,t='info'){
+    debugLogs.push({k,v,t,time:new Date().toLocaleTimeString()});
+    console.log(`[${t}] ${k}:`,v);
+    updateDebug();
+}
+function updateDebug(){
+    const c=document.getElementById('debugContent');
+    if(!c)return;
+    c.innerHTML=debugLogs.slice(-50).map(d=>{
+        const color=d.t==='error'?'#f87171':d.t==='warn'?'#fbbf24':'#4ade80';
+        const val=typeof d.v==='object'?JSON.stringify(d.v).substring(0,200):String(d.v).substring(0,200);
+        return`<div style="padding:0.1rem 0;border-bottom:1px solid rgba(255,255,255,0.05);"><span style="color:#94a3b8;font-size:0.6rem;">${d.time}</span> <b style="color:#f59e0b;">${d.k}:</b> <span style="color:${color};">${val}</span></div>`;
+    }).join('');
+}
 function clearDebugLogs(){debugLogs.length=0;updateDebug();}
 document.getElementById('debugToggleBtn').addEventListener('click',()=>document.getElementById('debugPanel').classList.toggle('show'));
 
 // ═══════════════════════ THEME ═══════════════════════
-(function(){const h=document.documentElement,t=document.getElementById('themeToggle'),s=localStorage.getItem('judah-theme')||'dark';h.setAttribute('data-theme',s);t.querySelector('span').textContent=s==='dark'?'Light':'Dark';t.addEventListener('click',()=>{const n=h.getAttribute('data-theme')==='dark'?'light':'dark';h.setAttribute('data-theme',n);localStorage.setItem('judah-theme',n);t.querySelector('span').textContent=n==='dark'?'Light':'Dark';});})();
+(function(){
+    const h=document.documentElement,t=document.getElementById('themeToggle'),s=localStorage.getItem('judah-theme')||'dark';
+    h.setAttribute('data-theme',s);
+    t.querySelector('span').textContent=s==='dark'?'Light':'Dark';
+    t.addEventListener('click',()=>{
+        const n=h.getAttribute('data-theme')==='dark'?'light':'dark';
+        h.setAttribute('data-theme',n);localStorage.setItem('judah-theme',n);
+        t.querySelector('span').textContent=n==='dark'?'Light':'Dark';
+    });
+})();
 
 function escapeHtml(s){const d=document.createElement('div');d.textContent=s||'';return d.innerHTML;}
-function showToast(m,t='info',d=4000){const icons={success:'fa-check-circle',error:'fa-exclamation-circle',warning:'fa-exclamation-triangle',info:'fa-info-circle'};const el=document.createElement('div');el.className='toast';el.innerHTML=`<i class="fas ${icons[t]}" style="color:var(--${t==='success'?'success':t==='error'?'danger':t==='warning'?'warning':'info'}-text);font-size:1.1rem;"></i><span>${escapeHtml(m)}</span>`;document.getElementById('toastContainer').appendChild(el);setTimeout(()=>{el.style.opacity='0';el.style.transform='translateX(100%)';el.style.transition='0.3s';setTimeout(()=>el.remove(),300);},d);}
-function extractYouTubeId(u){const m=u?.match(/(?:youtube\.com\/watch\?v=|youtu\.be\/|youtube\.com\/embed\/)([a-zA-Z0-9_-]{11})/);return m?m[1]:null;}
+function showToast(m,t='info',d=4000){
+    const icons={success:'fa-check-circle',error:'fa-exclamation-circle',warning:'fa-exclamation-triangle',info:'fa-info-circle'};
+    const el=document.createElement('div');el.className='toast';
+    el.innerHTML=`<i class="fas ${icons[t]}" style="color:var(--${t==='success'?'success':t==='error'?'danger':t==='warning'?'warning':'info'}-text);font-size:1.1rem;"></i><span>${escapeHtml(m)}</span>`;
+    document.getElementById('toastContainer').appendChild(el);
+    setTimeout(()=>{el.style.opacity='0';el.style.transform='translateX(100%)';el.style.transition='0.3s';setTimeout(()=>el.remove(),300);},d);
+}
+function extractYouTubeId(u){
+    const m=u?.match(/(?:youtube\.com\/watch\?v=|youtu\.be\/|youtube\.com\/embed\/)([a-zA-Z0-9_-]{11})/);
+    return m?m[1]:null;
+}
 function closeNoteModal(){document.getElementById('noteModal').classList.remove('active');}
 function openNoteModal(){document.getElementById('noteModal').classList.add('active');}
+function closePinModal(){document.getElementById('pinModal').classList.remove('active');}
 
 let currentUser=null,userData=null,studentClass=null,teacherId=null,teacherName=null;
 let allSubjects=[],currentSubject=null,currentWeek=null;
 let allNotesMap={},completedWeeks=new Set();
 let readingSeconds=0,readingInterval=null,activityCount=0;
-let liveRoomName=null,unsubLive=null,unsubChat=null;
+let liveRoomName=null,liveClassPIN=null,unsubLive=null,unsubChat=null;
 
 function startReadingTimer(){if(readingInterval)return;readingInterval=setInterval(()=>{readingSeconds++;updateReadingStats();},1000);}
 function stopReadingTimer(){if(readingInterval){clearInterval(readingInterval);readingInterval=null;}}
-function updateReadingStats(){const m=Math.floor(readingSeconds/60);document.getElementById('readingMinutes').textContent=m;document.getElementById('statMinutes').textContent=m;}
+function updateReadingStats(){
+    const m=Math.floor(readingSeconds/60);
+    document.getElementById('readingMinutes').textContent=m;
+    document.getElementById('statMinutes').textContent=m;
+}
 
 function updateProgress(){
     if(!currentSubject){document.getElementById('progressSubject').textContent='Select a subject';return;}
@@ -425,13 +477,11 @@ async function discoverSubjects(){
     const set=new Set();
     if(userData.subjects?.length)userData.subjects.forEach(s=>set.add(s));
     try{
-        // Load ALL lesson notes for this class — from ALL teachers
         const snap=await db.collection('lessonNotes').where('classId','==',studentClass).get();
         debugLog('Lesson notes found for class',snap.size+' documents');
         snap.forEach(d=>{
             const dd=d.data();
             if(dd.subject)set.add(dd.subject);
-            // Grab teacher info from the first note we find
             if(!teacherId&&dd.teacherId){
                 teacherId=dd.teacherId;
                 teacherName=dd.teacherName||null;
@@ -439,8 +489,6 @@ async function discoverSubjects(){
                 updateTeacherBadge();
             }
         });
-        
-        // If still no teacherId, try without classId filter as fallback
         if(snap.empty||!teacherId){
             debugLog('Trying broader search','Looking for any notes with matching classId','warn');
             const snap2=await db.collection('lessonNotes').where('classId','==',studentClass).limit(1).get();
@@ -457,28 +505,22 @@ async function discoverSubjects(){
 async function loadAllPublishedNotes(){
     allNotesMap={};
     try{
-        // Load ALL lesson notes for this class — shows content from ALL teachers assigned
         const snap=await db.collection('lessonNotes').where('classId','==',studentClass).get();
         debugLog('Loading published notes for class',{class:studentClass,count:snap.size});
         snap.forEach(d=>{
             const dd=d.data();
             if(!dd.subject||dd.week===undefined)return;
             const k=`${dd.subject}_${dd.week}`;
-            // SHOW ALL PUBLISHED CONTENT regardless of which teacher published it
             if(dd.resourcePublished||dd.videosPublished||dd.handwritingImagesPublished||dd.teachable||dd.studentResource||dd.videoLinks||dd.handwritingImages){
                 if(!allNotesMap[k])allNotesMap[k]={id:d.id,...dd};
                 else allNotesMap[k]={...allNotesMap[k],...dd,id:d.id};
-                // Also grab teacherId if we don't have it yet
                 if(!teacherId&&dd.teacherId){teacherId=dd.teacherId;teacherName=dd.teacherName||null;debugLog('Teacher found from note',{teacherId,teacherName});updateTeacherBadge();}
             }
         });
         debugLog('Published notes loaded',{weeks:Object.keys(allNotesMap).length,teacherId:teacherId||'NOT FOUND',teacherName:teacherName||'NOT FOUND'});
         updateTeacherBadge();
-        
-        // If NO notes found at all, show debug info
         if(Object.keys(allNotesMap).length===0){
             debugLog('No published content found','The teacher may not have published any lesson notes yet','warn');
-            // Try loading ALL notes (even unpublished) just to find teacher
             const allSnap=await db.collection('lessonNotes').where('classId','==',studentClass).limit(5).get();
             debugLog('Total notes in class (including unpublished)',allSnap.size);
             if(!allSnap.empty&&!teacherId){
@@ -570,33 +612,88 @@ function renderAll(){
     }else{document.getElementById('imagesSection').innerHTML='';}
 }
 
-// ═══════════════════════ LIVE CLASSROOM ═══════════════════════
+// ═══════════════════════ LIVE CLASSROOM (with PIN system) ═══════════════════════
 function setupLiveClassListener(){
     if(unsubLive)unsubLive();
     if(!studentClass)return;
     debugLog('Live class listener','Setting up for class: '+studentClass);
-    unsubLive=db.collection('liveClassSessions').where('classId','==',studentClass).where('status','==','live').limit(1).onSnapshot(snap=>{
-        const card=document.getElementById('liveClassroomCard');
-        const navBtn=document.getElementById('joinLiveNavBtn');
-        if(!snap.empty){
-            const s=snap.docs[0].data();
-            liveRoomName=s.roomName;
-            document.getElementById('liveClassTopic').textContent=s.topic||'Live Class';
-            card.classList.add('active');
-            navBtn.style.display='inline-flex';
-            debugLog('Live class detected!',s.topic);
-        }else{
-            card.classList.remove('active');
-            navBtn.style.display='none';
-            liveRoomName=null;
-        }
-    },e=>debugLog('Live listener error',e.message,'error'));
+    unsubLive=db.collection('liveClassSessions')
+        .where('classId','==',studentClass)
+        .where('status','==','live')
+        .limit(1)
+        .onSnapshot(snap=>{
+            const card=document.getElementById('liveClassroomCard');
+            const navBtn=document.getElementById('joinLiveNavBtn');
+            if(!snap.empty){
+                const s=snap.docs[0].data();
+                liveRoomName=s.roomName;
+                liveClassPIN=s.classPIN||null;
+                document.getElementById('liveClassTopic').textContent=s.topic||'Live Class';
+                document.getElementById('pinClassTopic').textContent=s.topic||'Live Class';
+                card.classList.add('active');
+                navBtn.style.display='inline-flex';
+                debugLog('Live class detected!',{topic:s.topic,hasPIN:!!liveClassPIN});
+            }else{
+                card.classList.remove('active');
+                navBtn.style.display='none';
+                liveRoomName=null;
+                liveClassPIN=null;
+                closePinModal();
+                debugLog('No live class active');
+            }
+        },e=>debugLog('Live listener error',e.message,'error'));
 }
 
 function joinLiveClass(){
     if(!liveRoomName){showToast('No live class right now','info');return;}
+    if(liveClassPIN){
+        document.getElementById('studentPinInput').value='';
+        document.getElementById('pinModal').classList.add('active');
+        setTimeout(()=>document.getElementById('studentPinInput').focus(),300);
+    }else{
+        openJitsiRoom();
+    }
+}
+
+function verifyPIN(){
+    const entered=document.getElementById('studentPinInput').value.trim();
+    if(!entered){showToast('Please enter the class PIN','warning');return;}
+    if(entered!==liveClassPIN){
+        showToast('Wrong PIN. Please try again.','error');
+        document.getElementById('studentPinInput').value='';
+        document.getElementById('studentPinInput').focus();
+        return;
+    }
+    closePinModal();
+    openJitsiRoom();
+}
+
+function buildStudentJitsiUrl(roomName,displayName){
+    let url=`https://meet.jit.si/${roomName}#config.prejoinPageEnabled=true`;
+    url+=`&config.enableLobby=false`;
+    url+=`&config.startWithAudioMuted=true`;
+    url+=`&config.startWithVideoMuted=true`;
+    url+=`&config.hideConferenceSubject=false`;
+    url+=`&config.hideConferenceTimer=false`;
+    url+=`&config.enableClosePage=false`;
+    url+=`&config.enableWelcomePage=false`;
+    url+=`&config.requireDisplayName=true`;
+    url+=`&userInfo.displayName=${encodeURIComponent(displayName)}`;
+    url+=`&interfaceConfig.APP_NAME=Judah+Classroom`;
+    url+=`&interfaceConfig.SHOW_JITSI_WATERMARK=false`;
+    url+=`&interfaceConfig.MOBILE_APP_PROMO=false`;
+    url+=`&interfaceConfig.TOOLBAR_ALWAYS_VISIBLE=true`;
+    url+=`&interfaceConfig.DISABLE_JOIN_LEAVE_NOTIFICATIONS=false`;
+    url+=`&interfaceConfig.HIDE_INVITE_MORE_HEADER=true`;
+    url+=`&interfaceConfig.SHOW_CHROME_EXTENSION_BANNER=false`;
+    url+=`&interfaceConfig.SHOW_POWERED_BY=false`;
+    return url;
+}
+
+function openJitsiRoom(){
+    if(!liveRoomName)return;
     const studentName=userData?`${userData.firstName||'Student'} ${userData.surname||''}`.trim():'Student';
-    const jitsiUrl=`https://meet.jit.si/${liveRoomName}#config.prejoinPageEnabled=true&config.startWithAudioMuted=true&config.startWithVideoMuted=true&userInfo.displayName=${encodeURIComponent(studentName)}&interfaceConfig.APP_NAME=Judah+Classroom&interfaceConfig.SHOW_JITSI_WATERMARK=false&interfaceConfig.MOBILE_APP_PROMO=false`;
+    const jitsiUrl=buildStudentJitsiUrl(liveRoomName,studentName);
     window.open(jitsiUrl,'_blank','noopener,noreferrer');
     showToast('Joining live classroom...','success');
     debugLog('Joining live class',liveRoomName);
@@ -616,7 +713,13 @@ async function uploadSnap(input){
         const fd=new FormData();fd.append('file',file);fd.append('upload_preset',UPLOAD_PRESET);fd.append('folder','student_snaps');fd.append('quality','auto:low');
         const r=await fetch(`https://api.cloudinary.com/v1_1/${CLOUD_NAME}/image/upload`,{method:'POST',body:fd});
         const d=await r.json();if(!r.ok)throw new Error(d.error?.message||'Upload failed');
-        await db.collection('studentSubmissions').add({teacherId,studentId:currentUser.uid,studentName:`${userData.firstName||''} ${userData.surname||''}`.trim(),classId:studentClass,type:'image',url:d.secure_url,caption:'Snap from student',viewedByTeacher:false,createdAt:firebase.firestore.FieldValue.serverTimestamp()});
+        await db.collection('studentSubmissions').add({
+            teacherId,studentId:currentUser.uid,
+            studentName:`${userData.firstName||''} ${userData.surname||''}`.trim(),
+            classId:studentClass,type:'image',url:d.secure_url,
+            caption:'Snap from student',viewedByTeacher:false,
+            createdAt:firebase.firestore.FieldValue.serverTimestamp()
+        });
         showToast('Sent!','Your snap has been sent to your teacher.','success');
         debugLog('Snap sent to teacher',teacherId);
     }catch(e){showToast('Error',e.message,'error');debugLog('Snap error',e.message,'error');}
@@ -634,7 +737,13 @@ async function uploadVoice(input){
         const fd=new FormData();fd.append('file',file);fd.append('upload_preset',UPLOAD_PRESET);fd.append('folder','student_voice');fd.append('quality','auto:low');
         const r=await fetch(`https://api.cloudinary.com/v1_1/${CLOUD_NAME}/video/upload`,{method:'POST',body:fd});
         const d=await r.json();if(!r.ok)throw new Error(d.error?.message||'Upload failed');
-        await db.collection('studentSubmissions').add({teacherId,studentId:currentUser.uid,studentName:`${userData.firstName||''} ${userData.surname||''}`.trim(),classId:studentClass,type:'voice',url:d.secure_url,caption:'Voice note from student',viewedByTeacher:false,createdAt:firebase.firestore.FieldValue.serverTimestamp()});
+        await db.collection('studentSubmissions').add({
+            teacherId,studentId:currentUser.uid,
+            studentName:`${userData.firstName||''} ${userData.surname||''}`.trim(),
+            classId:studentClass,type:'voice',url:d.secure_url,
+            caption:'Voice note from student',viewedByTeacher:false,
+            createdAt:firebase.firestore.FieldValue.serverTimestamp()
+        });
         showToast('Sent!','Your voice note has been sent.','success');
     }catch(e){showToast('Error',e.message,'error');}
     finally{b.disabled=false;b.innerHTML=o;input.value='';}
@@ -647,7 +756,12 @@ async function sendNote(){
         return;
     }
     try{
-        await db.collection('studentSubmissions').add({teacherId,studentId:currentUser.uid,studentName:`${userData.firstName||''} ${userData.surname||''}`.trim(),classId:studentClass,type:'note',caption:text,viewedByTeacher:false,createdAt:firebase.firestore.FieldValue.serverTimestamp()});
+        await db.collection('studentSubmissions').add({
+            teacherId,studentId:currentUser.uid,
+            studentName:`${userData.firstName||''} ${userData.surname||''}`.trim(),
+            classId:studentClass,type:'note',caption:text,
+            viewedByTeacher:false,createdAt:firebase.firestore.FieldValue.serverTimestamp()
+        });
         closeNoteModal();document.getElementById('noteText').value='';
         showToast('Sent!','Your note has been sent.','success');
     }catch(e){showToast('Error','error');}
@@ -658,9 +772,10 @@ function setupStudentChatListener(){
     if(unsubChat)unsubChat();
     if(!studentClass)return;
     debugLog('Chat listener','Setting up for class: '+studentClass);
-    unsubChat=db.collection('teacherStudentChats').where('classId','==',studentClass).orderBy('createdAt','asc').onSnapshot(s=>{
-        renderStudentChat(s);
-    },e=>debugLog('Chat listener error',e.message,'error'));
+    unsubChat=db.collection('teacherStudentChats')
+        .where('classId','==',studentClass)
+        .orderBy('createdAt','asc')
+        .onSnapshot(s=>{renderStudentChat(s);},e=>debugLog('Chat listener error',e.message,'error'));
 }
 function renderStudentChat(snap){
     const c=document.getElementById('studentChatMessages');
@@ -675,8 +790,7 @@ function renderStudentChat(snap){
 }
 async function sendStudentMessage(){
     const i=document.getElementById('studentChatInput'),m=i.value.trim();
-    if(!m||!studentClass)return;
-    i.value='';
+    if(!m||!studentClass)return;i.value='';
     try{
         await db.collection('teacherStudentChats').add({
             teacherId:teacherId||'unknown',
@@ -689,14 +803,30 @@ async function sendStudentMessage(){
         debugLog('Message sent',m.substring(0,50));
     }catch(e){debugLog('Chat send error',e.message,'error');showToast('Message sent','success',2000);}
 }
-function loadStudentChat(){if(!studentClass)return;db.collection('teacherStudentChats').where('classId','==',studentClass).orderBy('createdAt','asc').get().then(s=>renderStudentChat(s)).catch(()=>{});}
+function loadStudentChat(){
+    if(!studentClass)return;
+    db.collection('teacherStudentChats').where('classId','==',studentClass).orderBy('createdAt','asc').get()
+    .then(s=>renderStudentChat(s)).catch(()=>{});
+}
 
+// ═══════════════════════ MODAL CLICK HANDLERS ═══════════════════════
+document.getElementById('pinModal').addEventListener('click',function(e){if(e.target===this)closePinModal();});
 document.getElementById('noteModal').addEventListener('click',function(e){if(e.target===this)closeNoteModal();});
 
-window.switchSubject=switchSubject;window.selectWeek=selectWeek;window.toggleWeekComplete=toggleWeekComplete;
-window.joinLiveClass=joinLiveClass;window.openNoteModal=openNoteModal;window.closeNoteModal=closeNoteModal;
-window.sendNote=sendNote;window.sendStudentMessage=sendStudentMessage;window.loadStudentChat=loadStudentChat;
-window.uploadSnap=uploadSnap;window.uploadVoice=uploadVoice;
+// ═══════════════════════ EXPOSE TO WINDOW ═══════════════════════
+window.switchSubject=switchSubject;
+window.selectWeek=selectWeek;
+window.toggleWeekComplete=toggleWeekComplete;
+window.joinLiveClass=joinLiveClass;
+window.verifyPIN=verifyPIN;
+window.closePinModal=closePinModal;
+window.openNoteModal=openNoteModal;
+window.closeNoteModal=closeNoteModal;
+window.sendNote=sendNote;
+window.sendStudentMessage=sendStudentMessage;
+window.loadStudentChat=loadStudentChat;
+window.uploadSnap=uploadSnap;
+window.uploadVoice=uploadVoice;
 </script>
 </body>
 </html>
