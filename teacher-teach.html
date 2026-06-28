@@ -31,7 +31,6 @@
             --submission-bg:rgba(139,92,246,0.05); --submission-border:#8b5cf6;
             --debug-bg:#fef3c7; --debug-border:#f59e0b; --debug-text:#92400e;
             --live-room-bg:#f0fdf4; --live-room-border:#22c55e;
-            --classroom-bg:#f8fafc;
         }
         :root[data-theme="dark"] {
             --bg-primary:#0a0f1e; --bg-secondary:#0f1729; --text-primary:#f1f5f9;
@@ -50,7 +49,6 @@
             --submission-bg:rgba(139,92,246,0.08); --submission-border:#8b5cf6;
             --debug-bg:rgba(245,158,11,0.2); --debug-border:#f59e0b; --debug-text:#fbbf24;
             --live-room-bg:#0a1a0f; --live-room-border:#22c55e;
-            --classroom-bg:#0a0f1e;
         }
 
         body { font-family:'Inter',sans-serif; background:var(--bg-primary); color:var(--text-primary); min-height:100vh; transition:background 0.3s,color 0.3s; position:relative; overflow-x:hidden; line-height:1.6; }
@@ -66,6 +64,8 @@
         .nav-left,.nav-right { display:flex; align-items:center; gap:0.5rem; flex-wrap:wrap; }
         .nav-btn { background:transparent; border:1px solid var(--border); border-radius:2rem; padding:0.5rem 1.2rem; color:var(--text-primary); font-weight:500; font-size:0.85rem; cursor:pointer; transition:0.2s; text-decoration:none; display:inline-flex; align-items:center; gap:0.4rem; white-space:nowrap; }
         .nav-btn:hover { background:var(--hover-bg); border-color:var(--accent); color:var(--accent); }
+        .nav-btn.return-class { background:linear-gradient(135deg,#059669,#10b981); color:white; border-color:transparent; font-weight:700; display:none; animation:pulseLive 2s infinite; }
+        @keyframes pulseLive { 0%,100%{box-shadow:0 0 0 0 rgba(34,197,94,0.4)} 50%{box-shadow:0 0 0 10px rgba(34,197,94,0)} }
         .theme-toggle { display:inline-flex; align-items:center; gap:0.5rem; background:var(--card-bg); border:1px solid var(--border); border-radius:2rem; padding:0.4rem 1rem; cursor:pointer; font-size:0.85rem; color:var(--text-secondary); }
         .profile-dropdown { position:relative; cursor:pointer; }
         .profile-trigger { display:flex; align-items:center; gap:0.7rem; background:var(--card-bg); border:1px solid var(--border); border-radius:3rem; padding:0.3rem 0.3rem 0.3rem 0.9rem; }
@@ -83,48 +83,38 @@
 
         .controls-bar { display:flex; gap:0.8rem; margin-bottom:1.5rem; flex-wrap:wrap; align-items:center; background:var(--card-bg); backdrop-filter:blur(12px); -webkit-backdrop-filter:blur(12px); border:1px solid var(--border); border-radius:2rem; padding:0.5rem 1rem; }
         .controls-bar select { padding:0.5rem 1rem; background:var(--input-bg); border:1px solid var(--border); border-radius:2rem; color:var(--text-primary); font-family:inherit; font-size:0.85rem; cursor:pointer; min-width:140px; }
-        .controls-bar select:focus { outline:none; border-color:var(--accent); }
 
         .card { background:var(--card-bg); backdrop-filter:blur(12px); -webkit-backdrop-filter:blur(12px); border:1px solid var(--border); border-radius:1.5rem; padding:1.5rem; box-shadow:var(--shadow-md); margin-bottom:1.5rem; transition:0.3s; }
-        .card.locked { opacity:0.6; pointer-events:none; position:relative; }
-        .card.locked::after { content:"🔒 Published"; position:absolute; top:10px; right:15px; background:var(--success-text); color:white; padding:0.3rem 1rem; border-radius:2rem; font-size:0.75rem; font-weight:600; z-index:10; }
         .card-header { display:flex; justify-content:space-between; align-items:flex-start; margin-bottom:1rem; flex-wrap:wrap; gap:1rem; padding-bottom:1rem; border-bottom:1px solid var(--border); }
         .card-header h3 { font-size:1.15rem; font-weight:700; display:flex; align-items:center; gap:0.5rem; }
 
-        .classroom-card { background:var(--classroom-bg); border:3px solid var(--live-room-border); border-radius:1.5rem; overflow:hidden; box-shadow:0 0 40px rgba(34,197,94,0.15); animation:classroomGlow 3s ease-in-out infinite; }
+        /* CLASSROOM */
+        .classroom-card { background:var(--live-room-bg); border:3px solid var(--live-room-border); border-radius:1.5rem; overflow:hidden; box-shadow:0 0 40px rgba(34,197,94,0.15); animation:classroomGlow 3s ease-in-out infinite; margin-bottom:1.5rem; }
         @keyframes classroomGlow { 0%,100%{box-shadow:0 0 40px rgba(34,197,94,0.15)} 50%{box-shadow:0 0 60px rgba(34,197,94,0.3)} }
         .classroom-header { background:linear-gradient(135deg,#0A2540,#065f46); padding:1rem 1.5rem; display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:1rem; }
-        .classroom-header h3 { color:white; font-size:1.1rem; display:flex; align-items:center; gap:0.5rem; }
-        .classroom-timer { background:rgba(0,0,0,0.4); color:white; padding:0.4rem 1rem; border-radius:2rem; font-family:'Space Grotesk',monospace; font-weight:600; font-size:0.9rem; display:flex; align-items:center; gap:0.4rem; }
+        .classroom-header h3 { color:white; font-size:1.1rem; }
+        .classroom-timer { background:rgba(0,0,0,0.4); color:white; padding:0.4rem 1rem; border-radius:2rem; font-family:'Space Grotesk',monospace; font-weight:600; font-size:0.9rem; }
         .classroom-timer.urgent { background:#dc2626; animation:pulseUrgent 1s infinite; }
         @keyframes pulseUrgent { 0%,100%{opacity:1} 50%{opacity:0.5} }
-        .jitsi-container { width:100%; height:600px; background:#000; position:relative; }
-        .jitsi-container iframe { width:100%; height:100%; border:none; }
+        .jitsi-wrapper { width:100%; background:#000; position:relative; min-height:500px; display:flex; align-items:center; justify-content:center; }
+        .jitsi-wrapper iframe { width:100%; border:none; }
         .classroom-info-bar { background:var(--card-bg); padding:0.8rem 1.5rem; display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:0.5rem; border-top:1px solid var(--border); }
-        .classroom-status { display:flex; align-items:center; gap:0.5rem; font-weight:600; }
-        .live-dot { width:10px; height:10px; border-radius:50%; background:#22c55e; animation:pulseLive 1.5s infinite; }
+        .live-dot { width:10px; height:10px; border-radius:50%; background:#22c55e; animation:pulseLive 1.5s infinite; display:inline-block; }
         @keyframes pulseLive { 0%,100%{opacity:1;transform:scale(1)} 50%{opacity:0.5;transform:scale(1.5)} }
-        .classroom-controls { display:flex; gap:0.5rem; flex-wrap:wrap; }
-        .classroom-participant-count { background:var(--hover-bg); padding:0.3rem 0.8rem; border-radius:2rem; font-size:0.8rem; display:flex; align-items:center; gap:0.3rem; }
-
-        /* Permission prompt */
-        .permission-prompt { background:var(--info-bg); border:2px solid var(--accent); border-radius:1rem; padding:1.5rem; text-align:center; margin-bottom:0; }
-        .permission-prompt h4 { margin-bottom:0.5rem; font-size:1rem; }
-        .permission-prompt p { font-size:0.85rem; color:var(--text-secondary); margin-bottom:1rem; }
 
         .resource-grid { display:grid; grid-template-columns:repeat(auto-fill,minmax(380px,1fr)); gap:1.5rem; }
         .resource-card { background:var(--card-bg); border:1px solid var(--border); border-radius:1rem; padding:1.5rem; box-shadow:var(--shadow-sm); display:flex; flex-direction:column; transition:0.3s; }
         .resource-card:hover { border-color:var(--accent); box-shadow:var(--shadow-lg); transform:translateY(-2px); }
         .resource-card h4 { margin-bottom:0.7rem; color:var(--accent); font-weight:600; }
-        .resource-card .content-preview { color:var(--text-secondary); font-size:0.9rem; line-height:1.7; margin-bottom:1rem; max-height:280px; overflow-y:auto; flex:1; white-space:normal; }
+        .resource-card .content-preview { color:var(--text-secondary); font-size:0.9rem; line-height:1.7; margin-bottom:1rem; max-height:280px; overflow-y:auto; flex:1; }
 
         .handwriting-grid { display:grid; grid-template-columns:repeat(auto-fill,minmax(180px,1fr)); gap:0.6rem; }
-        .handwriting-grid img { width:100%; aspect-ratio:4/3; object-fit:cover; border-radius:0.5rem; cursor:pointer; border:2px solid transparent; transition:0.2s; }
+        .handwriting-grid img { width:100%; aspect-ratio:4/3; object-fit:cover; border-radius:0.5rem; cursor:pointer; border:2px solid transparent; }
         .handwriting-grid img:hover { transform:scale(1.04); border-color:var(--accent); }
         .audio-list-item { display:flex; align-items:center; gap:0.5rem; padding:0.4rem 0; }
 
         .video-thumb-grid { display:grid; grid-template-columns:repeat(auto-fill,minmax(200px,1fr)); gap:0.8rem; margin-bottom:1rem; }
-        .video-thumb-item { cursor:pointer; border-radius:0.5rem; overflow:hidden; border:2px solid transparent; transition:0.2s; background:#000; position:relative; }
+        .video-thumb-item { cursor:pointer; border-radius:0.5rem; overflow:hidden; border:2px solid transparent; background:#000; }
         .video-thumb-item:hover,.video-thumb-item.selected { border-color:var(--accent); }
         .video-thumb-item img { width:100%; aspect-ratio:16/9; object-fit:cover; display:block; }
         .youtube-wrapper { position:relative; width:100%; padding-bottom:56.25%; border-radius:0.5rem; overflow:hidden; background:#000; }
@@ -137,12 +127,11 @@
         .teach-panel { flex:1; background:var(--panel-bg); backdrop-filter:blur(20px); -webkit-backdrop-filter:blur(20px); display:flex; flex-direction:column; border-right:1px solid var(--border); min-width:0; }
         .teach-panel:last-child { border-right:none; }
         .teach-panel.hidden { display:none; }
-        .teach-panel-header { display:flex; justify-content:space-between; align-items:center; padding:1rem 1.5rem; border-bottom:1px solid var(--border); flex-shrink:0; gap:0.5rem; }
-        .teach-panel-header h3 { font-size:1rem; font-weight:600; display:flex; align-items:center; gap:0.5rem; }
-        .teach-panel-content { flex:1; overflow-y:auto; padding:1.5rem; font-size:1.05rem; line-height:1.8; white-space:normal; }
+        .teach-panel-header { display:flex; justify-content:space-between; align-items:center; padding:1rem 1.5rem; border-bottom:1px solid var(--border); flex-shrink:0; }
+        .teach-panel-content { flex:1; overflow-y:auto; padding:1.5rem; font-size:1.05rem; line-height:1.8; }
         .teach-panel-content.book-mode { overflow:hidden; display:flex; flex-direction:column; padding:1rem; }
         .book-container { flex:1; display:flex; flex-direction:column; position:relative; overflow:hidden; }
-        .book-page { background:var(--card-bg); border:1px solid var(--border); border-radius:0.5rem; padding:2rem; box-shadow:var(--shadow-lg); flex:1; overflow-y:auto; }
+        .book-page { background:var(--card-bg); border:1px solid var(--border); border-radius:0.5rem; padding:2rem; box-shadow:var(--shadow-lg); flex:1; overflow-y:auto; white-space:pre-wrap; }
         .book-nav { display:flex; justify-content:center; align-items:center; gap:1rem; padding:1rem 0 0; flex-shrink:0; }
         .book-nav-btn { width:40px; height:40px; border-radius:50%; border:1px solid var(--border); background:var(--card-bg); color:var(--text-primary); cursor:pointer; display:flex; align-items:center; justify-content:center; }
         .book-nav-btn:hover:not(:disabled) { border-color:var(--accent); color:var(--accent); }
@@ -158,47 +147,42 @@
         .btn-success { background:var(--success-text); color:white; }
         .btn-danger { background:var(--danger-text); color:white; }
         .btn-outline { background:transparent; border:1px solid var(--border); color:var(--text-primary); }
-        .btn-outline:hover { border-color:var(--accent); background:var(--hover-bg); }
         .btn-sm { padding:0.35rem 0.9rem; font-size:0.8rem; }
-        .btn-teach { background:linear-gradient(135deg,#8b5cf6,#6366f1); color:white; font-weight:600; box-shadow:0 4px 20px rgba(99,102,241,0.3); animation:pulse 3s infinite; }
-        .btn-teach:hover { box-shadow:0 8px 30px rgba(99,102,241,0.5); transform:translateY(-2px); }
-        .btn-teach.active-teach { background:linear-gradient(135deg,#ef4444,#dc2626); animation:none; }
+        .btn-teach { background:linear-gradient(135deg,#8b5cf6,#6366f1); color:white; font-weight:600; }
+        .btn-teach.active-teach { background:linear-gradient(135deg,#ef4444,#dc2626); }
         .btn-start-class { background:linear-gradient(135deg,#059669,#10b981); color:white; font-weight:700; font-size:1rem; padding:0.8rem 2rem; }
-        .btn-start-class:hover { box-shadow:0 8px 30px rgba(16,185,129,0.5); transform:translateY(-2px); }
         .btn-end-class { background:linear-gradient(135deg,#dc2626,#991b1b); color:white; font-weight:700; }
-        @keyframes pulse { 0%,100%{box-shadow:0 4px 20px rgba(99,102,241,0.3)} 50%{box-shadow:0 4px 30px rgba(99,102,241,0.5)} }
-        .btn:disabled { opacity:0.5; cursor:not-allowed; }
 
         .badge { display:inline-flex; align-items:center; gap:0.3rem; padding:0.2rem 0.8rem; border-radius:2rem; font-size:0.75rem; font-weight:600; }
         .badge-published { background:var(--success-bg); color:var(--success-text); border:1px solid var(--success-text); }
-        .badge-pending { background:var(--warning-bg); color:var(--warning-text); }
         .badge-teach { background:var(--info-bg); color:var(--info-text); border:1px solid rgba(59,130,246,0.3); }
         .badge-scheduled { background:rgba(139,92,246,0.15); color:#8b5cf6; }
 
-        .modal-overlay { position:fixed; inset:0; background:var(--overlay-bg); backdrop-filter:blur(4px); -webkit-backdrop-filter:blur(4px); z-index:400; display:none; align-items:center; justify-content:center; padding:1rem; }
-        .modal-overlay.active { display:flex; animation:fadeIn 0.2s; }
+        /* JITSI PERMISSION MODAL */
+        .permission-modal { position:fixed; inset:0; background:rgba(0,0,0,0.85); backdrop-filter:blur(8px); z-index:500; display:flex; align-items:center; justify-content:center; padding:2rem; }
+        .permission-box { background:var(--card-bg); border:2px solid var(--accent); border-radius:2rem; padding:2.5rem; max-width:500px; width:100%; text-align:center; box-shadow:var(--shadow-xl); }
+        .permission-box h2 { font-size:1.5rem; margin-bottom:0.5rem; color:var(--accent); }
+        .permission-box p { color:var(--text-secondary); margin-bottom:1.5rem; font-size:0.9rem; line-height:1.6; }
+        .permission-box .warning-note { background:var(--warning-bg); border-radius:1rem; padding:1rem; margin-bottom:1.5rem; font-size:0.85rem; color:var(--warning-text); }
+
+        .modal-overlay { position:fixed; inset:0; background:var(--overlay-bg); backdrop-filter:blur(4px); z-index:400; display:none; align-items:center; justify-content:center; padding:1rem; }
+        .modal-overlay.active { display:flex; }
         .modal-content { background:var(--card-bg); border:1px solid var(--border); border-radius:1.5rem; padding:1.5rem; max-width:550px; width:100%; box-shadow:var(--shadow-xl); animation:slideUp 0.3s; }
         @keyframes slideUp { from{opacity:0;transform:translateY(20px)} to{opacity:1;transform:translateY(0)} }
         .modal-header { display:flex; justify-content:space-between; align-items:center; margin-bottom:1rem; }
-        .modal-close { width:36px; height:36px; border-radius:50%; border:none; background:var(--hover-bg); color:var(--text-secondary); cursor:pointer; display:flex; align-items:center; justify-content:center; }
-        .modal-close:hover { background:var(--danger-bg); color:var(--danger-text); }
+        .modal-close { width:36px; height:36px; border-radius:50%; border:none; background:var(--hover-bg); color:var(--text-secondary); cursor:pointer; }
         .form-group { margin-bottom:1rem; }
-        .form-label { display:block; margin-bottom:0.3rem; color:var(--text-secondary); font-size:0.85rem; font-weight:500; }
+        .form-label { display:block; margin-bottom:0.3rem; color:var(--text-secondary); font-size:0.85rem; }
         .form-control { width:100%; padding:0.6rem 1rem; background:var(--input-bg); border:1px solid var(--border); border-radius:0.5rem; color:var(--text-primary); font-size:0.9rem; font-family:inherit; }
         .form-control:focus { outline:none; border-color:var(--accent); }
         .modal-actions { display:flex; gap:0.5rem; justify-content:flex-end; margin-top:1.5rem; }
-
-        .image-popup { position:fixed; inset:0; background:rgba(0,0,0,0.92); backdrop-filter:blur(10px); -webkit-backdrop-filter:blur(10px); z-index:500; display:none; justify-content:center; align-items:center; padding:2rem; cursor:zoom-out; }
-        .image-popup.active { display:flex; }
-        .image-popup img { max-width:90%; max-height:90vh; border-radius:0.5rem; object-fit:contain; cursor:default; }
-        .image-popup-close { position:absolute; top:1.5rem; right:1.5rem; width:44px; height:44px; border-radius:50%; background:rgba(255,255,255,0.1); border:1px solid rgba(255,255,255,0.2); color:white; font-size:1.3rem; cursor:pointer; display:flex; align-items:center; justify-content:center; }
 
         .guest-link-box { background:var(--info-bg); border:1px solid var(--info-text); border-radius:0.5rem; padding:1rem; margin-top:1rem; word-break:break-all; font-family:'Space Grotesk',monospace; font-size:0.85rem; display:none; }
         .guest-link-box.show { display:block; }
         .guest-code-display { font-size:2rem; font-weight:800; letter-spacing:0.3rem; color:var(--accent); text-align:center; padding:0.5rem; background:var(--hover-bg); border-radius:0.5rem; margin:0.5rem 0; }
 
         .toast-container { position:fixed; top:1rem; right:1rem; z-index:600; display:flex; flex-direction:column; gap:0.5rem; pointer-events:none; }
-        .toast { background:var(--card-bg); backdrop-filter:blur(16px); -webkit-backdrop-filter:blur(16px); border:1px solid var(--border); border-radius:1rem; padding:0.9rem 1.2rem; min-width:280px; max-width:400px; box-shadow:var(--shadow-xl); display:flex; align-items:flex-start; gap:0.6rem; animation:toastIn 0.3s; pointer-events:auto; font-size:0.85rem; }
+        .toast { background:var(--card-bg); backdrop-filter:blur(16px); border:1px solid var(--border); border-radius:1rem; padding:0.9rem 1.2rem; min-width:280px; max-width:400px; box-shadow:var(--shadow-xl); display:flex; align-items:flex-start; gap:0.6rem; animation:toastIn 0.3s; pointer-events:auto; font-size:0.85rem; }
         @keyframes toastIn { from{opacity:0;transform:translateX(100%)} to{opacity:1;transform:translateX(0)} }
 
         .empty-state { text-align:center; padding:3rem; color:var(--text-tertiary); }
@@ -206,80 +190,51 @@
 
         .chat-container { display:flex; flex-direction:column; height:400px; border:1px solid var(--border); border-radius:1rem; overflow:hidden; background:var(--card-bg); }
         .chat-messages { flex:1; overflow-y:auto; padding:1rem; display:flex; flex-direction:column; gap:0.5rem; }
-        .chat-bubble { max-width:75%; padding:0.7rem 1rem; border-radius:1rem; font-size:0.85rem; word-break:break-word; }
-        .chat-bubble.sent { align-self:flex-end; background:var(--chat-sent-bg); color:white; border-bottom-right-radius:0.3rem; }
-        .chat-bubble.received { align-self:flex-start; background:var(--chat-received-bg); border:1px solid var(--border); border-bottom-left-radius:0.3rem; }
-        .chat-bubble .chat-time { font-size:0.65rem; opacity:0.7; margin-top:0.3rem; }
-        .chat-bubble .chat-sender { font-weight:700; font-size:0.7rem; margin-bottom:0.2rem; }
+        .chat-bubble { max-width:75%; padding:0.7rem 1rem; border-radius:1rem; font-size:0.85rem; }
+        .chat-bubble.sent { align-self:flex-end; background:var(--chat-sent-bg); color:white; }
+        .chat-bubble.received { align-self:flex-start; background:var(--chat-received-bg); border:1px solid var(--border); }
+        .chat-bubble .chat-sender { font-weight:700; font-size:0.65rem; margin-bottom:0.15rem; }
+        .chat-bubble .chat-time { font-size:0.6rem; opacity:0.7; margin-top:0.2rem; }
         .chat-input-area { display:flex; gap:0.5rem; padding:0.8rem; border-top:1px solid var(--border); background:var(--hover-bg); }
-        .chat-input-area input { flex:1; padding:0.5rem 1rem; border-radius:2rem; border:1px solid var(--border); background:var(--input-bg); color:var(--text-primary); font-family:inherit; font-size:0.85rem; }
-        .chat-input-area input:focus { outline:none; border-color:var(--accent); }
-        .chat-input-area button { padding:0.5rem 1rem; border-radius:2rem; background:var(--accent); color:white; border:none; cursor:pointer; font-weight:600; }
+        .chat-input-area input { flex:1; padding:0.5rem 1rem; border-radius:2rem; border:1px solid var(--border); background:var(--input-bg); color:var(--text-primary); font-size:0.85rem; }
+        .chat-input-area button { padding:0.5rem 1rem; border-radius:2rem; background:var(--accent); color:white; border:none; cursor:pointer; }
 
         .submission-card { background:var(--submission-bg); border:1px solid var(--submission-border); border-radius:1rem; padding:1rem; margin-bottom:0.8rem; }
-        .submission-card img { max-width:100%; max-height:200px; border-radius:0.5rem; cursor:pointer; margin-top:0.5rem; }
+        .submission-card img { max-width:100%; max-height:200px; border-radius:0.5rem; cursor:pointer; }
         .submission-card audio { width:100%; margin-top:0.5rem; }
 
-        .section-badge { font-size:0.7rem; padding:0.15rem 0.6rem; border-radius:1rem; display:inline-flex; align-items:center; gap:0.3rem; margin-left:0.5rem; }
+        .section-badge { font-size:0.7rem; padding:0.15rem 0.6rem; border-radius:1rem; margin-left:0.5rem; }
         .section-badge.workspace { background:rgba(200,150,62,0.2); color:var(--accent); }
         .section-badge.student { background:rgba(139,92,246,0.2); color:#a78bfa; }
 
-        .past-session-item,.scheduled-session-item { display:flex; justify-content:space-between; align-items:center; padding:0.8rem; border-bottom:1px solid var(--border); flex-wrap:wrap; gap:0.5rem; }
-        .past-session-item:last-child,.scheduled-session-item:last-child { border-bottom:none; }
+        .scheduled-session-item,.past-session-item { display:flex; justify-content:space-between; align-items:center; padding:0.8rem; border-bottom:1px solid var(--border); flex-wrap:wrap; gap:0.5rem; }
+        .scheduled-session-item:last-child,.past-session-item:last-child { border-bottom:none; }
 
-        .debug-panel { position:fixed; bottom:80px; right:1rem; z-index:9999; background:var(--debug-bg); border:2px solid var(--debug-border); border-radius:1rem; padding:1rem; width:450px; max-width:calc(100vw - 2rem); max-height:55vh; overflow-y:auto; box-shadow:0 10px 40px rgba(0,0,0,0.8); font-family:'Space Grotesk',monospace; font-size:0.7rem; display:none; color:var(--debug-text); }
+        .debug-panel { position:fixed; bottom:80px; right:1rem; z-index:9999; background:var(--debug-bg); border:2px solid var(--debug-border); border-radius:1rem; padding:1rem; width:450px; max-width:calc(100vw - 2rem); max-height:55vh; overflow-y:auto; font-family:'Space Grotesk',monospace; font-size:0.7rem; display:none; color:var(--debug-text); }
         .debug-panel.show { display:block; }
-        .debug-panel h4 { margin-bottom:0.5rem; font-size:0.85rem; display:flex; justify-content:space-between; align-items:center; }
-        .debug-line { padding:0.15rem 0; border-bottom:1px solid rgba(0,0,0,0.1); word-break:break-all; }
-        .debug-line .dk { color:#92400e; font-weight:600; }
-        .debug-line .dv { color:#1e40af; }
-        .debug-line .de { color:#dc2626; }
-        .debug-btn { position:fixed; bottom:1.5rem; right:1.5rem; z-index:10000; width:44px; height:44px; border-radius:50%; background:#0A2540; border:2px solid #C8963E; color:#C8963E; cursor:pointer; font-size:1.1rem; display:flex; align-items:center; justify-content:center; box-shadow:0 4px 15px rgba(200,150,62,0.4); transition:all 0.3s; }
-        .debug-btn:hover { background:#C8963E; color:#0A2540; transform:scale(1.1); }
+        .debug-btn { position:fixed; bottom:1.5rem; right:1.5rem; z-index:10000; width:44px; height:44px; border-radius:50%; background:#0A2540; border:2px solid #C8963E; color:#C8963E; cursor:pointer; font-size:1.1rem; display:flex; align-items:center; justify-content:center; }
 
-        @media(max-width:1024px){ .teach-container{flex-direction:column;} .teach-panel{flex:none;height:50%;min-height:300px;} .jitsi-container{height:400px;} }
-        @media(max-width:768px){ .main-container{padding:1rem;} .top-nav{padding:0.5rem 1rem;gap:0.5rem;} .resource-grid{grid-template-columns:1fr;} .jitsi-container{height:300px;} }
+        @media(max-width:1024px){ .teach-container{flex-direction:column;} .teach-panel{flex:none;height:50%;min-height:300px;} }
+        @media(max-width:768px){ .main-container{padding:1rem;} .resource-grid{grid-template-columns:1fr;} }
     </style>
 </head>
 <body>
 <img src="https://res.cloudinary.com/dda7kpir8/image/upload/q_auto/f_auto/v1781038310/ChatGPT_Image_Jun_9_2026_09_25_06_AM_elnine.png" alt="" class="bg-logo" aria-hidden="true">
 <div class="orb orb-1"></div><div class="orb orb-2"></div>
 <div class="toast-container" id="toastContainer"></div>
-<div class="image-popup" id="imagePopup" onclick="closeImagePopup()"><button class="image-popup-close" onclick="closeImagePopup()">✕</button><img id="imagePopupImg" src="" alt="" onclick="event.stopPropagation()"></div>
 
-<button class="debug-btn" id="debugToggleBtn" title="Debug Panel"><i class="fas fa-bug"></i></button>
-<div class="debug-panel" id="debugPanel">
-    <h4><i class="fas fa-bug"></i> Debug Log <button class="btn btn-sm btn-outline" onclick="clearDebugLogs()" style="font-size:0.65rem;padding:0.2rem 0.5rem;">Clear</button></h4>
-    <div id="debugContent"></div>
-</div>
+<button class="debug-btn" id="debugToggleBtn" title="Debug"><i class="fas fa-bug"></i></button>
+<div class="debug-panel" id="debugPanel"><h4>Debug <button class="btn btn-sm btn-outline" onclick="clearDebugLogs()" style="font-size:0.6rem;">Clear</button></h4><div id="debugContent"></div></div>
 
 <!-- TEACH MODE OVERLAY -->
 <div class="teach-overlay" id="teachOverlay"></div>
 <div class="teach-container" id="teachContainer">
     <div class="teach-panel" id="teachPanelLN">
-        <div class="teach-panel-header">
-            <h3><i class="fas fa-book"></i> Lesson Note</h3>
-            <div style="display:flex;align-items:center;gap:0.5rem;flex-wrap:wrap;">
-                <div class="reading-toggle" id="readingToggleLN">
-                    <span class="reading-opt active" data-mode="scroll">Scroll</span>
-                    <span class="reading-opt" data-mode="book">Flip</span>
-                </div>
-                <button class="btn btn-outline btn-sm" onclick="toggleTeachPanel('lessonNote')">✕</button>
-            </div>
-        </div>
+        <div class="teach-panel-header"><h3><i class="fas fa-book"></i> Lesson Note</h3><div style="display:flex;align-items:center;gap:0.5rem;"><div class="reading-toggle" id="readingToggleLN"><span class="reading-opt active" data-mode="scroll">Scroll</span><span class="reading-opt" data-mode="book">Flip</span></div><button class="btn btn-outline btn-sm" onclick="toggleTeachPanel('lessonNote')">✕</button></div></div>
         <div class="teach-panel-content scroll-mode" id="teachContentLN"><div class="empty-state"><i class="fas fa-book-open"></i><h3>No Lesson Note</h3></div></div>
     </div>
     <div class="teach-panel" id="teachPanelTP">
-        <div class="teach-panel-header">
-            <h3><i class="fas fa-chalkboard-teacher"></i> Teaching Process</h3>
-            <div style="display:flex;align-items:center;gap:0.5rem;flex-wrap:wrap;">
-                <div class="reading-toggle" id="readingToggleTP">
-                    <span class="reading-opt active" data-mode="scroll">Scroll</span>
-                    <span class="reading-opt" data-mode="book">Flip</span>
-                </div>
-                <button class="btn btn-outline btn-sm" onclick="toggleTeachPanel('teachingProcess')">✕</button>
-            </div>
-        </div>
+        <div class="teach-panel-header"><h3><i class="fas fa-chalkboard-teacher"></i> Teaching Process</h3><div style="display:flex;align-items:center;gap:0.5rem;"><div class="reading-toggle" id="readingToggleTP"><span class="reading-opt active" data-mode="scroll">Scroll</span><span class="reading-opt" data-mode="book">Flip</span></div><button class="btn btn-outline btn-sm" onclick="toggleTeachPanel('teachingProcess')">✕</button></div></div>
         <div class="teach-panel-content scroll-mode" id="teachContentTP"><div class="empty-state"><i class="fas fa-chalkboard"></i><h3>No Teaching Process</h3></div></div>
     </div>
 </div>
@@ -289,6 +244,7 @@
     <div class="nav-left">
         <a href="teacher-dashboard.html" class="nav-btn"><i class="fas fa-chart-pie"></i> Dashboard</a>
         <a href="teacher-workspace.html" class="nav-btn"><i class="fas fa-briefcase"></i> Workspace</a>
+        <button class="nav-btn return-class" id="returnToClassBtn" onclick="returnToLiveClass()"><span class="live-dot"></span> Return to Live Class</button>
     </div>
     <div class="nav-right">
         <div class="theme-toggle" id="themeToggle"><i class="fas fa-sun"></i><span>Light</span></div>
@@ -302,21 +258,18 @@
     </div>
 </nav>
 
-<!-- MAIN CONTENT -->
+<!-- MAIN -->
 <main class="main-container">
     <div class="controls-bar">
-        <label style="font-weight:600;font-size:0.85rem;">Class:</label>
-        <select id="classSelect"><option value="">Loading...</option></select>
-        <label style="font-weight:600;font-size:0.85rem;">Subject:</label>
-        <select id="subjectSelect"><option value="">Select Subject</option></select>
-        <label style="font-weight:600;font-size:0.85rem;">Week:</label>
-        <select id="weekSelect"><option value="">Select Week</option></select>
+        <label>Class:</label><select id="classSelect"><option>Loading...</option></select>
+        <label>Subject:</label><select id="subjectSelect"><option>Select Subject</option></select>
+        <label>Week:</label><select id="weekSelect"><option>Select Week</option></select>
     </div>
 
     <div style="display:flex;gap:0.5rem;margin-bottom:1.5rem;flex-wrap:wrap;">
-        <button class="btn btn-teach" id="teachModeBtn"><i class="fas fa-chalkboard"></i> Teach Mode <small style="opacity:0.7;">Ctrl+T</small></button>
+        <button class="btn btn-teach" id="teachModeBtn"><i class="fas fa-chalkboard"></i> Teach Mode <small>Ctrl+T</small></button>
         <button class="btn btn-start-class" id="startClassBtn"><i class="fas fa-video"></i> Start Live Class Now</button>
-        <button class="btn btn-outline btn-sm" id="scheduleClassBtn"><i class="fas fa-calendar-plus"></i> Schedule Future Class</button>
+        <button class="btn btn-outline btn-sm" id="scheduleClassBtn"><i class="fas fa-calendar-plus"></i> Schedule Future</button>
         <button class="btn btn-outline btn-sm" id="guestInviteBtn"><i class="fas fa-user-plus"></i> Invite Guest</button>
         <button class="btn btn-outline btn-sm" id="studentViewBtn"><i class="fas fa-eye"></i> Student View</button>
         <button class="btn btn-outline btn-sm" id="printBtn"><i class="fas fa-print"></i> Print</button>
@@ -325,131 +278,94 @@
     <!-- LIVE CLASSROOM -->
     <div class="classroom-card" id="liveClassroomCard" style="display:none;">
         <div class="classroom-header">
-            <h3><span class="live-dot"></span> Live Classroom — <span id="liveClassName">Loading...</span></h3>
+            <h3><span class="live-dot"></span> Live — <span id="liveClassName">...</span></h3>
             <div style="display:flex;align-items:center;gap:1rem;flex-wrap:wrap;">
                 <div class="classroom-timer" id="classroomTimer">⏱️ <span id="timerDisplay">00:00</span></div>
-                <span class="classroom-participant-count"><i class="fas fa-users"></i> <span id="participantCount">0</span> online</span>
+                <span style="color:white;font-size:0.8rem;"><i class="fas fa-users"></i> <span id="participantCount">0</span></span>
             </div>
         </div>
-        <div class="jitsi-container" id="jitsiContainer">
-            <!-- Permission prompt shown before loading Jitsi -->
-            <div class="permission-prompt" id="permissionPrompt">
-                <i class="fas fa-video" style="font-size:2.5rem;color:var(--accent);margin-bottom:0.5rem;display:block;"></i>
-                <h4>Ready to Start the Classroom?</h4>
-                <p>Your browser will ask for camera & microphone permission. This is needed for the live class. Everything happens in your browser — no downloads needed.</p>
-                <button class="btn btn-start-class" onclick="grantPermissionAndStart()" id="grantPermissionBtn">
-                    <i class="fas fa-check-circle"></i> Allow Camera & Mic — Start Classroom
-                </button>
-            </div>
+        <div class="jitsi-wrapper" id="jitsiWrapper" style="height:600px;">
+            <div class="empty-state" style="background:#000;color:white;"><i class="fas fa-video" style="opacity:0.3;"></i><h3>Ready to start</h3></div>
         </div>
         <div class="classroom-info-bar">
-            <div class="classroom-status"><span class="live-dot"></span> <span>Session Active — In Browser</span></div>
-            <div class="classroom-controls">
-                <button class="btn btn-sm btn-outline" onclick="toggleClassroomChat()" title="Chat"><i class="fas fa-comments"></i> Chat</button>
-                <button class="btn btn-sm btn-outline" onclick="toggleClassroomParticipants()" title="Participants"><i class="fas fa-users"></i> People</button>
-                <button class="btn btn-sm btn-outline" onclick="toggleClassroomTileView()" title="Tile View"><i class="fas fa-th"></i> Tile</button>
-                <button class="btn btn-sm btn-outline" onclick="inviteGuestToLiveClass()" title="Invite Guest"><i class="fas fa-user-plus"></i> Invite</button>
-                <button class="btn btn-end-class btn-sm" id="endClassBtn" title="End Classroom"><i class="fas fa-stop"></i> End Class</button>
+            <span style="font-size:0.8rem;">All in browser — no downloads</span>
+            <div style="display:flex;gap:0.4rem;">
+                <button class="btn btn-sm btn-outline" onclick="toggleCC()">💬 Chat</button>
+                <button class="btn btn-sm btn-outline" onclick="togglePP()">👥 People</button>
+                <button class="btn btn-sm btn-outline" onclick="inviteGuestToLiveClass()">➕ Invite</button>
+                <button class="btn btn-end-class btn-sm" id="endClassBtn">⏹ End</button>
             </div>
         </div>
     </div>
 
-    <!-- SECTION 1: Scheduled Classes -->
-    <div class="card" id="scheduledClassesCard">
-        <div class="card-header"><h3><i class="fas fa-calendar-alt"></i> Scheduled & Upcoming Classes</h3></div>
-        <div id="scheduledClassesList"><div class="empty-state"><i class="fas fa-calendar"></i><h3>No scheduled classes</h3><p>Click "Schedule Future Class" to plan ahead.</p></div></div>
-    </div>
-
-    <!-- SECTION 2: Teaching Resources -->
-    <div class="card" id="teachingResourcesCard">
-        <div class="card-header">
-            <h3><i class="fas fa-book-open"></i> Teaching Resources <span class="section-badge workspace">From Workspace</span></h3>
-            <span id="resourceTitle" style="color:var(--accent);font-weight:600;">Select a subject and week</span>
-        </div>
+    <!-- TEACHING RESOURCES -->
+    <div class="card">
+        <div class="card-header"><h3><i class="fas fa-book-open"></i> Resources <span class="section-badge workspace">Workspace</span></h3><span id="resourceTitle" style="color:var(--accent);">Select subject & week</span></div>
         <div id="resourcesContainer"><div class="empty-state"><i class="fas fa-folder-open"></i><h3>Select Subject & Week</h3></div></div>
     </div>
 
-    <!-- SECTION 3: Past Sessions -->
-    <div class="card" id="pastSessionsCard">
-        <div class="card-header"><h3><i class="fas fa-history"></i> Past Live Sessions</h3></div>
-        <div id="pastSessionsList"><div class="empty-state"><i class="fas fa-history"></i><h3>No past sessions</h3></div></div>
-    </div>
+    <!-- SCHEDULED -->
+    <div class="card"><div class="card-header"><h3><i class="fas fa-calendar-alt"></i> Scheduled</h3></div><div id="scheduledList"><div class="empty-state"><i class="fas fa-calendar"></i><h3>None</h3></div></div></div>
 
-    <!-- SECTION 4: Student Submissions -->
-    <div class="card" id="studentSubmissionsCard">
-        <div class="card-header">
-            <h3><i class="fas fa-inbox"></i> Student Submissions <span class="section-badge student">From Students</span></h3>
-            <span class="badge badge-pending" id="submissionCountBadge" style="display:none;">0 new</span>
-        </div>
-        <div id="studentSubmissionsList"><div class="empty-state"><i class="fas fa-inbox"></i><h3>No submissions</h3></div></div>
-    </div>
+    <!-- PAST -->
+    <div class="card"><div class="card-header"><h3><i class="fas fa-history"></i> Past</h3></div><div id="pastList"><div class="empty-state"><i class="fas fa-history"></i><h3>None</h3></div></div></div>
 
-    <!-- SECTION 5: Student Chat -->
-    <div class="card" id="chatCard">
-        <div class="card-header">
-            <h3><i class="fas fa-comments"></i> Student Messages <span class="section-badge student">From Students</span></h3>
-            <button class="btn btn-outline btn-sm" onclick="loadChatMessages()"><i class="fas fa-sync-alt"></i> Refresh</button>
-        </div>
-        <div class="chat-container">
-            <div class="chat-messages" id="chatMessages"><div class="empty-state"><i class="fas fa-comments"></i><h3>No messages</h3></div></div>
-            <div class="chat-input-area">
-                <input type="text" id="chatInput" placeholder="Reply to students..." onkeypress="if(event.key==='Enter')sendChatMessage()">
-                <button onclick="sendChatMessage()"><i class="fas fa-paper-plane"></i> Send</button>
-            </div>
+    <!-- SUBMISSIONS -->
+    <div class="card"><div class="card-header"><h3><i class="fas fa-inbox"></i> Student Submissions <span class="section-badge student">Students</span></h3></div><div id="submissionsList"><div class="empty-state"><i class="fas fa-inbox"></i><h3>None</h3></div></div></div>
+
+    <!-- CHAT -->
+    <div class="card"><div class="card-header"><h3><i class="fas fa-comments"></i> Chat <span class="section-badge student">Students</span></h3></div>
+        <div class="chat-container"><div class="chat-messages" id="chatMessages"><div class="empty-state"><i class="fas fa-comments"></i><h3>No messages</h3></div></div>
+            <div class="chat-input-area"><input type="text" id="chatInput" placeholder="Reply..." onkeypress="if(event.key==='Enter')sendChat()"><button onclick="sendChat()">Send</button></div>
         </div>
     </div>
 </main>
 
-<!-- START CLASS MODAL (Live Now) -->
-<div class="modal-overlay" id="startClassModal">
-    <div class="modal-content">
-        <div class="modal-header"><h3><i class="fas fa-video"></i> Start Live Classroom Now</h3><button class="modal-close" id="startClassModalClose">✕</button></div>
-        <form id="startClassForm">
-            <div class="form-group"><label class="form-label">Topic</label><input type="text" id="classTopic" class="form-control" placeholder="e.g., Mathematics - Fractions" required></div>
-            <div class="form-group"><label class="form-label">Duration</label><select id="classDuration" class="form-control"><option value="20">20 min</option><option value="30">30 min</option><option value="45">45 min</option><option value="60" selected>1 hour</option><option value="90">1.5 hours</option></select></div>
-            <div class="modal-actions"><button type="button" class="btn btn-outline" id="startClassCancelBtn">Cancel</button><button type="submit" class="btn btn-start-class"><i class="fas fa-play"></i> Start Now</button></div>
-        </form>
-    </div>
-</div>
-
-<!-- SCHEDULE CLASS MODAL (Future) -->
-<div class="modal-overlay" id="scheduleClassModal">
-    <div class="modal-content">
-        <div class="modal-header"><h3><i class="fas fa-calendar-plus"></i> Schedule Future Class</h3><button class="modal-close" id="scheduleClassModalClose">✕</button></div>
-        <form id="scheduleClassForm">
-            <div class="form-group"><label class="form-label">Topic</label><input type="text" id="schedTopic" class="form-control" placeholder="e.g., Science - Plants" required></div>
-            <div class="form-group"><label class="form-label">Date</label><input type="date" id="schedDate" class="form-control" required></div>
-            <div class="form-group"><label class="form-label">Time</label><input type="time" id="schedTime" class="form-control" required></div>
-            <div class="form-group"><label class="form-label">Duration</label><select id="schedDuration" class="form-control"><option value="20">20 min</option><option value="30">30 min</option><option value="45">45 min</option><option value="60" selected>1 hour</option><option value="90">1.5 hours</option><option value="120">2 hours</option></select></div>
-            <div class="form-group"><label class="form-label">Invite Guest (Optional)</label><input type="text" id="schedGuestName" class="form-control" placeholder="Guest name (leave empty if none)"></div>
-            <div class="form-group" id="schedGuestPurposeGroup" style="display:none;"><label class="form-label">Guest Topic/Purpose</label><input type="text" id="schedGuestPurpose" class="form-control" placeholder="e.g., Health talk"></div>
-            <div class="modal-actions"><button type="button" class="btn btn-outline" id="scheduleClassCancelBtn">Cancel</button><button type="submit" class="btn btn-primary"><i class="fas fa-calendar-check"></i> Schedule Class</button></div>
-        </form>
-    </div>
-</div>
-
-<!-- GUEST MODAL (Invite to live or scheduled) -->
-<div class="modal-overlay" id="guestModal">
-    <div class="modal-content" style="max-width:550px;">
-        <div class="modal-header"><h3><i class="fas fa-user-plus"></i> Invite Guest Teacher</h3><button class="modal-close" id="guestModalClose">✕</button></div>
-        <form id="guestForm">
-            <div class="form-group"><label class="form-label">Guest Name</label><input type="text" id="guestName" class="form-control" placeholder="e.g., Dr. Adeola" required></div>
-            <div class="form-group"><label class="form-label">Purpose/Topic</label><input type="text" id="guestPurpose" class="form-control" placeholder="e.g., Health talk on hygiene" required></div>
-            <div class="form-group"><label class="form-label">For</label><select id="guestForType" class="form-control"><option value="now">Current Live Class</option><option value="scheduled">Scheduled Future Class</option></select></div>
-            <div class="form-group" id="guestScheduledSelect" style="display:none;"><label class="form-label">Select Scheduled Class</label><select id="guestScheduledClass" class="form-control"></select></div>
-            <div class="form-group"><label class="form-label">Access Duration</label><select id="guestDuration" class="form-control"><option value="30">30 minutes</option><option value="60" selected>1 hour</option><option value="120">2 hours</option><option value="360">6 hours</option><option value="1440">24 hours</option></select></div>
-            <div class="modal-actions"><button type="button" class="btn btn-outline" id="guestCancelBtn">Cancel</button><button type="submit" class="btn btn-primary"><i class="fas fa-link"></i> Generate Invite</button></div>
-        </form>
-        <div class="guest-link-box" id="guestLinkBox">
-            <strong><i class="fas fa-link"></i> Share with guest:</strong>
-            <p style="margin-top:0.5rem;"><strong>Link:</strong><br><span id="guestLinkText"></span></p>
-            <p style="margin-top:0.8rem;"><strong>One-Time Code:</strong></p>
-            <div class="guest-code-display" id="guestCodeDisplay">------</div>
-            <p style="font-size:0.75rem;color:var(--text-secondary);">No account needed. Opens in browser.</p>
-            <button class="btn btn-primary btn-sm" id="copyGuestInviteBtn" style="margin-top:0.5rem;"><i class="fas fa-copy"></i> Copy</button>
+<!-- PERMISSION MODAL (shown before Jitsi) -->
+<div class="permission-modal" id="permissionModal" style="display:none;">
+    <div class="permission-box">
+        <i class="fas fa-video" style="font-size:3rem;color:var(--accent);margin-bottom:1rem;"></i>
+        <h2>Start Live Classroom</h2>
+        <p>Your browser will ask for <strong>camera & microphone</strong> permission.<br>Everything happens in your browser — no downloads needed.</p>
+        <div class="warning-note">
+            <strong>📱 Important:</strong> After clicking below, you may see a Jitsi screen.<br>
+            <strong>Click "Continue in browser"</strong> or <strong>"Join as a guest"</strong> to enter the classroom.<br>
+            <em>Do NOT download any app — stay on the website.</em>
         </div>
+        <button class="btn btn-start-class" onclick="confirmStartClassroom()" style="width:100%;justify-content:center;">
+            <i class="fas fa-check-circle"></i> Allow Camera & Mic — Enter Classroom
+        </button>
     </div>
 </div>
+
+<!-- START CLASS MODAL -->
+<div class="modal-overlay" id="startClassModal"><div class="modal-content">
+    <div class="modal-header"><h3>Start Live Class</h3><button class="modal-close" onclick="closeModal('startClassModal')">✕</button></div>
+    <form onsubmit="submitStartClass(event)"><div class="form-group"><label class="form-label">Topic</label><input type="text" id="classTopic" class="form-control" required></div>
+    <div class="form-group"><label class="form-label">Duration</label><select id="classDuration" class="form-control"><option value="20">20 min</option><option value="30">30 min</option><option value="45">45 min</option><option value="60" selected>1 hour</option><option value="90">1.5 hours</option></select></div>
+    <div class="modal-actions"><button type="button" class="btn btn-outline" onclick="closeModal('startClassModal')">Cancel</button><button type="submit" class="btn btn-start-class">Start Now</button></div></form>
+</div></div>
+
+<!-- SCHEDULE MODAL -->
+<div class="modal-overlay" id="scheduleClassModal"><div class="modal-content">
+    <div class="modal-header"><h3>Schedule Class</h3><button class="modal-close" onclick="closeModal('scheduleClassModal')">✕</button></div>
+    <form onsubmit="submitSchedule(event)"><div class="form-group"><label class="form-label">Topic</label><input type="text" id="schedTopic" class="form-control" required></div>
+    <div class="form-group"><label class="form-label">Date</label><input type="date" id="schedDate" class="form-control" required></div>
+    <div class="form-group"><label class="form-label">Time</label><input type="time" id="schedTime" class="form-control" required></div>
+    <div class="form-group"><label class="form-label">Duration</label><select id="schedDuration" class="form-control"><option value="20">20 min</option><option value="30">30 min</option><option value="45">45 min</option><option value="60" selected>1 hour</option></select></div>
+    <div class="form-group"><label class="form-label">Guest (optional)</label><input type="text" id="schedGuest" class="form-control" placeholder="Guest name"></div>
+    <div class="modal-actions"><button type="button" class="btn btn-outline" onclick="closeModal('scheduleClassModal')">Cancel</button><button type="submit" class="btn btn-primary">Schedule</button></div></form>
+</div></div>
+
+<!-- GUEST MODAL -->
+<div class="modal-overlay" id="guestModal"><div class="modal-content">
+    <div class="modal-header"><h3>Invite Guest</h3><button class="modal-close" onclick="closeModal('guestModal')">✕</button></div>
+    <form onsubmit="submitGuest(event)"><div class="form-group"><label class="form-label">Name</label><input type="text" id="guestName" class="form-control" required></div>
+    <div class="form-group"><label class="form-label">Purpose</label><input type="text" id="guestPurpose" class="form-control" required></div>
+    <div class="form-group"><label class="form-label">Duration</label><select id="guestDuration" class="form-control"><option value="30">30 min</option><option value="60" selected>1 hour</option><option value="120">2 hours</option></select></div>
+    <div class="modal-actions"><button type="button" class="btn btn-outline" onclick="closeModal('guestModal')">Cancel</button><button type="submit" class="btn btn-primary">Generate</button></div></form>
+    <div class="guest-link-box" id="guestLinkBox"><strong>Share:</strong><br><span id="guestLinkText"></span><br><strong>Code:</strong><div class="guest-code-display" id="guestCodeDisplay">------</div><button class="btn btn-primary btn-sm" onclick="copyGuest()">Copy</button></div>
+</div></div>
 
 <script>
 const firebaseConfig = {
@@ -458,758 +374,315 @@ const firebaseConfig = {
     projectId: "judah-c737e",
     storageBucket: "judah-c737e.firebasestorage.app",
     messagingSenderId: "739196063078",
-    appId: "1:739196063078:web:c0ee1c1da2cc3794ca8ca7",
-    measurementId: "G-YEM22F1C39"
+    appId: "1:739196063078:web:c0ee1c1da2cc3794ca8ca7"
 };
 firebase.initializeApp(firebaseConfig);
-const auth = firebase.auth();
-const db = firebase.firestore();
-db.enablePersistence({synchronizeTabs:true}).catch(()=>{});
+const auth=firebase.auth(),db=firebase.firestore();
+try{db.enablePersistence({synchronizeTabs:true});}catch(e){}
 
-const debugLogs = [];
-function debugLog(key, value, type = 'info') {
-    debugLogs.push({ key, value, type, time: new Date().toLocaleTimeString() });
-    console.log(`[DEBUG][${type}] ${key}:`, value);
-    updateDebugPanel();
-}
-function updateDebugPanel() {
-    const c = document.getElementById('debugContent');
-    if (!c) return;
-    c.innerHTML = debugLogs.slice(-40).map(d => 
-        `<div class="debug-line"><span style="color:#64748b;font-size:0.6rem;">${d.time}</span> <span class="dk">${d.key}:</span> <span class="${d.type==='error'?'de':'dv'}">${typeof d.value === 'object' ? JSON.stringify(d.value).substring(0,150) : String(d.value).substring(0,200)}</span></div>`
-    ).join('');
-}
-function clearDebugLogs() { debugLogs.length = 0; updateDebugPanel(); }
-document.getElementById('debugToggleBtn').addEventListener('click', () => document.getElementById('debugPanel').classList.toggle('show'));
+// DEBUG
+const debugLogs=[];
+function debugLog(k,v,t='info'){debugLogs.push({k,v,t,time:new Date().toLocaleTimeString()});console.log(`[${t}] ${k}:`,v);updateDebug();}
+function updateDebug(){const c=document.getElementById('debugContent');if(c)c.innerHTML=debugLogs.slice(-30).map(d=>`<div style="padding:0.1rem 0;border-bottom:1px solid rgba(255,255,255,0.05);"><span style="color:#94a3b8;font-size:0.6rem;">${d.time}</span> <b>${d.k}:</b> <span style="color:${d.t==='error'?'#f87171':'#4ade80'}">${typeof d.v==='object'?JSON.stringify(d.v).substring(0,120):String(d.v).substring(0,150)}</span></div>`).join('');}
+function clearDebugLogs(){debugLogs.length=0;updateDebug();}
+document.getElementById('debugToggleBtn').addEventListener('click',()=>document.getElementById('debugPanel').classList.toggle('show'));
 
-let currentUser=null,userData=null,currentClass=null;
-let allClasses=[],subjects=[],currentSubject=null,currentWeek=null;
-let lessonNotesMap={},currentNote=null;
-let teachActive=false,teachPanels={lessonNote:true,teachingProcess:true};
-let teachModes={lessonNote:'scroll',teachingProcess:'scroll'};
-let bookPages={lessonNote:{pages:[],current:0},teachingProcess:{pages:[],current:0}};
-let selectedVideoIdx=0,unsubChat=null,unsubSubmissions=null,unsubLiveSession=null,unsubScheduled=null;
-let jitsiApi=null,currentLiveSessionId=null,classTimerInterval=null,classSeconds=0,classDuration=0;
-let pendingRoomName=null,pendingTopic=null,pendingDuration=null;
-
-// TRY THESE DOMAINS IN ORDER — framatalk is most reliable for embedded
-const JITSI_DOMAINS=['framatalk.org','meet.ffmuc.net','meet.mayfirst.org'];
-let currentJitsiDomainIdx=0;
+// THEME
+(function(){const h=document.documentElement,t=document.getElementById('themeToggle'),s=localStorage.getItem('judah-theme')||'dark';h.setAttribute('data-theme',s);t.querySelector('span').textContent=s==='dark'?'Light':'Dark';t.addEventListener('click',()=>{const n=h.getAttribute('data-theme')==='dark'?'light':'dark';h.setAttribute('data-theme',n);localStorage.setItem('judah-theme',n);t.querySelector('span').textContent=n==='dark'?'Light':'Dark';});})();
 
 function escapeHtml(s){const d=document.createElement('div');d.textContent=s||'';return d.innerHTML;}
-function showToast(msg,type='info',dur=4000){
-    const icons={success:'fa-check-circle',error:'fa-exclamation-circle',warning:'fa-exclamation-triangle',info:'fa-info-circle'};
-    const colors={success:'var(--success-text)',error:'var(--danger-text)',warning:'var(--warning-text)',info:'var(--accent)'};
-    const t=document.createElement('div');t.className='toast';
-    t.innerHTML=`<i class="fas ${icons[type]}" style="color:${colors[type]};font-size:1.1rem;"></i><span>${escapeHtml(msg)}</span>`;
-    document.getElementById('toastContainer').appendChild(t);
-    setTimeout(()=>{t.style.opacity='0';t.style.transform='translateX(100%)';t.style.transition='0.3s';setTimeout(()=>t.remove(),300);},dur);
-}
-function extractYouTubeId(url){if(!url)return null;const p=[/(?:youtube\.com\/watch\?v=)([a-zA-Z0-9_-]{11})/,/(?:youtu\.be\/)([a-zA-Z0-9_-]{11})/,/(?:youtube\.com\/embed\/)([a-zA-Z0-9_-]{11})/];for(const r of p){const m=url.match(r);if(m)return m[1];}return null;}
-function generateRoomName(base){return`judah-${base}-${Date.now().toString(36)}-${Math.random().toString(36).substring(2,6)}`;}
+function showToast(m,t='info',d=4000){const i={success:'fa-check-circle',error:'fa-exclamation-circle',warning:'fa-exclamation-triangle',info:'fa-info-circle'},c={success:'var(--success-text)',error:'var(--danger-text)',warning:'var(--warning-text)',info:'var(--accent)'},el=document.createElement('div');el.className='toast';el.innerHTML=`<i class="fas ${i[t]}" style="color:${c[t]};"></i><span>${escapeHtml(m)}</span>`;document.getElementById('toastContainer').appendChild(el);setTimeout(()=>{el.style.opacity='0';el.style.transform='translateX(100%)';el.style.transition='0.3s';setTimeout(()=>el.remove(),300);},d);}
+function extractYouTubeId(u){if(!u)return null;const p=[/(?:youtube\.com\/watch\?v=)([a-zA-Z0-9_-]{11})/,/(?:youtu\.be\/)([a-zA-Z0-9_-]{11})/];for(const r of p){const m=u.match(r);if(m)return m[1];}return null;}
+function closeModal(id){document.getElementById(id).classList.remove('active');}
 
-(function(){
-    const html=document.documentElement,tt=document.getElementById('themeToggle');
-    const saved=localStorage.getItem('judah-theme')||'dark';html.setAttribute('data-theme',saved);
-    tt.querySelector('span').textContent=saved==='dark'?'Light':'Dark';
-    tt.addEventListener('click',()=>{const n=html.getAttribute('data-theme')==='dark'?'light':'dark';html.setAttribute('data-theme',n);localStorage.setItem('judah-theme',n);tt.querySelector('span').textContent=n==='dark'?'Light':'Dark';});
-})();
+// STATE
+let currentUser=null,userData=null,currentClass=null,allClasses=[],subjects=[],currentSubject=null,currentWeek=null;
+let lessonNotesMap={},currentNote=null,teachActive=false,teachPanels={lessonNote:true,teachingProcess:true};
+let teachModes={lessonNote:'scroll',teachingProcess:'scroll'},bookPages={lessonNote:{pages:[],current:0},teachingProcess:{pages:[],current:0}};
+let selectedVideoIdx=0,jitsiApi=null,classTimerInterval=null,classSeconds=0,classDuration=0;
+let savedSession=null;
 
-function openImagePopup(url){document.getElementById('imagePopupImg').src=url;document.getElementById('imagePopup').classList.add('active');}
-function closeImagePopup(){document.getElementById('imagePopup').classList.remove('active');}
-document.addEventListener('keydown',e=>{if(e.key==='Escape'&&!teachActive)closeImagePopup();});
+// SESSION PERSISTENCE — save to localStorage so reload doesn't kill it
+function saveSessionToStorage(data){localStorage.setItem('judah-live-session',JSON.stringify(data));}
+function loadSessionFromStorage(){try{const d=localStorage.getItem('judah-live-session');return d?JSON.parse(d):null;}catch(e){return null;}}
+function clearSessionStorage(){localStorage.removeItem('judah-live-session');}
+function checkReturnButton(){const s=loadSessionFromStorage();if(s&&s.active){document.getElementById('returnToClassBtn').style.display='inline-flex';savedSession=s;}else{document.getElementById('returnToClassBtn').style.display='none';savedSession=null;}}
 
-// ═══════════════════════════════════════════
-// PERMISSION PROMPT + LIVE CLASSROOM
-// ═══════════════════════════════════════════
-function grantPermissionAndStart(){
-    // First request camera/mic permission explicitly
-    navigator.mediaDevices.getUserMedia({audio:true,video:true})
-    .then(stream=>{
-        // Permission granted — stop the test stream and start Jitsi
-        stream.getTracks().forEach(t=>t.stop());
-        debugLog('Permissions granted','Starting Jitsi');
-        document.getElementById('permissionPrompt').style.display='none';
-        actuallyStartJitsi();
-    })
-    .catch(err=>{
-        debugLog('Permission denied',err.message,'error');
-        // Try anyway — Jitsi will show its own prompt
-        document.getElementById('permissionPrompt').style.display='none';
-        actuallyStartJitsi();
-    });
-}
-
-function actuallyStartJitsi(){
-    if(!pendingRoomName)return;
-    const roomName=pendingRoomName,topic=pendingTopic;
-    const container=document.getElementById('jitsiContainer');
-    container.innerHTML='<div class="empty-state" style="background:#000;color:white;"><i class="fas fa-spinner fa-spin" style="opacity:0.5;"></i><h3>Loading classroom...</h3></div>';
-    
-    tryJitsiDomain(roomName,topic,0);
-}
-
-function tryJitsiDomain(roomName,topic,domainIdx){
-    if(domainIdx>=JITSI_DOMAINS.length){
-        document.getElementById('jitsiContainer').innerHTML='<div class="empty-state" style="background:#000;color:white;"><i class="fas fa-exclamation-triangle" style="color:#f59e0b;"></i><h3>Could not connect</h3><p style="color:#94a3b8;">Please check your internet and try again.</p><button class="btn btn-primary btn-sm" onclick="retryJitsi()">Retry</button></div>';
-        showToast('Connection failed','Please try again','error');
-        return;
-    }
-    
-    const domain=JITSI_DOMAINS[domainIdx];
-    currentJitsiDomainIdx=domainIdx;
-    debugLog('Trying Jitsi domain',domain);
-    
-    const container=document.getElementById('jitsiContainer');
-    
-    const options={
-        roomName:roomName,
-        width:'100%',
-        height:'100%',
-        parentNode:container,
-        userInfo:{displayName:userData?`${userData.firstName||'Teacher'} ${userData.surname||''}`.trim():'Teacher'},
-        configOverrides:{
-            startWithAudioMuted:false,
-            startWithVideoMuted:false,
-            disableDeepLinking:true,
-            prejoinPageEnabled:false,
-            requireDisplayName:false,
-            enableWelcomePage:false,
-            enableClosePage:false,
-            disableProfile:true,
-            enableNoisyMicDetection:false,
-            disableThirdPartyRequests:false,
-            analytics:{disabled:true},
-            toolbarButtons:[
-                'microphone','camera','closedcaptions','desktop','fullscreen',
-                'fodeviceselection','hangup','profile','chat',
-                'etherpad','sharedvideo','settings','raisehand',
-                'videoquality','filmstrip','feedback','stats','shortcuts',
-                'tileview','videobackgroundblur','help','mute-everyone'
-            ],
-            toolbarConfig:{alwaysVisible:true}
-        },
-        interfaceConfigOverrides:{
-            TOOLBAR_ALWAYS_VISIBLE:true,
-            DISABLE_JOIN_LEAVE_NOTIFICATIONS:false,
-            SHOW_CHROME_EXTENSION_BANNER:false,
-            MOBILE_APP_PROMO:false,
-            HIDE_INVITE_MORE_HEADER:true,
-            SHOW_JITSI_WATERMARK:false,
-            JITSI_WATERMARK_LINK:'',
-            APP_NAME:'Judah Classroom',
-            PROVIDER_NAME:'Judah Wonders'
-        }
-    };
+// JITSI
+function initJitsi(roomName,topic){
+    const wrapper=document.getElementById('jitsiWrapper');
+    wrapper.style.height=window.innerWidth<768?'400px':'600px';
+    wrapper.innerHTML='';
+    debugLog('Jitsi loading',roomName);
     
     try{
-        if(jitsiApi){try{jitsiApi.dispose();}catch(e){}}
-        jitsiApi=new JitsiMeetExternalAPI(domain,options);
-        
-        jitsiApi.addListener('participantJoined',(p)=>{debugLog('Joined',p.displayName);updateParticipantCount();});
-        jitsiApi.addListener('participantLeft',(p)=>{debugLog('Left',p.displayName);updateParticipantCount();});
-        jitsiApi.addListener('videoConferenceJoined',()=>{
-            debugLog('Conference connected','Success on '+domain);
-            updateParticipantCount();
-            const empty=container.querySelector('.empty-state');
-            if(empty)empty.remove();
-        });
-        jitsiApi.addListener('videoConferenceLeft',()=>debugLog('Conference left',''));
-        
-        // Set a timeout — if it doesn't connect in 10 seconds, try next domain
-        setTimeout(()=>{
-            const iframe=container.querySelector('iframe');
-            if(iframe){
-                try{
-                    const iframeDoc=iframe.contentDocument||iframe.contentWindow?.document;
-                    if(iframeDoc&&iframeDoc.querySelector('.empty-state')){
-                        debugLog('Jitsi not loaded on '+domain,'Trying next','warn');
-                        tryJitsiDomain(roomName,topic,domainIdx+1);
-                    }
-                }catch(e){/* cross-origin, iframe likely loaded */}
+        jitsiApi=new JitsiMeetExternalAPI('meet.jit.si',{
+            roomName,
+            width:'100%',
+            height:'100%',
+            parentNode:wrapper,
+            userInfo:{displayName:userData?`${userData.firstName||'Teacher'} ${userData.surname||''}`.trim():'Teacher'},
+            configOverrides:{
+                startWithAudioMuted:false,startWithVideoMuted:false,
+                prejoinPageEnabled:true,
+                disableDeepLinking:false,
+                toolbarButtons:['microphone','camera','desktop','fullscreen','chat','raisehand','tileview','settings','hangup'],
+                toolbarConfig:{alwaysVisible:true}
+            },
+            interfaceConfigOverrides:{
+                SHOW_JITSI_WATERMARK:false,APP_NAME:'Judah Classroom',
+                MOBILE_APP_PROMO:false,FILM_STRIP_MAX_HEIGHT:100
             }
-        },12000);
+        });
         
-    }catch(e){
-        debugLog('Jitsi init error on '+domain,e.message,'error');
-        tryJitsiDomain(roomName,topic,domainIdx+1);
-    }
+        jitsiApi.addListener('videoConferenceJoined',()=>{
+            debugLog('Conference joined','SUCCESS');
+            document.getElementById('permissionModal').style.display='none';
+            updateParticipantCount();
+            saveSessionToStorage({active:true,roomName,topic,startedAt:Date.now(),duration:classDuration});
+            checkReturnButton();
+        });
+        
+        jitsiApi.addListener('participantJoined',()=>updateParticipantCount());
+        jitsiApi.addListener('participantLeft',()=>updateParticipantCount());
+        jitsiApi.addListener('videoConferenceLeft',()=>{debugLog('Conference left','');clearSessionStorage();checkReturnButton();});
+        
+        jitsiApi.addListener('readyToClose',()=>{endLiveClass('Closed');});
+        
+    }catch(e){debugLog('Jitsi error',e.message,'error');showToast('Jitsi failed. Try refreshing.','error');}
 }
 
-function retryJitsi(){
-    if(pendingRoomName){
-        currentJitsiDomainIdx=0;
-        document.getElementById('jitsiContainer').innerHTML='<div class="empty-state" style="background:#000;color:white;"><i class="fas fa-spinner fa-spin"></i><h3>Retrying...</h3></div>';
-        tryJitsiDomain(pendingRoomName,pendingTopic,0);
-    }
+function updateParticipantCount(){if(jitsiApi)try{document.getElementById('participantCount').textContent=jitsiApi.getNumberOfParticipants()||0;}catch(e){}}
+function toggleCC(){if(jitsiApi)jitsiApi.executeCommand('toggleChat');}
+function togglePP(){if(jitsiApi)jitsiApi.executeCommand('toggleFilmStrip');}
+
+// PERMISSION MODAL → START CLASSROOM
+function confirmStartClassroom(){
+    document.getElementById('permissionModal').style.display='none';
+    initJitsi(pendingRoomName,pendingTopic);
+    startClassTimer();
+    document.getElementById('liveClassroomCard').style.display='block';
+    document.getElementById('liveClassName').textContent=pendingTopic;
+    document.getElementById('liveClassroomCard').scrollIntoView({behavior:'smooth'});
 }
 
-function updateParticipantCount(){
-    if(jitsiApi){try{document.getElementById('participantCount').textContent=jitsiApi.getNumberOfParticipants()||0;}catch(e){}}
+let pendingRoomName=null,pendingTopic=null;
+async function startLiveClass(topic,duration){
+    pendingTopic=topic;pendingDuration=duration;
+    const roomName='judah-'+Date.now().toString(36);
+    pendingRoomName=roomName;classDuration=duration;
+    
+    // Try Firestore, fallback to localStorage
+    try{
+        await db.collection('liveClassSessions').add({
+            roomName,topic,classId:currentClass,teacherId:currentUser?.uid||'guest',
+            teacherName:userData?`${userData.firstName||''} ${userData.surname||''}`.trim():'Teacher',
+            durationMinutes:duration,status:'live',startedAt:firebase.firestore.FieldValue.serverTimestamp()
+        });
+    }catch(e){debugLog('Firestore save skipped','Using localStorage fallback','warn');}
+    
+    // Show permission modal
+    document.getElementById('liveClassroomCard').style.display='block';
+    document.getElementById('liveClassName').textContent=topic;
+    document.getElementById('jitsiWrapper').innerHTML='<div class="empty-state" style="background:#000;color:white;"><i class="fas fa-video" style="opacity:0.3;"></i><h3>Ready</h3></div>';
+    document.getElementById('permissionModal').style.display='flex';
 }
-function toggleClassroomChat(){if(jitsiApi)jitsiApi.executeCommand('toggleChat');}
-function toggleClassroomParticipants(){if(jitsiApi)jitsiApi.executeCommand('toggleFilmStrip');}
-function toggleClassroomTileView(){if(jitsiApi)jitsiApi.executeCommand('toggleTileView');}
+
+function returnToLiveClass(){
+    if(savedSession&&savedSession.active){
+        document.getElementById('liveClassroomCard').style.display='block';
+        document.getElementById('liveClassName').textContent=savedSession.topic||'Live Class';
+        document.getElementById('permissionModal').style.display='none';
+        initJitsi(savedSession.roomName,savedSession.topic);
+        startClassTimer();
+        document.getElementById('liveClassroomCard').scrollIntoView({behavior:'smooth'});
+    }
+}
 
 function startClassTimer(){
-    classSeconds=0;updateTimerDisplay();
-    classTimerInterval=setInterval(()=>{classSeconds++;updateTimerDisplay();
+    classSeconds=0;updateTimer();
+    classTimerInterval=setInterval(()=>{classSeconds++;updateTimer();
         if(classDuration>0&&classSeconds>=classDuration*60)endLiveClass('Time expired');
     },1000);
 }
-function updateTimerDisplay(){
-    const m=Math.floor(classSeconds/60),s=classSeconds%60;
-    const d=document.getElementById('timerDisplay');if(d)d.textContent=`${String(m).padStart(2,'0')}:${String(s).padStart(2,'0')}`;
-    const t=document.getElementById('classroomTimer');
-    if(t&&classDuration>0){t.classList.toggle('urgent',(classDuration*60-classSeconds)<300);}
-}
-function stopClassTimer(){if(classTimerInterval){clearInterval(classTimerInterval);classTimerInterval=null;}}
+function updateTimer(){const m=Math.floor(classSeconds/60),s=classSeconds%60;const d=document.getElementById('timerDisplay');if(d)d.textContent=`${String(m).padStart(2,'0')}:${String(s).padStart(2,'0')}`;}
+function stopTimer(){if(classTimerInterval){clearInterval(classTimerInterval);classTimerInterval=null;}}
 
-async function startLiveClass(topic,duration,isScheduled=false,scheduledId=null){
-    if(currentLiveSessionId){showToast('Class already running','End current class first','warning');return;}
-    const roomName=generateRoomName(currentClass||'classroom');
-    currentLiveSessionId=scheduledId||roomName;
-    pendingRoomName=roomName;pendingTopic=topic;pendingDuration=duration;
-    classDuration=duration;currentJitsiDomainIdx=0;
-    debugLog('Starting live class',{roomName,topic,duration,isScheduled});
-    
-    // Save/update in Firestore
-    const sessionData={
-        roomName,topic,classId:currentClass,subject:currentSubject||'',week:currentWeek||null,
-        teacherId:currentUser?currentUser.uid:'guest',
-        teacherName:userData?`${userData.firstName||''} ${userData.surname||''}`.trim():'Teacher',
-        durationMinutes:duration,status:'live',participantCount:0,
-        startedAt:firebase.firestore.FieldValue.serverTimestamp()
-    };
-    
-    try{
-        if(isScheduled&&scheduledId){
-            await db.collection('scheduledClasses').doc(scheduledId).update({status:'live',roomName,startedAt:firebase.firestore.FieldValue.serverTimestamp()});
-            // Also add to live sessions
-            const ref=await db.collection('liveClassSessions').add(sessionData);
-            currentLiveSessionId=ref.id;
-        }else{
-            const ref=await db.collection('liveClassSessions').add(sessionData);
-            currentLiveSessionId=ref.id;
-        }
-        debugLog('Session saved');
-    }catch(e){debugLog('Save error',e.message,'error');}
-    
-    // Show classroom card with permission prompt
-    document.getElementById('liveClassroomCard').style.display='block';
-    document.getElementById('liveClassName').textContent=topic;
-    document.getElementById('jitsiContainer').innerHTML=`
-        <div class="permission-prompt" id="permissionPrompt">
-            <i class="fas fa-video" style="font-size:2.5rem;color:var(--accent);margin-bottom:0.5rem;display:block;"></i>
-            <h4>Ready to Start the Classroom?</h4>
-            <p>Your browser will ask for camera & microphone permission. This is needed for the live class.<br>Everything happens in your browser — no downloads needed.</p>
-            <button class="btn btn-start-class" onclick="grantPermissionAndStart()">
-                <i class="fas fa-check-circle"></i> Allow Camera & Mic — Start Classroom
-            </button>
-        </div>`;
-    
-    startClassTimer();
-    document.getElementById('liveClassroomCard').scrollIntoView({behavior:'smooth'});
-    showToast('Live Classroom Ready!','Click the button to allow camera & mic and start.','success',8000);
-}
-
-async function endLiveClass(reason='Teacher ended class'){
-    stopClassTimer();
+function endLiveClass(reason='Ended'){
+    stopTimer();
     if(jitsiApi){try{jitsiApi.executeCommand('hangup');jitsiApi.dispose();}catch(e){}jitsiApi=null;}
     document.getElementById('liveClassroomCard').style.display='none';
-    document.getElementById('jitsiContainer').innerHTML='<div class="empty-state" style="background:#000;color:white;"><i class="fas fa-check-circle" style="color:#22c55e;"></i><h3>Classroom Ended</h3></div>';
-    
-    if(currentLiveSessionId){
-        try{
-            await db.collection('liveClassSessions').doc(currentLiveSessionId).update({
-                status:'ended',endedAt:firebase.firestore.FieldValue.serverTimestamp(),
-                endedReason:reason,durationActual:classSeconds
-            });
-        }catch(e){}
-    }
-    currentLiveSessionId=null;pendingRoomName=null;pendingTopic=null;
-    classSeconds=0;classDuration=0;
-    showToast('Class Ended','Session saved to history.','info');
-    loadPastSessions();loadScheduledClasses();
+    document.getElementById('jitsiWrapper').innerHTML='<div class="empty-state" style="background:#000;color:white;"><i class="fas fa-check-circle" style="color:#22c55e;"></i><h3>Class Ended</h3></div>';
+    clearSessionStorage();checkReturnButton();
+    classSeconds=0;classDuration=0;pendingRoomName=null;pendingTopic=null;
+    showToast('Class ended','info');
 }
 
-// ═══════════════════════════════════════════
-// SCHEDULING SYSTEM
-// ═══════════════════════════════════════════
-function setupScheduledListener(){
-    if(unsubScheduled)unsubScheduled();if(!currentUser||!currentClass)return;
-    unsubScheduled=db.collection('scheduledClasses')
-        .where('teacherId','==',currentUser.uid)
-        .where('classId','==',currentClass)
-        .where('status','in',['scheduled','live'])
-        .onSnapshot(()=>loadScheduledClasses(),e=>debugLog('Sched ERROR',e.message,'error'));
+// SCHEDULING
+async function scheduleClass(topic,date,time,duration,guestName){
+    const data={topic,date,time,durationMinutes:duration,teacherId:currentUser.uid,classId:currentClass,status:'scheduled'};
+    if(guestName){data.guestName=guestName;data.guestCode=Math.random().toString(36).substring(2,8).toUpperCase();}
+    try{await db.collection('scheduledClasses').add(data);showToast('Scheduled!','success');loadScheduled();}
+    catch(e){showToast('Scheduled (local only)','info');}
 }
 
-async function loadScheduledClasses(){
-    if(!currentClass)return;
-    const c=document.getElementById('scheduledClassesList');
+async function loadScheduled(){
     try{
-        const snap=await db.collection('scheduledClasses')
-            .where('teacherId','==',currentUser.uid)
-            .where('classId','==',currentClass)
-            .where('status','in',['scheduled','live'])
-            .orderBy('date','asc').orderBy('time','asc')
-            .get();
-        
-        if(snap.empty){c.innerHTML='<div class="empty-state"><i class="fas fa-calendar"></i><h3>No scheduled classes</h3></div>';return;}
-        
-        const now=new Date();
-        c.innerHTML=snap.docs.map(d=>{
-            const s=d.data();
-            const dt=new Date(`${s.date}T${s.time}`);
-            const isPast=dt<now&&s.status!=='live';
-            const isNow=dt<=now&&(dt.getTime()+s.durationMinutes*60000)>now.getTime();
-            const statusLabel=s.status==='live'?'🔴 Live':isNow?'🟡 Now':'📅 Scheduled';
-            const statusCls=s.status==='live'?'badge-pending':isNow?'badge-pending':'badge-scheduled';
-            const guestInfo=s.guestName?` | Guest: ${s.guestName}`:'';
-            return`<div class="scheduled-session-item">
-                <div>
-                    <strong>${escapeHtml(s.topic||'Untitled')}</strong>
-                    <span class="badge ${statusCls}">${statusLabel}</span>
-                    <span style="font-size:0.8rem;color:var(--text-secondary);margin-left:0.3rem;">${s.date} ${s.time} · ${s.durationMinutes}min${guestInfo}</span>
-                </div>
-                <div style="display:flex;gap:0.3rem;">
-                    ${s.status!=='live'?`<button class="btn btn-start-class btn-sm" onclick="startScheduledClass('${d.id}')"><i class="fas fa-play"></i> Start</button>`:''}
-                    ${s.guestCode?`<button class="btn btn-outline btn-sm" onclick="copyGuestInfo('${d.id}')"><i class="fas fa-copy"></i> Guest</button>`:''}
-                    <button class="btn btn-outline btn-sm" onclick="deleteScheduled('${d.id}')"><i class="fas fa-trash"></i></button>
-                </div>
-            </div>`;
-        }).join('');
-    }catch(e){debugLog('Load sched error',e.message,'error');}
+        const snap=await db.collection('scheduledClasses').where('teacherId','==',currentUser.uid).where('classId','==',currentClass).where('status','==','scheduled').orderBy('date').get();
+        const c=document.getElementById('scheduledList');
+        if(snap.empty){c.innerHTML='<div class="empty-state"><i class="fas fa-calendar"></i><h3>None</h3></div>';return;}
+        c.innerHTML=snap.docs.map(d=>{const s=d.data();return`<div class="scheduled-session-item"><div><b>${escapeHtml(s.topic)}</b><br><small>${s.date} ${s.time} · ${s.durationMinutes}min${s.guestName?' · Guest: '+s.guestName:''}</small></div><div style="display:flex;gap:0.3rem;"><button class="btn btn-start-class btn-sm" onclick="startScheduled('${d.id}')">Start</button><button class="btn btn-outline btn-sm" onclick="deleteSched('${d.id}')">✕</button></div></div>`;}).join('');
+    }catch(e){}
 }
+async function startScheduled(id){const d=await db.collection('scheduledClasses').doc(id).get();if(d.exists){const s=d.data();startLiveClass(s.topic,s.durationMinutes);await db.collection('scheduledClasses').doc(id).update({status:'live'});}}
+async function deleteSched(id){await db.collection('scheduledClasses').doc(id).delete();loadScheduled();}
 
-async function scheduleClass(topic,date,time,duration,guestName,guestPurpose){
-    const data={
-        teacherId:currentUser.uid,teacherName:`${userData.firstName||''} ${userData.surname||''}`.trim(),
-        classId:currentClass,subject:currentSubject||'',week:currentWeek||null,
-        topic,date,time,durationMinutes:duration,
-        status:'scheduled',createdAt:firebase.firestore.FieldValue.serverTimestamp()
-    };
-    
-    // If guest invited, generate code
-    if(guestName&&guestName.trim()){
-        const guestId=Math.random().toString(36).substring(2,14);
-        const guestCode=Math.random().toString(36).substring(2,8).toUpperCase();
-        data.guestName=guestName.trim();
-        data.guestPurpose=guestPurpose||'';
-        data.guestId=guestId;
-        data.guestCode=guestCode;
-        data.guestUsed=false;
-    }
-    
-    try{
-        const ref=await db.collection('scheduledClasses').add(data);
-        debugLog('Class scheduled',ref.id);
-        showToast('Scheduled!',`Class for ${date} at ${time}.${guestName?' Guest '+guestName+' invited.':''}`,'success',6000);
-        if(guestName)showGuestInviteInfo(ref.id,data);
-    }catch(e){showToast('Error',e.message,'error');}
-}
-
-async function startScheduledClass(id){
-    const doc=await db.collection('scheduledClasses').doc(id).get();
-    if(!doc.exists)return;
-    const s=doc.data();
-    startLiveClass(s.topic,s.durationMinutes,true,id);
-}
-
-async function deleteScheduled(id){
-    if(!confirm('Delete this scheduled class?'))return;
-    await db.collection('scheduledClasses').doc(id).delete();
-    showToast('Deleted','Scheduled class removed','info');
-}
-
-function showGuestInviteInfo(scheduledId,data){
-    const link=`${window.location.origin}/teacher-teach.html?guest=${data.guestId}&code=${data.guestCode}&scheduled=${scheduledId}`;
-    document.getElementById('guestLinkText').textContent=link;
-    document.getElementById('guestCodeDisplay').textContent=data.guestCode;
-    document.getElementById('guestLinkBox').classList.add('show');
-    document.getElementById('guestModal').classList.add('active');
-}
-
-async function copyGuestInfo(id){
-    const doc=await db.collection('scheduledClasses').doc(id).get();
-    if(!doc.exists)return;
-    const s=doc.data();
-    const link=`${window.location.origin}/teacher-teach.html?guest=${s.guestId}&code=${s.guestCode}&scheduled=${id}`;
-    navigator.clipboard.writeText(`Link: ${link}\nCode: ${s.guestCode}\nDate: ${s.date} at ${s.time}`)
-        .then(()=>showToast('Copied!','Guest info copied','success'))
-        .catch(()=>showToast('Failed','error'));
-}
-
-// ═══════════════════════════════════════════
-// INVITE GUEST TO LIVE CLASS
-// ═══════════════════════════════════════════
+// GUEST
 function inviteGuestToLiveClass(){
-    if(!currentLiveSessionId){
-        // No live class — open guest modal for scheduling
-        document.getElementById('guestForType').value='scheduled';
-        document.getElementById('guestScheduledSelect').parentElement.style.display='block';
-        populateGuestScheduledSelect();
-    }else{
-        document.getElementById('guestForType').value='now';
-        document.getElementById('guestScheduledSelect').parentElement.style.display='none';
-    }
     document.getElementById('guestModal').classList.add('active');
     document.getElementById('guestLinkBox').classList.remove('show');
 }
+async function submitGuest(e){
+    e.preventDefault();
+    const name=document.getElementById('guestName').value.trim(),purpose=document.getElementById('guestPurpose').value.trim(),dur=parseInt(document.getElementById('guestDuration').value);
+    const code=Math.random().toString(36).substring(2,8).toUpperCase(),guestId=Math.random().toString(36).substring(2,14);
+    const link=`${window.location.origin}/teacher-teach.html?guest=${guestId}&code=${code}`;
+    document.getElementById('guestLinkText').textContent=link;
+    document.getElementById('guestCodeDisplay').textContent=code;
+    document.getElementById('guestLinkBox').classList.add('show');
+    try{await db.collection('guestAccess').add({guestId,oneTimeCode:code,guestName:name,purpose,roomName:pendingRoomName,teacherId:currentUser.uid,classId:currentClass,subject:currentSubject,week:currentWeek,durationMinutes:dur,used:false});}catch(e){}
+}
+function copyGuest(){const l=document.getElementById('guestLinkText').textContent,c=document.getElementById('guestCodeDisplay').textContent;navigator.clipboard.writeText(`Link: ${l}\nCode: ${c}`).then(()=>showToast('Copied!','success'));}
 
-async function populateGuestScheduledSelect(){
-    const sel=document.getElementById('guestScheduledClass');
-    sel.innerHTML='<option value="">Select...</option>';
-    if(!currentClass)return;
-    const snap=await db.collection('scheduledClasses')
-        .where('teacherId','==',currentUser.uid)
-        .where('classId','==',currentClass)
-        .where('status','==','scheduled')
-        .orderBy('date','asc')
-        .get();
-    snap.forEach(d=>{
-        const s=d.data();
-        const o=document.createElement('option');
-        o.value=d.id;
-        o.textContent=`${s.topic} — ${s.date} ${s.time}`;
-        sel.appendChild(o);
-    });
-}
+// FORM SUBMISSIONS
+function submitStartClass(e){e.preventDefault();const t=document.getElementById('classTopic').value.trim(),d=parseInt(document.getElementById('classDuration').value);closeModal('startClassModal');startLiveClass(t,d);}
+function submitSchedule(e){e.preventDefault();const t=document.getElementById('schedTopic').value.trim(),d2=document.getElementById('schedDate').value,tm=document.getElementById('schedTime').value,dur=parseInt(document.getElementById('schedDuration').value),g=document.getElementById('schedGuest').value.trim();closeModal('scheduleClassModal');scheduleClass(t,d2,tm,dur,g);}
 
-// ═══════════════════════════════════════════
-// PAST SESSIONS
-// ═══════════════════════════════════════════
-async function loadPastSessions(){
-    if(!currentClass)return;
-    const c=document.getElementById('pastSessionsList');
-    try{
-        const snap=await db.collection('liveClassSessions').where('classId','==',currentClass).where('status','==','ended').orderBy('endedAt','desc').limit(10).get();
-        if(snap.empty){c.innerHTML='<div class="empty-state"><i class="fas fa-history"></i><h3>No past sessions</h3></div>';return;}
-        c.innerHTML=snap.docs.map(d=>{
-            const s=d.data();
-            const d2=s.startedAt?.toDate?new Date(s.startedAt.toDate()).toLocaleString():'Unknown';
-            const dur=s.durationActual?`${Math.floor(s.durationActual/60)}m`:s.durationMinutes+'m';
-            return`<div class="past-session-item"><div><strong>${escapeHtml(s.topic||'Untitled')}</strong><span style="font-size:0.8rem;color:var(--text-secondary);margin-left:0.5rem;">${d2}</span></div><span style="font-size:0.75rem;color:var(--text-secondary);">${dur}</span></div>`;
-        }).join('');
-    }catch(e){}
-}
-
-// ═══════════════════════════════════════════
-// TEACH MODE (unchanged)
-// ═══════════════════════════════════════════
-function paginateContent(text,wordsPerPage=150){
-    if(!text||!text.trim())return['No content available.'];
-    const clean=text.replace(/<[^>]*>/g,' ').replace(/\s+/g,' ').trim();
-    const words=clean.split(/\s+/);const pages=[];
-    for(let i=0;i<words.length;i+=wordsPerPage)pages.push(words.slice(i,i+wordsPerPage).join(' '));
-    return pages.length?pages:['No content available.'];
-}
-function renderBookMode(container,pages,current,panelKey){
-    container.innerHTML='';const fc=document.createElement('div');fc.className='book-container';
-    const pd=document.createElement('div');pd.className='book-page';pd.textContent=pages[current]||'';fc.appendChild(pd);
-    const nav=document.createElement('div');nav.className='book-nav';
-    nav.innerHTML=`<button class="book-nav-btn" data-action="prev" data-panel="${panelKey}" ${current===0?'disabled':''}><i class="fas fa-chevron-left"></i></button><span class="page-indicator">Page ${current+1}/${pages.length}</span><button class="book-nav-btn" data-action="next" data-panel="${panelKey}" ${current>=pages.length-1?'disabled':''}><i class="fas fa-chevron-right"></i></button>`;
-    container.appendChild(fc);container.appendChild(nav);
-    nav.querySelectorAll('.book-nav-btn').forEach(btn=>btn.addEventListener('click',function(){flipBookPage(this.dataset.panel,this.dataset.action==='next'?1:-1);}));
-}
-function flipBookPage(panelKey,dir){const bp=bookPages[panelKey],np=bp.current+dir;if(np<0||np>=bp.pages.length)return;bp.current=np;const ck=panelKey==='lessonNote'?'teachContentLN':'teachContentTP';if(document.getElementById(ck).classList.contains('book-mode'))renderBookMode(document.getElementById(ck),bp.pages,bp.current,panelKey);}
-function setReadingMode(panelKey,mode){
-    teachModes[panelKey]=mode;const ck=panelKey==='lessonNote'?'teachContentLN':'teachContentTP',container=document.getElementById(ck);
-    container.classList.remove('scroll-mode','book-mode');if(!currentNote)return;
-    const content=panelKey==='lessonNote'?(currentNote.lessonNote||''):(currentNote.teachingProcess||'');
-    if(mode==='book'){const pages=paginateContent(content);bookPages[panelKey]={pages,current:0};container.classList.add('book-mode');renderBookMode(container,pages,0,panelKey);}
-    else{container.classList.add('scroll-mode');container.innerHTML=`<div style="padding:1rem;">${content||'Not available.'}</div>`;}
-}
-function setupReadingToggles(){
-    ['lessonNote','teachingProcess'].forEach(pk=>{
-        const toggle=document.getElementById(pk==='lessonNote'?'readingToggleLN':'readingToggleTP');if(!toggle)return;
-        toggle.querySelectorAll('.reading-opt').forEach(opt=>opt.addEventListener('click',function(){toggle.querySelectorAll('.reading-opt').forEach(o=>o.classList.remove('active'));this.classList.add('active');setReadingMode(pk,this.dataset.mode);}));
-    });
-}
-function toggleTeachPanel(pk){teachPanels[pk]=!teachPanels[pk];const p=document.getElementById(pk==='lessonNote'?'teachPanelLN':'teachPanelTP');p.classList.toggle('hidden',!teachPanels[pk]);if(!teachPanels.lessonNote&&!teachPanels.teachingProcess)closeTeachMode();}
-function openTeachMode(){
-    if(!currentNote)return showToast('Select subject and week first','warning');
-    if(!currentNote.teachable||(!currentNote.lessonNote&&!currentNote.teachingProcess))return showToast('No teachable content','warning');
-    teachActive=true;teachPanels={lessonNote:!!(currentNote.teachable&&currentNote.lessonNote),teachingProcess:!!(currentNote.teachable&&currentNote.teachingProcess)};
-    document.getElementById('teachOverlay').classList.add('active');document.getElementById('teachContainer').classList.add('active');
-    document.getElementById('teachPanelLN').classList.toggle('hidden',!teachPanels.lessonNote);document.getElementById('teachPanelTP').classList.toggle('hidden',!teachPanels.teachingProcess);
-    const btn=document.getElementById('teachModeBtn');btn.classList.add('active-teach');btn.innerHTML='<i class="fas fa-times"></i> Exit Teach <small>Esc</small>';
-    populateTeachPanels();document.body.style.overflow='hidden';
-}
-function closeTeachMode(){teachActive=false;document.getElementById('teachOverlay').classList.remove('active');document.getElementById('teachContainer').classList.remove('active');const btn=document.getElementById('teachModeBtn');btn.classList.remove('active-teach');btn.innerHTML='<i class="fas fa-chalkboard"></i> Teach Mode <small>Ctrl+T</small>';document.body.style.overflow='';}
+// TEACH MODE
+function paginateContent(text,wpp=150){if(!text||!text.trim())return['No content.'];const w=text.replace(/<[^>]*>/g,' ').replace(/\s+/g,' ').trim().split(/\s+/),p=[];for(let i=0;i<w.length;i+=wpp)p.push(w.slice(i,i+wpp).join(' '));return p.length?p:['No content.'];}
+function renderBook(container,pages,cur,pk){container.innerHTML='';const fc=document.createElement('div');fc.className='book-container';const pd=document.createElement('div');pd.className='book-page';pd.textContent=pages[cur]||'';fc.appendChild(pd);const nav=document.createElement('div');nav.className='book-nav';nav.innerHTML=`<button class="book-nav-btn" ${cur===0?'disabled':''} onclick="flipPage('${pk}',-1)"><i class="fas fa-chevron-left"></i></button><span class="page-indicator">Page ${cur+1}/${pages.length}</span><button class="book-nav-btn" ${cur>=pages.length-1?'disabled':''} onclick="flipPage('${pk}',1)"><i class="fas fa-chevron-right"></i></button>`;container.appendChild(fc);container.appendChild(nav);}
+function flipPage(pk,dir){const bp=bookPages[pk],np=bp.current+dir;if(np<0||np>=bp.pages.length)return;bp.current=np;const ck=pk==='lessonNote'?'teachContentLN':'teachContentTP';if(document.getElementById(ck).classList.contains('book-mode'))renderBook(document.getElementById(ck),bp.pages,bp.current,pk);}
+function setReadingMode(pk,mode){teachModes[pk]=mode;const ck=pk==='lessonNote'?'teachContentLN':'teachContentTP',c=document.getElementById(ck);c.classList.remove('scroll-mode','book-mode');if(!currentNote)return;const content=pk==='lessonNote'?(currentNote.lessonNote||''):(currentNote.teachingProcess||'');if(mode==='book'){const pages=paginateContent(content);bookPages[pk]={pages,current:0};c.classList.add('book-mode');renderBook(c,pages,0,pk);}else{c.classList.add('scroll-mode');c.innerHTML=`<div style="padding:1rem;">${content||'Not available.'}</div>`;}}
+function toggleTeachPanel(pk){teachPanels[pk]=!teachPanels[pk];document.getElementById(pk==='lessonNote'?'teachPanelLN':'teachPanelTP').classList.toggle('hidden',!teachPanels[pk]);if(!teachPanels.lessonNote&&!teachPanels.teachingProcess)closeTeachMode();}
+function openTeachMode(){if(!currentNote)return showToast('Select subject & week first','warning');if(!currentNote.teachable||(!currentNote.lessonNote&&!currentNote.teachingProcess))return showToast('No teachable content','warning');teachActive=true;teachPanels={lessonNote:!!(currentNote.teachable&&currentNote.lessonNote),teachingProcess:!!(currentNote.teachable&&currentNote.teachingProcess)};document.getElementById('teachOverlay').classList.add('active');document.getElementById('teachContainer').classList.add('active');document.getElementById('teachPanelLN').classList.toggle('hidden',!teachPanels.lessonNote);document.getElementById('teachPanelTP').classList.toggle('hidden',!teachPanels.teachingProcess);document.getElementById('teachModeBtn').classList.add('active-teach');document.getElementById('teachModeBtn').innerHTML='<i class="fas fa-times"></i> Exit Teach';populateTeachPanels();document.body.style.overflow='hidden';}
+function closeTeachMode(){teachActive=false;document.getElementById('teachOverlay').classList.remove('active');document.getElementById('teachContainer').classList.remove('active');document.getElementById('teachModeBtn').classList.remove('active-teach');document.getElementById('teachModeBtn').innerHTML='<i class="fas fa-chalkboard"></i> Teach Mode <small>Ctrl+T</small>';document.body.style.overflow='';}
 function toggleTeachMode(){teachActive?closeTeachMode():openTeachMode();}
 function populateTeachPanels(){if(!currentNote)return;['lessonNote','teachingProcess'].forEach(pk=>setReadingMode(pk,teachModes[pk]));}
 
-// ═══════════════════════════════════════════
-// LOAD TEACH DATA
-// ═══════════════════════════════════════════
+// READING TOGGLES
+['lessonNote','teachingProcess'].forEach(pk=>{const t=document.getElementById(pk==='lessonNote'?'readingToggleLN':'readingToggleTP');if(!t)return;t.querySelectorAll('.reading-opt').forEach(o=>o.addEventListener('click',function(){t.querySelectorAll('.reading-opt').forEach(x=>x.classList.remove('active'));this.classList.add('active');setReadingMode(pk,this.dataset.mode);}));});
+
+// LOAD DATA
 async function loadTeachData(){
     if(!currentUser||!currentClass)return;
     try{
         const snap=await db.collection('lessonNotes').where('teacherId','==',currentUser.uid).where('classId','==',currentClass).get();
         lessonNotesMap={};snap.forEach(d=>{const dd=d.data();lessonNotesMap[`${dd.subject}_${dd.week}`]={id:d.id,...dd};});
-        const weeks=new Set();
-        Object.values(lessonNotesMap).forEach(n=>{if(n.teachable||n.lessonNote||n.teachingProcess||n.studentResource||n.videoLinks?.length||n.handwritingImages?.length)weeks.add(n.week);});
+        const weeks=new Set();Object.values(lessonNotesMap).forEach(n=>{if(n.teachable||n.lessonNote)weeks.add(n.week);});
         const wSel=document.getElementById('weekSelect');wSel.innerHTML='<option value="">Select Week</option>';
         [...weeks].sort((a,b)=>a-b).forEach(w=>{const o=document.createElement('option');o.value=w;o.textContent=`Week ${w}`;wSel.appendChild(o);});
         renderResources();
-    }catch(e){debugLog('loadTeachData ERROR',e.message,'error');}
+    }catch(e){debugLog('Load error',e.message,'error');}
 }
-function onSubjectChange(){currentSubject=document.getElementById('subjectSelect').value;document.getElementById('weekSelect').value='';currentWeek=null;currentNote=null;renderResources();}
+function onSubjChange(){currentSubject=document.getElementById('subjectSelect').value;document.getElementById('weekSelect').value='';currentWeek=null;currentNote=null;renderResources();}
 function onWeekChange(){currentWeek=parseInt(document.getElementById('weekSelect').value)||null;renderResources();}
 
 function renderResources(){
-    const container=document.getElementById('resourcesContainer'),title=document.getElementById('resourceTitle');
-    if(!currentSubject||!currentWeek){container.innerHTML='<div class="empty-state"><i class="fas fa-folder-open"></i><h3>Select Subject & Week</h3></div>';title.textContent='Select a subject and week';currentNote=null;return;}
-    const key=`${currentSubject}_${currentWeek}`;currentNote=lessonNotesMap[key]||null;title.textContent=`${currentSubject} — Week ${currentWeek}`;
-    if(!currentNote){container.innerHTML='<div class="empty-state"><i class="fas fa-inbox"></i><h3>No Resources</h3></div>';return;}
-    const n=currentNote;let html='<div class="resource-grid">';
-    if(n.teachable&&n.lessonNote)html+=`<div class="resource-card"><h4><i class="fas fa-book"></i> Lesson Note</h4><div class="content-preview">${n.lessonNote.substring(0,600)}${n.lessonNote.length>600?'...':''}</div><span class="badge badge-teach">In Teach</span></div>`;
-    if(n.teachable&&n.teachingProcess)html+=`<div class="resource-card"><h4><i class="fas fa-chalkboard-teacher"></i> Teaching Process</h4><div class="content-preview">${n.teachingProcess.substring(0,600)}${n.teachingProcess.length>600?'...':''}</div><span class="badge badge-teach">In Teach</span></div>`;
-    if(n.studentResource){const p=n.resourcePublished;html+=`<div class="resource-card"><h4><i class="fas fa-book-reader"></i> Student Resources ${p?'<span class="badge badge-published">Published</span>':''}</h4><div class="content-preview">${n.studentResource.substring(0,500)}${n.studentResource.length>500?'...':''}</div>${p?'<span class="badge badge-teach">Published</span>':`<button class="btn btn-outline btn-sm pub-btn" data-doc="${n.id}" data-f="resourcePublished">📤 Publish</button>`}</div>`;}
+    const c=document.getElementById('resourcesContainer'),t=document.getElementById('resourceTitle');
+    if(!currentSubject||!currentWeek){c.innerHTML='<div class="empty-state"><i class="fas fa-folder-open"></i><h3>Select Subject & Week</h3></div>';t.textContent='Select subject & week';currentNote=null;return;}
+    const k=`${currentSubject}_${currentWeek}`;currentNote=lessonNotesMap[k]||null;t.textContent=`${currentSubject} — Week ${currentWeek}`;
+    if(!currentNote){c.innerHTML='<div class="empty-state"><i class="fas fa-inbox"></i><h3>No Resources</h3></div>';return;}
+    const n=currentNote;let h='<div class="resource-grid">';
+    if(n.teachable&&n.lessonNote)h+=`<div class="resource-card"><h4><i class="fas fa-book"></i> Lesson Note</h4><div class="content-preview">${n.lessonNote.substring(0,600)}${n.lessonNote.length>600?'...':''}</div><span class="badge badge-teach">In Teach</span></div>`;
+    if(n.teachable&&n.teachingProcess)h+=`<div class="resource-card"><h4><i class="fas fa-chalkboard-teacher"></i> Teaching Process</h4><div class="content-preview">${n.teachingProcess.substring(0,600)}${n.teachingProcess.length>600?'...':''}</div><span class="badge badge-teach">In Teach</span></div>`;
+    if(n.studentResource){const p=n.resourcePublished;h+=`<div class="resource-card"><h4><i class="fas fa-book-reader"></i> Student Resources ${p?'<span class="badge badge-published">Published</span>':''}</h4><div class="content-preview">${n.studentResource.substring(0,500)}${n.studentResource.length>500?'...':''}</div>${p?'<span class="badge badge-teach">Published</span>':`<button class="btn btn-outline btn-sm pub-btn" data-doc="${n.id}" data-f="resourcePublished">📤 Publish</button>`}</div>`;}
     if(n.handwritingImages?.length||n.handwritingAudios?.length){
-        let ih='';if(n.handwritingImages?.length){ih+='<div class="handwriting-grid">';n.handwritingImages.forEach(img=>ih+=`<img src="${img.url}" onclick="openImagePopup('${img.url.replace(/'/g,"\\'")}')" style="cursor:pointer;" loading="lazy" onerror="this.style.display='none';">`);ih+='</div>';}
-        if(n.handwritingAudios?.length)n.handwritingAudios.forEach(a=>ih+=`<div class="audio-list-item"><audio controls src="${a.url}" style="height:28px;"></audio><span style="font-size:0.75rem;">${escapeHtml(a.name||'Audio')}</span></div>`);
-        const p=n.handwritingImagesPublished;html+=`<div class="resource-card"><h4><i class="fas fa-pen-fancy"></i> Visual Notes ${p?'<span class="badge badge-published">Published</span>':''}</h4>${ih}${p?'<span class="badge badge-teach">Published</span>':`<button class="btn btn-outline btn-sm pub-btn" data-doc="${n.id}" data-f="handwritingImagesPublished">📤 Publish</button>`}</div>`;
+        let ih='';if(n.handwritingImages?.length){ih+='<div class="handwriting-grid">';n.handwritingImages.forEach(img=>ih+=`<img src="${img.url}" onclick="window.open('${img.url}')" loading="lazy" onerror="this.style.display='none';">`);ih+='</div>';}
+        if(n.handwritingAudios?.length)n.handwritingAudios.forEach(a=>ih+=`<div class="audio-list-item"><audio controls src="${a.url}" style="height:28px;"></audio><span>${escapeHtml(a.name||'Audio')}</span></div>`);
+        const p=n.handwritingImagesPublished;h+=`<div class="resource-card"><h4><i class="fas fa-pen-fancy"></i> Visual Notes ${p?'<span class="badge badge-published">Published</span>':''}</h4>${ih}${p?'<span class="badge badge-teach">Published</span>':`<button class="btn btn-outline btn-sm pub-btn" data-doc="${n.id}" data-f="handwritingImagesPublished">📤 Publish</button>`}</div>`;
     }
     if(n.videoLinks?.length){
-        let vh='<div class="video-thumb-grid">';n.videoLinks.forEach((l,i)=>{const v=extractYouTubeId(l);if(v)vh+=`<div class="video-thumb-item ${i===selectedVideoIdx?'selected':''}" data-v="${i}"><img src="https://img.youtube.com/vi/${v}/hqdefault.jpg" loading="lazy" onerror="this.style.display='none';"></div>`;});vh+='</div>';
+        let vh='<div class="video-thumb-grid">';n.videoLinks.forEach((l,i)=>{const v=extractYouTubeId(l);if(v)vh+=`<div class="video-thumb-item ${i===selectedVideoIdx?'selected':''}" data-v="${i}"><img src="https://img.youtube.com/vi/${v}/hqdefault.jpg" loading="lazy"></div>`;});vh+='</div>';
         const sv=n.videoLinks[selectedVideoIdx]||n.videoLinks[0],svid=extractYouTubeId(sv);if(svid)vh+=`<div class="youtube-wrapper"><iframe src="https://www.youtube.com/embed/${svid}?rel=0&modestbranding=1" allowfullscreen loading="lazy"></iframe></div>`;
-        const p=n.videosPublished;html+=`<div class="resource-card" style="grid-column:1/-1;"><h4><i class="fab fa-youtube"></i> Videos ${p?'<span class="badge badge-published">Published</span>':''}</h4>${vh}${p?'<span class="badge badge-teach">Published</span>':`<button class="btn btn-outline btn-sm pub-btn" data-doc="${n.id}" data-f="videosPublished">📤 Publish</button>`}</div>`;
+        const p=n.videosPublished;h+=`<div class="resource-card" style="grid-column:1/-1;"><h4><i class="fab fa-youtube"></i> Videos ${p?'<span class="badge badge-published">Published</span>':''}</h4>${vh}${p?'<span class="badge badge-teach">Published</span>':`<button class="btn btn-outline btn-sm pub-btn" data-doc="${n.id}" data-f="videosPublished">📤 Publish</button>`}</div>`;
     }
-    html+='</div>';container.innerHTML=html;
-    container.querySelectorAll('.video-thumb-item').forEach(i=>i.addEventListener('click',function(){selectedVideoIdx=parseInt(this.dataset.v);renderResources();}));
-    container.querySelectorAll('.pub-btn').forEach(b=>b.addEventListener('click',async function(){const d=this.dataset.doc,f=this.dataset.f,o=this.innerHTML;this.disabled=true;this.innerHTML='<i class="fas fa-spinner fa-spin"></i>';try{await db.collection('lessonNotes').doc(d).update({[f]:true,updatedAt:firebase.firestore.FieldValue.serverTimestamp()});showToast('Published!','success');await loadTeachData();renderResources();}catch(e){showToast('Error',e.message,'error');this.disabled=false;this.innerHTML=o;}}));
+    h+='</div>';c.innerHTML=h;
+    c.querySelectorAll('.video-thumb-item').forEach(i=>i.addEventListener('click',function(){selectedVideoIdx=parseInt(this.dataset.v);renderResources();}));
+    c.querySelectorAll('.pub-btn').forEach(b=>b.addEventListener('click',async function(){const d=this.dataset.doc,f=this.dataset.f;try{await db.collection('lessonNotes').doc(d).update({[f]:true});showToast('Published!','success');loadTeachData();}catch(e){showToast('Error','error');}}));
 }
 
-function setupSubmissionsListener(){
-    if(unsubSubmissions)unsubSubmissions();if(!currentUser||!currentClass)return;
-    unsubSubmissions=db.collection('studentSubmissions').where('teacherId','==',currentUser.uid).where('classId','==',currentClass).orderBy('createdAt','desc').limit(50).onSnapshot(s=>renderStudentSubmissions(s),e=>debugLog('Subs ERROR',e.message,'error'));
+// SUBMISSIONS
+function renderSubmissions(snap){
+    const c=document.getElementById('submissionsList');if(!snap||snap.empty){c.innerHTML='<div class="empty-state"><i class="fas fa-inbox"></i><h3>None</h3></div>';return;}
+    const s=[];snap.forEach(d=>s.push({id:d.id,...d.data()}));
+    c.innerHTML=s.map(s=>{const im=s.type==='image',au=s.type==='audio'||s.type==='voice',t=s.createdAt?.toDate?new Date(s.createdAt.toDate()).toLocaleString():'';return`<div class="submission-card"><b>${escapeHtml(s.studentName||'Student')}</b> <small>${t}</small>${im?`<img src="${s.url}" loading="lazy" onerror="this.style.display='none';">`:''}${au?`<audio controls src="${s.url}"></audio>`:''}${s.caption?`<p>${escapeHtml(s.caption)}</p>`:''}</div>`;}).join('');
 }
-function renderStudentSubmissions(snap){
-    const c=document.getElementById('studentSubmissionsList'),b=document.getElementById('submissionCountBadge');
-    if(!snap||snap.empty){c.innerHTML='<div class="empty-state"><i class="fas fa-inbox"></i><h3>No submissions</h3></div>';b.style.display='none';return;}
-    const subs=[];snap.forEach(d=>subs.push({id:d.id,...d.data()}));const nc=subs.filter(s=>!s.viewedByTeacher).length;
-    b.style.display=nc>0?'inline-block':'none';if(nc>0)b.textContent=`${nc} new`;
-    c.innerHTML=subs.map(s=>{const im=s.type==='image',au=s.type==='audio'||s.type==='voice',t=s.createdAt?.toDate?new Date(s.createdAt.toDate()).toLocaleString():'Unknown';
-        return`<div class="submission-card"><div style="display:flex;justify-content:space-between;align-items:start;flex-wrap:wrap;gap:0.5rem;"><div><strong>${escapeHtml(s.studentName||'Student')}</strong><span style="font-size:0.75rem;color:var(--text-secondary);margin-left:0.5rem;">${t}</span>${!s.viewedByTeacher?'<span class="badge badge-pending" style="margin-left:0.5rem;">New</span>':''}</div><button class="btn btn-sm btn-outline" onclick="markSubmissionViewed('${s.id}')"><i class="fas fa-check"></i></button></div>${im?`<img src="${s.url}" onclick="openImagePopup('${s.url.replace(/'/g,"\\'")}')" loading="lazy" onerror="this.style.display='none';">`:''}${au?`<audio controls src="${s.url}" style="width:100%;margin-top:0.5rem;"></audio>`:''}${s.caption?`<p style="font-size:0.8rem;color:var(--text-secondary);margin-top:0.3rem;">${escapeHtml(s.caption)}</p>`:''}</div>`;}).join('');
-}
-async function markSubmissionViewed(id){await db.collection('studentSubmissions').doc(id).update({viewedByTeacher:true,viewedAt:firebase.firestore.FieldValue.serverTimestamp()});showToast('Marked','Done','success');}
 
-function setupChatListener(){
-    if(unsubChat)unsubChat();if(!currentUser||!currentClass)return;
-    unsubChat=db.collection('teacherStudentChats').where('teacherId','==',currentUser.uid).where('classId','==',currentClass).orderBy('createdAt','asc').onSnapshot(s=>renderChatMessages(s),e=>debugLog('Chat ERROR',e.message,'error'));
-}
-function renderChatMessages(snap){
+// CHAT
+function renderChat(snap){
     const c=document.getElementById('chatMessages');if(!snap||snap.empty){c.innerHTML='<div class="empty-state"><i class="fas fa-comments"></i><h3>No messages</h3></div>';return;}
-    const msgs=[];snap.forEach(d=>msgs.push({id:d.id,...d.data()}));
-    c.innerHTML=msgs.map(m=>{const isT=m.senderRole==='teacher',cls=isT?'sent':'received',sender=isT?'You':(m.studentName||'Student'),t=m.createdAt?.toDate?new Date(m.createdAt.toDate()).toLocaleTimeString([],{hour:'2-digit',minute:'2-digit'}):'';return`<div class="chat-bubble ${cls}"><div class="chat-sender">${escapeHtml(sender)}</div><div>${escapeHtml(m.message||'')}</div><div class="chat-time">${t}</div></div>`;}).join('');c.scrollTop=c.scrollHeight;
+    const m=[];snap.forEach(d=>m.push({id:d.id,...d.data()}));
+    c.innerHTML=m.map(m=>{const isT=m.senderRole==='teacher',cls=isT?'sent':'received';return`<div class="chat-bubble ${cls}"><div class="chat-sender">${isT?'You':escapeHtml(m.studentName||'Student')}</div><div>${escapeHtml(m.message||'')}</div></div>`;}).join('');c.scrollTop=c.scrollHeight;
 }
-async function sendChatMessage(){const i=document.getElementById('chatInput'),m=i.value.trim();if(!m||!currentUser||!currentClass)return;i.value='';try{await db.collection('teacherStudentChats').add({teacherId:currentUser.uid,teacherName:`${userData?.firstName||''} ${userData?.surname||''}`.trim(),studentId:null,studentName:'Teacher',classId:currentClass,subject:currentSubject||'',week:currentWeek||null,message:m,senderRole:'teacher',createdAt:firebase.firestore.FieldValue.serverTimestamp(),readByStudent:false});}catch(e){}}
-function loadChatMessages(){if(!currentClass)return;db.collection('teacherStudentChats').where('teacherId','==',currentUser.uid).where('classId','==',currentClass).orderBy('createdAt','asc').get().then(s=>renderChatMessages(s)).catch(()=>{});}
+async function sendChat(){const i=document.getElementById('chatInput'),m=i.value.trim();if(!m||!currentUser)return;i.value='';try{await db.collection('teacherStudentChats').add({teacherId:currentUser.uid,classId:currentClass,message:m,senderRole:'teacher',createdAt:firebase.firestore.FieldValue.serverTimestamp()});}catch(e){}}
 
-// ═══════════════════════════════════════════
 // AUTH
-// ═══════════════════════════════════════════
 auth.onAuthStateChanged(async user=>{
     debugLog('Auth',user?'User: '+user.uid:'No user');
     const params=new URLSearchParams(window.location.search);
-    const guestId=params.get('guest'),guestCode=params.get('code'),scheduledId=params.get('scheduled');
-    if(guestId&&guestCode){await handleGuestAccess(guestId,guestCode,scheduledId);return;}
+    const guestId=params.get('guest'),guestCode=params.get('code');
+    if(guestId&&guestCode){await handleGuest(guestId,guestCode);return;}
     if(!user){window.location.href='teacher-login.html';return;}
     try{
         const doc=await db.collection('users').doc(user.uid).get();
-        if(!doc.exists||doc.data().role!=='teacher'){await auth.signOut();window.location.href='index.html';return;}
+        if(!doc.exists||doc.data().role!=='teacher'){auth.signOut();window.location.href='index.html';return;}
         currentUser=user;userData=doc.data();allClasses=userData.classesTeaching||(userData.classTeaching?[userData.classTeaching]:[]);currentClass=allClasses[0]||null;subjects=userData.subjects||[];
-        const pic=document.getElementById('profilePic');if(userData.photoURL)pic.innerHTML=`<img src="${userData.photoURL}" alt="Profile">`;else pic.textContent=(userData.firstName?.[0]||'T')+(userData.surname?.[0]||'E');
+        const pic=document.getElementById('profilePic');if(userData.photoURL)pic.innerHTML=`<img src="${userData.photoURL}">`;else pic.textContent=(userData.firstName?.[0]||'T')+(userData.surname?.[0]||'E');
         document.getElementById('profileName').textContent=userData.firstName||'Teacher';
         const cs=document.getElementById('classSelect');cs.innerHTML='';allClasses.forEach(c=>{const o=document.createElement('option');o.value=c;o.textContent=c;cs.appendChild(o);});if(currentClass)cs.value=currentClass;
-        cs.addEventListener('change',function(){currentClass=this.value;loadTeachData();setupSubmissionsListener();setupChatListener();setupScheduledListener();loadPastSessions();loadScheduledClasses();});
-        const ss=document.getElementById('subjectSelect');ss.innerHTML='<option value="">Select Subject</option>';subjects.forEach(s=>{const o=document.createElement('option');o.value=s;o.textContent=s;ss.appendChild(o);});ss.addEventListener('change',onSubjectChange);
+        cs.addEventListener('change',function(){currentClass=this.value;loadTeachData();loadScheduled();});
+        const ss=document.getElementById('subjectSelect');ss.innerHTML='<option value="">Select Subject</option>';subjects.forEach(s=>{const o=document.createElement('option');o.value=s;o.textContent=s;ss.appendChild(o);});ss.addEventListener('change',onSubjChange);
         document.getElementById('weekSelect').addEventListener('change',onWeekChange);
-        setupReadingToggles();
-        if(currentClass){await loadTeachData();setupSubmissionsListener();setupChatListener();setupScheduledListener();loadPastSessions();loadScheduledClasses();}
-    }catch(e){debugLog('Auth ERROR',e.message,'error');}
+        if(currentClass){loadTeachData();loadScheduled();}
+        // Real-time listeners with error handling
+        try{db.collection('studentSubmissions').where('teacherId','==',currentUser.uid).where('classId','==',currentClass).orderBy('createdAt','desc').limit(30).onSnapshot(s=>renderSubmissions(s),e=>debugLog('Subs','skipped','warn'));}catch(e){}
+        try{db.collection('teacherStudentChats').where('teacherId','==',currentUser.uid).where('classId','==',currentClass).orderBy('createdAt','asc').onSnapshot(s=>renderChat(s),e=>debugLog('Chat','skipped','warn'));}catch(e){}
+        checkReturnButton();
+    }catch(e){debugLog('Auth error',e.message,'error');}
 });
-document.getElementById('logoutBtn').addEventListener('click',async()=>{stopClassTimer();if(jitsiApi)try{jitsiApi.dispose();}catch(e){}if(unsubChat)unsubChat();if(unsubSubmissions)unsubSubmissions();if(unsubScheduled)unsubScheduled();await auth.signOut();window.location.href='index.html';});
+document.getElementById('logoutBtn').addEventListener('click',()=>{stopTimer();if(jitsiApi)try{jitsiApi.dispose();}catch(e){}auth.signOut().then(()=>window.location.href='index.html');});
 
-// ═══════════════════════════════════════════
-// BUTTONS
-// ═══════════════════════════════════════════
-document.getElementById('teachModeBtn').addEventListener('click',toggleTeachMode);
-
-document.getElementById('startClassBtn').addEventListener('click',()=>{
-    document.getElementById('classTopic').value=currentSubject?`${currentSubject} - Week ${currentWeek||'?'}`:'';
-    document.getElementById('startClassModal').classList.add('active');
-});
-document.getElementById('scheduleClassBtn').addEventListener('click',()=>{
-    document.getElementById('schedTopic').value=currentSubject?`${currentSubject} - Week ${currentWeek||'?'}`:'';
-    document.getElementById('schedDate').value='';
-    document.getElementById('schedTime').value='';
-    document.getElementById('schedGuestName').value='';
-    document.getElementById('schedGuestPurpose').value='';
-    document.getElementById('schedGuestPurposeGroup').style.display='none';
-    document.getElementById('scheduleClassModal').classList.add('active');
-});
-document.getElementById('guestInviteBtn').addEventListener('click',()=>{
-    document.getElementById('guestForType').value='now';
-    document.getElementById('guestScheduledSelect').parentElement.style.display='none';
-    document.getElementById('guestModal').classList.add('active');
-    document.getElementById('guestLinkBox').classList.remove('show');
-});
-document.getElementById('studentViewBtn').addEventListener('click',()=>{
-    window.open(`student-classroom.html?class=${encodeURIComponent(currentClass||'')}&subject=${encodeURIComponent(currentSubject||'')}&week=${currentWeek||''}`,'_blank','noopener');
-});
-document.getElementById('printBtn').addEventListener('click',()=>window.print());
-
-// Modal close handlers
-document.getElementById('startClassModalClose').addEventListener('click',()=>document.getElementById('startClassModal').classList.remove('active'));
-document.getElementById('startClassCancelBtn').addEventListener('click',()=>document.getElementById('startClassModal').classList.remove('active'));
-document.getElementById('scheduleClassModalClose').addEventListener('click',()=>document.getElementById('scheduleClassModal').classList.remove('active'));
-document.getElementById('scheduleClassCancelBtn').addEventListener('click',()=>document.getElementById('scheduleClassModal').classList.remove('active'));
-document.getElementById('guestModalClose').addEventListener('click',()=>{document.getElementById('guestModal').classList.remove('active');document.getElementById('guestLinkBox').classList.remove('show');});
-document.getElementById('guestCancelBtn').addEventListener('click',()=>{document.getElementById('guestModal').classList.remove('active');document.getElementById('guestLinkBox').classList.remove('show');});
-
-// Start class form
-document.getElementById('startClassForm').addEventListener('submit',function(e){
-    e.preventDefault();const t=document.getElementById('classTopic').value.trim(),d=parseInt(document.getElementById('classDuration').value);
-    if(!t)return;document.getElementById('startClassModal').classList.remove('active');startLiveClass(t,d);this.reset();
-});
-
-// Schedule class form
-document.getElementById('schedGuestName').addEventListener('input',function(){
-    document.getElementById('schedGuestPurposeGroup').style.display=this.value.trim()?'block':'none';
-});
-document.getElementById('scheduleClassForm').addEventListener('submit',function(e){
-    e.preventDefault();
-    const topic=document.getElementById('schedTopic').value.trim();
-    const date=document.getElementById('schedDate').value;
-    const time=document.getElementById('schedTime').value;
-    const duration=parseInt(document.getElementById('schedDuration').value);
-    const guestName=document.getElementById('schedGuestName').value.trim();
-    const guestPurpose=document.getElementById('schedGuestPurpose').value.trim();
-    if(!topic||!date||!time)return showToast('Fill all required fields','warning');
-    document.getElementById('scheduleClassModal').classList.remove('active');
-    scheduleClass(topic,date,time,duration,guestName,guestPurpose);
-    this.reset();
-    document.getElementById('schedGuestPurposeGroup').style.display='none';
-});
-
-// Guest form
-document.getElementById('guestForType').addEventListener('change',function(){
-    document.getElementById('guestScheduledSelect').parentElement.style.display=this.value==='scheduled'?'block':'none';
-    if(this.value==='scheduled')populateGuestScheduledSelect();
-});
-document.getElementById('guestForm').addEventListener('submit',async function(e){
-    e.preventDefault();
-    const name=document.getElementById('guestName').value.trim();
-    const purpose=document.getElementById('guestPurpose').value.trim();
-    const forType=document.getElementById('guestForType').value;
-    const duration=parseInt(document.getElementById('guestDuration').value);
-    if(!name||!purpose)return;
-    
-    const guestId=Math.random().toString(36).substring(2,14);
-    const code=Math.random().toString(36).substring(2,8).toUpperCase();
-    const expires=new Date(Date.now()+duration*60000);
-    
-    if(forType==='now'&&currentLiveSessionId){
-        // Add guest to current live session
-        const roomName=pendingRoomName||generateRoomName('guest');
-        await db.collection('guestAccess').add({
-            guestId,oneTimeCode:code,guestName:name,purpose,roomName,
-            teacherId:currentUser.uid,teacherName:`${userData.firstName||''} ${userData.surname||''}`.trim(),
-            classId:currentClass,subject:currentSubject,week:currentWeek,
-            durationMinutes:duration,expiresAt:firebase.firestore.Timestamp.fromDate(expires),
-            createdAt:firebase.firestore.FieldValue.serverTimestamp(),used:false
-        });
-        const link=`${window.location.origin}/teacher-teach.html?guest=${guestId}&code=${code}`;
-        document.getElementById('guestLinkText').textContent=link;
-        document.getElementById('guestCodeDisplay').textContent=code;
-        document.getElementById('guestLinkBox').classList.add('show');
-        showToast('Guest invited to live class!','Share link + code','success',8000);
-    }else if(forType==='scheduled'){
-        const schedId=document.getElementById('guestScheduledClass').value;
-        if(!schedId)return showToast('Select a scheduled class','warning');
-        await db.collection('scheduledClasses').doc(schedId).update({
-            guestName:name,guestPurpose:purpose,guestId,guestCode:code,guestUsed:false
-        });
-        const link=`${window.location.origin}/teacher-teach.html?guest=${guestId}&code=${code}&scheduled=${schedId}`;
-        document.getElementById('guestLinkText').textContent=link;
-        document.getElementById('guestCodeDisplay').textContent=code;
-        document.getElementById('guestLinkBox').classList.add('show');
-        showToast('Guest invited to scheduled class!','They will join when class starts.','success',8000);
-    }
-});
-document.getElementById('copyGuestInviteBtn').addEventListener('click',()=>{
-    const l=document.getElementById('guestLinkText').textContent,c=document.getElementById('guestCodeDisplay').textContent;
-    navigator.clipboard.writeText(`Link: ${l}\nCode: ${c}`).then(()=>showToast('Copied!','success')).catch(()=>showToast('Failed','error'));
-});
-
-document.getElementById('endClassBtn').addEventListener('click',()=>{if(confirm('End this live classroom?'))endLiveClass('Teacher ended class');});
-
-// ═══════════════════════════════════════════
-// GUEST ACCESS
-// ═══════════════════════════════════════════
-async function handleGuestAccess(guestId,guestCode,scheduledId){
-    try{
-        // Check guestAccess first
-        const snap=await db.collection('guestAccess').where('guestId','==',guestId).limit(1).get();
-        let g=null;
-        if(!snap.empty){g=snap.docs[0].data();g.docId=snap.docs[0].id;}
-        
-        // Also check scheduledClasses
-        if(!g&&scheduledId){
-            const schedSnap=await db.collection('scheduledClasses').doc(scheduledId).get();
-            if(schedSnap.exists){g=schedSnap.data();g.docId=scheduledId;g.fromScheduled=true;}
-        }
-        
-        if(!g){showToast('Invalid link','error',10000);return;}
-        if(g.oneTimeCode!==guestCode){showToast('Wrong code','error',10000);return;}
-        if(g.used&&!g.fromScheduled){showToast('Already used','error',10000);return;}
-        if(g.expiresAt?.toDate()<new Date()&&!g.fromScheduled){showToast('Expired','error',10000);return;}
-        
-        if(!g.fromScheduled)await db.collection('guestAccess').doc(g.docId).update({used:true,usedAt:firebase.firestore.FieldValue.serverTimestamp()});
-        
+// GUEST
+async function handleGuest(guestId,guestCode){
+    try{const snap=await db.collection('guestAccess').where('guestId','==',guestId).limit(1).get();if(snap.empty){showToast('Invalid','error',10000);return;}const g=snap.docs[0].data();if(g.oneTimeCode!==guestCode||g.used){showToast('Invalid/used','error',10000);return;}
         currentClass=g.classId;currentSubject=g.subject;currentWeek=g.week;
-        document.getElementById('classSelect').innerHTML=`<option selected>${g.classId}</option>`;
-        document.getElementById('subjectSelect').innerHTML=`<option selected>${g.subject}</option>`;
-        document.getElementById('weekSelect').innerHTML=`<option selected>Week ${g.week}</option>`;
-        document.getElementById('profileName').textContent=`Guest: ${g.guestName}`;
-        document.getElementById('profilePic').textContent=g.guestName.charAt(0).toUpperCase();
-        document.getElementById('resourceTitle').textContent=`${g.subject} — Week ${g.week}`;
-        
-        const lnSnap=await db.collection('lessonNotes').where('teacherId','==',g.teacherId).where('classId','==',g.classId).get();
-        lessonNotesMap={};lnSnap.forEach(d=>{const dd=d.data();lessonNotesMap[`${dd.subject}_${dd.week}`]={id:d.id,...dd};});
-        renderResources();setupReadingToggles();
-        
-        if(g.roomName)startLiveClass(`${g.subject||'Class'} - ${g.purpose||'Guest Session'}`,g.durationMinutes||60);
-        showToast(`Welcome ${g.guestName}!`,'Classroom is ready.','info',12000);
-    }catch(e){debugLog('Guest error',e.message,'error');}
+        document.getElementById('classSelect').innerHTML=`<option>${g.classId}</option>`;document.getElementById('subjectSelect').innerHTML=`<option>${g.subject}</option>`;document.getElementById('weekSelect').innerHTML=`<option>Week ${g.week}</option>`;
+        document.getElementById('profileName').textContent=`Guest: ${g.guestName}`;document.getElementById('profilePic').textContent=g.guestName.charAt(0).toUpperCase();
+        const lnSnap=await db.collection('lessonNotes').where('teacherId','==',g.teacherId).where('classId','==',g.classId).get();lessonNotesMap={};lnSnap.forEach(d=>{const dd=d.data();lessonNotesMap[`${dd.subject}_${dd.week}`]={id:d.id,...dd};});renderResources();
+        if(g.roomName)startLiveClass(g.subject+' - '+g.purpose,g.durationMinutes||60);}catch(e){}
 }
 
-document.addEventListener('keydown',function(e){
-    if((e.ctrlKey||e.metaKey)&&e.key==='t'){e.preventDefault();toggleTeachMode();}
-    if(e.key==='Escape'&&teachActive){e.preventDefault();closeTeachMode();}
-});
+// BUTTONS
+document.getElementById('teachModeBtn').addEventListener('click',toggleTeachMode);
+document.getElementById('startClassBtn').addEventListener('click',()=>{document.getElementById('classTopic').value=currentSubject?`${currentSubject} - Week ${currentWeek||'?'}`:'';document.getElementById('startClassModal').classList.add('active');});
+document.getElementById('scheduleClassBtn').addEventListener('click',()=>{document.getElementById('schedTopic').value=currentSubject?`${currentSubject} - Week ${currentWeek||'?'}`:'';document.getElementById('scheduleClassModal').classList.add('active');});
+document.getElementById('guestInviteBtn').addEventListener('click',()=>{document.getElementById('guestModal').classList.add('active');document.getElementById('guestLinkBox').classList.remove('show');});
+document.getElementById('studentViewBtn').addEventListener('click',()=>window.open(`student-classroom.html?class=${encodeURIComponent(currentClass||'')}&subject=${encodeURIComponent(currentSubject||'')}&week=${currentWeek||''}`,'_blank'));
+document.getElementById('printBtn').addEventListener('click',()=>window.print());
+document.getElementById('endClassBtn').addEventListener('click',()=>{if(confirm('End class?'))endLiveClass();});
 
-document.getElementById('startClassModal').addEventListener('click',function(e){if(e.target===this)this.classList.remove('active');});
-document.getElementById('scheduleClassModal').addEventListener('click',function(e){if(e.target===this)this.classList.remove('active');});
-document.getElementById('guestModal').addEventListener('click',function(e){if(e.target===this){this.classList.remove('active');document.getElementById('guestLinkBox').classList.remove('show');}});
+// KEYBOARD
+document.addEventListener('keydown',e=>{if((e.ctrlKey||e.metaKey)&&e.key==='t'){e.preventDefault();toggleTeachMode();}if(e.key==='Escape'&&teachActive){closeTeachMode();}});
+
+// CLOSE MODALS ON OVERLAY CLICK
+['startClassModal','scheduleClassModal','guestModal'].forEach(id=>document.getElementById(id).addEventListener('click',function(e){if(e.target===this)closeModal(id);}));
 document.getElementById('teachOverlay').addEventListener('click',closeTeachMode);
 
-window.grantPermissionAndStart=grantPermissionAndStart;window.retryJitsi=retryJitsi;
-window.startScheduledClass=startScheduledClass;window.deleteScheduled=deleteScheduled;
-window.copyGuestInfo=copyGuestInfo;window.inviteGuestToLiveClass=inviteGuestToLiveClass;
-window.toggleTeachMode=toggleTeachMode;window.toggleTeachPanel=toggleTeachPanel;
-window.flipBookPage=flipBookPage;window.openImagePopup=openImagePopup;window.closeImagePopup=closeImagePopup;
-window.setReadingMode=setReadingMode;window.markSubmissionViewed=markSubmissionViewed;
-window.sendChatMessage=sendChatMessage;window.loadChatMessages=loadChatMessages;
-window.startLiveClass=startLiveClass;window.endLiveClass=endLiveClass;
-window.toggleClassroomChat=toggleClassroomChat;window.toggleClassroomParticipants=toggleClassroomParticipants;
-window.toggleClassroomTileView=toggleClassroomTileView;
-
-console.log('🎓 Teach Mode — Permission Prompt + Scheduling + Guest System Ready ✅');
+// EXPOSE
+window.toggleTeachMode=toggleTeachMode;window.toggleTeachPanel=toggleTeachPanel;window.flipPage=flipPage;
+window.sendChat=sendChat;window.startScheduled=startScheduled;window.deleteSched=deleteSched;
+window.inviteGuestToLiveClass=inviteGuestToLiveClass;window.copyGuest=copyGuest;
+window.returnToLiveClass=returnToLiveClass;window.toggleCC=toggleCC;window.togglePP=togglePP;
 </script>
 </body>
 </html>
