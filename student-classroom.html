@@ -195,6 +195,8 @@
         .debug-btn { position:fixed; bottom:1.5rem; right:1.5rem; z-index:10000; width:44px; height:44px; border-radius:50%; background:#0A2540; border:2px solid #C8963E; color:#C8963E; cursor:pointer; font-size:1.1rem; display:flex; align-items:center; justify-content:center; }
         .debug-btn:hover { background:#C8963E; color:#0A2540; }
 
+        .teacher-info-badge { background:var(--info-bg); border:1px solid var(--accent); border-radius:0.5rem; padding:0.3rem 0.8rem; font-size:0.75rem; display:inline-flex; align-items:center; gap:0.3rem; margin-left:0.5rem; }
+
         @media(max-width:768px){
             .main-content{padding:0.8rem;}
             .video-grid{grid-template-columns:1fr;}
@@ -223,6 +225,7 @@
         <a href="student-dashboard.html" class="nav-btn"><i class="fas fa-chart-pie"></i> Dashboard</a>
         <a href="student-classroom.html" class="nav-btn active"><i class="fas fa-chalkboard"></i> Classroom</a>
         <button class="nav-btn join-live" id="joinLiveNavBtn" onclick="joinLiveClass()"><span class="live-dot-sm"></span> Join Live Class</button>
+        <span class="teacher-info-badge" id="teacherInfoBadge" style="display:none;"><i class="fas fa-chalkboard-teacher"></i> <span id="teacherInfoText"></span></span>
     </div>
     <div class="nav-right">
         <div class="theme-toggle" id="themeToggle"><i class="fas fa-sun"></i><span>Light</span></div>
@@ -282,7 +285,7 @@
             <label class="btn btn-outline btn-sm" style="cursor:pointer;"><i class="fas fa-microphone"></i> Voice Note<input type="file" id="voiceNoteUpload" accept="audio/*" capture style="display:none;" onchange="uploadVoice(this)"></label>
             <button class="btn btn-outline btn-sm" onclick="openNoteModal()"><i class="fas fa-sticky-note"></i> Send Note</button>
         </div>
-        <p style="font-size:0.75rem;color:var(--text-secondary);margin-top:0.5rem;">Snaps and voice notes are compressed to save space.</p>
+        <p style="font-size:0.75rem;color:var(--text-secondary);margin-top:0.5rem;" id="sendHint">Snaps and voice notes are compressed to save space.</p>
     </div>
 
     <div class="card">
@@ -318,7 +321,7 @@ firebase.initializeApp(firebaseConfig);
 const auth=firebase.auth(),db=firebase.firestore();
 const CLOUD_NAME='dda7kpir8',UPLOAD_PRESET='Judahschool';
 
-// ═══════════════════════ DEBUG ═══════════════════════
+// ═══════════════════════ DEBUG SYSTEM ═══════════════════════
 const debugLogs=[];
 function debugLog(k,v,t='info'){debugLogs.push({k,v,t,time:new Date().toLocaleTimeString()});console.log(`[${t}] ${k}:`,v);updateDebug();}
 function updateDebug(){const c=document.getElementById('debugContent');if(!c)return;c.innerHTML=debugLogs.slice(-50).map(d=>{const color=d.t==='error'?'#f87171':d.t==='warn'?'#fbbf24':'#4ade80';const val=typeof d.v==='object'?JSON.stringify(d.v).substring(0,200):String(d.v).substring(0,200);return`<div style="padding:0.1rem 0;border-bottom:1px solid rgba(255,255,255,0.05);"><span style="color:#94a3b8;font-size:0.6rem;">${d.time}</span> <b style="color:#f59e0b;">${d.k}:</b> <span style="color:${color};">${val}</span></div>`;}).join('');}
@@ -334,7 +337,7 @@ function extractYouTubeId(u){const m=u?.match(/(?:youtube\.com\/watch\?v=|youtu\
 function closeNoteModal(){document.getElementById('noteModal').classList.remove('active');}
 function openNoteModal(){document.getElementById('noteModal').classList.add('active');}
 
-let currentUser=null,userData=null,studentClass=null,teacherId=null;
+let currentUser=null,userData=null,studentClass=null,teacherId=null,teacherName=null;
 let allSubjects=[],currentSubject=null,currentWeek=null;
 let allNotesMap={},completedWeeks=new Set();
 let readingSeconds=0,readingInterval=null,activityCount=0;
@@ -365,6 +368,20 @@ async function toggleWeekComplete(){
     updateProgress();renderWeekTabs();updateStats();
 }
 
+function updateTeacherBadge(){
+    const badge=document.getElementById('teacherInfoBadge');
+    const text=document.getElementById('teacherInfoText');
+    if(teacherName){
+        badge.style.display='inline-flex';
+        text.textContent='Teacher: '+teacherName;
+    }else if(teacherId){
+        badge.style.display='inline-flex';
+        text.textContent='Teacher connected';
+    }else{
+        badge.style.display='none';
+    }
+}
+
 // ═══════════════════════ AUTH ═══════════════════════
 auth.onAuthStateChanged(async user=>{
     debugLog('Auth state',user?'User: '+user.uid:'No user');
@@ -376,27 +393,15 @@ auth.onAuthStateChanged(async user=>{
         if(!userData.approved){alert('Account pending approval.');await auth.signOut();window.location.href='student-login.html';return;}
         studentClass=userData.class||null;
         teacherId=userData.teacherId||null;
+        teacherName=userData.teacherName||null;
         completedWeeks=new Set(userData.completedWeeks||[]);
-        debugLog('Student loaded',{name:userData.firstName,class:studentClass,teacherId});
+        debugLog('Student loaded',{name:userData.firstName,class:studentClass,teacherId:teacherId||'not set',teacherName:teacherName||'not set'});
         
         const pic=document.getElementById('profilePic');
         if(userData.photoURL)pic.innerHTML=`<img src="${userData.photoURL}" alt="Profile">`;
         else pic.textContent=(userData.firstName?.[0]||'S')+(userData.surname?.[0]||'S');
         
-        // Find teacher if not set
-        if(!teacherId&&studentClass){
-            debugLog('Finding teacher for class',studentClass);
-            const tSnap=await db.collection('users').where('role','==','teacher').where('classTeaching','==',studentClass).limit(1).get();
-            if(!tSnap.empty){
-                teacherId=tSnap.docs[0].id;
-                debugLog('Teacher found',teacherId);
-            }else{
-                // Try classesTeaching array
-                const tSnap2=await db.collection('users').where('role','==','teacher').where('classesTeaching','array-contains',studentClass).limit(1).get();
-                if(!tSnap2.empty){teacherId=tSnap2.docs[0].id;debugLog('Teacher found via array',teacherId);}
-                else{debugLog('No teacher found for class','warn');}
-            }
-        }
+        updateTeacherBadge();
         
         await discoverSubjects();
         await loadAllPublishedNotes();
@@ -409,7 +414,9 @@ auth.onAuthStateChanged(async user=>{
         const subj=params.get('subject'),wk=params.get('week');
         if(subj&&allSubjects.includes(subj)){switchSubject(subj);if(wk)selectWeek(parseInt(wk));}
         else if(allSubjects.length>0)switchSubject(allSubjects[0]);
-        debugLog('Initialization complete','Ready');
+        
+        updateTeacherBadge();
+        debugLog('Initialization complete','Ready. TeacherId: '+(teacherId||'NOT FOUND'));
     }catch(e){debugLog('Auth error',e.message,'error');}
 });
 document.getElementById('logoutBtn').addEventListener('click',()=>{stopReadingTimer();auth.signOut().then(()=>window.location.href='index.html');});
@@ -418,37 +425,67 @@ async function discoverSubjects(){
     const set=new Set();
     if(userData.subjects?.length)userData.subjects.forEach(s=>set.add(s));
     try{
-        // Load ALL lesson notes for this class — regardless of teacher
+        // Load ALL lesson notes for this class — from ALL teachers
         const snap=await db.collection('lessonNotes').where('classId','==',studentClass).get();
         debugLog('Lesson notes found for class',snap.size+' documents');
-        snap.forEach(d=>{const dd=d.data();if(dd.subject)set.add(dd.subject);});
+        snap.forEach(d=>{
+            const dd=d.data();
+            if(dd.subject)set.add(dd.subject);
+            // Grab teacher info from the first note we find
+            if(!teacherId&&dd.teacherId){
+                teacherId=dd.teacherId;
+                teacherName=dd.teacherName||null;
+                debugLog('Teacher found from lesson note',{teacherId,teacherName});
+                updateTeacherBadge();
+            }
+        });
         
-        // Also check without classId filter if nothing found
-        if(snap.empty){
-            debugLog('No notes with classId filter','Trying without classId','warn');
-            const snap2=await db.collection('lessonNotes').get();
-            snap2.forEach(d=>{const dd=d.data();if(dd.subject&&dd.classId===studentClass)set.add(dd.subject);});
+        // If still no teacherId, try without classId filter as fallback
+        if(snap.empty||!teacherId){
+            debugLog('Trying broader search','Looking for any notes with matching classId','warn');
+            const snap2=await db.collection('lessonNotes').where('classId','==',studentClass).limit(1).get();
+            if(!snap2.empty){
+                const dd=snap2.docs[0].data();
+                if(dd.teacherId&&!teacherId){teacherId=dd.teacherId;teacherName=dd.teacherName||null;debugLog('Teacher found via fallback',{teacherId,teacherName});updateTeacherBadge();}
+            }
         }
     }catch(e){debugLog('Discover subjects error',e.message,'error');}
     allSubjects=[...set].sort();
     debugLog('Subjects discovered',allSubjects);
+    debugLog('Teacher status after discover',{teacherId:teacherId||'NOT FOUND',teacherName:teacherName||'NOT FOUND'});
 }
 async function loadAllPublishedNotes(){
     allNotesMap={};
     try{
+        // Load ALL lesson notes for this class — shows content from ALL teachers assigned
         const snap=await db.collection('lessonNotes').where('classId','==',studentClass).get();
-        debugLog('Loading published notes',snap.size+' documents');
+        debugLog('Loading published notes for class',{class:studentClass,count:snap.size});
         snap.forEach(d=>{
             const dd=d.data();
             if(!dd.subject||dd.week===undefined)return;
             const k=`${dd.subject}_${dd.week}`;
-            // Only show published content
-            if(dd.resourcePublished||dd.videosPublished||dd.handwritingImagesPublished||dd.teachable){
+            // SHOW ALL PUBLISHED CONTENT regardless of which teacher published it
+            if(dd.resourcePublished||dd.videosPublished||dd.handwritingImagesPublished||dd.teachable||dd.studentResource||dd.videoLinks||dd.handwritingImages){
                 if(!allNotesMap[k])allNotesMap[k]={id:d.id,...dd};
                 else allNotesMap[k]={...allNotesMap[k],...dd,id:d.id};
+                // Also grab teacherId if we don't have it yet
+                if(!teacherId&&dd.teacherId){teacherId=dd.teacherId;teacherName=dd.teacherName||null;debugLog('Teacher found from note',{teacherId,teacherName});updateTeacherBadge();}
             }
         });
-        debugLog('Published notes loaded',Object.keys(allNotesMap).length+' weeks');
+        debugLog('Published notes loaded',{weeks:Object.keys(allNotesMap).length,teacherId:teacherId||'NOT FOUND',teacherName:teacherName||'NOT FOUND'});
+        updateTeacherBadge();
+        
+        // If NO notes found at all, show debug info
+        if(Object.keys(allNotesMap).length===0){
+            debugLog('No published content found','The teacher may not have published any lesson notes yet','warn');
+            // Try loading ALL notes (even unpublished) just to find teacher
+            const allSnap=await db.collection('lessonNotes').where('classId','==',studentClass).limit(5).get();
+            debugLog('Total notes in class (including unpublished)',allSnap.size);
+            if(!allSnap.empty&&!teacherId){
+                const dd=allSnap.docs[0].data();
+                if(dd.teacherId){teacherId=dd.teacherId;teacherName=dd.teacherName||null;debugLog('Teacher found from unpublished note',{teacherId,teacherName});updateTeacherBadge();}
+            }
+        }
     }catch(e){debugLog('Load notes error',e.message,'error');}
 }
 
@@ -469,9 +506,9 @@ function renderWeekTabs(){
     if(!weeks.length){c.innerHTML='';return;}
     c.innerHTML=weeks.map(w=>{
         const n=allNotesMap[`${currentSubject}_${w}`]||{},icons=[];
-        if(n.resourcePublished&&n.studentResource)icons.push('<i class="fas fa-book"></i>');
-        if(n.videosPublished&&n.videoLinks?.length)icons.push('<i class="fas fa-play"></i>');
-        if(n.handwritingImagesPublished&&n.handwritingImages?.length)icons.push('<i class="fas fa-image"></i>');
+        if((n.resourcePublished||n.teachable)&&n.studentResource)icons.push('<i class="fas fa-book"></i>');
+        if((n.videosPublished||n.teachable)&&n.videoLinks?.length)icons.push('<i class="fas fa-play"></i>');
+        if((n.handwritingImagesPublished||n.teachable)&&(n.handwritingImages?.length||n.handwritingAudios?.length))icons.push('<i class="fas fa-image"></i>');
         const done=completedWeeks.has(`${currentSubject}_${w}`)?' ✅':'';
         return`<span class="tab${w===currentWeek?' active':''}" onclick="selectWeek(${w})">Wk ${w} ${icons.join('')}${done}</span>`;
     }).join('');
@@ -479,7 +516,7 @@ function renderWeekTabs(){
 function selectWeek(w){currentWeek=w;document.querySelectorAll('#weekTabs .tab').forEach(t=>t.classList.toggle('active',t.textContent.includes(`Wk ${w}`)));stopReadingTimer();startReadingTimer();renderAll();}
 function updateStats(){
     const weeks=getWeeksForSubject();let r=0,v=0,i=0;
-    weeks.forEach(w=>{const n=allNotesMap[`${currentSubject}_${w}`]||{};if(n.resourcePublished&&n.studentResource)r++;if(n.videosPublished&&n.videoLinks?.length)v+=n.videoLinks.length;if(n.handwritingImagesPublished&&n.handwritingImages?.length)i+=n.handwritingImages.length;});
+    weeks.forEach(w=>{const n=allNotesMap[`${currentSubject}_${w}`]||{};if((n.resourcePublished||n.teachable)&&n.studentResource)r++;if((n.videosPublished||n.teachable)&&n.videoLinks?.length)v+=n.videoLinks.length;if((n.handwritingImagesPublished||n.teachable)&&n.handwritingImages?.length)i+=n.handwritingImages.length;});
     document.getElementById('statResources').textContent=r;document.getElementById('statVideos').textContent=v;document.getElementById('statImages').textContent=i;
     const done=weeks.filter(w=>completedWeeks.has(`${currentSubject}_${w}`)).length;
     document.getElementById('statCompleted').textContent=(weeks.length?Math.round((done/weeks.length)*100):0)+'%';
@@ -493,17 +530,17 @@ function renderAll(){
         document.getElementById('videosSection').innerHTML='';document.getElementById('imagesSection').innerHTML='';return;
     }
     const n=allNotesMap[`${currentSubject}_${currentWeek}`]||{};
-    debugLog('Rendering week',{subject:currentSubject,week:currentWeek,hasNote:!!n.subject,keys:Object.keys(n)});
+    debugLog('Rendering week',{subject:currentSubject,week:currentWeek,hasContent:!!(n.studentResource||n.videoLinks||n.handwritingImages),teacherName:n.teacherName||'unknown'});
     
-    const hasRes=!!(n.resourcePublished&&n.studentResource);
-    const hasVid=!!(n.videosPublished&&n.videoLinks?.length);
-    const hasImg=!!(n.handwritingImagesPublished&&(n.handwritingImages?.length||n.handwritingAudios?.length));
+    const hasRes=!!((n.resourcePublished||n.teachable)&&n.studentResource);
+    const hasVid=!!((n.videosPublished||n.teachable)&&n.videoLinks?.length);
+    const hasImg=!!((n.handwritingImagesPublished||n.teachable)&&(n.handwritingImages?.length||n.handwritingAudios?.length));
     const done=completedWeeks.has(`${currentSubject}_${currentWeek}`);
 
     if(hasRes){
         document.getElementById('resourcesSection').innerHTML=`
             <div class="card">
-                <div class="card-header"><h3><i class="fas fa-book-reader"></i> ${escapeHtml(n.topic||'Study Notes')} ${done?'<span class="badge badge-success">Completed</span>':''}</h3>
+                <div class="card-header"><h3><i class="fas fa-book-reader"></i> ${escapeHtml(n.topic||'Study Notes')} ${done?'<span class="badge badge-success">Completed</span>':''} ${n.teacherName?`<span class="badge badge-info"><i class="fas fa-chalkboard-teacher"></i> ${escapeHtml(n.teacherName)}</span>`:''}</h3>
                     <button class="btn btn-sm ${done?'btn-outline':'btn-success'}" onclick="toggleWeekComplete()"><i class="fas ${done?'fa-undo':'fa-check'}"></i> ${done?'Undo':'Mark Complete'}</button>
                 </div>
                 <div class="reading-tracker"><i class="fas fa-clock"></i> Reading time: <span class="tracker-val" id="sessionTime">0 min</span></div>
@@ -537,18 +574,17 @@ function renderAll(){
 function setupLiveClassListener(){
     if(unsubLive)unsubLive();
     if(!studentClass)return;
-    debugLog('Setting up live class listener','class: '+studentClass);
+    debugLog('Live class listener','Setting up for class: '+studentClass);
     unsubLive=db.collection('liveClassSessions').where('classId','==',studentClass).where('status','==','live').limit(1).onSnapshot(snap=>{
         const card=document.getElementById('liveClassroomCard');
         const navBtn=document.getElementById('joinLiveNavBtn');
-        debugLog('Live session check',snap.size+' active');
         if(!snap.empty){
             const s=snap.docs[0].data();
             liveRoomName=s.roomName;
             document.getElementById('liveClassTopic').textContent=s.topic||'Live Class';
             card.classList.add('active');
             navBtn.style.display='inline-flex';
-            debugLog('Live class detected',s.topic);
+            debugLog('Live class detected!',s.topic);
         }else{
             card.classList.remove('active');
             navBtn.style.display='none';
@@ -568,20 +604,31 @@ function joinLiveClass(){
 
 // ═══════════════════════ UPLOADS ═══════════════════════
 async function uploadSnap(input){
-    const file=input.files[0];if(!file||!teacherId){showToast('No teacher assigned','warning');return;}
+    const file=input.files[0];
+    if(!file)return;
+    if(!teacherId){
+        showToast('No teacher assigned yet. Ask your teacher to publish a lesson note first.','warning',6000);
+        debugLog('Upload blocked','No teacherId found');
+        input.value='';return;
+    }
     const b=input.parentElement,o=b.innerHTML;b.disabled=true;b.innerHTML='<i class="fas fa-spinner fa-spin"></i> Sending...';
     try{
         const fd=new FormData();fd.append('file',file);fd.append('upload_preset',UPLOAD_PRESET);fd.append('folder','student_snaps');fd.append('quality','auto:low');
         const r=await fetch(`https://api.cloudinary.com/v1_1/${CLOUD_NAME}/image/upload`,{method:'POST',body:fd});
         const d=await r.json();if(!r.ok)throw new Error(d.error?.message||'Upload failed');
         await db.collection('studentSubmissions').add({teacherId,studentId:currentUser.uid,studentName:`${userData.firstName||''} ${userData.surname||''}`.trim(),classId:studentClass,type:'image',url:d.secure_url,caption:'Snap from student',viewedByTeacher:false,createdAt:firebase.firestore.FieldValue.serverTimestamp()});
-        showToast('Sent!','Your snap has been sent.','success');
-        debugLog('Snap sent',d.secure_url.substring(0,50));
+        showToast('Sent!','Your snap has been sent to your teacher.','success');
+        debugLog('Snap sent to teacher',teacherId);
     }catch(e){showToast('Error',e.message,'error');debugLog('Snap error',e.message,'error');}
     finally{b.disabled=false;b.innerHTML=o;input.value='';}
 }
 async function uploadVoice(input){
-    const file=input.files[0];if(!file||!teacherId){showToast('No teacher assigned','warning');return;}
+    const file=input.files[0];
+    if(!file)return;
+    if(!teacherId){
+        showToast('No teacher assigned yet. Ask your teacher to publish a lesson note first.','warning',6000);
+        input.value='';return;
+    }
     const b=input.parentElement,o=b.innerHTML;b.disabled=true;b.innerHTML='<i class="fas fa-spinner fa-spin"></i> Sending...';
     try{
         const fd=new FormData();fd.append('file',file);fd.append('upload_preset',UPLOAD_PRESET);fd.append('folder','student_voice');fd.append('quality','auto:low');
@@ -594,7 +641,11 @@ async function uploadVoice(input){
 }
 async function sendNote(){
     const text=document.getElementById('noteText').value.trim();
-    if(!text||!teacherId)return showToast('Write something','warning');
+    if(!text)return showToast('Write something','warning');
+    if(!teacherId){
+        showToast('No teacher assigned yet. Ask your teacher to publish a lesson note first.','warning',6000);
+        return;
+    }
     try{
         await db.collection('studentSubmissions').add({teacherId,studentId:currentUser.uid,studentName:`${userData.firstName||''} ${userData.surname||''}`.trim(),classId:studentClass,type:'note',caption:text,viewedByTeacher:false,createdAt:firebase.firestore.FieldValue.serverTimestamp()});
         closeNoteModal();document.getElementById('noteText').value='';
@@ -606,9 +657,8 @@ async function sendNote(){
 function setupStudentChatListener(){
     if(unsubChat)unsubChat();
     if(!studentClass)return;
-    debugLog('Setting up chat listener','class: '+studentClass);
+    debugLog('Chat listener','Setting up for class: '+studentClass);
     unsubChat=db.collection('teacherStudentChats').where('classId','==',studentClass).orderBy('createdAt','asc').onSnapshot(s=>{
-        debugLog('Chat snapshot',s.size+' messages');
         renderStudentChat(s);
     },e=>debugLog('Chat listener error',e.message,'error'));
 }
