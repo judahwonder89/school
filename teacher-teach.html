@@ -248,7 +248,7 @@
         </div>
         <div class="jitsi-wrapper" id="jitsiWrapper"><div class="empty-state" style="background:#000;color:white;"><i class="fas fa-video" style="opacity:0.3;"></i><h3>Ready</h3></div></div>
         <div class="classroom-info-bar">
-            <span style="font-size:0.8rem;"><i class="fas fa-shield-alt"></i> You are the moderator — Students need PIN to join</span>
+            <span style="font-size:0.8rem;"><i class="fas fa-shield-alt"></i> You are the moderator — Students need PIN to join. <strong style="color:var(--accent);">End Jitsi meeting first before clicking End Class.</strong></span>
             <div style="display:flex;gap:0.4rem;">
                 <button class="btn btn-outline btn-sm" onclick="inviteGuestToLiveClass()">➕ Invite Guest</button>
                 <button class="btn btn-end-class btn-sm" id="endClassBtn">⏹ End Class</button>
@@ -262,25 +262,23 @@
 
     <div class="card"><div class="card-header"><h3><i class="fas fa-history"></i> Past Sessions</h3></div><div id="pastList"><div class="empty-state"><i class="fas fa-history"></i><h3>No past sessions</h3></div></div></div>
 
-    <div class="card"><div class="card-header"><h3><i class="fas fa-inbox"></i> Student Submissions <span class="section-badge student">Students</span></h3><span class="badge badge-pending" id="submissionBadge" style="display:none;">0 new</span></div><div id="submissionsList"><div class="empty-state"><i class="fas fa-inbox"></i><h3>No submissions yet</h3></div></div></div>
+    <div class="card"><div class="card-header"><h3><i class="fas fa-inbox"></i> Student Submissions <span class="section-badge student">Students</span></h3><span class="badge badge-pending" id="submissionBadge" style="display:none;">0 new</span></div><div id="submissionsList"><div class="empty-state"><i class="fas fa-inbox"></i><h3>No submissions yet</h3><p>Students send snaps and voice notes from their classroom.</p></div></div></div>
 
     <div class="card"><div class="card-header"><h3><i class="fas fa-comments"></i> Student Messages <span class="section-badge student">Students</span></h3><button class="btn btn-outline btn-sm" onclick="loadChat()"><i class="fas fa-sync-alt"></i></button></div>
-        <div class="chat-container"><div class="chat-messages" id="chatMessages"><div class="empty-state"><i class="fas fa-comments"></i><h3>No messages yet</h3></div></div>
+        <div class="chat-container"><div class="chat-messages" id="chatMessages"><div class="empty-state"><i class="fas fa-comments"></i><h3>No messages yet</h3><p>Chat with your students here.</p></div></div>
             <div class="chat-input-area"><input type="text" id="chatInput" placeholder="Reply to students..." onkeypress="if(event.key==='Enter')sendChat()"><button onclick="sendChat()"><i class="fas fa-paper-plane"></i> Send</button></div>
         </div>
     </div>
 </main>
 
+<!-- START CLASS MODAL -->
 <div class="modal-overlay" id="startClassModal"><div class="modal-content">
     <div class="modal-header"><h3><i class="fas fa-video"></i> Start Live Classroom</h3><button class="modal-close" onclick="closeModal('startClassModal')">✕</button></div>
     <form onsubmit="submitStartClass(event)">
         <div class="form-group"><label class="form-label">Topic / Title</label><input type="text" id="classTopic" class="form-control" placeholder="e.g., Mathematics - Fractions" required></div>
         <div class="form-group"><label class="form-label">Duration</label><select id="classDuration" class="form-control"><option value="20">20 minutes</option><option value="30">30 minutes</option><option value="45">45 minutes</option><option value="60" selected>1 hour</option><option value="90">1.5 hours</option><option value="120">2 hours</option></select></div>
         <div class="form-group"><label class="form-label">🔐 Class PIN <small>(Students must enter this to join)</small></label>
-            <div style="display:flex;gap:0.5rem;">
-                <input type="text" id="classPIN" class="form-control" placeholder="e.g., 4829" maxlength="6" style="font-size:1.2rem;text-align:center;letter-spacing:0.3rem;" required>
-                <button type="button" class="btn btn-outline btn-sm" onclick="generatePIN()" title="Generate random PIN"><i class="fas fa-sync-alt"></i></button>
-            </div>
+            <div style="display:flex;gap:0.5rem;"><input type="text" id="classPIN" class="form-control" placeholder="e.g., 4829" maxlength="6" style="font-size:1.2rem;text-align:center;letter-spacing:0.3rem;" required><button type="button" class="btn btn-outline btn-sm" onclick="generatePIN()" title="Generate random PIN"><i class="fas fa-sync-alt"></i></button></div>
             <p style="font-size:0.7rem;color:var(--text-secondary);margin-top:0.2rem;">Share this PIN with your students so they can join the class.</p>
         </div>
         <p style="font-size:0.8rem;color:var(--text-secondary);"><i class="fas fa-shield-alt"></i> <strong>You are the moderator.</strong> You enter first — students can only join after you. When you end the class, it stops for everyone.</p>
@@ -288,6 +286,7 @@
     </form>
 </div></div>
 
+<!-- SCHEDULE MODAL -->
 <div class="modal-overlay" id="scheduleClassModal"><div class="modal-content">
     <div class="modal-header"><h3><i class="fas fa-calendar-plus"></i> Schedule Future Class</h3><button class="modal-close" onclick="closeModal('scheduleClassModal')">✕</button></div>
     <form onsubmit="submitSchedule(event)">
@@ -301,6 +300,7 @@
     </form>
 </div></div>
 
+<!-- GUEST MODAL -->
 <div class="modal-overlay" id="guestModal"><div class="modal-content">
     <div class="modal-header"><h3><i class="fas fa-user-plus"></i> Invite Guest Teacher</h3><button class="modal-close" onclick="closeModal('guestModal')">✕</button></div>
     <form onsubmit="submitGuest(event)">
@@ -335,7 +335,7 @@ document.getElementById('debugToggleBtn').addEventListener('click',()=>document.
 (function(){const h=document.documentElement,t=document.getElementById('themeToggle'),s=localStorage.getItem('judah-theme')||'dark';h.setAttribute('data-theme',s);t.querySelector('span').textContent=s==='dark'?'Light':'Dark';t.addEventListener('click',()=>{const n=h.getAttribute('data-theme')==='dark'?'light':'dark';h.setAttribute('data-theme',n);localStorage.setItem('judah-theme',n);t.querySelector('span').textContent=n==='dark'?'Light':'Dark';});})();
 
 function escapeHtml(s){const d=document.createElement('div');d.textContent=s||'';return d.innerHTML;}
-function showToast(m,t='info',d=4000){const i={success:'fa-check-circle',error:'fa-exclamation-circle',warning:'fa-exclamation-triangle',info:'fa-info-circle'},c={success:'var(--success-text)',error:'var(--danger-text)',warning:'var(--warning-text)',info:'var(--accent)'},el=document.createElement('div');el.className='toast';el.innerHTML=`<i class="fas ${i[t]}" style="color:${c[t]};font-size:1.1rem;"></i><span>${escapeHtml(m)}</span>`;document.getElementById('toastContainer').appendChild(el);setTimeout(()=>{el.style.opacity='0';el.style.transform='translateX(100%)';el.style.transition='0.3s';setTimeout(()=>el.remove(),300);},d);}
+function showToast(m,t='info',d=4000){const icons={success:'fa-check-circle',error:'fa-exclamation-circle',warning:'fa-exclamation-triangle',info:'fa-info-circle'},colors={success:'var(--success-text)',error:'var(--danger-text)',warning:'var(--warning-text)',info:'var(--accent)'},el=document.createElement('div');el.className='toast';el.innerHTML=`<i class="fas ${icons[t]}" style="color:${colors[t]};font-size:1.1rem;"></i><span>${escapeHtml(m)}</span>`;document.getElementById('toastContainer').appendChild(el);setTimeout(()=>{el.style.opacity='0';el.style.transform='translateX(100%)';el.style.transition='0.3s';setTimeout(()=>el.remove(),300);},d);}
 function extractYouTubeId(u){if(!u)return null;const p=[/(?:youtube\.com\/watch\?v=)([a-zA-Z0-9_-]{11})/,/(?:youtu\.be\/)([a-zA-Z0-9_-]{11})/];for(const r of p){const m=u.match(r);if(m)return m[1];}return null;}
 function closeModal(id){document.getElementById(id).classList.remove('active');}
 function generatePIN(){document.getElementById('classPIN').value=String(Math.floor(1000+Math.random()*9000));}
@@ -355,18 +355,37 @@ function stopTimer(){if(classTimerInterval){clearInterval(classTimerInterval);cl
 
 function copyRoomLink(roomName){navigator.clipboard.writeText(`https://meet.jit.si/${roomName}`).then(()=>showToast('Link copied!','success')).catch(()=>showToast('Copy failed','error'));}
 
+function buildJitsiUrl(roomName,displayName,isTeacher){
+    let url=`https://meet.jit.si/${roomName}#config.prejoinPageEnabled=true`;
+    url+=`&config.enableLobby=false`;
+    url+=`&config.startWithAudioMuted=`+(isTeacher?'false':'true');
+    url+=`&config.startWithVideoMuted=`+(isTeacher?'false':'true');
+    url+=`&config.hideConferenceSubject=false`;
+    url+=`&config.hideConferenceTimer=false`;
+    url+=`&config.enableClosePage=false`;
+    url+=`&config.enableWelcomePage=false`;
+    url+=`&config.requireDisplayName=true`;
+    url+=`&userInfo.displayName=${encodeURIComponent(displayName)}`;
+    url+=`&interfaceConfig.APP_NAME=Judah+Classroom`;
+    url+=`&interfaceConfig.SHOW_JITSI_WATERMARK=false`;
+    url+=`&interfaceConfig.MOBILE_APP_PROMO=false`;
+    url+=`&interfaceConfig.TOOLBAR_ALWAYS_VISIBLE=true`;
+    url+=`&interfaceConfig.DISABLE_JOIN_LEAVE_NOTIFICATIONS=false`;
+    url+=`&interfaceConfig.HIDE_INVITE_MORE_HEADER=true`;
+    url+=`&interfaceConfig.SHOW_CHROME_EXTENSION_BANNER=false`;
+    url+=`&interfaceConfig.SHOW_POWERED_BY=false`;
+    return url;
+}
+
 async function startLiveClass(topic,duration,pin){
     if(pendingRoomName){showToast('Class already running','warning');return;}
     pendingTopic=topic;currentClassPIN=pin;
     const roomName='judah-'+Date.now().toString(36)+'-'+Math.random().toString(36).substring(2,10)+'-'+Math.random().toString(36).substring(2,6);
     pendingRoomName=roomName;classDuration=duration;
     debugLog('Starting live class',{roomName,topic,duration,pin});
-    
     const teacherName=userData?`${userData.firstName||'Teacher'} ${userData.surname||''}`.trim():'Teacher';
-    const jitsiUrl=`https://meet.jit.si/${roomName}#config.prejoinPageEnabled=true&config.enableLobby=false&config.startWithAudioMuted=false&config.startWithVideoMuted=false&userInfo.displayName=${encodeURIComponent(teacherName+' (Teacher)')}&interfaceConfig.APP_NAME=Judah+Classroom&interfaceConfig.SHOW_JITSI_WATERMARK=false&interfaceConfig.MOBILE_APP_PROMO=false`;
-    
+    const jitsiUrl=buildJitsiUrl(roomName,teacherName+' (Teacher)',true);
     try{await db.collection('liveClassSessions').add({roomName,topic,classId:currentClass,subject:currentSubject||'',week:currentWeek||null,teacherId:currentUser?.uid||'guest',teacherName,durationMinutes:duration,status:'live',classPIN:pin,startedAt:firebase.firestore.FieldValue.serverTimestamp()});debugLog('Session saved with PIN',pin);}catch(e){debugLog('Firestore save failed','Using local only','warn');}
-    
     document.getElementById('liveClassroomCard').style.display='block';
     document.getElementById('liveClassName').textContent=topic;
     document.getElementById('liveClassPINDisplay').textContent=pin;
@@ -375,28 +394,14 @@ async function startLiveClass(topic,duration,pin){
             <i class="fas fa-crown" style="font-size:2.5rem;color:#f59e0b;margin-bottom:0.5rem;"></i>
             <h3 style="margin-bottom:0.3rem;">Live Classroom Ready</h3>
             <p style="color:#94a3b8;margin-bottom:0.3rem;">Topic: <strong style="color:white;">${escapeHtml(topic)}</strong></p>
-            <div class="pin-display">
-                <p style="color:var(--accent);font-weight:700;font-size:0.9rem;"><i class="fas fa-key"></i> Class PIN</p>
-                <p class="pin-number">${pin}</p>
-                <p style="color:#94a3b8;font-size:0.7rem;">Share this PIN with students — they need it to join</p>
-            </div>
+            <div class="pin-display"><p style="color:var(--accent);font-weight:700;font-size:0.9rem;"><i class="fas fa-key"></i> Class PIN</p><p class="pin-number">${pin}</p><p style="color:#94a3b8;font-size:0.7rem;">Share this PIN with students — they need it to join</p></div>
             <p style="color:#4ade80;margin-bottom:0.8rem;"><i class="fas fa-check-circle"></i> No login • No time limit • Opens in new tab</p>
-            <div style="background:rgba(200,150,62,0.15);border:1px solid var(--accent);border-radius:0.8rem;padding:0.8rem;margin-bottom:1rem;text-align:left;font-size:0.8rem;color:var(--accent);">
-                <i class="fas fa-shield-alt"></i> <strong>You are the moderator.</strong> Open this tab first before students join. You can mute students, manage screen sharing, and end the class for everyone.
-            </div>
-            <button class="btn btn-start-class" onclick="window.open('${jitsiUrl}','_blank','noopener,noreferrer')" style="font-size:1.1rem;padding:1rem 2.5rem;">
-                <i class="fas fa-external-link-alt"></i> Open Live Classroom
-            </button>
-            <div style="margin-top:1rem;background:var(--hover-bg);padding:0.5rem 1rem;border-radius:0.5rem;font-size:0.75rem;">
-                <span style="color:#94a3b8;">Room: </span><code style="color:#4ade80;">meet.jit.si/${roomName}</code>
-                <button class="btn btn-sm btn-outline" onclick="copyRoomLink('${roomName}')" style="margin-left:0.5rem;"><i class="fas fa-copy"></i></button>
-            </div>
+            <div style="background:rgba(200,150,62,0.15);border:1px solid var(--accent);border-radius:0.8rem;padding:0.8rem;margin-bottom:1rem;text-align:left;font-size:0.8rem;color:var(--accent);"><i class="fas fa-shield-alt"></i> <strong>You are the moderator.</strong> Open this tab first. You can mute all students and end the meeting for everyone from within Jitsi.</div>
+            <button class="btn btn-start-class" onclick="window.open('${jitsiUrl}','_blank','noopener,noreferrer')" style="font-size:1.1rem;padding:1rem 2.5rem;"><i class="fas fa-external-link-alt"></i> Open Live Classroom</button>
+            <div style="margin-top:1rem;background:var(--hover-bg);padding:0.5rem 1rem;border-radius:0.5rem;font-size:0.75rem;"><span style="color:#94a3b8;">Room: </span><code style="color:#4ade80;">meet.jit.si/${roomName}</code> <button class="btn btn-sm btn-outline" onclick="copyRoomLink('${roomName}')" style="margin-left:0.5rem;"><i class="fas fa-copy"></i></button></div>
         </div>`;
-    
-    saveSession({active:true,roomName,topic,pin,startedAt:Date.now(),duration:classDuration});
-    checkReturnButton();
-    startTimer();
-    document.getElementById('liveClassroomCard').scrollIntoView({behavior:'smooth'});
+    saveSession({active:true,roomName,topic,pin,startedAt:Date.now(),duration:classDuration});checkReturnButton();
+    startTimer();document.getElementById('liveClassroomCard').scrollIntoView({behavior:'smooth'});
     showToast(`Class started! PIN: ${pin} — Share with students.`,'success',8000);
 }
 
@@ -407,13 +412,8 @@ function returnToLiveClass(){
     document.getElementById('liveClassPINDisplay').textContent=savedSession.pin||'----';
     currentClassPIN=savedSession.pin||null;
     const teacherName=userData?`${userData.firstName||'Teacher'} ${userData.surname||''}`.trim():'Teacher';
-    const jitsiUrl=`https://meet.jit.si/${savedSession.roomName}#config.prejoinPageEnabled=true&config.enableLobby=false&config.startWithAudioMuted=false&userInfo.displayName=${encodeURIComponent(teacherName)}&interfaceConfig.APP_NAME=Judah+Classroom&interfaceConfig.SHOW_JITSI_WATERMARK=false&interfaceConfig.MOBILE_APP_PROMO=false`;
-    document.getElementById('jitsiWrapper').innerHTML=`
-        <div style="display:flex;flex-direction:column;align-items:center;justify-content:center;height:100%;background:#000;color:white;text-align:center;padding:2rem;">
-            <h3>Live Classroom</h3><p style="color:#94a3b8;">${escapeHtml(savedSession.topic||'')}</p>
-            <div class="pin-display"><p style="color:var(--accent);">Class PIN</p><p class="pin-number">${savedSession.pin||'----'}</p></div>
-            <button class="btn btn-start-class" onclick="window.open('${jitsiUrl}','_blank','noopener,noreferrer')" style="font-size:1.1rem;padding:1rem 2.5rem;"><i class="fas fa-external-link-alt"></i> Reopen Classroom</button>
-        </div>`;
+    const jitsiUrl=buildJitsiUrl(savedSession.roomName,teacherName+' (Teacher)',true);
+    document.getElementById('jitsiWrapper').innerHTML=`<div style="display:flex;flex-direction:column;align-items:center;justify-content:center;height:100%;background:#000;color:white;text-align:center;padding:2rem;"><h3>Live Classroom</h3><p style="color:#94a3b8;">${escapeHtml(savedSession.topic||'')}</p><div class="pin-display"><p style="color:var(--accent);">Class PIN</p><p class="pin-number">${savedSession.pin||'----'}</p></div><button class="btn btn-start-class" onclick="window.open('${jitsiUrl}','_blank','noopener,noreferrer')" style="font-size:1.1rem;padding:1rem 2.5rem;"><i class="fas fa-external-link-alt"></i> Reopen Classroom</button></div>`;
     pendingRoomName=savedSession.roomName;pendingTopic=savedSession.topic;classDuration=savedSession.duration||60;
     startTimer();document.getElementById('liveClassroomCard').scrollIntoView({behavior:'smooth'});
     showToast('Returned to live classroom','success');
@@ -422,35 +422,15 @@ function returnToLiveClass(){
 async function endLiveClass(reason='Teacher ended class'){
     stopTimer();
     document.getElementById('liveClassroomCard').style.display='none';
-    document.getElementById('jitsiWrapper').innerHTML='<div class="empty-state" style="background:#000;color:white;"><i class="fas fa-check-circle" style="color:#22c55e;"></i><h3>Class Ended</h3><p style="color:#94a3b8;">Students can no longer join</p></div>';
-    if(pendingRoomName){
-        try{
-            const snap=await db.collection('liveClassSessions').where('roomName','==',pendingRoomName).where('status','==','live').get();
-            const batch=db.batch();
-            snap.forEach(d=>{batch.update(d.ref,{status:'ended',endedAt:firebase.firestore.FieldValue.serverTimestamp(),endedReason:reason,durationActual:classSeconds});});
-            await batch.commit();
-            debugLog('All sessions ended',snap.size+' updated');
-        }catch(e){debugLog('End error',e.message,'error');}
-    }
-    clearSession();checkReturnButton();
-    classSeconds=0;classDuration=0;pendingRoomName=null;pendingTopic=null;currentClassPIN=null;
-    showToast('Class ended — students can no longer join','info');
-    loadPastSessions();
+    document.getElementById('jitsiWrapper').innerHTML='<div class="empty-state" style="background:#000;color:white;"><i class="fas fa-check-circle" style="color:#22c55e;"></i><h3>Class Ended</h3><p style="color:#94a3b8;">Students can no longer join. Close the Jitsi tab if still open.</p></div>';
+    if(pendingRoomName){try{const snap=await db.collection('liveClassSessions').where('roomName','==',pendingRoomName).where('status','==','live').get();const batch=db.batch();snap.forEach(d=>{batch.update(d.ref,{status:'ended',endedAt:firebase.firestore.FieldValue.serverTimestamp(),endedReason:reason,durationActual:classSeconds});});await batch.commit();debugLog('All sessions ended',snap.size+' updated');}catch(e){debugLog('End error',e.message,'error');}}
+    clearSession();checkReturnButton();classSeconds=0;classDuration=0;pendingRoomName=null;pendingTopic=null;currentClassPIN=null;
+    showToast('Class ended — students can no longer join','info');loadPastSessions();
 }
 
 async function forceEndAllClasses(){
     if(!confirm('⚠️ ADMIN: Force end ALL live classes for this class? This will kick all students out.'))return;
-    try{
-        const snap=await db.collection('liveClassSessions').where('classId','==',currentClass).where('status','==','live').get();
-        const batch=db.batch();
-        snap.forEach(d=>{batch.update(d.ref,{status:'ended',endedAt:firebase.firestore.FieldValue.serverTimestamp(),endedReason:'Force ended by teacher'});});
-        await batch.commit();
-        stopTimer();
-        document.getElementById('liveClassroomCard').style.display='none';
-        clearSession();checkReturnButton();
-        showToast(`Force ended ${snap.size} live class(es)`,'warning');
-        loadPastSessions();
-    }catch(e){showToast('Error ending classes','error');}
+    try{const snap=await db.collection('liveClassSessions').where('classId','==',currentClass).where('status','==','live').get();const batch=db.batch();snap.forEach(d=>{batch.update(d.ref,{status:'ended',endedAt:firebase.firestore.FieldValue.serverTimestamp(),endedReason:'Force ended by teacher'});});await batch.commit();stopTimer();document.getElementById('liveClassroomCard').style.display='none';clearSession();checkReturnButton();showToast(`Force ended ${snap.size} live class(es)`,'warning');loadPastSessions();}catch(e){showToast('Error ending classes','error');}
 }
 
 async function scheduleClass(topic,date,time,duration,guestName){
@@ -459,23 +439,13 @@ async function scheduleClass(topic,date,time,duration,guestName){
     try{await db.collection('scheduledClasses').add(data);showToast('Class scheduled!','success');loadScheduled();}catch(e){showToast('Scheduled (offline mode)','info',3000);}
 }
 async function loadScheduled(){
-    try{
-        const snap=await db.collection('scheduledClasses').where('teacherId','==',currentUser?.uid).where('classId','==',currentClass).where('status','==','scheduled').orderBy('date').orderBy('time').get();
-        const c=document.getElementById('scheduledList');
-        if(snap.empty){c.innerHTML='<div class="empty-state"><i class="fas fa-calendar"></i><h3>No scheduled classes</h3></div>';return;}
-        c.innerHTML=snap.docs.map(d=>{const s=d.data();return`<div class="scheduled-session-item"><div><b>${escapeHtml(s.topic)}</b><br><small>${s.date} at ${s.time} · ${s.durationMinutes}min${s.guestName?' · Guest: '+escapeHtml(s.guestName):''}</small></div><div style="display:flex;gap:0.3rem;"><button class="btn btn-start-class btn-sm" onclick="startScheduledClass('${d.id}')"><i class="fas fa-play"></i> Start</button><button class="btn btn-outline btn-sm" onclick="deleteScheduled('${d.id}')"><i class="fas fa-trash"></i></button></div></div>`;}).join('');
-    }catch(e){debugLog('Load sched err',e.message,'warn');}
+    try{const snap=await db.collection('scheduledClasses').where('teacherId','==',currentUser?.uid).where('classId','==',currentClass).where('status','==','scheduled').orderBy('date').orderBy('time').get();const c=document.getElementById('scheduledList');if(snap.empty){c.innerHTML='<div class="empty-state"><i class="fas fa-calendar"></i><h3>No scheduled classes</h3></div>';return;}c.innerHTML=snap.docs.map(d=>{const s=d.data();return`<div class="scheduled-session-item"><div><b>${escapeHtml(s.topic)}</b><br><small>${s.date} at ${s.time} · ${s.durationMinutes}min${s.guestName?' · Guest: '+escapeHtml(s.guestName):''}</small></div><div style="display:flex;gap:0.3rem;"><button class="btn btn-start-class btn-sm" onclick="startScheduledClass('${d.id}')"><i class="fas fa-play"></i> Start</button><button class="btn btn-outline btn-sm" onclick="deleteScheduled('${d.id}')"><i class="fas fa-trash"></i></button></div></div>`;}).join('');}catch(e){debugLog('Load sched err',e.message,'warn');}
 }
 async function startScheduledClass(id){const d=await db.collection('scheduledClasses').doc(id).get();if(d.exists){const s=d.data();generatePIN();const pin=document.getElementById('classPIN')?.value||String(Math.floor(1000+Math.random()*9000));startLiveClass(s.topic,s.durationMinutes,pin);try{await db.collection('scheduledClasses').doc(id).update({status:'live'});}catch(e){}}}
 async function deleteScheduled(id){if(!confirm('Delete this scheduled class?'))return;try{await db.collection('scheduledClasses').doc(id).delete();loadScheduled();}catch(e){}}
 
 async function loadPastSessions(){
-    try{
-        const snap=await db.collection('liveClassSessions').where('teacherId','==',currentUser?.uid).where('classId','==',currentClass).where('status','==','ended').orderBy('endedAt','desc').limit(10).get();
-        const c=document.getElementById('pastList');
-        if(snap.empty){c.innerHTML='<div class="empty-state"><i class="fas fa-history"></i><h3>No past sessions</h3></div>';return;}
-        c.innerHTML=snap.docs.map(d=>{const s=d.data();const dt=s.startedAt?.toDate?new Date(s.startedAt.toDate()).toLocaleDateString():'Unknown';const dur=s.durationActual?`${Math.floor(s.durationActual/60)}m`:s.durationMinutes+'m';return`<div class="past-session-item"><div><b>${escapeHtml(s.topic||'Untitled')}</b><br><small>${dt} · ${dur}</small></div><span class="badge">Ended</span></div>`;}).join('');
-    }catch(e){}
+    try{const snap=await db.collection('liveClassSessions').where('teacherId','==',currentUser?.uid).where('classId','==',currentClass).where('status','==','ended').orderBy('endedAt','desc').limit(10).get();const c=document.getElementById('pastList');if(snap.empty){c.innerHTML='<div class="empty-state"><i class="fas fa-history"></i><h3>No past sessions</h3></div>';return;}c.innerHTML=snap.docs.map(d=>{const s=d.data();const dt=s.startedAt?.toDate?new Date(s.startedAt.toDate()).toLocaleDateString():'Unknown';const dur=s.durationActual?`${Math.floor(s.durationActual/60)}m`:s.durationMinutes+'m';return`<div class="past-session-item"><div><b>${escapeHtml(s.topic||'Untitled')}</b><br><small>${dt} · ${dur}</small></div><span class="badge">Ended</span></div>`;}).join('');}catch(e){}
 }
 
 function inviteGuestToLiveClass(){document.getElementById('guestModal').classList.add('active');document.getElementById('guestLinkBox').classList.remove('show');}
@@ -522,11 +492,10 @@ function renderResources(){
     const n=currentNote;let h='<div class="resource-grid">';let hasAny=false;
     if(n.lessonNote){hasAny=true;h+=`<div class="resource-card"><h4><i class="fas fa-book"></i> Lesson Note ${n.teachable?'<span class="badge badge-teach">In Teach</span>':''}</h4><div class="content-preview">${n.lessonNote.substring(0,600)}${n.lessonNote.length>600?'...':''}</div>${!n.teachable&&n.id?`<button class="btn btn-outline btn-sm pub-btn" data-doc="${n.id}" data-f="teachable"><i class="fas fa-chalkboard"></i> Push to Teach</button>`:''}</div>`;}
     if(n.teachingProcess){hasAny=true;h+=`<div class="resource-card"><h4><i class="fas fa-chalkboard-teacher"></i> Teaching Process ${n.teachingProcessReady?'<span class="badge badge-teach">In Teach</span>':''}</h4><div class="content-preview">${n.teachingProcess.substring(0,600)}${n.teachingProcess.length>600?'...':''}</div></div>`;}
-    if(n.studentResource){hasAny=true;const p=n.resourcePublished;h+=`<div class="resource-card"><h4><i class="fas fa-book-reader"></i> Student Resources ${p?'<span class="badge badge-published">Published</span>':''}</h4><div class="content-preview">${n.studentResource.substring(0,500)}${n.studentResource.length>500?'...':''}</div>${p?'<span class="badge badge-teach">Published</span>':`<button class="btn btn-outline btn-sm pub-btn" data-doc="${n.id}" data-f="resourcePublished">📤 Publish</button>`}</div>`;}
-    if(n.handwritingImages?.length||n.handwritingAudios?.length){hasAny=true;let ih='';if(n.handwritingImages?.length){ih+='<div class="handwriting-grid">';n.handwritingImages.forEach(img=>ih+=`<img src="${img.url}" onclick="window.open('${img.url}','_blank')" loading="lazy" onerror="this.style.display='none';" alt="Visual note">`);ih+='</div>';}if(n.handwritingAudios?.length)n.handwritingAudios.forEach(a=>ih+=`<div class="audio-list-item"><audio controls src="${a.url}" style="height:28px;"></audio><span style="font-size:0.75rem;">${escapeHtml(a.name||'Audio')}</span></div>`);const p=n.handwritingImagesPublished;h+=`<div class="resource-card"><h4><i class="fas fa-pen-fancy"></i> Visual Notes ${p?'<span class="badge badge-published">Published</span>':''}</h4>${ih}${p?'<span class="badge badge-teach">Published</span>':`<button class="btn btn-outline btn-sm pub-btn" data-doc="${n.id}" data-f="handwritingImagesPublished">📤 Publish</button>`}</div>`;}
-    if(n.videoLinks?.length){hasAny=true;let vh='<div class="video-thumb-grid">';n.videoLinks.forEach((l,i)=>{const v=extractYouTubeId(l);if(v)vh+=`<div class="video-thumb-item ${i===selectedVideoIdx?'selected':''}" data-v="${i}"><img src="https://img.youtube.com/vi/${v}/hqdefault.jpg" loading="lazy" onerror="this.style.display='none';"></div>`;});vh+='</div>';const sv=n.videoLinks[selectedVideoIdx]||n.videoLinks[0],svid=extractYouTubeId(sv);if(svid)vh+=`<div class="youtube-wrapper"><iframe src="https://www.youtube.com/embed/${svid}?rel=0&modestbranding=1" allowfullscreen loading="lazy"></iframe></div>`;const p=n.videosPublished;h+=`<div class="resource-card" style="grid-column:1/-1;"><h4><i class="fab fa-youtube"></i> Video Links ${p?'<span class="badge badge-published">Published</span>':''}</h4>${vh}${p?'<span class="badge badge-teach">Published</span>':`<button class="btn btn-outline btn-sm pub-btn" data-doc="${n.id}" data-f="videosPublished">📤 Publish</button>`}</div>`;}
-    h+='</div>';
-    if(!hasAny){c.innerHTML='<div class="empty-state"><i class="fas fa-inbox"></i><h3>No content to display</h3><p>This note exists but has no published sections.</p></div>';}else{c.innerHTML=h;}
+    if(n.studentResource){hasAny=true;const p=n.resourcePublished;h+=`<div class="resource-card"><h4><i class="fas fa-book-reader"></i> Student Resources ${p?'<span class="badge badge-published">Published</span>':''}</h4><div class="content-preview">${n.studentResource.substring(0,500)}${n.studentResource.length>500?'...':''}</div>${p?'<span class="badge badge-teach">Published</span>':`<button class="btn btn-outline btn-sm pub-btn" data-doc="${n.id}" data-f="resourcePublished">📤 Publish to Students</button>`}</div>`;}
+    if(n.handwritingImages?.length||n.handwritingAudios?.length){hasAny=true;let ih='';if(n.handwritingImages?.length){ih+='<div class="handwriting-grid">';n.handwritingImages.forEach(img=>ih+=`<img src="${img.url}" onclick="window.open('${img.url}','_blank')" loading="lazy" onerror="this.style.display='none';" alt="Visual note">`);ih+='</div>';}if(n.handwritingAudios?.length)n.handwritingAudios.forEach(a=>ih+=`<div class="audio-list-item"><audio controls src="${a.url}" style="height:28px;"></audio><span style="font-size:0.75rem;">${escapeHtml(a.name||'Audio')}</span></div>`);const p=n.handwritingImagesPublished;h+=`<div class="resource-card"><h4><i class="fas fa-pen-fancy"></i> Visual Notes ${p?'<span class="badge badge-published">Published</span>':''}</h4>${ih}${p?'<span class="badge badge-teach">Published</span>':`<button class="btn btn-outline btn-sm pub-btn" data-doc="${n.id}" data-f="handwritingImagesPublished">📤 Publish to Students</button>`}</div>`;}
+    if(n.videoLinks?.length){hasAny=true;let vh='<div class="video-thumb-grid">';n.videoLinks.forEach((l,i)=>{const v=extractYouTubeId(l);if(v)vh+=`<div class="video-thumb-item ${i===selectedVideoIdx?'selected':''}" data-v="${i}"><img src="https://img.youtube.com/vi/${v}/hqdefault.jpg" loading="lazy" onerror="this.style.display='none';"></div>`;});vh+='</div>';const sv=n.videoLinks[selectedVideoIdx]||n.videoLinks[0],svid=extractYouTubeId(sv);if(svid)vh+=`<div class="youtube-wrapper"><iframe src="https://www.youtube.com/embed/${svid}?rel=0&modestbranding=1" allowfullscreen loading="lazy"></iframe></div>`;const p=n.videosPublished;h+=`<div class="resource-card" style="grid-column:1/-1;"><h4><i class="fab fa-youtube"></i> Video Links ${p?'<span class="badge badge-published">Published</span>':''}</h4>${vh}${p?'<span class="badge badge-teach">Published</span>':`<button class="btn btn-outline btn-sm pub-btn" data-doc="${n.id}" data-f="videosPublished">📤 Publish to Students</button>`}</div>`;}
+    h+='</div>';if(!hasAny){c.innerHTML='<div class="empty-state"><i class="fas fa-inbox"></i><h3>No content to display</h3><p>This note exists but has no published sections.</p></div>';}else{c.innerHTML=h;}
     c.querySelectorAll('.video-thumb-item').forEach(i=>i.addEventListener('click',function(){selectedVideoIdx=parseInt(this.dataset.v);renderResources();}));
     c.querySelectorAll('.pub-btn').forEach(b=>b.addEventListener('click',async function(){const d=this.dataset.doc,f=this.dataset.f,o=this.innerHTML;this.disabled=true;this.innerHTML='<i class="fas fa-spinner fa-spin"></i>';try{const updateData={[f]:true,updatedAt:firebase.firestore.FieldValue.serverTimestamp()};if(f==='resourcePublished'||f==='handwritingImagesPublished'||f==='videosPublished'){updateData.teachable=true;updateData.studentResourceReady=true;}await db.collection('lessonNotes').doc(d).update(updateData);showToast('Published!','success');await loadTeachData();renderResources();}catch(e){debugLog('Publish error',e.message,'error');showToast('Error','error');this.disabled=false;this.innerHTML=o;}}));
 }
@@ -542,8 +511,7 @@ async function markViewed(id){try{await db.collection('studentSubmissions').doc(
 function renderChat(snap){
     const c=document.getElementById('chatMessages');if(!snap||snap.empty){c.innerHTML='<div class="empty-state"><i class="fas fa-comments"></i><h3>No messages yet</h3><p>Chat with your students here.</p></div>';return;}
     const m=[];snap.forEach(d=>m.push({id:d.id,...d.data()}));
-    c.innerHTML=m.map(m=>{const isT=m.senderRole==='teacher',cls=isT?'sent':'received',sender=isT?'You':escapeHtml(m.studentName||'Student'),t=m.createdAt?.toDate?new Date(m.createdAt.toDate()).toLocaleTimeString([],{hour:'2-digit',minute:'2-digit'}):'';return`<div class="chat-bubble ${cls}"><div class="chat-sender">${sender}</div><div>${escapeHtml(m.message||'')}</div><div class="chat-time">${t}</div></div>`;}).join('');c.scrollTop=c.scrollHeight;
-}
+    c.innerHTML=m.map(m=>{const isT=m.senderRole==='teacher',cls=isT?'sent':'received',sender=isT?'You':escapeHtml(m.studentName||'Student'),t=m.createdAt?.toDate?new Date(m.createdAt.toDate()).toLocaleTimeString([],{hour:'2-digit',minute:'2-digit'}):'';return`<div class="chat-bubble ${cls}"><div class="chat-sender">${sender}</div><div>${escapeHtml(m.message||'')}</div><div class="chat-time">${t}</div></div>`;}).join('');c.scrollTop=c.scrollHeight;}
 async function sendChat(){const i=document.getElementById('chatInput'),m=i.value.trim();if(!m||!currentUser||!currentClass)return;i.value='';try{await db.collection('teacherStudentChats').add({teacherId:currentUser.uid,teacherName:`${userData?.firstName||''} ${userData?.surname||''}`.trim(),studentId:null,studentName:'Teacher',classId:currentClass,subject:currentSubject||'',week:currentWeek||null,message:m,senderRole:'teacher',createdAt:firebase.firestore.FieldValue.serverTimestamp(),readByStudent:false});}catch(e){showToast('Message sent (offline)','info',2000);}}
 function loadChat(){if(!currentClass||!currentUser)return;db.collection('teacherStudentChats').where('teacherId','==',currentUser.uid).where('classId','==',currentClass).orderBy('createdAt','asc').get().then(s=>renderChat(s)).catch(e=>debugLog('Chat load err',e.message,'error'));}
 
@@ -564,8 +532,7 @@ auth.onAuthStateChanged(async user=>{
         const ss=document.getElementById('subjectSelect');ss.innerHTML='<option value="">Select Subject</option>';subjects.forEach(s=>{const o=document.createElement('option');o.value=s;o.textContent=s;ss.appendChild(o);});ss.addEventListener('change',onSubjectChange);
         document.getElementById('weekSelect').addEventListener('change',onWeekChange);
         if(currentClass){await loadTeachData();loadScheduled();loadPastSessions();setupListeners();}
-        checkReturnButton();
-        debugLog('Initialization complete','Ready');
+        checkReturnButton();debugLog('Initialization complete','Ready');
     }catch(e){debugLog('Auth error',e.message,'error');}
 });
 document.getElementById('logoutBtn').addEventListener('click',async()=>{stopTimer();clearSession();await auth.signOut();window.location.href='index.html';});
@@ -606,7 +573,7 @@ document.getElementById('scheduleClassBtn').addEventListener('click',()=>{docume
 document.getElementById('guestInviteBtn').addEventListener('click',()=>{document.getElementById('guestModal').classList.add('active');document.getElementById('guestLinkBox').classList.remove('show');});
 document.getElementById('studentViewBtn').addEventListener('click',()=>window.open(`student-classroom.html?class=${encodeURIComponent(currentClass||'')}&subject=${encodeURIComponent(currentSubject||'')}&week=${currentWeek||''}`,'_blank','noopener'));
 document.getElementById('printBtn').addEventListener('click',()=>window.print());
-document.getElementById('endClassBtn').addEventListener('click',()=>{if(confirm('End this live classroom? Students will be disconnected.'))endLiveClass('Teacher ended class');});
+document.getElementById('endClassBtn').addEventListener('click',()=>{if(confirm('End this live classroom? Students will be disconnected. Make sure you have ended the Jitsi meeting first.'))endLiveClass('Teacher ended class');});
 
 ['startClassModal','scheduleClassModal','guestModal'].forEach(id=>document.getElementById(id).addEventListener('click',function(e){if(e.target===this)closeModal(id);}));
 
@@ -616,7 +583,7 @@ window.returnToLiveClass=returnToLiveClass;window.copyRoomLink=copyRoomLink;
 window.sendChat=sendChat;window.loadChat=loadChat;window.markViewed=markViewed;
 window.forceEndAllClasses=forceEndAllClasses;window.generatePIN=generatePIN;
 
-console.log('🎓 Teacher Teach Mode — PIN System + Admin Controls Ready ✅');
+console.log('🎓 Teacher Teach Mode — Enhanced Jitsi + PIN System + Admin Controls Ready ✅');
 </script>
 </body>
 </html>
