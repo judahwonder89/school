@@ -26,6 +26,8 @@
             --info-bg:rgba(59,130,246,0.1); --info-text:#2563eb;
             --input-bg:rgba(255,255,255,0.9); --panel-bg:rgba(255,255,255,0.92);
             --overlay-bg:rgba(0,0,0,0.5); --gradient-start:#0A2540; --gradient-end:#C8963E;
+            --chat-sent-bg:#0A2540; --chat-received-bg:#f1f5f9;
+            --submission-bg:rgba(139,92,246,0.05); --submission-border:#8b5cf6;
         }
         :root[data-theme="dark"] {
             --bg-primary:#0a0f1e; --bg-secondary:#0f1729; --text-primary:#f1f5f9;
@@ -40,6 +42,8 @@
             --info-bg:rgba(59,130,246,0.15); --info-text:#60a5fa;
             --input-bg:rgba(30,41,59,0.8); --panel-bg:rgba(15,23,42,0.85);
             --overlay-bg:rgba(0,0,0,0.7); --gradient-start:#0A2540; --gradient-end:#C8963E;
+            --chat-sent-bg:#C8963E; --chat-received-bg:#1e293b;
+            --submission-bg:rgba(139,92,246,0.08); --submission-border:#8b5cf6;
         }
 
         body { font-family:'Inter',sans-serif; background:var(--bg-primary); color:var(--text-primary); min-height:100vh; transition:background 0.3s,color 0.3s; position:relative; overflow-x:hidden; line-height:1.6; }
@@ -53,6 +57,7 @@
         .nav-left,.nav-right { display:flex; align-items:center; gap:0.5rem; flex-wrap:wrap; }
         .nav-btn { background:transparent; border:1px solid var(--border); border-radius:2rem; padding:0.5rem 1.2rem; color:var(--text-primary); font-weight:500; font-size:0.85rem; cursor:pointer; transition:0.2s; text-decoration:none; display:inline-flex; align-items:center; gap:0.4rem; white-space:nowrap; }
         .nav-btn:hover { background:var(--hover-bg); border-color:var(--accent); color:var(--accent); }
+        .nav-btn.btn-teach-link { background:linear-gradient(135deg,#8b5cf6,#6366f1); color:white; border-color:transparent; font-weight:600; }
         .theme-toggle { display:inline-flex; align-items:center; gap:0.5rem; background:var(--card-bg); border:1px solid var(--border); border-radius:2rem; padding:0.4rem 1rem; cursor:pointer; font-size:0.85rem; color:var(--text-secondary); }
         .theme-toggle:hover { border-color:var(--accent); }
         .profile-dropdown { position:relative; cursor:pointer; }
@@ -73,7 +78,9 @@
         .controls-bar select { padding:0.5rem 1rem; background:var(--input-bg); border:1px solid var(--border); border-radius:2rem; color:var(--text-primary); font-family:inherit; font-size:0.85rem; cursor:pointer; min-width:140px; }
         .controls-bar select:focus { outline:none; border-color:var(--accent); }
 
-        .card { background:var(--card-bg); backdrop-filter:blur(12px); -webkit-backdrop-filter:blur(12px); border:1px solid var(--border); border-radius:1.5rem; padding:1.5rem; box-shadow:var(--shadow-md); margin-bottom:1.5rem; }
+        .card { background:var(--card-bg); backdrop-filter:blur(12px); -webkit-backdrop-filter:blur(12px); border:1px solid var(--border); border-radius:1.5rem; padding:1.5rem; box-shadow:var(--shadow-md); margin-bottom:1.5rem; transition:0.3s; }
+        .card.locked { opacity:0.6; pointer-events:none; position:relative; }
+        .card.locked::after { content:"🔒 Published"; position:absolute; top:10px; right:15px; background:var(--success-text); color:white; padding:0.3rem 1rem; border-radius:2rem; font-size:0.75rem; font-weight:600; z-index:10; }
         .card-header { display:flex; justify-content:space-between; align-items:flex-start; margin-bottom:1rem; flex-wrap:wrap; gap:1rem; padding-bottom:1rem; border-bottom:1px solid var(--border); }
         .card-header h3 { font-size:1.15rem; font-weight:700; display:flex; align-items:center; gap:0.5rem; }
 
@@ -81,11 +88,13 @@
         .resource-card { background:var(--card-bg); border:1px solid var(--border); border-radius:1rem; padding:1.5rem; box-shadow:var(--shadow-sm); display:flex; flex-direction:column; transition:0.3s; }
         .resource-card:hover { border-color:var(--accent); box-shadow:var(--shadow-lg); transform:translateY(-2px); }
         .resource-card h4 { margin-bottom:0.7rem; color:var(--accent); font-weight:600; }
-        .resource-card p { color:var(--text-secondary); font-size:0.9rem; line-height:1.7; margin-bottom:1rem; white-space:pre-wrap; max-height:280px; overflow-y:auto; flex:1; }
+        .resource-card .content-preview { color:var(--text-secondary); font-size:0.9rem; line-height:1.7; margin-bottom:1rem; max-height:280px; overflow-y:auto; flex:1; }
+        .resource-card .content-preview.rendered { white-space:normal; }
 
         .handwriting-grid { display:grid; grid-template-columns:repeat(auto-fill,minmax(180px,1fr)); gap:0.6rem; }
         .handwriting-grid img { width:100%; aspect-ratio:4/3; object-fit:cover; border-radius:0.5rem; cursor:pointer; border:2px solid transparent; transition:0.2s; }
         .handwriting-grid img:hover { transform:scale(1.04); border-color:var(--accent); }
+        .audio-list-item { display:flex; align-items:center; gap:0.5rem; padding:0.4rem 0; }
 
         .video-thumb-grid { display:grid; grid-template-columns:repeat(auto-fill,minmax(200px,1fr)); gap:0.8rem; margin-bottom:1rem; }
         .video-thumb-item { cursor:pointer; border-radius:0.5rem; overflow:hidden; border:2px solid transparent; transition:0.2s; background:#000; position:relative; }
@@ -103,7 +112,8 @@
         .teach-panel.hidden { display:none; }
         .teach-panel-header { display:flex; justify-content:space-between; align-items:center; padding:1rem 1.5rem; border-bottom:1px solid var(--border); flex-shrink:0; gap:0.5rem; }
         .teach-panel-header h3 { font-size:1rem; font-weight:600; display:flex; align-items:center; gap:0.5rem; }
-        .teach-panel-content { flex:1; overflow-y:auto; padding:1.5rem; font-size:1.05rem; line-height:1.8; }
+        .teach-panel-content { flex:1; overflow-y:auto; padding:1.5rem; font-size:1.05rem; line-height:1.8; white-space:pre-wrap; }
+        .teach-panel-content.rendered { white-space:normal; }
         .teach-panel-content.book-mode { overflow:hidden; display:flex; flex-direction:column; padding:1rem; }
         .book-container { flex:1; display:flex; flex-direction:column; position:relative; overflow:hidden; }
         .book-page { background:var(--card-bg); border:1px solid var(--border); border-radius:0.5rem; padding:2rem; box-shadow:var(--shadow-lg); flex:1; overflow-y:auto; }
@@ -131,6 +141,7 @@
 
         .badge { display:inline-flex; align-items:center; gap:0.3rem; padding:0.2rem 0.8rem; border-radius:2rem; font-size:0.75rem; font-weight:600; }
         .badge-published { background:var(--success-bg); color:var(--success-text); border:1px solid var(--success-text); }
+        .badge-pending { background:var(--warning-bg); color:var(--warning-text); }
 
         .modal-overlay { position:fixed; inset:0; background:var(--overlay-bg); backdrop-filter:blur(4px); -webkit-backdrop-filter:blur(4px); z-index:400; display:none; align-items:center; justify-content:center; padding:1rem; }
         .modal-overlay.active { display:flex; animation:fadeIn 0.2s; }
@@ -152,6 +163,7 @@
 
         .guest-link-box { background:var(--info-bg); border:1px solid var(--info-text); border-radius:0.5rem; padding:1rem; margin-top:1rem; word-break:break-all; font-family:'Space Grotesk',monospace; font-size:0.85rem; display:none; }
         .guest-link-box.show { display:block; }
+        .guest-code-display { font-size:2rem; font-weight:800; letter-spacing:0.3rem; color:var(--accent); text-align:center; padding:0.5rem; background:var(--hover-bg); border-radius:0.5rem; margin:0.5rem 0; }
 
         .toast-container { position:fixed; top:1rem; right:1rem; z-index:600; display:flex; flex-direction:column; gap:0.5rem; pointer-events:none; }
         .toast { background:var(--card-bg); backdrop-filter:blur(16px); -webkit-backdrop-filter:blur(16px); border:1px solid var(--border); border-radius:1rem; padding:0.9rem 1.2rem; min-width:280px; max-width:400px; box-shadow:var(--shadow-xl); display:flex; align-items:flex-start; gap:0.6rem; animation:toastIn 0.3s; pointer-events:auto; font-size:0.85rem; }
@@ -159,6 +171,29 @@
 
         .empty-state { text-align:center; padding:3rem; color:var(--text-tertiary); }
         .empty-state i { font-size:3rem; margin-bottom:1rem; opacity:0.5; display:block; }
+
+        /* Chat Styles */
+        .chat-container { display:flex; flex-direction:column; height:400px; border:1px solid var(--border); border-radius:1rem; overflow:hidden; background:var(--card-bg); }
+        .chat-messages { flex:1; overflow-y:auto; padding:1rem; display:flex; flex-direction:column; gap:0.5rem; }
+        .chat-bubble { max-width:75%; padding:0.7rem 1rem; border-radius:1rem; font-size:0.85rem; word-break:break-word; }
+        .chat-bubble.sent { align-self:flex-end; background:var(--chat-sent-bg); color:white; border-bottom-right-radius:0.3rem; }
+        .chat-bubble.received { align-self:flex-start; background:var(--chat-received-bg); border:1px solid var(--border); border-bottom-left-radius:0.3rem; }
+        .chat-bubble .chat-time { font-size:0.65rem; opacity:0.7; margin-top:0.3rem; }
+        .chat-bubble .chat-sender { font-weight:700; font-size:0.7rem; margin-bottom:0.2rem; }
+        .chat-input-area { display:flex; gap:0.5rem; padding:0.8rem; border-top:1px solid var(--border); background:var(--hover-bg); }
+        .chat-input-area input { flex:1; padding:0.5rem 1rem; border-radius:2rem; border:1px solid var(--border); background:var(--input-bg); color:var(--text-primary); font-family:inherit; font-size:0.85rem; }
+        .chat-input-area input:focus { outline:none; border-color:var(--accent); }
+        .chat-input-area button { padding:0.5rem 1rem; border-radius:2rem; background:var(--accent); color:white; border:none; cursor:pointer; font-weight:600; }
+
+        /* Student Submissions */
+        .submission-card { background:var(--submission-bg); border:1px solid var(--submission-border); border-radius:1rem; padding:1rem; margin-bottom:0.8rem; }
+        .submission-card img { max-width:100%; max-height:200px; border-radius:0.5rem; cursor:pointer; margin-top:0.5rem; }
+        .submission-card audio { width:100%; margin-top:0.5rem; }
+
+        .tab-nav-inline { display:flex; gap:0.3rem; margin-bottom:1rem; background:var(--card-bg); border:1px solid var(--border); border-radius:2rem; padding:0.3rem; width:fit-content; flex-wrap:wrap; }
+        .tab-inline { padding:0.5rem 1.2rem; border-radius:2rem; font-weight:500; font-size:0.82rem; cursor:pointer; color:var(--text-secondary); white-space:nowrap; transition:0.2s; }
+        .tab-inline.active { background:linear-gradient(135deg,var(--gradient-start),var(--gradient-end)); color:white; }
+        .tab-inline:hover:not(.active) { color:var(--accent); }
 
         @media(max-width:1024px){ .teach-container{flex-direction:column;} .teach-panel{flex:none;height:50%;min-height:300px;} }
         @media(max-width:768px){ .main-container{padding:1rem;} .top-nav{padding:0.5rem 1rem;gap:0.5rem;} .resource-grid{grid-template-columns:1fr;} }
@@ -183,7 +218,8 @@
                 <button class="btn btn-outline btn-sm" onclick="toggleTeachPanel('lessonNote')">✕</button>
             </div>
         </div>
-        <div class="teach-panel-content scroll-mode" id="teachContentLN"><div class="empty-state"><i class="fas fa-book-open"></i><h3>No Lesson Note</h3></div></div>
+        <!-- UPDATE #7: Content now renders as HTML (not raw codes) -->
+        <div class="teach-panel-content scroll-mode rendered" id="teachContentLN"><div class="empty-state"><i class="fas fa-book-open"></i><h3>No Lesson Note</h3></div></div>
     </div>
     <div class="teach-panel" id="teachPanelTP">
         <div class="teach-panel-header">
@@ -196,7 +232,7 @@
                 <button class="btn btn-outline btn-sm" onclick="toggleTeachPanel('teachingProcess')">✕</button>
             </div>
         </div>
-        <div class="teach-panel-content scroll-mode" id="teachContentTP"><div class="empty-state"><i class="fas fa-chalkboard"></i><h3>No Teaching Process</h3></div></div>
+        <div class="teach-panel-content scroll-mode rendered" id="teachContentTP"><div class="empty-state"><i class="fas fa-chalkboard"></i><h3>No Teaching Process</h3></div></div>
     </div>
 </div>
 
@@ -207,7 +243,7 @@
         <a href="teacher-workspace.html" class="nav-btn"><i class="fas fa-briefcase"></i> Workspace</a>
     </div>
     <div class="nav-right">
-        <div class="theme-toggle" id="themeToggle"><i class="fas fa-sun"></i><span>Light</span><i class="fas fa-moon"></i></div>
+        <div class="theme-toggle" id="themeToggle"><i class="fas fa-sun"></i><span>Light</span></div>
         <div class="profile-dropdown">
             <div class="profile-trigger"><span class="profile-name" id="profileName">Teacher</span><div class="profile-pic" id="profilePic">T</div></div>
             <div class="dropdown-menu">
@@ -232,19 +268,47 @@
     <div style="display:flex;gap:0.5rem;margin-bottom:1.5rem;flex-wrap:wrap;">
         <button class="btn btn-teach" id="teachModeBtn"><i class="fas fa-chalkboard"></i> Teach Mode <small style="opacity:0.7;">Ctrl+T</small></button>
         <button class="btn btn-outline btn-sm" id="virtualClassBtn"><i class="fas fa-video"></i> Virtual Class</button>
+        <!-- UPDATE #17: Guest Invite with time limit + one-time code -->
         <button class="btn btn-outline btn-sm" id="guestInviteBtn"><i class="fas fa-user-plus"></i> Invite Guest</button>
         <button class="btn btn-outline btn-sm" id="studentViewBtn"><i class="fas fa-eye"></i> Student View</button>
         <button class="btn btn-outline btn-sm" id="printBtn"><i class="fas fa-print"></i> Print</button>
     </div>
 
-    <div class="card">
+    <!-- UPDATE #8: Schedule now appears for BOTH teacher and students -->
+    <div class="card" id="scheduleCard">
+        <div class="card-header"><h3><i class="fas fa-calendar-alt"></i> Scheduled Classes <span style="font-size:0.75rem;color:var(--text-secondary);">(Visible to you & students)</span></h3></div>
+        <div id="virtualClassesList"><div class="empty-state"><i class="fas fa-video-slash"></i><h3>No upcoming classes</h3></div></div>
+    </div>
+
+    <!-- Teaching Resources (Locked if published) -->
+    <!-- UPDATE #9: Lock behavior for published content -->
+    <div class="card" id="teachingResourcesCard">
         <div class="card-header"><h3>Teaching Resources — <span id="resourceTitle" style="color:var(--accent);">Select a subject and week</span></h3></div>
         <div id="resourcesContainer"><div class="empty-state"><i class="fas fa-folder-open"></i><h3>Select Subject & Week</h3></div></div>
     </div>
 
-    <div class="card">
-        <div class="card-header"><h3><i class="fas fa-calendar-alt"></i> Upcoming Virtual Classes</h3></div>
-        <div id="virtualClassesList"><div class="empty-state"><i class="fas fa-video-slash"></i><h3>No upcoming classes</h3></div></div>
+    <!-- UPDATE #10 & #12: Student Submissions (images & audio) appear at Teach -->
+    <div class="card" id="studentSubmissionsCard">
+        <div class="card-header">
+            <h3><i class="fas fa-inbox"></i> Student Submissions <span style="font-size:0.75rem;color:var(--text-secondary);">(Snaps & Voice Notes)</span></h3>
+            <span class="badge badge-pending" id="submissionCountBadge" style="display:none;">0 new</span>
+        </div>
+        <div id="studentSubmissionsList"><div class="empty-state"><i class="fas fa-inbox"></i><h3>No student submissions yet</h3><p>Students can send images and voice notes from their classroom.</p></div></div>
+    </div>
+
+    <!-- UPDATE #13: Chat between Teacher and Students -->
+    <div class="card" id="chatCard">
+        <div class="card-header">
+            <h3><i class="fas fa-comments"></i> Student Messages</h3>
+            <button class="btn btn-outline btn-sm" id="refreshChatBtn" onclick="loadChatMessages()"><i class="fas fa-sync-alt"></i> Refresh</button>
+        </div>
+        <div class="chat-container">
+            <div class="chat-messages" id="chatMessages"><div class="empty-state"><i class="fas fa-comments"></i><h3>No messages yet</h3></div></div>
+            <div class="chat-input-area">
+                <input type="text" id="chatInput" placeholder="Reply to student..." onkeypress="if(event.key==='Enter')sendChatMessage()">
+                <button onclick="sendChatMessage()"><i class="fas fa-paper-plane"></i> Send</button>
+            </div>
+        </div>
     </div>
 </main>
 
@@ -263,20 +327,25 @@
     </div>
 </div>
 
-<!-- GUEST MODAL -->
+<!-- GUEST MODAL - UPDATE #17: Time limit + one-time use code -->
 <div class="modal-overlay" id="guestModal">
-    <div class="modal-content">
+    <div class="modal-content" style="max-width:550px;">
         <div class="modal-header"><h3>Invite Guest Teacher</h3><button class="modal-close" id="guestModalClose">✕</button></div>
         <form id="guestForm">
             <div class="form-group"><label class="form-label">Guest Name</label><input type="text" id="guestName" class="form-control" placeholder="e.g., Dr. Adeola" required></div>
-            <div class="form-group"><label class="form-label">Purpose</label><input type="text" id="guestPurpose" class="form-control" placeholder="e.g., Health talk on hygiene" required></div>
-            <div class="form-group"><label class="form-label">Expires In</label><select id="guestExpiry" class="form-control"><option value="1">1 hour</option><option value="6">6 hours</option><option value="24" selected>24 hours</option><option value="72">3 days</option></select></div>
-            <div class="modal-actions"><button type="button" class="btn btn-outline" id="guestCancelBtn">Cancel</button><button type="submit" class="btn btn-primary">Generate Link</button></div>
+            <div class="form-group"><label class="form-label">Purpose / Topic</label><input type="text" id="guestPurpose" class="form-control" placeholder="e.g., Health talk on hygiene" required></div>
+            <div class="form-group"><label class="form-label">Access Duration</label><select id="guestDuration" class="form-control"><option value="20">20 minutes</option><option value="30">30 minutes</option><option value="45">45 minutes</option><option value="60" selected>1 hour</option><option value="120">2 hours</option><option value="360">6 hours</option><option value="1440">24 hours</option></select></div>
+            <div class="form-group"><label class="form-label">Platform</label><select id="guestPlatform" class="form-control"><option value="zoom">Zoom</option><option value="google-meet">Google Meet</option><option value="jitsi">Jitsi Meet</option><option value="custom">Custom Link</option></select></div>
+            <div class="form-group" id="guestCustomGroup" style="display:none;"><label class="form-label">Meeting Link</label><input type="url" id="guestCustomLink" class="form-control" placeholder="https://meet.example.com"></div>
+            <div class="modal-actions"><button type="button" class="btn btn-outline" id="guestCancelBtn">Cancel</button><button type="submit" class="btn btn-primary">Generate Invite</button></div>
         </form>
         <div class="guest-link-box" id="guestLinkBox">
-            <strong>Guest Link:</strong><br>
-            <span id="guestLinkText"></span>
-            <button class="btn btn-primary btn-sm" id="copyGuestLinkBtn" style="margin-top:0.5rem;"><i class="fas fa-copy"></i> Copy Link</button>
+            <strong><i class="fas fa-link"></i> Share this with your guest:</strong>
+            <p style="margin-top:0.5rem;"><strong>Link:</strong><br><span id="guestLinkText" style="word-break:break-all;"></span></p>
+            <p style="margin-top:0.8rem;"><strong>One-Time Access Code:</strong></p>
+            <div class="guest-code-display" id="guestCodeDisplay">------</div>
+            <p style="font-size:0.75rem;color:var(--text-secondary);">Guest does NOT need to sign up or log in. They only need the link and this code. Code expires after one use or when time runs out.</p>
+            <button class="btn btn-primary btn-sm" id="copyGuestInviteBtn" style="margin-top:0.5rem;"><i class="fas fa-copy"></i> Copy Link + Code</button>
         </div>
     </div>
 </div>
@@ -308,12 +377,15 @@ let lessonNotesMap={},currentNote=null;
 let teachActive=false,teachPanels={lessonNote:true,teachingProcess:true};
 let teachModes={lessonNote:'scroll',teachingProcess:'scroll'};
 let bookPages={lessonNote:{pages:[],current:0},teachingProcess:{pages:[],current:0}};
-let selectedVideoIdx=0,unsubVC=null;
+let selectedVideoIdx=0,unsubVC=null,unsubChat=null,unsubSubmissions=null;
+let activeChatStudentId=null;
+let currentGuestCode=null;
 
 // ============================================
 // UTILITIES
 // ============================================
 function escapeHtml(s){const d=document.createElement('div');d.textContent=s||'';return d.innerHTML;}
+function sanitizeAndRender(html){if(!html)return'';return html;}
 function showToast(msg,type='info',dur=4000){
     const icons={success:'fa-check-circle',error:'fa-exclamation-circle',warning:'fa-exclamation-triangle',info:'fa-info-circle'};
     const colors={success:'var(--success-text)',error:'var(--danger-text)',warning:'var(--warning-text)',info:'var(--accent)'};
@@ -356,7 +428,6 @@ function paginateContent(text,wordsPerPage=150){
     for(let i=0;i<words.length;i+=wordsPerPage)pages.push(words.slice(i,i+wordsPerPage).join(' '));
     return pages;
 }
-
 function renderBookMode(container,pages,current,panelKey){
     container.innerHTML='';
     const fc=document.createElement('div');fc.className='book-container';
@@ -365,8 +436,6 @@ function renderBookMode(container,pages,current,panelKey){
     const nav=document.createElement('div');nav.className='book-nav';
     nav.innerHTML=`<button class="book-nav-btn" data-action="prev" data-panel="${panelKey}" ${current===0?'disabled':''}><i class="fas fa-chevron-left"></i></button><span class="page-indicator">Page ${current+1}/${pages.length}</span><button class="book-nav-btn" data-action="next" data-panel="${panelKey}" ${current>=pages.length-1?'disabled':''}><i class="fas fa-chevron-right"></i></button>`;
     container.appendChild(fc);container.appendChild(nav);
-    
-    // Bind book nav buttons
     nav.querySelectorAll('.book-nav-btn').forEach(btn=>{
         btn.addEventListener('click',function(){
             const dir=this.dataset.action==='next'?1:-1;
@@ -375,7 +444,6 @@ function renderBookMode(container,pages,current,panelKey){
         });
     });
 }
-
 function flipBookPage(panelKey,direction){
     const bp=bookPages[panelKey];const np=bp.current+direction;
     if(np<0||np>=bp.pages.length)return;
@@ -387,23 +455,25 @@ function flipBookPage(panelKey,direction){
     }
 }
 
+// UPDATE #7: Content renders as HTML, not raw codes
 function setReadingMode(panelKey,mode){
     teachModes[panelKey]=mode;
     const ck=panelKey==='lessonNote'?'teachContentLN':'teachContentTP';
     const container=document.getElementById(ck);
-    container.classList.remove('scroll-mode','book-mode');
+    container.classList.remove('scroll-mode','book-mode','rendered');
     const note=currentNote;
     if(!note)return;
     const content=panelKey==='lessonNote'?(note.lessonNote||''):(note.teachingProcess||'');
     if(mode==='book'){
-        const pages=paginateContent(content);bookPages[panelKey]={pages,current:0};
+        const plainText=content.replace(/<[^>]*>/g,' ').replace(/\s+/g,' ').trim();
+        const pages=paginateContent(plainText);bookPages[panelKey]={pages,current:0};
         container.classList.add('book-mode');renderBookMode(container,pages,0,panelKey);
     }else{
-        container.classList.add('scroll-mode');
-        container.innerHTML=`<div style="white-space:pre-wrap;padding:1rem;">${escapeHtml(content)||'Not available.'}</div>`;
+        container.classList.add('scroll-mode','rendered');
+        // UPDATE #7: Render as HTML properly
+        container.innerHTML=`<div style="padding:1rem;">${sanitizeAndRender(content)||'Not available.'}</div>`;
     }
 }
-
 function setupReadingToggles(){
     ['lessonNote','teachingProcess'].forEach(pk=>{
         const tid=pk==='lessonNote'?'readingToggleLN':'readingToggleTP';
@@ -418,14 +488,12 @@ function setupReadingToggles(){
         });
     });
 }
-
 function toggleTeachPanel(panelKey){
     teachPanels[panelKey]=!teachPanels[panelKey];
     const panel=document.getElementById(panelKey==='lessonNote'?'teachPanelLN':'teachPanelTP');
     if(teachPanels[panelKey])panel.classList.remove('hidden');else panel.classList.add('hidden');
     if(!teachPanels.lessonNote&&!teachPanels.teachingProcess)closeTeachMode();
 }
-
 function openTeachMode(){
     if(!currentNote)return showToast('Select a subject and week first','warning');
     const hasLN=currentNote.teachable&&currentNote.lessonNote;
@@ -440,7 +508,6 @@ function openTeachMode(){
     populateTeachPanels();document.body.style.overflow='hidden';
     if(currentUser)logAudit('TEACH_MODE_OPENED',`${currentSubject} Week ${currentWeek}`);
 }
-
 function closeTeachMode(){
     teachActive=false;
     document.getElementById('teachOverlay').classList.remove('active');
@@ -448,9 +515,7 @@ function closeTeachMode(){
     const btn=document.getElementById('teachModeBtn');btn.classList.remove('active-teach');btn.innerHTML='<i class="fas fa-chalkboard"></i> Teach Mode <small>Ctrl+T</small>';
     document.body.style.overflow='';
 }
-
 function toggleTeachMode(){if(teachActive)closeTeachMode();else openTeachMode();}
-
 function populateTeachPanels(){
     if(!currentNote)return;
     ['lessonNote','teachingProcess'].forEach(pk=>setReadingMode(pk,teachModes[pk]));
@@ -478,31 +543,37 @@ async function loadTeachData(){
         renderResources();
     }catch(e){console.error('Load error:',e);}
 }
-
 function onSubjectChange(){
     currentSubject=document.getElementById('subjectSelect').value;
     document.getElementById('weekSelect').value='';currentWeek=null;currentNote=null;
-    renderResources();
+    renderResources();loadStudentSubmissions();loadChatMessages();
 }
-
 function onWeekChange(){
     currentWeek=parseInt(document.getElementById('weekSelect').value)||null;
-    renderResources();
+    renderResources();loadStudentSubmissions();loadChatMessages();
 }
 
 // ============================================
-// RENDER RESOURCES
+// RENDER RESOURCES (with lock states)
 // ============================================
 function renderResources(){
     const container=document.getElementById('resourcesContainer');
     const title=document.getElementById('resourceTitle');
+    const card=document.getElementById('teachingResourcesCard');
     if(!currentSubject||!currentWeek){
         container.innerHTML='<div class="empty-state"><i class="fas fa-folder-open"></i><h3>Select Subject & Week</h3></div>';
-        title.textContent='Select a subject and week';currentNote=null;return;
+        title.textContent='Select a subject and week';currentNote=null;
+        card.classList.remove('locked');
+        return;
     }
     const key=`${currentSubject}_${currentWeek}`;
     currentNote=lessonNotesMap[key]||null;
     title.textContent=`${currentSubject} — Week ${currentWeek}`;
+    
+    // UPDATE #9: Check if all content is published (lock card)
+    const allLocked=currentNote&&currentNote.teachable&&currentNote.resourcePublished&&currentNote.videosPublished&&currentNote.handwritingImagesPublished;
+    if(allLocked){card.classList.add('locked');}else{card.classList.remove('locked');}
+    
     if(!currentNote){
         container.innerHTML='<div class="empty-state"><i class="fas fa-inbox"></i><h3>No Resources</h3><p>Push content to teach from your Lesson Notes page.</p></div>';return;
     }
@@ -510,47 +581,48 @@ function renderResources(){
     
     // Lesson Note
     if(n.teachable&&n.lessonNote){
-        html+=`<div class="resource-card"><h4><i class="fas fa-book"></i> Lesson Note</h4><p>${escapeHtml(n.lessonNote.substring(0,500))}${n.lessonNote.length>500?'...':''}</p><div style="margin-top:auto;font-size:0.75rem;color:var(--text-secondary);">Ready to teach</div></div>`;
+        html+=`<div class="resource-card"><h4><i class="fas fa-book"></i> Lesson Note</h4><div class="content-preview rendered">${sanitizeAndRender(n.lessonNote.substring(0,500))}${n.lessonNote.length>500?'...':''}</div><div style="margin-top:auto;font-size:0.75rem;color:var(--text-secondary);">Ready to teach</div></div>`;
     }
     // Teaching Process
     if(n.teachable&&n.teachingProcess){
-        html+=`<div class="resource-card"><h4><i class="fas fa-chalkboard-teacher"></i> Teaching Process</h4><p>${escapeHtml(n.teachingProcess.substring(0,500))}${n.teachingProcess.length>500?'...':''}</p><div style="margin-top:auto;font-size:0.75rem;color:var(--text-secondary);">Ready to teach</div></div>`;
+        html+=`<div class="resource-card"><h4><i class="fas fa-chalkboard-teacher"></i> Teaching Process</h4><div class="content-preview rendered">${sanitizeAndRender(n.teachingProcess.substring(0,500))}${n.teachingProcess.length>500?'...':''}</div><div style="margin-top:auto;font-size:0.75rem;color:var(--text-secondary);">Ready to teach</div></div>`;
     }
     // Student Resource
     if(n.studentResource){
         const pubLabel=n.resourcePublished?'<span class="badge badge-published">Published to Students</span>':`<button class="btn btn-outline btn-sm publish-btn" data-doc="${n.id}" data-field="resourcePublished">📤 Publish to Students</button>`;
-        html+=`<div class="resource-card"><h4><i class="fas fa-users"></i> Student Resources</h4><p>${escapeHtml(n.studentResource.substring(0,400))}${n.studentResource.length>400?'...':''}</p><div style="margin-top:auto;">${pubLabel}</div></div>`;
+        html+=`<div class="resource-card"><h4><i class="fas fa-users"></i> Student Resources</h4><div class="content-preview rendered">${sanitizeAndRender(n.studentResource.substring(0,400))}${n.studentResource.length>400?'...':''}</div><div style="margin-top:auto;">${pubLabel}</div></div>`;
     }
     // Handwriting
     if(n.handwritingImages?.length){
         let ih='<div class="handwriting-grid">';
-        n.handwritingImages.forEach(img=>{ih+=`<img src="${img.url}" onclick="openImagePopup('${img.url.replace(/'/g,"\\'")}')" alt="Visual note" style="cursor:pointer;">`;});
+        n.handwritingImages.forEach(img=>{ih+=`<img src="${img.url}" onclick="openImagePopup('${img.url.replace(/'/g,"\\'")}')" alt="Visual note" style="cursor:pointer;" loading="lazy">`;});
         ih+='</div>';
+        if(n.handwritingAudios?.length){
+            n.handwritingAudios.forEach(a=>{ih+=`<div class="audio-list-item"><audio controls src="${a.url}" style="height:28px;"></audio><span style="font-size:0.75rem;">${escapeHtml(a.name||'Audio')}</span></div>`;});
+        }
         const pubLabel=n.handwritingImagesPublished?'<span class="badge badge-published">Published to Students</span>':`<button class="btn btn-outline btn-sm publish-btn" data-doc="${n.id}" data-field="handwritingImagesPublished">📤 Publish to Students</button>`;
         html+=`<div class="resource-card"><h4><i class="fas fa-pen-fancy"></i> Visual Notes</h4>${ih}<div style="margin-top:0.5rem;">${pubLabel}</div></div>`;
     }
-    // Videos
+    // Videos (Netflix-style inline)
     if(n.videoLinks?.length){
         let vh='<div class="video-thumb-grid">';
         n.videoLinks.forEach((link,i)=>{
             const vid=extractYouTubeId(link);
-            if(vid)vh+=`<div class="video-thumb-item ${i===selectedVideoIdx?'selected':''}" data-video-idx="${i}"><img src="https://img.youtube.com/vi/${vid}/hqdefault.jpg" alt="Video ${i+1}"></div>`;
+            if(vid)vh+=`<div class="video-thumb-item ${i===selectedVideoIdx?'selected':''}" data-video-idx="${i}"><img src="https://img.youtube.com/vi/${vid}/hqdefault.jpg" alt="Video ${i+1}" loading="lazy"></div>`;
         });
         vh+='</div>';
         const sv=n.videoLinks[selectedVideoIdx]||n.videoLinks[0];const svid=extractYouTubeId(sv);
-        if(svid)vh+=`<div class="youtube-wrapper"><iframe src="https://www.youtube.com/embed/${svid}?rel=0&modestbranding=1" allowfullscreen></iframe></div>`;
+        if(svid)vh+=`<div class="youtube-wrapper"><iframe src="https://www.youtube.com/embed/${svid}?rel=0&modestbranding=1" allowfullscreen loading="lazy"></iframe></div>`;
         const pubLabel=n.videosPublished?'<span class="badge badge-published">Published to Students</span>':`<button class="btn btn-outline btn-sm publish-btn" data-doc="${n.id}" data-field="videosPublished">📤 Publish to Students</button>`;
         html+=`<div class="resource-card" style="grid-column:1/-1;"><h4><i class="fab fa-youtube"></i> Videos</h4>${vh}<div style="margin-top:0.5rem;">${pubLabel}</div></div>`;
     }
     html+='</div>';container.innerHTML=html;
     
-    // Bind video selection
     container.querySelectorAll('.video-thumb-item').forEach(item=>{
         item.addEventListener('click',function(){
             selectedVideoIdx=parseInt(this.dataset.videoIdx);renderResources();
         });
     });
-    // Bind publish buttons
     container.querySelectorAll('.publish-btn').forEach(btn=>{
         btn.addEventListener('click',async function(){
             const docId=this.dataset.doc,field=this.dataset.field;
@@ -561,7 +633,133 @@ function renderResources(){
 }
 
 // ============================================
-// VIRTUAL CLASSES
+// UPDATE #10 & #12: STUDENT SUBMISSIONS (images & audio)
+// ============================================
+function setupSubmissionsListener(){
+    if(unsubSubmissions)unsubSubmissions();
+    if(!currentUser||!currentClass)return;
+    unsubSubmissions=db.collection('studentSubmissions')
+        .where('teacherId','==',currentUser.uid)
+        .where('classId','==',currentClass)
+        .orderBy('createdAt','desc')
+        .limit(50)
+        .onSnapshot(snap=>renderStudentSubmissions(snap));
+}
+function renderStudentSubmissions(snap){
+    const container=document.getElementById('studentSubmissionsList');
+    const badge=document.getElementById('submissionCountBadge');
+    if(!snap||snap.empty){
+        container.innerHTML='<div class="empty-state"><i class="fas fa-inbox"></i><h3>No student submissions yet</h3><p>Students can send images and voice notes from their classroom.</p></div>';
+        badge.style.display='none';
+        return;
+    }
+    const submissions=[];
+    snap.forEach(d=>submissions.push({id:d.id,...d.data()}));
+    const newCount=submissions.filter(s=>!s.viewedByTeacher).length;
+    if(newCount>0){badge.style.display='inline-block';badge.textContent=`${newCount} new`;}else{badge.style.display='none';}
+    
+    container.innerHTML=submissions.map(s=>{
+        const isImage=s.type==='image';
+        const isAudio=s.type==='audio'||s.type==='voice';
+        const timeStr=s.createdAt?.toDate?.(s.createdAt.toDate().toLocaleString())||'Unknown';
+        return`<div class="submission-card">
+            <div style="display:flex;justify-content:space-between;align-items:start;flex-wrap:wrap;gap:0.5rem;">
+                <div>
+                    <strong>${escapeHtml(s.studentName||'Student')}</strong>
+                    <span style="font-size:0.75rem;color:var(--text-secondary);margin-left:0.5rem;">${timeStr}</span>
+                    ${!s.viewedByTeacher?'<span class="badge badge-pending" style="margin-left:0.5rem;">New</span>':''}
+                </div>
+                <button class="btn btn-sm btn-outline" onclick="markSubmissionViewed('${s.id}')" title="Mark as viewed"><i class="fas fa-check"></i></button>
+            </div>
+            ${isImage?`<img src="${s.url}" alt="Student submission" onclick="openImagePopup('${s.url.replace(/'/g,"\\'")}')" loading="lazy">`:''}
+            ${isAudio?`<audio controls src="${s.url}" style="width:100%;margin-top:0.5rem;"></audio>`:''}
+            ${s.caption?`<p style="font-size:0.8rem;color:var(--text-secondary);margin-top:0.3rem;">${escapeHtml(s.caption)}</p>`:''}
+        </div>`;
+    }).join('');
+}
+async function markSubmissionViewed(id){
+    await db.collection('studentSubmissions').doc(id).update({viewedByTeacher:true,viewedAt:firebase.firestore.FieldValue.serverTimestamp()});
+    showToast('Marked','Submission marked as viewed','success');
+}
+function loadStudentSubmissions(){
+    if(!currentClass)return;
+    db.collection('studentSubmissions')
+        .where('teacherId','==',currentUser.uid)
+        .where('classId','==',currentClass)
+        .orderBy('createdAt','desc')
+        .limit(50)
+        .get()
+        .then(snap=>renderStudentSubmissions(snap))
+        .catch(()=>{});
+}
+
+// ============================================
+// UPDATE #13: CHAT BETWEEN TEACHER AND STUDENT
+// ============================================
+function setupChatListener(){
+    if(unsubChat)unsubChat();
+    if(!currentUser||!currentClass)return;
+    unsubChat=db.collection('teacherStudentChats')
+        .where('teacherId','==',currentUser.uid)
+        .where('classId','==',currentClass)
+        .orderBy('createdAt','asc')
+        .onSnapshot(snap=>renderChatMessages(snap));
+}
+function renderChatMessages(snap){
+    const container=document.getElementById('chatMessages');
+    if(!snap||snap.empty){
+        container.innerHTML='<div class="empty-state"><i class="fas fa-comments"></i><h3>No messages yet</h3></div>';
+        return;
+    }
+    const messages=[];
+    snap.forEach(d=>messages.push({id:d.id,...d.data()}));
+    container.innerHTML=messages.map(m=>{
+        const isTeacher=m.senderRole==='teacher';
+        const cls=isTeacher?'sent':'received';
+        const sender=isTeacher?'You':(m.studentName||'Student');
+        const time=m.createdAt?.toDate?.(m.createdAt.toDate().toLocaleTimeString([],{hour:'2-digit',minute:'2-digit'})):'';
+        return`<div class="chat-bubble ${cls}">
+            <div class="chat-sender">${escapeHtml(sender)}</div>
+            <div>${escapeHtml(m.message||'')}</div>
+            <div class="chat-time">${time}</div>
+        </div>`;
+    }).join('');
+    container.scrollTop=container.scrollHeight;
+}
+async function sendChatMessage(){
+    const input=document.getElementById('chatInput');
+    const msg=input.value.trim();
+    if(!msg||!currentUser||!currentClass)return;
+    input.value='';
+    try{
+        await db.collection('teacherStudentChats').add({
+            teacherId:currentUser.uid,
+            teacherName:`${userData?.firstName||''} ${userData?.surname||''}`.trim(),
+            studentId:null,
+            studentName:'All Students',
+            classId:currentClass,
+            subject:currentSubject||'',
+            week:currentWeek||null,
+            message:msg,
+            senderRole:'teacher',
+            createdAt:firebase.firestore.FieldValue.serverTimestamp(),
+            readByStudent:false
+        });
+    }catch(e){showToast('Error sending message','error');}
+}
+function loadChatMessages(){
+    if(!currentClass)return;
+    db.collection('teacherStudentChats')
+        .where('teacherId','==',currentUser.uid)
+        .where('classId','==',currentClass)
+        .orderBy('createdAt','asc')
+        .get()
+        .then(snap=>renderChatMessages(snap))
+        .catch(()=>{});
+}
+
+// ============================================
+// VIRTUAL CLASSES (UPDATE #8: Appears for both)
 // ============================================
 function setupVCListener(){
     if(unsubVC)unsubVC();
@@ -572,14 +770,17 @@ function setupVCListener(){
         .orderBy('date','asc').orderBy('time','asc')
         .onSnapshot(snap=>renderVC(snap));
 }
-
 function renderVC(snap){
     const c=document.getElementById('virtualClassesList');
-    if(snap.empty){c.innerHTML='<div class="empty-state"><i class="fas fa-video-slash"></i><h3>No upcoming classes</h3></div>';return;}
+    if(snap.empty){c.innerHTML='<div class="empty-state"><i class="fas fa-video-slash"></i><h3>No upcoming classes</h3><p style="font-size:0.8rem;">Schedule a virtual class to see it here.</p></div>';return;}
     const now=new Date();let html='<div class="resource-grid">';let hasUpcoming=false;
     snap.forEach(d=>{
         const v=d.data();const dt=new Date(`${v.date}T${v.time}`);if(dt<now)return;hasUpcoming=true;
-        html+=`<div class="resource-card"><h4><i class="fas fa-video"></i> ${v.subject||currentSubject} — Week ${v.week||currentWeek}</h4><p><strong>Platform:</strong> ${v.platform}<br><strong>Date:</strong> ${v.date}<br><strong>Time:</strong> ${v.time}<br><strong>Duration:</strong> ${v.duration} min</p><div style="margin-top:auto;"><a href="${v.link||'#'}" target="_blank" rel="noopener" class="btn btn-primary">Join</a></div></div>`;
+        const diff=Math.floor((dt-now)/60000);
+        let statusLabel='Upcoming',statusCls='';
+        if(diff<=0&&diff>-120){statusLabel='● Live Now';statusCls='live';}
+        else if(diff<=15&&diff>0){statusLabel='● Starting Soon';statusCls='soon';}
+        html+=`<div class="resource-card ${statusCls}"><h4><i class="fas fa-video"></i> ${v.subject||currentSubject} — Week ${v.week||currentWeek}</h4><p><strong>Platform:</strong> ${v.platform}<br><strong>Date:</strong> ${v.date}<br><strong>Time:</strong> ${v.time}<br><strong>Duration:</strong> ${v.duration} min</p><span class="badge ${statusCls==='live'?'badge-published':'badge-pending'}">${statusLabel}</span><div style="margin-top:auto;"><a href="${v.link||'#'}" target="_blank" rel="noopener" class="btn btn-primary btn-sm">Join</a></div></div>`;
     });
     html+='</div>';c.innerHTML=hasUpcoming?html:'<div class="empty-state"><i class="fas fa-video-slash"></i><h3>No upcoming classes</h3></div>';
 }
@@ -588,10 +789,11 @@ function renderVC(snap){
 // AUTH
 // ============================================
 auth.onAuthStateChanged(async user=>{
-    // Guest check
+    // UPDATE #17: Guest access with link + one-time code
     const params=new URLSearchParams(window.location.search);
     const guestId=params.get('guest');
-    if(guestId){await handleGuestAccess(guestId);return;}
+    const guestCode=params.get('code');
+    if(guestId&&guestCode){await handleGuestAccess(guestId,guestCode);return;}
     
     if(!user){window.location.href='teacher-login.html';return;}
     try{
@@ -607,29 +809,28 @@ auth.onAuthStateChanged(async user=>{
         else pic.textContent=(userData.firstName?.[0]||'T')+(userData.surname?.[0]||'E');
         document.getElementById('profileName').textContent=userData.firstName||'Teacher';
         
-        // Populate class selector
         const cs=document.getElementById('classSelect');cs.innerHTML='';
         allClasses.forEach(c=>{const o=document.createElement('option');o.value=c;o.textContent=c;cs.appendChild(o);});
         if(currentClass)cs.value=currentClass;
-        cs.addEventListener('change',function(){currentClass=this.value;if(currentClass)loadTeachData();});
+        cs.addEventListener('change',function(){currentClass=this.value;if(currentClass){loadTeachData();setupVCListener();setupSubmissionsListener();setupChatListener();}});
         
-        // Populate subject selector
         const ss=document.getElementById('subjectSelect');ss.innerHTML='<option value="">Select Subject</option>';
         subjects.forEach(s=>{const o=document.createElement('option');o.value=s;o.textContent=s;ss.appendChild(o);});
         ss.addEventListener('change',onSubjectChange);
-        
-        // Week selector
         document.getElementById('weekSelect').addEventListener('change',onWeekChange);
         
         setupReadingToggles();
-        if(currentClass)await loadTeachData();
-        setupVCListener();
+        if(currentClass){
+            await loadTeachData();
+            setupVCListener();
+            setupSubmissionsListener();
+            setupChatListener();
+        }
     }catch(e){console.error('Auth error:',e);window.location.href='teacher-login.html';}
 });
 
-// Logout
 document.getElementById('logoutBtn').addEventListener('click',async()=>{
-    if(unsubVC)unsubVC();
+    if(unsubVC)unsubVC();if(unsubChat)unsubChat();if(unsubSubmissions)unsubSubmissions();
     await auth.signOut();window.location.href='index.html';
 });
 
@@ -645,6 +846,8 @@ document.getElementById('virtualClassBtn').addEventListener('click',function(){
 document.getElementById('guestInviteBtn').addEventListener('click',function(){
     if(!currentSubject||!currentWeek)return showToast('Select subject and week first','warning');
     document.getElementById('guestModal').classList.add('active');
+    document.getElementById('guestLinkBox').classList.remove('show');
+    currentGuestCode=null;
 });
 document.getElementById('studentViewBtn').addEventListener('click',function(){
     if(!currentSubject||!currentWeek)return showToast('Select subject and week first','warning');
@@ -655,8 +858,8 @@ document.getElementById('printBtn').addEventListener('click',function(){window.p
 // ============================================
 // VIRTUAL CLASS MODAL
 // ============================================
-document.getElementById('vcModalClose').addEventListener('click',function(){document.getElementById('vcModal').classList.remove('active');});
-document.getElementById('vcCancelBtn').addEventListener('click',function(){document.getElementById('vcModal').classList.remove('active');});
+document.getElementById('vcModalClose').addEventListener('click',()=>document.getElementById('vcModal').classList.remove('active'));
+document.getElementById('vcCancelBtn').addEventListener('click',()=>document.getElementById('vcModal').classList.remove('active'));
 document.getElementById('vcPlatform').addEventListener('change',function(){
     document.getElementById('vcCustomGroup').style.display=this.value==='custom'?'block':'none';
 });
@@ -666,58 +869,103 @@ document.getElementById('vcForm').addEventListener('submit',async function(e){
     let link='';const date=document.getElementById('vcDate').value,time=document.getElementById('vcTime').value,duration=parseInt(document.getElementById('vcDuration').value);
     if(platform==='custom'){link=document.getElementById('vcCustomLink').value;if(!link)return showToast('Enter a link','warning');}
     else{const id=Math.random().toString(36).substring(2,10);const m={zoom:`https://zoom.us/j/${id}`,'google-meet':`https://meet.google.com/${id}`,jitsi:`https://meet.jit.si/${id}`};link=m[platform];}
-    await db.collection('virtualClasses').add({teacherId:currentUser.uid,classId:currentClass,subject:currentSubject,week:currentWeek,platform,link,date,time,duration,createdAt:firebase.firestore.FieldValue.serverTimestamp(),status:'scheduled'});
+    // UPDATE #8: Add visibleToBoth flag so schedule appears for both teacher and students
+    await db.collection('virtualClasses').add({
+        teacherId:currentUser.uid,classId:currentClass,subject:currentSubject,week:currentWeek,
+        platform,link,date,time,duration,
+        visibleToBoth:true,
+        createdAt:firebase.firestore.FieldValue.serverTimestamp(),status:'scheduled'
+    });
     await logAudit('VC_CREATED',`${platform} class for ${currentSubject} Week ${currentWeek}`);
-    showToast('Virtual class created!','success');
+    showToast('Virtual class created! Visible to you and students.','success');
     document.getElementById('vcModal').classList.remove('active');
     this.reset();
 });
 
 // ============================================
-// GUEST MODAL
+// GUEST MODAL - UPDATE #17: Time limit + one-time use code
 // ============================================
-document.getElementById('guestModalClose').addEventListener('click',function(){
+document.getElementById('guestModalClose').addEventListener('click',()=>{
     document.getElementById('guestModal').classList.remove('active');
     document.getElementById('guestLinkBox').classList.remove('show');
 });
-document.getElementById('guestCancelBtn').addEventListener('click',function(){
+document.getElementById('guestCancelBtn').addEventListener('click',()=>{
     document.getElementById('guestModal').classList.remove('active');
     document.getElementById('guestLinkBox').classList.remove('show');
+});
+document.getElementById('guestPlatform').addEventListener('change',function(){
+    document.getElementById('guestCustomGroup').style.display=this.value==='custom'?'block':'none';
 });
 document.getElementById('guestForm').addEventListener('submit',async function(e){
     e.preventDefault();
     const name=document.getElementById('guestName').value.trim();
     const purpose=document.getElementById('guestPurpose').value.trim();
-    const expiry=parseInt(document.getElementById('guestExpiry').value);
+    const durationMin=parseInt(document.getElementById('guestDuration').value);
+    const platform=document.getElementById('guestPlatform').value;
     if(!name||!purpose)return;
+    
     const guestId=Math.random().toString(36).substring(2,14);
-    const expiresAt=new Date(Date.now()+expiry*3600000);
+    // Generate one-time use code (6 characters, easy to share)
+    const oneTimeCode=Math.random().toString(36).substring(2,8).toUpperCase();
+    const expiresAt=new Date(Date.now()+durationMin*60000);
+    
+    // Get meeting link
+    let link='';
+    if(platform==='custom'){link=document.getElementById('guestCustomLink').value;if(!link)return showToast('Enter a meeting link','warning');}
+    else{const mid=Math.random().toString(36).substring(2,10);const m={zoom:`https://zoom.us/j/${mid}`,'google-meet':`https://meet.google.com/${mid}`,jitsi:`https://meet.jit.si/${mid}`};link=m[platform];}
+    
     await db.collection('guestAccess').add({
-        guestId,guestName:name,purpose,teacherId:currentUser.uid,
+        guestId,oneTimeCode,guestName:name,purpose,platform,link,
+        teacherId:currentUser.uid,
         teacherName:`${userData.firstName||''} ${userData.surname||''}`.trim(),
         classId:currentClass,subject:currentSubject,week:currentWeek,
+        durationMinutes:durationMin,
         expiresAt:firebase.firestore.Timestamp.fromDate(expiresAt),
-        createdAt:firebase.firestore.FieldValue.serverTimestamp(),used:false
+        createdAt:firebase.firestore.FieldValue.serverTimestamp(),
+        used:false,usedAt:null
     });
-    await logAudit('GUEST_INVITED',`${name} for ${purpose}`);
-    const link=`${window.location.origin}${window.location.pathname}?guest=${guestId}&class=${encodeURIComponent(currentClass)}`;
-    document.getElementById('guestLinkText').textContent=link;
+    
+    await logAudit('GUEST_INVITED',`${name} for ${purpose} (${durationMin}min, code: ${oneTimeCode})`);
+    
+    const teachLink=`${window.location.origin}${window.location.pathname}?guest=${guestId}&code=${oneTimeCode}`;
+    document.getElementById('guestLinkText').textContent=teachLink;
+    document.getElementById('guestCodeDisplay').textContent=oneTimeCode;
     document.getElementById('guestLinkBox').classList.add('show');
+    currentGuestCode=oneTimeCode;
+    
+    showToast('Invite Generated!','Share the link and code with your guest. No login required.','success',8000);
 });
-document.getElementById('copyGuestLinkBtn').addEventListener('click',function(){
-    const text=document.getElementById('guestLinkText').textContent;
-    navigator.clipboard.writeText(text).then(()=>showToast('Link copied!','success')).catch(()=>showToast('Failed to copy','error'));
+document.getElementById('copyGuestInviteBtn').addEventListener('click',function(){
+    const link=document.getElementById('guestLinkText').textContent;
+    const code=document.getElementById('guestCodeDisplay').textContent;
+    const fullText=`Link: ${link}\nOne-Time Access Code: ${code}\n\nGuest does NOT need to sign up. Just use the link and code.`;
+    navigator.clipboard.writeText(fullText).then(()=>showToast('Copied!','Link and code copied to clipboard','success')).catch(()=>showToast('Failed','Could not copy','error'));
 });
 
 // ============================================
-// GUEST ACCESS HANDLER
+// GUEST ACCESS HANDLER (UPDATE #17: No auth needed, one-time code)
 // ============================================
-async function handleGuestAccess(guestId){
+async function handleGuestAccess(guestId,guestCode){
     try{
         const snap=await db.collection('guestAccess').where('guestId','==',guestId).limit(1).get();
-        if(snap.empty){showToast('Invalid guest link','error',10000);return;}
+        if(snap.empty){showToast('Invalid guest link','This link is not valid.','error',10000);return;}
         const g=snap.docs[0].data();
-        if(g.expiresAt.toDate()<new Date()){showToast('Guest link has expired','error',10000);return;}
+        
+        // Verify one-time code
+        if(g.oneTimeCode!==guestCode){showToast('Invalid code','The access code is incorrect.','error',10000);return;}
+        
+        // Check if already used
+        if(g.used){showToast('Code already used','This guest code has already been used. Request a new invite.','error',10000);return;}
+        
+        // Check expiry
+        if(g.expiresAt.toDate()<new Date()){showToast('Expired','This guest invite has expired.','error',10000);return;}
+        
+        // Mark as used (one-time use)
+        await db.collection('guestAccess').doc(snap.docs[0].id).update({
+            used:true,
+            usedAt:firebase.firestore.FieldValue.serverTimestamp()
+        });
+        
         currentClass=g.classId;currentSubject=g.subject;currentWeek=g.week;
         document.getElementById('classSelect').innerHTML=`<option>${g.classId}</option>`;
         document.getElementById('subjectSelect').innerHTML=`<option>${g.subject}</option>`;
@@ -725,17 +973,25 @@ async function handleGuestAccess(guestId){
         document.getElementById('profileName').textContent=`Guest: ${g.guestName}`;
         document.getElementById('profilePic').textContent=g.guestName.charAt(0).toUpperCase();
         document.getElementById('resourceTitle').textContent=`${g.subject} — Week ${g.week} (Guest: ${g.guestName})`;
-        await db.collection('guestAccess').doc(snap.docs[0].id).update({used:true});
+        
         await db.collection('auditLogs').add({
             userId:'guest_'+guestId,userName:g.guestName,userRole:'guest',
-            action:'GUEST_JOINED',description:`${g.guestName} joined for ${g.purpose}`,
+            action:'GUEST_JOINED',description:`${g.guestName} joined via one-time code for ${g.purpose}`,
             timestamp:firebase.firestore.FieldValue.serverTimestamp()
         });
+        
+        // Load resources for this class/subject
         const lnSnap=await db.collection('lessonNotes').where('teacherId','==',g.teacherId).where('classId','==',g.classId).get();
         lessonNotesMap={};lnSnap.forEach(d=>{const dd=d.data();lessonNotesMap[`${dd.subject}_${dd.week}`]={id:d.id,...dd};});
         renderResources();
         setupReadingToggles();
-    }catch(e){console.error('Guest error:',e);showToast('Error loading guest access','error',10000);}
+        setupVCListener();
+        
+        // Show meeting link if available
+        if(g.link){
+            showToast(`Welcome ${g.guestName}!`,`Platform: ${g.platform}. Click Virtual Class to join. Expires in ${g.durationMinutes} min.`,'info',12000);
+        }
+    }catch(e){console.error('Guest error:',e);showToast('Error','Could not load guest access','error',10000);}
 }
 
 // Keyboard shortcuts
@@ -757,15 +1013,17 @@ document.getElementById('vcModal').addEventListener('click',function(e){if(e.tar
 document.getElementById('guestModal').addEventListener('click',function(e){if(e.target===this){this.classList.remove('active');document.getElementById('guestLinkBox').classList.remove('show');}});
 document.getElementById('teachOverlay').addEventListener('click',closeTeachMode);
 
-// Expose to window
 window.toggleTeachMode=toggleTeachMode;
 window.toggleTeachPanel=toggleTeachPanel;
 window.flipBookPage=flipBookPage;
 window.openImagePopup=openImagePopup;
 window.closeImagePopup=closeImagePopup;
 window.setReadingMode=setReadingMode;
+window.markSubmissionViewed=markSubmissionViewed;
+window.sendChatMessage=sendChatMessage;
+window.loadChatMessages=loadChatMessages;
 
-console.log('🎓 Teacher Teach Mode — Fully Functional');
+console.log('🎓 Teacher Teach Mode — Updated with Student Submissions, Chat & Guest System ✅');
 </script>
 </body>
 </html>
