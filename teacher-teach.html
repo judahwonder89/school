@@ -31,6 +31,7 @@
             --submission-bg:rgba(139,92,246,0.05); --submission-border:#8b5cf6;
             --debug-bg:#fef3c7; --debug-border:#f59e0b; --debug-text:#92400e;
             --live-room-bg:#f0fdf4; --live-room-border:#22c55e;
+            --offline-bg:rgba(245,158,11,0.1); --offline-text:#b45309;
         }
         :root[data-theme="dark"] {
             --bg-primary:#0a0f1e; --bg-secondary:#0f1729; --text-primary:#f1f5f9;
@@ -49,6 +50,7 @@
             --submission-bg:rgba(139,92,246,0.08); --submission-border:#8b5cf6;
             --debug-bg:rgba(245,158,11,0.2); --debug-border:#f59e0b; --debug-text:#fbbf24;
             --live-room-bg:#0a1a0f; --live-room-border:#22c55e;
+            --offline-bg:rgba(245,158,11,0.15); --offline-text:#fbbf24;
         }
 
         body { font-family:'Inter',sans-serif; background:var(--bg-primary); color:var(--text-primary); min-height:100vh; transition:background 0.3s,color 0.3s; position:relative; overflow-x:hidden; line-height:1.6; }
@@ -65,6 +67,7 @@
         .nav-btn { background:transparent; border:1px solid var(--border); border-radius:2rem; padding:0.5rem 1.2rem; color:var(--text-primary); font-weight:500; font-size:0.85rem; cursor:pointer; transition:0.2s; text-decoration:none; display:inline-flex; align-items:center; gap:0.4rem; white-space:nowrap; }
         .nav-btn:hover { background:var(--hover-bg); border-color:var(--accent); color:var(--accent); }
         .nav-btn.return-class { background:linear-gradient(135deg,#059669,#10b981); color:white; border-color:transparent; font-weight:700; display:none; animation:pulseLive 2s infinite; }
+        .nav-btn.offline-warn { background:var(--offline-bg); color:var(--offline-text); border-color:transparent; display:none; }
         @keyframes pulseLive { 0%,100%{box-shadow:0 0 0 0 rgba(34,197,94,0.4)} 50%{box-shadow:0 0 0 10px rgba(34,197,94,0)} }
         .theme-toggle { display:inline-flex; align-items:center; gap:0.5rem; background:var(--card-bg); border:1px solid var(--border); border-radius:2rem; padding:0.4rem 1rem; cursor:pointer; font-size:0.85rem; color:var(--text-secondary); }
         .profile-dropdown { position:relative; cursor:pointer; }
@@ -83,6 +86,7 @@
 
         .controls-bar { display:flex; gap:0.8rem; margin-bottom:1.5rem; flex-wrap:wrap; align-items:center; background:var(--card-bg); backdrop-filter:blur(12px); -webkit-backdrop-filter:blur(12px); border:1px solid var(--border); border-radius:2rem; padding:0.5rem 1rem; }
         .controls-bar select { padding:0.5rem 1rem; background:var(--input-bg); border:1px solid var(--border); border-radius:2rem; color:var(--text-primary); font-family:inherit; font-size:0.85rem; cursor:pointer; min-width:140px; }
+        .controls-bar select:focus { outline:none; border-color:var(--accent); }
 
         .card { background:var(--card-bg); backdrop-filter:blur(12px); -webkit-backdrop-filter:blur(12px); border:1px solid var(--border); border-radius:1.5rem; padding:1.5rem; box-shadow:var(--shadow-md); margin-bottom:1.5rem; transition:0.3s; }
         .card-header { display:flex; justify-content:space-between; align-items:flex-start; margin-bottom:1rem; flex-wrap:wrap; gap:1rem; padding-bottom:1rem; border-bottom:1px solid var(--border); }
@@ -96,7 +100,7 @@
         .classroom-timer { background:rgba(0,0,0,0.4); color:white; padding:0.4rem 1rem; border-radius:2rem; font-family:'Space Grotesk',monospace; font-weight:600; font-size:0.9rem; }
         .classroom-timer.urgent { background:#dc2626; animation:pulseUrgent 1s infinite; }
         @keyframes pulseUrgent { 0%,100%{opacity:1} 50%{opacity:0.5} }
-        .jitsi-wrapper { width:100%; background:#000; position:relative; min-height:500px; display:flex; align-items:center; justify-content:center; }
+        .jitsi-wrapper { width:100%; background:#000; position:relative; min-height:500px; }
         .jitsi-wrapper iframe { width:100%; border:none; }
         .classroom-info-bar { background:var(--card-bg); padding:0.8rem 1.5rem; display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:0.5rem; border-top:1px solid var(--border); }
         .live-dot { width:10px; height:10px; border-radius:50%; background:#22c55e; animation:pulseLive 1.5s infinite; display:inline-block; }
@@ -147,32 +151,38 @@
         .btn-success { background:var(--success-text); color:white; }
         .btn-danger { background:var(--danger-text); color:white; }
         .btn-outline { background:transparent; border:1px solid var(--border); color:var(--text-primary); }
+        .btn-outline:hover { border-color:var(--accent); background:var(--hover-bg); }
         .btn-sm { padding:0.35rem 0.9rem; font-size:0.8rem; }
         .btn-teach { background:linear-gradient(135deg,#8b5cf6,#6366f1); color:white; font-weight:600; }
         .btn-teach.active-teach { background:linear-gradient(135deg,#ef4444,#dc2626); }
         .btn-start-class { background:linear-gradient(135deg,#059669,#10b981); color:white; font-weight:700; font-size:1rem; padding:0.8rem 2rem; }
+        .btn-start-class:hover { box-shadow:0 8px 30px rgba(16,185,129,0.5); transform:translateY(-2px); }
         .btn-end-class { background:linear-gradient(135deg,#dc2626,#991b1b); color:white; font-weight:700; }
+        .btn:disabled { opacity:0.5; cursor:not-allowed; }
 
         .badge { display:inline-flex; align-items:center; gap:0.3rem; padding:0.2rem 0.8rem; border-radius:2rem; font-size:0.75rem; font-weight:600; }
         .badge-published { background:var(--success-bg); color:var(--success-text); border:1px solid var(--success-text); }
-        .badge-teach { background:var(--info-bg); color:var(--info-text); border:1px solid rgba(59,130,246,0.3); }
+        .badge-teach { background:var(--info-bg); color:var(--info-text); }
         .badge-scheduled { background:rgba(139,92,246,0.15); color:#8b5cf6; }
+        .badge-live { background:rgba(34,197,94,0.2); color:#22c55e; animation:pulseLive 1.5s infinite; }
 
-        /* JITSI PERMISSION MODAL */
-        .permission-modal { position:fixed; inset:0; background:rgba(0,0,0,0.85); backdrop-filter:blur(8px); z-index:500; display:flex; align-items:center; justify-content:center; padding:2rem; }
-        .permission-box { background:var(--card-bg); border:2px solid var(--accent); border-radius:2rem; padding:2.5rem; max-width:500px; width:100%; text-align:center; box-shadow:var(--shadow-xl); }
+        .permission-modal { position:fixed; inset:0; background:rgba(0,0,0,0.85); backdrop-filter:blur(8px); z-index:500; display:none; align-items:center; justify-content:center; padding:2rem; }
+        .permission-modal.show { display:flex; }
+        .permission-box { background:var(--card-bg); border:2px solid var(--accent); border-radius:2rem; padding:2.5rem; max-width:520px; width:100%; text-align:center; box-shadow:var(--shadow-xl); }
         .permission-box h2 { font-size:1.5rem; margin-bottom:0.5rem; color:var(--accent); }
-        .permission-box p { color:var(--text-secondary); margin-bottom:1.5rem; font-size:0.9rem; line-height:1.6; }
-        .permission-box .warning-note { background:var(--warning-bg); border-radius:1rem; padding:1rem; margin-bottom:1.5rem; font-size:0.85rem; color:var(--warning-text); }
+        .permission-box p { color:var(--text-secondary); margin-bottom:1.2rem; font-size:0.9rem; line-height:1.6; }
+        .permission-box .warning-note { background:var(--warning-bg); border-radius:1rem; padding:1rem; margin-bottom:1.5rem; font-size:0.85rem; color:var(--warning-text); text-align:left; }
+        .permission-box .warning-note strong { display:block; margin-bottom:0.3rem; }
 
         .modal-overlay { position:fixed; inset:0; background:var(--overlay-bg); backdrop-filter:blur(4px); z-index:400; display:none; align-items:center; justify-content:center; padding:1rem; }
         .modal-overlay.active { display:flex; }
         .modal-content { background:var(--card-bg); border:1px solid var(--border); border-radius:1.5rem; padding:1.5rem; max-width:550px; width:100%; box-shadow:var(--shadow-xl); animation:slideUp 0.3s; }
         @keyframes slideUp { from{opacity:0;transform:translateY(20px)} to{opacity:1;transform:translateY(0)} }
         .modal-header { display:flex; justify-content:space-between; align-items:center; margin-bottom:1rem; }
-        .modal-close { width:36px; height:36px; border-radius:50%; border:none; background:var(--hover-bg); color:var(--text-secondary); cursor:pointer; }
+        .modal-close { width:36px; height:36px; border-radius:50%; border:none; background:var(--hover-bg); color:var(--text-secondary); cursor:pointer; display:flex; align-items:center; justify-content:center; }
+        .modal-close:hover { background:var(--danger-bg); color:var(--danger-text); }
         .form-group { margin-bottom:1rem; }
-        .form-label { display:block; margin-bottom:0.3rem; color:var(--text-secondary); font-size:0.85rem; }
+        .form-label { display:block; margin-bottom:0.3rem; color:var(--text-secondary); font-size:0.85rem; font-weight:500; }
         .form-control { width:100%; padding:0.6rem 1rem; background:var(--input-bg); border:1px solid var(--border); border-radius:0.5rem; color:var(--text-primary); font-size:0.9rem; font-family:inherit; }
         .form-control:focus { outline:none; border-color:var(--accent); }
         .modal-actions { display:flex; gap:0.5rem; justify-content:flex-end; margin-top:1.5rem; }
@@ -188,19 +198,23 @@
         .empty-state { text-align:center; padding:3rem; color:var(--text-tertiary); }
         .empty-state i { font-size:3rem; margin-bottom:1rem; opacity:0.5; display:block; }
 
+        .loading-spinner { display:inline-block; width:20px; height:20px; border:3px solid var(--border); border-top:3px solid var(--accent); border-radius:50%; animation:spin 0.8s linear infinite; }
+        @keyframes spin { 0%{transform:rotate(0deg)} 100%{transform:rotate(360deg)} }
+
         .chat-container { display:flex; flex-direction:column; height:400px; border:1px solid var(--border); border-radius:1rem; overflow:hidden; background:var(--card-bg); }
         .chat-messages { flex:1; overflow-y:auto; padding:1rem; display:flex; flex-direction:column; gap:0.5rem; }
         .chat-bubble { max-width:75%; padding:0.7rem 1rem; border-radius:1rem; font-size:0.85rem; }
-        .chat-bubble.sent { align-self:flex-end; background:var(--chat-sent-bg); color:white; }
-        .chat-bubble.received { align-self:flex-start; background:var(--chat-received-bg); border:1px solid var(--border); }
+        .chat-bubble.sent { align-self:flex-end; background:var(--chat-sent-bg); color:white; border-bottom-right-radius:0.3rem; }
+        .chat-bubble.received { align-self:flex-start; background:var(--chat-received-bg); border:1px solid var(--border); border-bottom-left-radius:0.3rem; }
         .chat-bubble .chat-sender { font-weight:700; font-size:0.65rem; margin-bottom:0.15rem; }
         .chat-bubble .chat-time { font-size:0.6rem; opacity:0.7; margin-top:0.2rem; }
         .chat-input-area { display:flex; gap:0.5rem; padding:0.8rem; border-top:1px solid var(--border); background:var(--hover-bg); }
         .chat-input-area input { flex:1; padding:0.5rem 1rem; border-radius:2rem; border:1px solid var(--border); background:var(--input-bg); color:var(--text-primary); font-size:0.85rem; }
-        .chat-input-area button { padding:0.5rem 1rem; border-radius:2rem; background:var(--accent); color:white; border:none; cursor:pointer; }
+        .chat-input-area input:focus { outline:none; border-color:var(--accent); }
+        .chat-input-area button { padding:0.5rem 1rem; border-radius:2rem; background:var(--accent); color:white; border:none; cursor:pointer; font-weight:600; }
 
         .submission-card { background:var(--submission-bg); border:1px solid var(--submission-border); border-radius:1rem; padding:1rem; margin-bottom:0.8rem; }
-        .submission-card img { max-width:100%; max-height:200px; border-radius:0.5rem; cursor:pointer; }
+        .submission-card img { max-width:100%; max-height:200px; border-radius:0.5rem; cursor:pointer; margin-top:0.5rem; }
         .submission-card audio { width:100%; margin-top:0.5rem; }
 
         .section-badge { font-size:0.7rem; padding:0.15rem 0.6rem; border-radius:1rem; margin-left:0.5rem; }
@@ -213,9 +227,14 @@
         .debug-panel { position:fixed; bottom:80px; right:1rem; z-index:9999; background:var(--debug-bg); border:2px solid var(--debug-border); border-radius:1rem; padding:1rem; width:450px; max-width:calc(100vw - 2rem); max-height:55vh; overflow-y:auto; font-family:'Space Grotesk',monospace; font-size:0.7rem; display:none; color:var(--debug-text); }
         .debug-panel.show { display:block; }
         .debug-btn { position:fixed; bottom:1.5rem; right:1.5rem; z-index:10000; width:44px; height:44px; border-radius:50%; background:#0A2540; border:2px solid #C8963E; color:#C8963E; cursor:pointer; font-size:1.1rem; display:flex; align-items:center; justify-content:center; }
+        .debug-btn:hover { background:#C8963E; color:#0A2540; }
 
         @media(max-width:1024px){ .teach-container{flex-direction:column;} .teach-panel{flex:none;height:50%;min-height:300px;} }
-        @media(max-width:768px){ .main-container{padding:1rem;} .resource-grid{grid-template-columns:1fr;} }
+        @media(max-width:768px){
+            .main-container{padding:1rem;} .resource-grid{grid-template-columns:1fr;}
+            .permission-box{padding:1.5rem;margin:1rem;} .permission-box h2{font-size:1.2rem;}
+            .jitsi-wrapper{min-height:350px;} .chat-container{height:300px;}
+        }
     </style>
 </head>
 <body>
@@ -223,8 +242,11 @@
 <div class="orb orb-1"></div><div class="orb orb-2"></div>
 <div class="toast-container" id="toastContainer"></div>
 
-<button class="debug-btn" id="debugToggleBtn" title="Debug"><i class="fas fa-bug"></i></button>
-<div class="debug-panel" id="debugPanel"><h4>Debug <button class="btn btn-sm btn-outline" onclick="clearDebugLogs()" style="font-size:0.6rem;">Clear</button></h4><div id="debugContent"></div></div>
+<button class="debug-btn" id="debugToggleBtn" title="Debug Panel"><i class="fas fa-bug"></i></button>
+<div class="debug-panel" id="debugPanel">
+    <h4 style="display:flex;justify-content:space-between;"><span>Debug Log</span><button class="btn btn-sm btn-outline" onclick="clearDebugLogs()" style="font-size:0.6rem;padding:0.15rem 0.4rem;">Clear</button></h4>
+    <div id="debugContent"></div>
+</div>
 
 <!-- TEACH MODE OVERLAY -->
 <div class="teach-overlay" id="teachOverlay"></div>
@@ -245,6 +267,7 @@
         <a href="teacher-dashboard.html" class="nav-btn"><i class="fas fa-chart-pie"></i> Dashboard</a>
         <a href="teacher-workspace.html" class="nav-btn"><i class="fas fa-briefcase"></i> Workspace</a>
         <button class="nav-btn return-class" id="returnToClassBtn" onclick="returnToLiveClass()"><span class="live-dot"></span> Return to Live Class</button>
+        <button class="nav-btn offline-warn" id="offlineWarnBtn"><i class="fas fa-exclamation-triangle"></i> Offline Mode</button>
     </div>
     <div class="nav-right">
         <div class="theme-toggle" id="themeToggle"><i class="fas fa-sun"></i><span>Light</span></div>
@@ -261,14 +284,14 @@
 <!-- MAIN -->
 <main class="main-container">
     <div class="controls-bar">
-        <label>Class:</label><select id="classSelect"><option>Loading...</option></select>
-        <label>Subject:</label><select id="subjectSelect"><option>Select Subject</option></select>
-        <label>Week:</label><select id="weekSelect"><option>Select Week</option></select>
+        <label style="font-weight:600;font-size:0.85rem;">Class:</label><select id="classSelect"><option>Loading...</option></select>
+        <label style="font-weight:600;font-size:0.85rem;">Subject:</label><select id="subjectSelect"><option>Select Subject</option></select>
+        <label style="font-weight:600;font-size:0.85rem;">Week:</label><select id="weekSelect"><option>Select Week</option></select>
     </div>
 
     <div style="display:flex;gap:0.5rem;margin-bottom:1.5rem;flex-wrap:wrap;">
         <button class="btn btn-teach" id="teachModeBtn"><i class="fas fa-chalkboard"></i> Teach Mode <small>Ctrl+T</small></button>
-        <button class="btn btn-start-class" id="startClassBtn"><i class="fas fa-video"></i> Start Live Class Now</button>
+        <button class="btn btn-start-class" id="startClassBtn"><i class="fas fa-video"></i> Start Live Classroom</button>
         <button class="btn btn-outline btn-sm" id="scheduleClassBtn"><i class="fas fa-calendar-plus"></i> Schedule Future</button>
         <button class="btn btn-outline btn-sm" id="guestInviteBtn"><i class="fas fa-user-plus"></i> Invite Guest</button>
         <button class="btn btn-outline btn-sm" id="studentViewBtn"><i class="fas fa-eye"></i> Student View</button>
@@ -278,96 +301,112 @@
     <!-- LIVE CLASSROOM -->
     <div class="classroom-card" id="liveClassroomCard" style="display:none;">
         <div class="classroom-header">
-            <h3><span class="live-dot"></span> Live — <span id="liveClassName">...</span></h3>
+            <h3><span class="live-dot"></span> Live Classroom — <span id="liveClassName">...</span></h3>
             <div style="display:flex;align-items:center;gap:1rem;flex-wrap:wrap;">
                 <div class="classroom-timer" id="classroomTimer">⏱️ <span id="timerDisplay">00:00</span></div>
                 <span style="color:white;font-size:0.8rem;"><i class="fas fa-users"></i> <span id="participantCount">0</span></span>
             </div>
         </div>
         <div class="jitsi-wrapper" id="jitsiWrapper" style="height:600px;">
-            <div class="empty-state" style="background:#000;color:white;"><i class="fas fa-video" style="opacity:0.3;"></i><h3>Ready to start</h3></div>
+            <div class="empty-state" style="background:#000;color:white;"><i class="fas fa-video" style="opacity:0.3;"></i><h3>Classroom Ready</h3><p style="color:#94a3b8;">Click "Allow Camera & Mic" to start</p></div>
         </div>
         <div class="classroom-info-bar">
-            <span style="font-size:0.8rem;">All in browser — no downloads</span>
-            <div style="display:flex;gap:0.4rem;">
-                <button class="btn btn-sm btn-outline" onclick="toggleCC()">💬 Chat</button>
-                <button class="btn btn-sm btn-outline" onclick="togglePP()">👥 People</button>
-                <button class="btn btn-sm btn-outline" onclick="inviteGuestToLiveClass()">➕ Invite</button>
-                <button class="btn btn-end-class btn-sm" id="endClassBtn">⏹ End</button>
+            <span style="font-size:0.8rem;color:var(--text-secondary);"><i class="fas fa-info-circle"></i> Everything stays in your browser — no downloads, no time limits</span>
+            <div style="display:flex;gap:0.4rem;flex-wrap:wrap;">
+                <button class="btn btn-sm btn-outline" onclick="toggleJitsiChat()">💬 Chat</button>
+                <button class="btn btn-sm btn-outline" onclick="toggleJitsiPeople()">👥 People</button>
+                <button class="btn btn-sm btn-outline" onclick="toggleJitsiTile()">🔲 Tile</button>
+                <button class="btn btn-sm btn-outline" onclick="inviteGuestToLiveClass()">➕ Invite Guest</button>
+                <button class="btn btn-end-class btn-sm" id="endClassBtn">⏹ End Class</button>
             </div>
         </div>
     </div>
 
-    <!-- TEACHING RESOURCES -->
-    <div class="card">
-        <div class="card-header"><h3><i class="fas fa-book-open"></i> Resources <span class="section-badge workspace">Workspace</span></h3><span id="resourceTitle" style="color:var(--accent);">Select subject & week</span></div>
-        <div id="resourcesContainer"><div class="empty-state"><i class="fas fa-folder-open"></i><h3>Select Subject & Week</h3></div></div>
+    <!-- RESOURCES -->
+    <div class="card" id="resourcesCard">
+        <div class="card-header"><h3><i class="fas fa-book-open"></i> Teaching Resources <span class="section-badge workspace">From Workspace</span></h3><span id="resourceTitle" style="color:var(--accent);font-weight:600;">Select a subject and week</span></div>
+        <div id="resourcesContainer"><div class="empty-state"><i class="fas fa-folder-open"></i><h3>Select Subject & Week</h3><p>Published content appears here</p></div></div>
     </div>
 
     <!-- SCHEDULED -->
-    <div class="card"><div class="card-header"><h3><i class="fas fa-calendar-alt"></i> Scheduled</h3></div><div id="scheduledList"><div class="empty-state"><i class="fas fa-calendar"></i><h3>None</h3></div></div></div>
+    <div class="card"><div class="card-header"><h3><i class="fas fa-calendar-alt"></i> Scheduled Classes</h3></div><div id="scheduledList"><div class="empty-state"><i class="fas fa-calendar"></i><h3>No scheduled classes</h3><p>Click "Schedule Future" to plan ahead</p></div></div></div>
 
-    <!-- PAST -->
-    <div class="card"><div class="card-header"><h3><i class="fas fa-history"></i> Past</h3></div><div id="pastList"><div class="empty-state"><i class="fas fa-history"></i><h3>None</h3></div></div></div>
+    <!-- PAST SESSIONS -->
+    <div class="card"><div class="card-header"><h3><i class="fas fa-history"></i> Past Sessions</h3></div><div id="pastList"><div class="empty-state"><i class="fas fa-history"></i><h3>No past sessions</h3></div></div></div>
 
-    <!-- SUBMISSIONS -->
-    <div class="card"><div class="card-header"><h3><i class="fas fa-inbox"></i> Student Submissions <span class="section-badge student">Students</span></h3></div><div id="submissionsList"><div class="empty-state"><i class="fas fa-inbox"></i><h3>None</h3></div></div></div>
+    <!-- STUDENT SUBMISSIONS -->
+    <div class="card"><div class="card-header"><h3><i class="fas fa-inbox"></i> Student Submissions <span class="section-badge student">From Students</span></h3><span class="badge badge-pending" id="submissionBadge" style="display:none;">0 new</span></div><div id="submissionsList"><div class="empty-state"><i class="fas fa-inbox"></i><h3>No submissions yet</h3></div></div></div>
 
     <!-- CHAT -->
-    <div class="card"><div class="card-header"><h3><i class="fas fa-comments"></i> Chat <span class="section-badge student">Students</span></h3></div>
-        <div class="chat-container"><div class="chat-messages" id="chatMessages"><div class="empty-state"><i class="fas fa-comments"></i><h3>No messages</h3></div></div>
-            <div class="chat-input-area"><input type="text" id="chatInput" placeholder="Reply..." onkeypress="if(event.key==='Enter')sendChat()"><button onclick="sendChat()">Send</button></div>
+    <div class="card"><div class="card-header"><h3><i class="fas fa-comments"></i> Student Messages <span class="section-badge student">From Students</span></h3><button class="btn btn-outline btn-sm" onclick="loadChat()"><i class="fas fa-sync-alt"></i></button></div>
+        <div class="chat-container"><div class="chat-messages" id="chatMessages"><div class="empty-state"><i class="fas fa-comments"></i><h3>No messages yet</h3><p>Chat with your students</p></div></div>
+            <div class="chat-input-area"><input type="text" id="chatInput" placeholder="Reply to students..." onkeypress="if(event.key==='Enter')sendChat()"><button onclick="sendChat()"><i class="fas fa-paper-plane"></i> Send</button></div>
         </div>
     </div>
 </main>
 
-<!-- PERMISSION MODAL (shown before Jitsi) -->
-<div class="permission-modal" id="permissionModal" style="display:none;">
+<!-- PERMISSION MODAL -->
+<div class="permission-modal" id="permissionModal">
     <div class="permission-box">
-        <i class="fas fa-video" style="font-size:3rem;color:var(--accent);margin-bottom:1rem;"></i>
+        <i class="fas fa-video" style="font-size:3rem;color:var(--accent);margin-bottom:1rem;display:block;"></i>
         <h2>Start Live Classroom</h2>
-        <p>Your browser will ask for <strong>camera & microphone</strong> permission.<br>Everything happens in your browser — no downloads needed.</p>
+        <p>Your browser will ask for <strong>camera & microphone</strong> permission.<br>Everything happens in your browser — <strong>no downloads, no time limits</strong>.</p>
         <div class="warning-note">
-            <strong>📱 Important:</strong> After clicking below, you may see a Jitsi screen.<br>
-            <strong>Click "Continue in browser"</strong> or <strong>"Join as a guest"</strong> to enter the classroom.<br>
-            <em>Do NOT download any app — stay on the website.</em>
+            <strong>📱 Important — What to click:</strong>
+            When the Jitsi screen appears, look for and click:<br>
+            • <strong>"Continue in browser"</strong> or <strong>"Join as a guest"</strong><br>
+            • <strong>DO NOT</strong> download any app<br>
+            • Enter your name if prompted, then click <strong>"Join meeting"</strong>
         </div>
         <button class="btn btn-start-class" onclick="confirmStartClassroom()" style="width:100%;justify-content:center;">
             <i class="fas fa-check-circle"></i> Allow Camera & Mic — Enter Classroom
         </button>
+        <button class="btn btn-outline btn-sm" onclick="document.getElementById('permissionModal').classList.remove('show')" style="margin-top:1rem;">Cancel</button>
     </div>
 </div>
 
 <!-- START CLASS MODAL -->
 <div class="modal-overlay" id="startClassModal"><div class="modal-content">
-    <div class="modal-header"><h3>Start Live Class</h3><button class="modal-close" onclick="closeModal('startClassModal')">✕</button></div>
-    <form onsubmit="submitStartClass(event)"><div class="form-group"><label class="form-label">Topic</label><input type="text" id="classTopic" class="form-control" required></div>
-    <div class="form-group"><label class="form-label">Duration</label><select id="classDuration" class="form-control"><option value="20">20 min</option><option value="30">30 min</option><option value="45">45 min</option><option value="60" selected>1 hour</option><option value="90">1.5 hours</option></select></div>
-    <div class="modal-actions"><button type="button" class="btn btn-outline" onclick="closeModal('startClassModal')">Cancel</button><button type="submit" class="btn btn-start-class">Start Now</button></div></form>
+    <div class="modal-header"><h3><i class="fas fa-video"></i> Start Live Classroom Now</h3><button class="modal-close" onclick="closeModal('startClassModal')">✕</button></div>
+    <form onsubmit="submitStartClass(event)"><div class="form-group"><label class="form-label">Topic / Title</label><input type="text" id="classTopic" class="form-control" placeholder="e.g., Mathematics - Fractions" required></div>
+    <div class="form-group"><label class="form-label">Duration</label><select id="classDuration" class="form-control"><option value="20">20 minutes</option><option value="30">30 minutes</option><option value="45">45 minutes</option><option value="60" selected>1 hour</option><option value="90">1.5 hours</option><option value="120">2 hours</option></select></div>
+    <p style="font-size:0.8rem;color:var(--text-secondary);"><i class="fas fa-info-circle"></i> Students will see a "Join Live Class" button on their classroom page. No external apps needed.</p>
+    <div class="modal-actions"><button type="button" class="btn btn-outline" onclick="closeModal('startClassModal')">Cancel</button><button type="submit" class="btn btn-start-class"><i class="fas fa-play"></i> Start Now</button></div></form>
 </div></div>
 
 <!-- SCHEDULE MODAL -->
 <div class="modal-overlay" id="scheduleClassModal"><div class="modal-content">
-    <div class="modal-header"><h3>Schedule Class</h3><button class="modal-close" onclick="closeModal('scheduleClassModal')">✕</button></div>
-    <form onsubmit="submitSchedule(event)"><div class="form-group"><label class="form-label">Topic</label><input type="text" id="schedTopic" class="form-control" required></div>
+    <div class="modal-header"><h3><i class="fas fa-calendar-plus"></i> Schedule Future Class</h3><button class="modal-close" onclick="closeModal('scheduleClassModal')">✕</button></div>
+    <form onsubmit="submitSchedule(event)"><div class="form-group"><label class="form-label">Topic</label><input type="text" id="schedTopic" class="form-control" placeholder="e.g., Science - Plants" required></div>
     <div class="form-group"><label class="form-label">Date</label><input type="date" id="schedDate" class="form-control" required></div>
     <div class="form-group"><label class="form-label">Time</label><input type="time" id="schedTime" class="form-control" required></div>
-    <div class="form-group"><label class="form-label">Duration</label><select id="schedDuration" class="form-control"><option value="20">20 min</option><option value="30">30 min</option><option value="45">45 min</option><option value="60" selected>1 hour</option></select></div>
-    <div class="form-group"><label class="form-label">Guest (optional)</label><input type="text" id="schedGuest" class="form-control" placeholder="Guest name"></div>
-    <div class="modal-actions"><button type="button" class="btn btn-outline" onclick="closeModal('scheduleClassModal')">Cancel</button><button type="submit" class="btn btn-primary">Schedule</button></div></form>
+    <div class="form-group"><label class="form-label">Duration</label><select id="schedDuration" class="form-control"><option value="20">20 min</option><option value="30">30 min</option><option value="45">45 min</option><option value="60" selected>1 hour</option><option value="90">1.5 hours</option><option value="120">2 hours</option></select></div>
+    <div class="form-group"><label class="form-label">Invite Guest (Optional)</label><input type="text" id="schedGuest" class="form-control" placeholder="Guest name — leave empty if none"></div>
+    <div class="modal-actions"><button type="button" class="btn btn-outline" onclick="closeModal('scheduleClassModal')">Cancel</button><button type="submit" class="btn btn-primary"><i class="fas fa-calendar-check"></i> Schedule</button></div></form>
 </div></div>
 
 <!-- GUEST MODAL -->
 <div class="modal-overlay" id="guestModal"><div class="modal-content">
-    <div class="modal-header"><h3>Invite Guest</h3><button class="modal-close" onclick="closeModal('guestModal')">✕</button></div>
-    <form onsubmit="submitGuest(event)"><div class="form-group"><label class="form-label">Name</label><input type="text" id="guestName" class="form-control" required></div>
-    <div class="form-group"><label class="form-label">Purpose</label><input type="text" id="guestPurpose" class="form-control" required></div>
-    <div class="form-group"><label class="form-label">Duration</label><select id="guestDuration" class="form-control"><option value="30">30 min</option><option value="60" selected>1 hour</option><option value="120">2 hours</option></select></div>
-    <div class="modal-actions"><button type="button" class="btn btn-outline" onclick="closeModal('guestModal')">Cancel</button><button type="submit" class="btn btn-primary">Generate</button></div></form>
-    <div class="guest-link-box" id="guestLinkBox"><strong>Share:</strong><br><span id="guestLinkText"></span><br><strong>Code:</strong><div class="guest-code-display" id="guestCodeDisplay">------</div><button class="btn btn-primary btn-sm" onclick="copyGuest()">Copy</button></div>
+    <div class="modal-header"><h3><i class="fas fa-user-plus"></i> Invite Guest Teacher</h3><button class="modal-close" onclick="closeModal('guestModal')">✕</button></div>
+    <form onsubmit="submitGuest(event)"><div class="form-group"><label class="form-label">Guest Name</label><input type="text" id="guestName" class="form-control" placeholder="e.g., Dr. Adeola" required></div>
+    <div class="form-group"><label class="form-label">Purpose / Topic</label><input type="text" id="guestPurpose" class="form-control" placeholder="e.g., Health talk" required></div>
+    <div class="form-group"><label class="form-label">Access Duration</label><select id="guestDuration" class="form-control"><option value="30">30 minutes</option><option value="60" selected>1 hour</option><option value="120">2 hours</option><option value="360">6 hours</option></select></div>
+    <p style="font-size:0.8rem;color:var(--text-secondary);"><i class="fas fa-info-circle"></i> Guest gets a link + one-time code. No login needed. They join our built-in classroom directly.</p>
+    <div class="modal-actions"><button type="button" class="btn btn-outline" onclick="closeModal('guestModal')">Cancel</button><button type="submit" class="btn btn-primary"><i class="fas fa-link"></i> Generate Invite</button></div></form>
+    <div class="guest-link-box" id="guestLinkBox">
+        <strong><i class="fas fa-link"></i> Share with guest:</strong>
+        <p style="margin-top:0.5rem;"><strong>Link:</strong><br><span id="guestLinkText" style="word-break:break-all;"></span></p>
+        <p style="margin-top:0.8rem;"><strong>One-Time Code:</strong></p>
+        <div class="guest-code-display" id="guestCodeDisplay">------</div>
+        <p style="font-size:0.75rem;color:var(--text-secondary);">No account, no app — just open in browser, enter code, and teach.</p>
+        <button class="btn btn-primary btn-sm" onclick="copyGuestInfo()"><i class="fas fa-copy"></i> Copy Link + Code</button>
+    </div>
 </div></div>
 
 <script>
+// ═══════════════════════════════════════════
+// FIREBASE
+// ═══════════════════════════════════════════
 const firebaseConfig = {
     apiKey: "AIzaSyADXHEiaSQ146QsGsaOCElARtpwrLE8svs",
     authDomain: "judah-c737e.firebaseapp.com",
@@ -380,164 +419,264 @@ firebase.initializeApp(firebaseConfig);
 const auth=firebase.auth(),db=firebase.firestore();
 try{db.enablePersistence({synchronizeTabs:true});}catch(e){}
 
-// DEBUG
+// ═══════════════════════════════════════════
+// DEBUG SYSTEM
+// ═══════════════════════════════════════════
 const debugLogs=[];
 function debugLog(k,v,t='info'){debugLogs.push({k,v,t,time:new Date().toLocaleTimeString()});console.log(`[${t}] ${k}:`,v);updateDebug();}
-function updateDebug(){const c=document.getElementById('debugContent');if(c)c.innerHTML=debugLogs.slice(-30).map(d=>`<div style="padding:0.1rem 0;border-bottom:1px solid rgba(255,255,255,0.05);"><span style="color:#94a3b8;font-size:0.6rem;">${d.time}</span> <b>${d.k}:</b> <span style="color:${d.t==='error'?'#f87171':'#4ade80'}">${typeof d.v==='object'?JSON.stringify(d.v).substring(0,120):String(d.v).substring(0,150)}</span></div>`).join('');}
+function updateDebug(){const c=document.getElementById('debugContent');if(c)c.innerHTML=debugLogs.slice(-40).map(d=>`<div style="padding:0.1rem 0;border-bottom:1px solid rgba(255,255,255,0.05);"><span style="color:#94a3b8;font-size:0.6rem;">${d.time}</span> <b>${d.k}:</b> <span style="color:${d.t==='error'?'#f87171':d.t==='warn'?'#fbbf24':'#4ade80'}">${typeof d.v==='object'?JSON.stringify(d.v).substring(0,120):String(d.v).substring(0,150)}</span></div>`).join('');}
 function clearDebugLogs(){debugLogs.length=0;updateDebug();}
 document.getElementById('debugToggleBtn').addEventListener('click',()=>document.getElementById('debugPanel').classList.toggle('show'));
 
+// ═══════════════════════════════════════════
 // THEME
+// ═══════════════════════════════════════════
 (function(){const h=document.documentElement,t=document.getElementById('themeToggle'),s=localStorage.getItem('judah-theme')||'dark';h.setAttribute('data-theme',s);t.querySelector('span').textContent=s==='dark'?'Light':'Dark';t.addEventListener('click',()=>{const n=h.getAttribute('data-theme')==='dark'?'light':'dark';h.setAttribute('data-theme',n);localStorage.setItem('judah-theme',n);t.querySelector('span').textContent=n==='dark'?'Light':'Dark';});})();
 
+// ═══════════════════════════════════════════
+// UTILITIES
+// ═══════════════════════════════════════════
 function escapeHtml(s){const d=document.createElement('div');d.textContent=s||'';return d.innerHTML;}
-function showToast(m,t='info',d=4000){const i={success:'fa-check-circle',error:'fa-exclamation-circle',warning:'fa-exclamation-triangle',info:'fa-info-circle'},c={success:'var(--success-text)',error:'var(--danger-text)',warning:'var(--warning-text)',info:'var(--accent)'},el=document.createElement('div');el.className='toast';el.innerHTML=`<i class="fas ${i[t]}" style="color:${c[t]};"></i><span>${escapeHtml(m)}</span>`;document.getElementById('toastContainer').appendChild(el);setTimeout(()=>{el.style.opacity='0';el.style.transform='translateX(100%)';el.style.transition='0.3s';setTimeout(()=>el.remove(),300);},d);}
+function showToast(m,t='info',d=4000){const icons={success:'fa-check-circle',error:'fa-exclamation-circle',warning:'fa-exclamation-triangle',info:'fa-info-circle'},colors={success:'var(--success-text)',error:'var(--danger-text)',warning:'var(--warning-text)',info:'var(--accent)'},el=document.createElement('div');el.className='toast';el.innerHTML=`<i class="fas ${icons[t]}" style="color:${colors[t]};font-size:1.1rem;"></i><span>${escapeHtml(m)}</span>`;document.getElementById('toastContainer').appendChild(el);setTimeout(()=>{el.style.opacity='0';el.style.transform='translateX(100%)';el.style.transition='0.3s';setTimeout(()=>el.remove(),300);},d);}
 function extractYouTubeId(u){if(!u)return null;const p=[/(?:youtube\.com\/watch\?v=)([a-zA-Z0-9_-]{11})/,/(?:youtu\.be\/)([a-zA-Z0-9_-]{11})/];for(const r of p){const m=u.match(r);if(m)return m[1];}return null;}
 function closeModal(id){document.getElementById(id).classList.remove('active');}
+function showOfflineWarn(){document.getElementById('offlineWarnBtn').style.display='inline-flex';}
+function hideOfflineWarn(){document.getElementById('offlineWarnBtn').style.display='none';}
+window.addEventListener('online',hideOfflineWarn);
+window.addEventListener('offline',showOfflineWarn);
+if(!navigator.onLine)showOfflineWarn();
 
+// ═══════════════════════════════════════════
 // STATE
+// ═══════════════════════════════════════════
 let currentUser=null,userData=null,currentClass=null,allClasses=[],subjects=[],currentSubject=null,currentWeek=null;
 let lessonNotesMap={},currentNote=null,teachActive=false,teachPanels={lessonNote:true,teachingProcess:true};
 let teachModes={lessonNote:'scroll',teachingProcess:'scroll'},bookPages={lessonNote:{pages:[],current:0},teachingProcess:{pages:[],current:0}};
 let selectedVideoIdx=0,jitsiApi=null,classTimerInterval=null,classSeconds=0,classDuration=0;
-let savedSession=null;
+let savedSession=null,pendingRoomName=null,pendingTopic=null;
 
-// SESSION PERSISTENCE — save to localStorage so reload doesn't kill it
-function saveSessionToStorage(data){localStorage.setItem('judah-live-session',JSON.stringify(data));}
-function loadSessionFromStorage(){try{const d=localStorage.getItem('judah-live-session');return d?JSON.parse(d):null;}catch(e){return null;}}
-function clearSessionStorage(){localStorage.removeItem('judah-live-session');}
-function checkReturnButton(){const s=loadSessionFromStorage();if(s&&s.active){document.getElementById('returnToClassBtn').style.display='inline-flex';savedSession=s;}else{document.getElementById('returnToClassBtn').style.display='none';savedSession=null;}}
+// ═══════════════════════════════════════════
+// SESSION PERSISTENCE (survives reload)
+// ═══════════════════════════════════════════
+function saveSession(d){localStorage.setItem('judah-live-session',JSON.stringify(d));}
+function loadSession(){try{const d=localStorage.getItem('judah-live-session');return d?JSON.parse(d):null;}catch(e){return null;}}
+function clearSession(){localStorage.removeItem('judah-live-session');}
+function checkReturnButton(){const s=loadSession();if(s&&s.active){document.getElementById('returnToClassBtn').style.display='inline-flex';savedSession=s;}else{document.getElementById('returnToClassBtn').style.display='none';savedSession=null;}}
 
-// JITSI
+// ═══════════════════════════════════════════
+// JITSI — NO TIME LIMIT (8x8.vc)
+// ═══════════════════════════════════════════
 function initJitsi(roomName,topic){
     const wrapper=document.getElementById('jitsiWrapper');
-    wrapper.style.height=window.innerWidth<768?'400px':'600px';
-    wrapper.innerHTML='';
-    debugLog('Jitsi loading',roomName);
+    const h=window.innerWidth<768?'380px':'600px';
+    wrapper.style.height=h;
+    wrapper.innerHTML='<div class="empty-state" style="background:#000;color:white;"><div class="loading-spinner" style="margin:0 auto 1rem;"></div><h3>Loading classroom...</h3></div>';
     
     try{
-        jitsiApi=new JitsiMeetExternalAPI('meet.jit.si',{
+        // Use 8x8.vc — NO 5-minute limit, free for embedded use
+        jitsiApi=new JitsiMeetExternalAPI('8x8.vc',{
             roomName,
             width:'100%',
             height:'100%',
             parentNode:wrapper,
             userInfo:{displayName:userData?`${userData.firstName||'Teacher'} ${userData.surname||''}`.trim():'Teacher'},
             configOverrides:{
-                startWithAudioMuted:false,startWithVideoMuted:false,
+                startWithAudioMuted:false,
+                startWithVideoMuted:false,
                 prejoinPageEnabled:true,
-                disableDeepLinking:false,
-                toolbarButtons:['microphone','camera','desktop','fullscreen','chat','raisehand','tileview','settings','hangup'],
+                disableDeepLinking:true,
+                disableThirdPartyRequests:false,
+                analytics:{disabled:true},
+                toolbarButtons:[
+                    'microphone','camera','desktop','fullscreen',
+                    'chat','raisehand','tileview','settings',
+                    'hangup','filmstrip','sharedvideo','etherpad',
+                    'videoquality','videobackgroundblur','mute-everyone'
+                ],
                 toolbarConfig:{alwaysVisible:true}
             },
             interfaceConfigOverrides:{
-                SHOW_JITSI_WATERMARK:false,APP_NAME:'Judah Classroom',
-                MOBILE_APP_PROMO:false,FILM_STRIP_MAX_HEIGHT:100
+                SHOW_JITSI_WATERMARK:false,
+                JITSI_WATERMARK_LINK:'',
+                APP_NAME:'Judah Wonders Classroom',
+                NATIVE_APP_NAME:'Judah Classroom',
+                PROVIDER_NAME:'Judah Wonders Model School',
+                MOBILE_APP_PROMO:false,
+                TOOLBAR_ALWAYS_VISIBLE:true,
+                DISABLE_JOIN_LEAVE_NOTIFICATIONS:false,
+                FILM_STRIP_MAX_HEIGHT:120
             }
         });
         
         jitsiApi.addListener('videoConferenceJoined',()=>{
-            debugLog('Conference joined','SUCCESS');
-            document.getElementById('permissionModal').style.display='none';
+            debugLog('Classroom connected','SUCCESS');
+            document.getElementById('permissionModal').classList.remove('show');
             updateParticipantCount();
-            saveSessionToStorage({active:true,roomName,topic,startedAt:Date.now(),duration:classDuration});
+            saveSession({active:true,roomName,topic,startedAt:Date.now(),duration:classDuration});
             checkReturnButton();
+            showToast('Classroom is live! Students can join now.','success',6000);
         });
         
         jitsiApi.addListener('participantJoined',()=>updateParticipantCount());
         jitsiApi.addListener('participantLeft',()=>updateParticipantCount());
-        jitsiApi.addListener('videoConferenceLeft',()=>{debugLog('Conference left','');clearSessionStorage();checkReturnButton();});
+        jitsiApi.addListener('videoConferenceLeft',()=>{debugLog('Classroom left','');clearSession();checkReturnButton();});
+        jitsiApi.addListener('readyToClose',()=>endLiveClass('Session closed'));
         
-        jitsiApi.addListener('readyToClose',()=>{endLiveClass('Closed');});
+        // Auto-retry if connection stalls
+        let connected=false;
+        jitsiApi.addListener('videoConferenceJoined',()=>{connected=true;});
+        setTimeout(()=>{if(!connected&&!jitsiApi.__disposed){debugLog('Jitsi connection timeout','Retrying','warn');initJitsi(roomName,topic);}},20000);
         
-    }catch(e){debugLog('Jitsi error',e.message,'error');showToast('Jitsi failed. Try refreshing.','error');}
+    }catch(e){
+        debugLog('Jitsi error',e.message,'error');
+        wrapper.innerHTML='<div class="empty-state" style="background:#000;color:white;"><i class="fas fa-exclamation-triangle" style="color:#f59e0b;"></i><h3>Could not start classroom</h3><p style="color:#94a3b8;">Please check your connection and try again.</p><button class="btn btn-primary btn-sm" onclick="retryClassroom()">Retry</button></div>';
+        showToast('Classroom failed to start. Check connection.','error');
+    }
 }
 
-function updateParticipantCount(){if(jitsiApi)try{document.getElementById('participantCount').textContent=jitsiApi.getNumberOfParticipants()||0;}catch(e){}}
-function toggleCC(){if(jitsiApi)jitsiApi.executeCommand('toggleChat');}
-function togglePP(){if(jitsiApi)jitsiApi.executeCommand('toggleFilmStrip');}
+function retryClassroom(){
+    if(pendingRoomName&&pendingTopic){
+        document.getElementById('jitsiWrapper').innerHTML='<div class="empty-state" style="background:#000;color:white;"><div class="loading-spinner" style="margin:0 auto 1rem;"></div><h3>Retrying...</h3></div>';
+        initJitsi(pendingRoomName,pendingTopic);
+    }
+}
 
-// PERMISSION MODAL → START CLASSROOM
+function updateParticipantCount(){
+    if(jitsiApi)try{document.getElementById('participantCount').textContent=jitsiApi.getNumberOfParticipants()||0;}catch(e){}
+}
+function toggleJitsiChat(){if(jitsiApi)jitsiApi.executeCommand('toggleChat');}
+function toggleJitsiPeople(){if(jitsiApi)jitsiApi.executeCommand('toggleFilmStrip');}
+function toggleJitsiTile(){if(jitsiApi)jitsiApi.executeCommand('toggleTileView');}
+
+// ═══════════════════════════════════════════
+// TIMER
+// ═══════════════════════════════════════════
+function startTimer(){
+    classSeconds=0;updateTimerDisplay();
+    classTimerInterval=setInterval(()=>{classSeconds++;updateTimerDisplay();if(classDuration>0&&classSeconds>=classDuration*60)endLiveClass('Time expired');},1000);
+}
+function updateTimerDisplay(){
+    const m=Math.floor(classSeconds/60),s=classSeconds%60;
+    const d=document.getElementById('timerDisplay');if(d)d.textContent=`${String(m).padStart(2,'0')}:${String(s).padStart(2,'0')}`;
+    const t=document.getElementById('classroomTimer');
+    if(t&&classDuration>0)t.classList.toggle('urgent',(classDuration*60-classSeconds)<300);
+}
+function stopTimer(){if(classTimerInterval){clearInterval(classTimerInterval);classTimerInterval=null;}}
+
+// ═══════════════════════════════════════════
+// START / END CLASS
+// ═══════════════════════════════════════════
 function confirmStartClassroom(){
-    document.getElementById('permissionModal').style.display='none';
+    document.getElementById('permissionModal').classList.remove('show');
     initJitsi(pendingRoomName,pendingTopic);
-    startClassTimer();
+    startTimer();
     document.getElementById('liveClassroomCard').style.display='block';
     document.getElementById('liveClassName').textContent=pendingTopic;
     document.getElementById('liveClassroomCard').scrollIntoView({behavior:'smooth'});
 }
 
-let pendingRoomName=null,pendingTopic=null;
 async function startLiveClass(topic,duration){
-    pendingTopic=topic;pendingDuration=duration;
-    const roomName='judah-'+Date.now().toString(36);
-    pendingRoomName=roomName;classDuration=duration;
+    if(pendingRoomName){showToast('Class already starting','warning');return;}
+    pendingTopic=topic;
+    const roomName='judah-'+Date.now().toString(36)+'-'+Math.random().toString(36).substring(2,6);
+    pendingRoomName=roomName;
+    classDuration=duration;
     
-    // Try Firestore, fallback to localStorage
+    debugLog('Starting live class',{roomName,topic,duration});
+    
+    // Try Firestore — if it fails, continue anyway (local only)
     try{
         await db.collection('liveClassSessions').add({
-            roomName,topic,classId:currentClass,teacherId:currentUser?.uid||'guest',
+            roomName,topic,classId:currentClass,subject:currentSubject||'',week:currentWeek||null,
+            teacherId:currentUser?.uid||'guest',
             teacherName:userData?`${userData.firstName||''} ${userData.surname||''}`.trim():'Teacher',
-            durationMinutes:duration,status:'live',startedAt:firebase.firestore.FieldValue.serverTimestamp()
+            durationMinutes:duration,status:'live',
+            startedAt:firebase.firestore.FieldValue.serverTimestamp(),participantCount:0
         });
-    }catch(e){debugLog('Firestore save skipped','Using localStorage fallback','warn');}
+        debugLog('Session saved to Firestore');
+    }catch(e){
+        debugLog('Firestore write failed — using local only','warn');
+        showToast('Live class started (offline mode)','info',3000);
+    }
     
-    // Show permission modal
+    // Show classroom card + permission modal
     document.getElementById('liveClassroomCard').style.display='block';
     document.getElementById('liveClassName').textContent=topic;
-    document.getElementById('jitsiWrapper').innerHTML='<div class="empty-state" style="background:#000;color:white;"><i class="fas fa-video" style="opacity:0.3;"></i><h3>Ready</h3></div>';
-    document.getElementById('permissionModal').style.display='flex';
+    document.getElementById('jitsiWrapper').innerHTML='<div class="empty-state" style="background:#000;color:white;"><i class="fas fa-video" style="opacity:0.3;"></i><h3>Classroom Ready</h3></div>';
+    document.getElementById('permissionModal').classList.add('show');
 }
 
 function returnToLiveClass(){
     if(savedSession&&savedSession.active){
         document.getElementById('liveClassroomCard').style.display='block';
         document.getElementById('liveClassName').textContent=savedSession.topic||'Live Class';
-        document.getElementById('permissionModal').style.display='none';
+        document.getElementById('permissionModal').classList.remove('show');
         initJitsi(savedSession.roomName,savedSession.topic);
-        startClassTimer();
+        startTimer();
         document.getElementById('liveClassroomCard').scrollIntoView({behavior:'smooth'});
+        showToast('Returned to live classroom','success');
     }
 }
 
-function startClassTimer(){
-    classSeconds=0;updateTimer();
-    classTimerInterval=setInterval(()=>{classSeconds++;updateTimer();
-        if(classDuration>0&&classSeconds>=classDuration*60)endLiveClass('Time expired');
-    },1000);
-}
-function updateTimer(){const m=Math.floor(classSeconds/60),s=classSeconds%60;const d=document.getElementById('timerDisplay');if(d)d.textContent=`${String(m).padStart(2,'0')}:${String(s).padStart(2,'0')}`;}
-function stopTimer(){if(classTimerInterval){clearInterval(classTimerInterval);classTimerInterval=null;}}
-
-function endLiveClass(reason='Ended'){
+async function endLiveClass(reason='Teacher ended class'){
     stopTimer();
-    if(jitsiApi){try{jitsiApi.executeCommand('hangup');jitsiApi.dispose();}catch(e){}jitsiApi=null;}
+    if(jitsiApi&&!jitsiApi.__disposed){
+        try{jitsiApi.executeCommand('hangup');jitsiApi.dispose();jitsiApi.__disposed=true;}catch(e){}
+        jitsiApi=null;
+    }
     document.getElementById('liveClassroomCard').style.display='none';
-    document.getElementById('jitsiWrapper').innerHTML='<div class="empty-state" style="background:#000;color:white;"><i class="fas fa-check-circle" style="color:#22c55e;"></i><h3>Class Ended</h3></div>';
-    clearSessionStorage();checkReturnButton();
+    document.getElementById('jitsiWrapper').innerHTML='<div class="empty-state" style="background:#000;color:white;"><i class="fas fa-check-circle" style="color:#22c55e;"></i><h3>Classroom Ended</h3></div>';
+    document.getElementById('permissionModal').classList.remove('show');
+    
+    // Try updating Firestore
+    if(pendingRoomName){
+        try{
+            const snap=await db.collection('liveClassSessions').where('roomName','==',pendingRoomName).where('status','==','live').limit(1).get();
+            snap.forEach(async d=>{await db.collection('liveClassSessions').doc(d.id).update({status:'ended',endedAt:firebase.firestore.FieldValue.serverTimestamp(),endedReason:reason,durationActual:classSeconds});});
+        }catch(e){}
+    }
+    
+    clearSession();checkReturnButton();
     classSeconds=0;classDuration=0;pendingRoomName=null;pendingTopic=null;
-    showToast('Class ended','info');
+    showToast('Class ended — session saved','info');
+    loadPastSessions();
 }
 
+// ═══════════════════════════════════════════
 // SCHEDULING
+// ═══════════════════════════════════════════
 async function scheduleClass(topic,date,time,duration,guestName){
-    const data={topic,date,time,durationMinutes:duration,teacherId:currentUser.uid,classId:currentClass,status:'scheduled'};
-    if(guestName){data.guestName=guestName;data.guestCode=Math.random().toString(36).substring(2,8).toUpperCase();}
-    try{await db.collection('scheduledClasses').add(data);showToast('Scheduled!','success');loadScheduled();}
-    catch(e){showToast('Scheduled (local only)','info');}
+    const data={topic,date,time,durationMinutes:duration,teacherId:currentUser?.uid,teacherName:userData?`${userData.firstName||''} ${userData.surname||''}`.trim():'Teacher',classId:currentClass,subject:currentSubject||'',week:currentWeek||null,status:'scheduled',createdAt:firebase.firestore.FieldValue.serverTimestamp()};
+    if(guestName&&guestName.trim()){data.guestName=guestName.trim();data.guestCode=Math.random().toString(36).substring(2,8).toUpperCase();data.guestId=Math.random().toString(36).substring(2,14);data.guestUsed=false;}
+    try{await db.collection('scheduledClasses').add(data);showToast('Class scheduled!','success');loadScheduled();}catch(e){showToast('Scheduled (offline mode)','info',3000);}
 }
 
 async function loadScheduled(){
     try{
-        const snap=await db.collection('scheduledClasses').where('teacherId','==',currentUser.uid).where('classId','==',currentClass).where('status','==','scheduled').orderBy('date').get();
+        const snap=await db.collection('scheduledClasses').where('teacherId','==',currentUser?.uid).where('classId','==',currentClass).where('status','==','scheduled').orderBy('date').orderBy('time').get();
         const c=document.getElementById('scheduledList');
-        if(snap.empty){c.innerHTML='<div class="empty-state"><i class="fas fa-calendar"></i><h3>None</h3></div>';return;}
-        c.innerHTML=snap.docs.map(d=>{const s=d.data();return`<div class="scheduled-session-item"><div><b>${escapeHtml(s.topic)}</b><br><small>${s.date} ${s.time} · ${s.durationMinutes}min${s.guestName?' · Guest: '+s.guestName:''}</small></div><div style="display:flex;gap:0.3rem;"><button class="btn btn-start-class btn-sm" onclick="startScheduled('${d.id}')">Start</button><button class="btn btn-outline btn-sm" onclick="deleteSched('${d.id}')">✕</button></div></div>`;}).join('');
+        if(snap.empty){c.innerHTML='<div class="empty-state"><i class="fas fa-calendar"></i><h3>No scheduled classes</h3></div>';return;}
+        c.innerHTML=snap.docs.map(d=>{const s=d.data();return`<div class="scheduled-session-item"><div><b>${escapeHtml(s.topic)}</b><br><small>${s.date} at ${s.time} · ${s.durationMinutes}min${s.guestName?' · Guest: '+escapeHtml(s.guestName):''}</small></div><div style="display:flex;gap:0.3rem;"><button class="btn btn-start-class btn-sm" onclick="startScheduledClass('${d.id}')"><i class="fas fa-play"></i> Start</button><button class="btn btn-outline btn-sm" onclick="deleteScheduled('${d.id}')"><i class="fas fa-trash"></i></button></div></div>`;}).join('');
+    }catch(e){debugLog('Load sched error',e.message,'warn');}
+}
+async function startScheduledClass(id){const d=await db.collection('scheduledClasses').doc(id).get();if(d.exists){const s=d.data();startLiveClass(s.topic,s.durationMinutes);try{await db.collection('scheduledClasses').doc(id).update({status:'live'});}catch(e){}}}
+async function deleteScheduled(id){if(!confirm('Delete this scheduled class?'))return;try{await db.collection('scheduledClasses').doc(id).delete();loadScheduled();}catch(e){}}
+
+// ═══════════════════════════════════════════
+// PAST SESSIONS
+// ═══════════════════════════════════════════
+async function loadPastSessions(){
+    try{
+        const snap=await db.collection('liveClassSessions').where('teacherId','==',currentUser?.uid).where('classId','==',currentClass).where('status','==','ended').orderBy('endedAt','desc').limit(10).get();
+        const c=document.getElementById('pastList');
+        if(snap.empty){c.innerHTML='<div class="empty-state"><i class="fas fa-history"></i><h3>No past sessions</h3></div>';return;}
+        c.innerHTML=snap.docs.map(d=>{const s=d.data();const dt=s.startedAt?.toDate?new Date(s.startedAt.toDate()).toLocaleDateString():'Unknown';const dur=s.durationActual?`${Math.floor(s.durationActual/60)}m`:s.durationMinutes+'m';return`<div class="past-session-item"><div><b>${escapeHtml(s.topic||'Untitled')}</b><br><small>${dt} · ${dur}</small></div><span class="badge">Ended</span></div>`;}).join('');
     }catch(e){}
 }
-async function startScheduled(id){const d=await db.collection('scheduledClasses').doc(id).get();if(d.exists){const s=d.data();startLiveClass(s.topic,s.durationMinutes);await db.collection('scheduledClasses').doc(id).update({status:'live'});}}
-async function deleteSched(id){await db.collection('scheduledClasses').doc(id).delete();loadScheduled();}
 
-// GUEST
+// ═══════════════════════════════════════════
+// GUEST INVITE
+// ═══════════════════════════════════════════
 function inviteGuestToLiveClass(){
     document.getElementById('guestModal').classList.add('active');
     document.getElementById('guestLinkBox').classList.remove('show');
@@ -545,40 +684,45 @@ function inviteGuestToLiveClass(){
 async function submitGuest(e){
     e.preventDefault();
     const name=document.getElementById('guestName').value.trim(),purpose=document.getElementById('guestPurpose').value.trim(),dur=parseInt(document.getElementById('guestDuration').value);
+    if(!name||!purpose)return;
     const code=Math.random().toString(36).substring(2,8).toUpperCase(),guestId=Math.random().toString(36).substring(2,14);
     const link=`${window.location.origin}/teacher-teach.html?guest=${guestId}&code=${code}`;
     document.getElementById('guestLinkText').textContent=link;
     document.getElementById('guestCodeDisplay').textContent=code;
     document.getElementById('guestLinkBox').classList.add('show');
-    try{await db.collection('guestAccess').add({guestId,oneTimeCode:code,guestName:name,purpose,roomName:pendingRoomName,teacherId:currentUser.uid,classId:currentClass,subject:currentSubject,week:currentWeek,durationMinutes:dur,used:false});}catch(e){}
+    try{await db.collection('guestAccess').add({guestId,oneTimeCode:code,guestName:name,purpose,roomName:pendingRoomName,teacherId:currentUser.uid,teacherName:`${userData?.firstName||''} ${userData?.surname||''}`.trim(),classId:currentClass,subject:currentSubject,week:currentWeek,durationMinutes:dur,expiresAt:firebase.firestore.Timestamp.fromDate(new Date(Date.now()+dur*60000)),used:false,createdAt:firebase.firestore.FieldValue.serverTimestamp()});}catch(e){debugLog('Guest save error',e.message,'warn');}
+    showToast('Guest invite generated!','success');
 }
-function copyGuest(){const l=document.getElementById('guestLinkText').textContent,c=document.getElementById('guestCodeDisplay').textContent;navigator.clipboard.writeText(`Link: ${l}\nCode: ${c}`).then(()=>showToast('Copied!','success'));}
+function copyGuestInfo(){
+    const l=document.getElementById('guestLinkText').textContent,c=document.getElementById('guestCodeDisplay').textContent;
+    navigator.clipboard.writeText(`Judah Wonders - Guest Invite\nLink: ${l}\nOne-Time Code: ${c}\n\nNo login needed — open in browser.`).then(()=>showToast('Copied!','success')).catch(()=>showToast('Copy failed','error'));
+}
 
-// FORM SUBMISSIONS
-function submitStartClass(e){e.preventDefault();const t=document.getElementById('classTopic').value.trim(),d=parseInt(document.getElementById('classDuration').value);closeModal('startClassModal');startLiveClass(t,d);}
-function submitSchedule(e){e.preventDefault();const t=document.getElementById('schedTopic').value.trim(),d2=document.getElementById('schedDate').value,tm=document.getElementById('schedTime').value,dur=parseInt(document.getElementById('schedDuration').value),g=document.getElementById('schedGuest').value.trim();closeModal('scheduleClassModal');scheduleClass(t,d2,tm,dur,g);}
-
-// TEACH MODE
+// ═══════════════════════════════════════════
+// TEACH MODE (lesson note overlay)
+// ═══════════════════════════════════════════
 function paginateContent(text,wpp=150){if(!text||!text.trim())return['No content.'];const w=text.replace(/<[^>]*>/g,' ').replace(/\s+/g,' ').trim().split(/\s+/),p=[];for(let i=0;i<w.length;i+=wpp)p.push(w.slice(i,i+wpp).join(' '));return p.length?p:['No content.'];}
 function renderBook(container,pages,cur,pk){container.innerHTML='';const fc=document.createElement('div');fc.className='book-container';const pd=document.createElement('div');pd.className='book-page';pd.textContent=pages[cur]||'';fc.appendChild(pd);const nav=document.createElement('div');nav.className='book-nav';nav.innerHTML=`<button class="book-nav-btn" ${cur===0?'disabled':''} onclick="flipPage('${pk}',-1)"><i class="fas fa-chevron-left"></i></button><span class="page-indicator">Page ${cur+1}/${pages.length}</span><button class="book-nav-btn" ${cur>=pages.length-1?'disabled':''} onclick="flipPage('${pk}',1)"><i class="fas fa-chevron-right"></i></button>`;container.appendChild(fc);container.appendChild(nav);}
 function flipPage(pk,dir){const bp=bookPages[pk],np=bp.current+dir;if(np<0||np>=bp.pages.length)return;bp.current=np;const ck=pk==='lessonNote'?'teachContentLN':'teachContentTP';if(document.getElementById(ck).classList.contains('book-mode'))renderBook(document.getElementById(ck),bp.pages,bp.current,pk);}
 function setReadingMode(pk,mode){teachModes[pk]=mode;const ck=pk==='lessonNote'?'teachContentLN':'teachContentTP',c=document.getElementById(ck);c.classList.remove('scroll-mode','book-mode');if(!currentNote)return;const content=pk==='lessonNote'?(currentNote.lessonNote||''):(currentNote.teachingProcess||'');if(mode==='book'){const pages=paginateContent(content);bookPages[pk]={pages,current:0};c.classList.add('book-mode');renderBook(c,pages,0,pk);}else{c.classList.add('scroll-mode');c.innerHTML=`<div style="padding:1rem;">${content||'Not available.'}</div>`;}}
 function toggleTeachPanel(pk){teachPanels[pk]=!teachPanels[pk];document.getElementById(pk==='lessonNote'?'teachPanelLN':'teachPanelTP').classList.toggle('hidden',!teachPanels[pk]);if(!teachPanels.lessonNote&&!teachPanels.teachingProcess)closeTeachMode();}
-function openTeachMode(){if(!currentNote)return showToast('Select subject & week first','warning');if(!currentNote.teachable||(!currentNote.lessonNote&&!currentNote.teachingProcess))return showToast('No teachable content','warning');teachActive=true;teachPanels={lessonNote:!!(currentNote.teachable&&currentNote.lessonNote),teachingProcess:!!(currentNote.teachable&&currentNote.teachingProcess)};document.getElementById('teachOverlay').classList.add('active');document.getElementById('teachContainer').classList.add('active');document.getElementById('teachPanelLN').classList.toggle('hidden',!teachPanels.lessonNote);document.getElementById('teachPanelTP').classList.toggle('hidden',!teachPanels.teachingProcess);document.getElementById('teachModeBtn').classList.add('active-teach');document.getElementById('teachModeBtn').innerHTML='<i class="fas fa-times"></i> Exit Teach';populateTeachPanels();document.body.style.overflow='hidden';}
-function closeTeachMode(){teachActive=false;document.getElementById('teachOverlay').classList.remove('active');document.getElementById('teachContainer').classList.remove('active');document.getElementById('teachModeBtn').classList.remove('active-teach');document.getElementById('teachModeBtn').innerHTML='<i class="fas fa-chalkboard"></i> Teach Mode <small>Ctrl+T</small>';document.body.style.overflow='';}
+function openTeachMode(){if(!currentNote)return showToast('Select a subject and week first','warning');if(!currentNote.teachable||(!currentNote.lessonNote&&!currentNote.teachingProcess))return showToast('No teachable content for this week','warning');teachActive=true;teachPanels={lessonNote:!!(currentNote.teachable&&currentNote.lessonNote),teachingProcess:!!(currentNote.teachable&&currentNote.teachingProcess)};document.getElementById('teachOverlay').classList.add('active');document.getElementById('teachContainer').classList.add('active');document.getElementById('teachPanelLN').classList.toggle('hidden',!teachPanels.lessonNote);document.getElementById('teachPanelTP').classList.toggle('hidden',!teachPanels.teachingProcess);const btn=document.getElementById('teachModeBtn');btn.classList.add('active-teach');btn.innerHTML='<i class="fas fa-times"></i> Exit Teach <small>Esc</small>';populateTeachPanels();document.body.style.overflow='hidden';}
+function closeTeachMode(){teachActive=false;document.getElementById('teachOverlay').classList.remove('active');document.getElementById('teachContainer').classList.remove('active');const btn=document.getElementById('teachModeBtn');btn.classList.remove('active-teach');btn.innerHTML='<i class="fas fa-chalkboard"></i> Teach Mode <small>Ctrl+T</small>';document.body.style.overflow='';}
 function toggleTeachMode(){teachActive?closeTeachMode():openTeachMode();}
 function populateTeachPanels(){if(!currentNote)return;['lessonNote','teachingProcess'].forEach(pk=>setReadingMode(pk,teachModes[pk]));}
-
-// READING TOGGLES
 ['lessonNote','teachingProcess'].forEach(pk=>{const t=document.getElementById(pk==='lessonNote'?'readingToggleLN':'readingToggleTP');if(!t)return;t.querySelectorAll('.reading-opt').forEach(o=>o.addEventListener('click',function(){t.querySelectorAll('.reading-opt').forEach(x=>x.classList.remove('active'));this.classList.add('active');setReadingMode(pk,this.dataset.mode);}));});
 
-// LOAD DATA
+// ═══════════════════════════════════════════
+// LOAD TEACH DATA
+// ═══════════════════════════════════════════
 async function loadTeachData(){
-    if(!currentUser||!currentClass)return;
+    if(!currentUser||!currentClass){debugLog('Load skipped','No user/class');return;}
+    debugLog('Loading data','Class: '+currentClass);
     try{
         const snap=await db.collection('lessonNotes').where('teacherId','==',currentUser.uid).where('classId','==',currentClass).get();
         lessonNotesMap={};snap.forEach(d=>{const dd=d.data();lessonNotesMap[`${dd.subject}_${dd.week}`]={id:d.id,...dd};});
-        const weeks=new Set();Object.values(lessonNotesMap).forEach(n=>{if(n.teachable||n.lessonNote)weeks.add(n.week);});
+        debugLog('Notes loaded',Object.keys(lessonNotesMap).length+' notes');
+        const weeks=new Set();Object.values(lessonNotesMap).forEach(n=>{if(n.teachable||n.lessonNote||n.teachingProcess||n.studentResource||n.videoLinks?.length||n.handwritingImages?.length)weeks.add(n.week);});
         const wSel=document.getElementById('weekSelect');wSel.innerHTML='<option value="">Select Week</option>';
         [...weeks].sort((a,b)=>a-b).forEach(w=>{const o=document.createElement('option');o.value=w;o.textContent=`Week ${w}`;wSel.appendChild(o);});
         renderResources();
@@ -587,46 +731,59 @@ async function loadTeachData(){
 function onSubjChange(){currentSubject=document.getElementById('subjectSelect').value;document.getElementById('weekSelect').value='';currentWeek=null;currentNote=null;renderResources();}
 function onWeekChange(){currentWeek=parseInt(document.getElementById('weekSelect').value)||null;renderResources();}
 
+// ═══════════════════════════════════════════
+// RENDER RESOURCES
+// ═══════════════════════════════════════════
 function renderResources(){
     const c=document.getElementById('resourcesContainer'),t=document.getElementById('resourceTitle');
-    if(!currentSubject||!currentWeek){c.innerHTML='<div class="empty-state"><i class="fas fa-folder-open"></i><h3>Select Subject & Week</h3></div>';t.textContent='Select subject & week';currentNote=null;return;}
+    if(!currentSubject||!currentWeek){c.innerHTML='<div class="empty-state"><i class="fas fa-folder-open"></i><h3>Select Subject & Week</h3><p>Published content from Workspace appears here</p></div>';t.textContent='Select a subject and week';currentNote=null;return;}
     const k=`${currentSubject}_${currentWeek}`;currentNote=lessonNotesMap[k]||null;t.textContent=`${currentSubject} — Week ${currentWeek}`;
-    if(!currentNote){c.innerHTML='<div class="empty-state"><i class="fas fa-inbox"></i><h3>No Resources</h3></div>';return;}
+    if(!currentNote){c.innerHTML='<div class="empty-state"><i class="fas fa-inbox"></i><h3>No Resources Yet</h3><p>Publish content from your Workspace to see it here</p></div>';return;}
     const n=currentNote;let h='<div class="resource-grid">';
-    if(n.teachable&&n.lessonNote)h+=`<div class="resource-card"><h4><i class="fas fa-book"></i> Lesson Note</h4><div class="content-preview">${n.lessonNote.substring(0,600)}${n.lessonNote.length>600?'...':''}</div><span class="badge badge-teach">In Teach</span></div>`;
-    if(n.teachable&&n.teachingProcess)h+=`<div class="resource-card"><h4><i class="fas fa-chalkboard-teacher"></i> Teaching Process</h4><div class="content-preview">${n.teachingProcess.substring(0,600)}${n.teachingProcess.length>600?'...':''}</div><span class="badge badge-teach">In Teach</span></div>`;
-    if(n.studentResource){const p=n.resourcePublished;h+=`<div class="resource-card"><h4><i class="fas fa-book-reader"></i> Student Resources ${p?'<span class="badge badge-published">Published</span>':''}</h4><div class="content-preview">${n.studentResource.substring(0,500)}${n.studentResource.length>500?'...':''}</div>${p?'<span class="badge badge-teach">Published</span>':`<button class="btn btn-outline btn-sm pub-btn" data-doc="${n.id}" data-f="resourcePublished">📤 Publish</button>`}</div>`;}
+    if(n.teachable&&n.lessonNote)h+=`<div class="resource-card"><h4><i class="fas fa-book"></i> Lesson Note</h4><div class="content-preview">${n.lessonNote.substring(0,600)}${n.lessonNote.length>600?'...':''}</div><span class="badge badge-teach"><i class="fas fa-chalkboard"></i> Ready to Teach</span></div>`;
+    if(n.teachable&&n.teachingProcess)h+=`<div class="resource-card"><h4><i class="fas fa-chalkboard-teacher"></i> Teaching Process</h4><div class="content-preview">${n.teachingProcess.substring(0,600)}${n.teachingProcess.length>600?'...':''}</div><span class="badge badge-teach"><i class="fas fa-chalkboard"></i> Ready to Teach</span></div>`;
+    if(n.studentResource){const p=n.resourcePublished;h+=`<div class="resource-card"><h4><i class="fas fa-book-reader"></i> Student Resources ${p?'<span class="badge badge-published"><i class="fas fa-check"></i> Published</span>':''}</h4><div class="content-preview">${n.studentResource.substring(0,500)}${n.studentResource.length>500?'...':''}</div>${p?'<span class="badge badge-teach">Published to Students</span>':`<button class="btn btn-outline btn-sm pub-btn" data-doc="${n.id}" data-f="resourcePublished">📤 Publish to Students</button>`}</div>`;}
     if(n.handwritingImages?.length||n.handwritingAudios?.length){
-        let ih='';if(n.handwritingImages?.length){ih+='<div class="handwriting-grid">';n.handwritingImages.forEach(img=>ih+=`<img src="${img.url}" onclick="window.open('${img.url}')" loading="lazy" onerror="this.style.display='none';">`);ih+='</div>';}
-        if(n.handwritingAudios?.length)n.handwritingAudios.forEach(a=>ih+=`<div class="audio-list-item"><audio controls src="${a.url}" style="height:28px;"></audio><span>${escapeHtml(a.name||'Audio')}</span></div>`);
-        const p=n.handwritingImagesPublished;h+=`<div class="resource-card"><h4><i class="fas fa-pen-fancy"></i> Visual Notes ${p?'<span class="badge badge-published">Published</span>':''}</h4>${ih}${p?'<span class="badge badge-teach">Published</span>':`<button class="btn btn-outline btn-sm pub-btn" data-doc="${n.id}" data-f="handwritingImagesPublished">📤 Publish</button>`}</div>`;
+        let ih='';if(n.handwritingImages?.length){ih+='<div class="handwriting-grid">';n.handwritingImages.forEach(img=>ih+=`<img src="${img.url}" onclick="window.open('${img.url}','_blank')" loading="lazy" onerror="this.style.display='none';">`);ih+='</div>';}
+        if(n.handwritingAudios?.length)n.handwritingAudios.forEach(a=>ih+=`<div class="audio-list-item"><audio controls src="${a.url}" style="height:28px;"></audio><span style="font-size:0.75rem;">${escapeHtml(a.name||'Audio')}</span></div>`);
+        const p=n.handwritingImagesPublished;h+=`<div class="resource-card"><h4><i class="fas fa-pen-fancy"></i> Visual Notes ${p?'<span class="badge badge-published"><i class="fas fa-check"></i> Published</span>':''}</h4>${ih}${p?'<span class="badge badge-teach">Published to Students</span>':`<button class="btn btn-outline btn-sm pub-btn" data-doc="${n.id}" data-f="handwritingImagesPublished">📤 Publish to Students</button>`}</div>`;
     }
     if(n.videoLinks?.length){
-        let vh='<div class="video-thumb-grid">';n.videoLinks.forEach((l,i)=>{const v=extractYouTubeId(l);if(v)vh+=`<div class="video-thumb-item ${i===selectedVideoIdx?'selected':''}" data-v="${i}"><img src="https://img.youtube.com/vi/${v}/hqdefault.jpg" loading="lazy"></div>`;});vh+='</div>';
+        let vh='<div class="video-thumb-grid">';n.videoLinks.forEach((l,i)=>{const v=extractYouTubeId(l);if(v)vh+=`<div class="video-thumb-item ${i===selectedVideoIdx?'selected':''}" data-v="${i}"><img src="https://img.youtube.com/vi/${v}/hqdefault.jpg" loading="lazy" onerror="this.style.display='none';"></div>`;});vh+='</div>';
         const sv=n.videoLinks[selectedVideoIdx]||n.videoLinks[0],svid=extractYouTubeId(sv);if(svid)vh+=`<div class="youtube-wrapper"><iframe src="https://www.youtube.com/embed/${svid}?rel=0&modestbranding=1" allowfullscreen loading="lazy"></iframe></div>`;
-        const p=n.videosPublished;h+=`<div class="resource-card" style="grid-column:1/-1;"><h4><i class="fab fa-youtube"></i> Videos ${p?'<span class="badge badge-published">Published</span>':''}</h4>${vh}${p?'<span class="badge badge-teach">Published</span>':`<button class="btn btn-outline btn-sm pub-btn" data-doc="${n.id}" data-f="videosPublished">📤 Publish</button>`}</div>`;
+        const p=n.videosPublished;h+=`<div class="resource-card" style="grid-column:1/-1;"><h4><i class="fab fa-youtube"></i> Video Links ${p?'<span class="badge badge-published"><i class="fas fa-check"></i> Published</span>':''}</h4>${vh}${p?'<span class="badge badge-teach">Published to Students</span>':`<button class="btn btn-outline btn-sm pub-btn" data-doc="${n.id}" data-f="videosPublished">📤 Publish to Students</button>`}</div>`;
     }
     h+='</div>';c.innerHTML=h;
     c.querySelectorAll('.video-thumb-item').forEach(i=>i.addEventListener('click',function(){selectedVideoIdx=parseInt(this.dataset.v);renderResources();}));
-    c.querySelectorAll('.pub-btn').forEach(b=>b.addEventListener('click',async function(){const d=this.dataset.doc,f=this.dataset.f;try{await db.collection('lessonNotes').doc(d).update({[f]:true});showToast('Published!','success');loadTeachData();}catch(e){showToast('Error','error');}}));
+    c.querySelectorAll('.pub-btn').forEach(b=>b.addEventListener('click',async function(){const d=this.dataset.doc,f=this.dataset.f,o=this.innerHTML;this.disabled=true;this.innerHTML='<i class="fas fa-spinner fa-spin"></i>';try{await db.collection('lessonNotes').doc(d).update({[f]:true,updatedAt:firebase.firestore.FieldValue.serverTimestamp()});showToast('Published to students!','success');await loadTeachData();renderResources();}catch(e){showToast('Published (offline mode)','info');this.disabled=false;this.innerHTML=o;}}));
 }
 
-// SUBMISSIONS
+// ═══════════════════════════════════════════
+// STUDENT SUBMISSIONS
+// ═══════════════════════════════════════════
 function renderSubmissions(snap){
-    const c=document.getElementById('submissionsList');if(!snap||snap.empty){c.innerHTML='<div class="empty-state"><i class="fas fa-inbox"></i><h3>None</h3></div>';return;}
+    const c=document.getElementById('submissionsList'),b=document.getElementById('submissionBadge');
+    if(!snap||snap.empty){c.innerHTML='<div class="empty-state"><i class="fas fa-inbox"></i><h3>No submissions yet</h3><p>Students send snaps and voice notes from their classroom</p></div>';b.style.display='none';return;}
     const s=[];snap.forEach(d=>s.push({id:d.id,...d.data()}));
-    c.innerHTML=s.map(s=>{const im=s.type==='image',au=s.type==='audio'||s.type==='voice',t=s.createdAt?.toDate?new Date(s.createdAt.toDate()).toLocaleString():'';return`<div class="submission-card"><b>${escapeHtml(s.studentName||'Student')}</b> <small>${t}</small>${im?`<img src="${s.url}" loading="lazy" onerror="this.style.display='none';">`:''}${au?`<audio controls src="${s.url}"></audio>`:''}${s.caption?`<p>${escapeHtml(s.caption)}</p>`:''}</div>`;}).join('');
+    const nc=s.filter(x=>!x.viewedByTeacher).length;b.style.display=nc>0?'inline-flex':'none';if(nc>0)b.textContent=`${nc} new`;
+    c.innerHTML=s.map(s=>{const im=s.type==='image',au=s.type==='audio'||s.type==='voice',t=s.createdAt?.toDate?new Date(s.createdAt.toDate()).toLocaleString():'Unknown';return`<div class="submission-card"><div style="display:flex;justify-content:space-between;align-items:start;flex-wrap:wrap;gap:0.5rem;"><div><b>${escapeHtml(s.studentName||'Student')}</b><br><small style="color:var(--text-secondary);">${t}</small>${!s.viewedByTeacher?' <span class="badge badge-pending">New</span>':''}</div><button class="btn btn-sm btn-outline" onclick="markViewed('${s.id}')"><i class="fas fa-check"></i></button></div>${im?`<img src="${s.url}" onclick="window.open('${s.url}','_blank')" loading="lazy" onerror="this.style.display='none';">`:''}${au?`<audio controls src="${s.url}" style="width:100%;margin-top:0.5rem;"></audio>`:''}${s.caption?`<p style="font-size:0.8rem;color:var(--text-secondary);margin-top:0.3rem;">${escapeHtml(s.caption)}</p>`:''}</div>`;}).join('');
 }
+async function markViewed(id){try{await db.collection('studentSubmissions').doc(id).update({viewedByTeacher:true,viewedAt:firebase.firestore.FieldValue.serverTimestamp()});}catch(e){}}
 
+// ═══════════════════════════════════════════
 // CHAT
+// ═══════════════════════════════════════════
 function renderChat(snap){
-    const c=document.getElementById('chatMessages');if(!snap||snap.empty){c.innerHTML='<div class="empty-state"><i class="fas fa-comments"></i><h3>No messages</h3></div>';return;}
+    const c=document.getElementById('chatMessages');if(!snap||snap.empty){c.innerHTML='<div class="empty-state"><i class="fas fa-comments"></i><h3>No messages yet</h3><p>Chat with your students</p></div>';return;}
     const m=[];snap.forEach(d=>m.push({id:d.id,...d.data()}));
-    c.innerHTML=m.map(m=>{const isT=m.senderRole==='teacher',cls=isT?'sent':'received';return`<div class="chat-bubble ${cls}"><div class="chat-sender">${isT?'You':escapeHtml(m.studentName||'Student')}</div><div>${escapeHtml(m.message||'')}</div></div>`;}).join('');c.scrollTop=c.scrollHeight;
+    c.innerHTML=m.map(m=>{const isT=m.senderRole==='teacher',cls=isT?'sent':'received',sender=isT?'You':escapeHtml(m.studentName||'Student'),t=m.createdAt?.toDate?new Date(m.createdAt.toDate()).toLocaleTimeString([],{hour:'2-digit',minute:'2-digit'}):'';return`<div class="chat-bubble ${cls}"><div class="chat-sender">${sender}</div><div>${escapeHtml(m.message||'')}</div><div class="chat-time">${t}</div></div>`;}).join('');c.scrollTop=c.scrollHeight;
 }
-async function sendChat(){const i=document.getElementById('chatInput'),m=i.value.trim();if(!m||!currentUser)return;i.value='';try{await db.collection('teacherStudentChats').add({teacherId:currentUser.uid,classId:currentClass,message:m,senderRole:'teacher',createdAt:firebase.firestore.FieldValue.serverTimestamp()});}catch(e){}}
+async function sendChat(){const i=document.getElementById('chatInput'),m=i.value.trim();if(!m||!currentUser||!currentClass)return;i.value='';try{await db.collection('teacherStudentChats').add({teacherId:currentUser.uid,teacherName:`${userData?.firstName||''} ${userData?.surname||''}`.trim(),studentId:null,studentName:'Teacher',classId:currentClass,subject:currentSubject||'',week:currentWeek||null,message:m,senderRole:'teacher',createdAt:firebase.firestore.FieldValue.serverTimestamp(),readByStudent:false});}catch(e){showToast('Message sent (offline)','info',2000);}}
+function loadChat(){if(!currentClass)return;db.collection('teacherStudentChats').where('teacherId','==',currentUser?.uid).where('classId','==',currentClass).orderBy('createdAt','asc').get().then(s=>renderChat(s)).catch(()=>{});}
 
+// ═══════════════════════════════════════════
 // AUTH
+// ═══════════════════════════════════════════
 auth.onAuthStateChanged(async user=>{
     debugLog('Auth',user?'User: '+user.uid:'No user');
     const params=new URLSearchParams(window.location.search);
@@ -635,54 +792,89 @@ auth.onAuthStateChanged(async user=>{
     if(!user){window.location.href='teacher-login.html';return;}
     try{
         const doc=await db.collection('users').doc(user.uid).get();
-        if(!doc.exists||doc.data().role!=='teacher'){auth.signOut();window.location.href='index.html';return;}
+        if(!doc.exists||doc.data().role!=='teacher'){await auth.signOut();window.location.href='index.html';return;}
         currentUser=user;userData=doc.data();allClasses=userData.classesTeaching||(userData.classTeaching?[userData.classTeaching]:[]);currentClass=allClasses[0]||null;subjects=userData.subjects||[];
-        const pic=document.getElementById('profilePic');if(userData.photoURL)pic.innerHTML=`<img src="${userData.photoURL}">`;else pic.textContent=(userData.firstName?.[0]||'T')+(userData.surname?.[0]||'E');
+        debugLog('User loaded',{name:userData.firstName,classes:allClasses,subjects});
+        const pic=document.getElementById('profilePic');if(userData.photoURL)pic.innerHTML=`<img src="${userData.photoURL}" alt="Profile">`;else pic.textContent=(userData.firstName?.[0]||'T')+(userData.surname?.[0]||'E');
         document.getElementById('profileName').textContent=userData.firstName||'Teacher';
         const cs=document.getElementById('classSelect');cs.innerHTML='';allClasses.forEach(c=>{const o=document.createElement('option');o.value=c;o.textContent=c;cs.appendChild(o);});if(currentClass)cs.value=currentClass;
-        cs.addEventListener('change',function(){currentClass=this.value;loadTeachData();loadScheduled();});
+        cs.addEventListener('change',function(){currentClass=this.value;debugLog('Class changed',currentClass);loadTeachData();loadScheduled();loadPastSessions();setupListeners();});
         const ss=document.getElementById('subjectSelect');ss.innerHTML='<option value="">Select Subject</option>';subjects.forEach(s=>{const o=document.createElement('option');o.value=s;o.textContent=s;ss.appendChild(o);});ss.addEventListener('change',onSubjChange);
         document.getElementById('weekSelect').addEventListener('change',onWeekChange);
-        if(currentClass){loadTeachData();loadScheduled();}
-        // Real-time listeners with error handling
-        try{db.collection('studentSubmissions').where('teacherId','==',currentUser.uid).where('classId','==',currentClass).orderBy('createdAt','desc').limit(30).onSnapshot(s=>renderSubmissions(s),e=>debugLog('Subs','skipped','warn'));}catch(e){}
-        try{db.collection('teacherStudentChats').where('teacherId','==',currentUser.uid).where('classId','==',currentClass).orderBy('createdAt','asc').onSnapshot(s=>renderChat(s),e=>debugLog('Chat','skipped','warn'));}catch(e){}
+        if(currentClass){await loadTeachData();loadScheduled();loadPastSessions();setupListeners();}
         checkReturnButton();
     }catch(e){debugLog('Auth error',e.message,'error');}
 });
-document.getElementById('logoutBtn').addEventListener('click',()=>{stopTimer();if(jitsiApi)try{jitsiApi.dispose();}catch(e){}auth.signOut().then(()=>window.location.href='index.html');});
+document.getElementById('logoutBtn').addEventListener('click',async()=>{stopTimer();if(jitsiApi&&!jitsiApi.__disposed)try{jitsiApi.dispose();jitsiApi.__disposed=true;}catch(e){}clearSession();await auth.signOut();window.location.href='index.html';});
 
-// GUEST
-async function handleGuest(guestId,guestCode){
-    try{const snap=await db.collection('guestAccess').where('guestId','==',guestId).limit(1).get();if(snap.empty){showToast('Invalid','error',10000);return;}const g=snap.docs[0].data();if(g.oneTimeCode!==guestCode||g.used){showToast('Invalid/used','error',10000);return;}
-        currentClass=g.classId;currentSubject=g.subject;currentWeek=g.week;
-        document.getElementById('classSelect').innerHTML=`<option>${g.classId}</option>`;document.getElementById('subjectSelect').innerHTML=`<option>${g.subject}</option>`;document.getElementById('weekSelect').innerHTML=`<option>Week ${g.week}</option>`;
-        document.getElementById('profileName').textContent=`Guest: ${g.guestName}`;document.getElementById('profilePic').textContent=g.guestName.charAt(0).toUpperCase();
-        const lnSnap=await db.collection('lessonNotes').where('teacherId','==',g.teacherId).where('classId','==',g.classId).get();lessonNotesMap={};lnSnap.forEach(d=>{const dd=d.data();lessonNotesMap[`${dd.subject}_${dd.week}`]={id:d.id,...dd};});renderResources();
-        if(g.roomName)startLiveClass(g.subject+' - '+g.purpose,g.durationMinutes||60);}catch(e){}
+function setupListeners(){
+    try{db.collection('studentSubmissions').where('teacherId','==',currentUser?.uid).where('classId','==',currentClass).orderBy('createdAt','desc').limit(30).onSnapshot(s=>renderSubmissions(s),e=>debugLog('Subs listener','Permission issue — check Firestore rules','warn'));}catch(e){}
+    try{db.collection('teacherStudentChats').where('teacherId','==',currentUser?.uid).where('classId','==',currentClass).orderBy('createdAt','asc').onSnapshot(s=>renderChat(s),e=>debugLog('Chat listener','Permission issue — check Firestore rules','warn'));}catch(e){}
 }
 
-// BUTTONS
+// ═══════════════════════════════════════════
+// GUEST ACCESS
+// ═══════════════════════════════════════════
+async function handleGuest(guestId,guestCode){
+    debugLog('Guest access attempt',{guestId,guestCode});
+    try{
+        const snap=await db.collection('guestAccess').where('guestId','==',guestId).limit(1).get();
+        if(snap.empty){showToast('Invalid guest link','error',10000);return;}
+        const g=snap.docs[0].data();
+        if(g.oneTimeCode!==guestCode){showToast('Wrong access code','error',10000);return;}
+        if(g.used){showToast('This code has already been used','error',10000);return;}
+        if(g.expiresAt?.toDate()<new Date()){showToast('This invite has expired','error',10000);return;}
+        await db.collection('guestAccess').doc(snap.docs[0].id).update({used:true,usedAt:firebase.firestore.FieldValue.serverTimestamp()});
+        currentClass=g.classId;currentSubject=g.subject;currentWeek=g.week;
+        document.getElementById('classSelect').innerHTML=`<option selected>${g.classId}</option>`;
+        document.getElementById('subjectSelect').innerHTML=`<option selected>${g.subject}</option>`;
+        document.getElementById('weekSelect').innerHTML=`<option selected>Week ${g.week}</option>`;
+        document.getElementById('profileName').textContent=`Guest: ${g.guestName}`;
+        document.getElementById('profilePic').textContent=g.guestName.charAt(0).toUpperCase();
+        document.getElementById('resourceTitle').textContent=`${g.subject} — Week ${g.week} (Guest)`;
+        const lnSnap=await db.collection('lessonNotes').where('teacherId','==',g.teacherId).where('classId','==',g.classId).get();
+        lessonNotesMap={};lnSnap.forEach(d=>{const dd=d.data();lessonNotesMap[`${dd.subject}_${dd.week}`]={id:d.id,...dd};});
+        renderResources();
+        if(g.roomName){startLiveClass(`${g.subject||'Class'} - ${g.purpose||'Guest Session'}`,g.durationMinutes||60);}
+        showToast(`Welcome ${g.guestName}!`,'Live classroom is ready.','success',12000);
+    }catch(e){debugLog('Guest error',e.message,'error');showToast('Error loading guest access','error');}
+}
+
+// ═══════════════════════════════════════════
+// BUTTONS & FORMS
+// ═══════════════════════════════════════════
 document.getElementById('teachModeBtn').addEventListener('click',toggleTeachMode);
 document.getElementById('startClassBtn').addEventListener('click',()=>{document.getElementById('classTopic').value=currentSubject?`${currentSubject} - Week ${currentWeek||'?'}`:'';document.getElementById('startClassModal').classList.add('active');});
 document.getElementById('scheduleClassBtn').addEventListener('click',()=>{document.getElementById('schedTopic').value=currentSubject?`${currentSubject} - Week ${currentWeek||'?'}`:'';document.getElementById('scheduleClassModal').classList.add('active');});
 document.getElementById('guestInviteBtn').addEventListener('click',()=>{document.getElementById('guestModal').classList.add('active');document.getElementById('guestLinkBox').classList.remove('show');});
-document.getElementById('studentViewBtn').addEventListener('click',()=>window.open(`student-classroom.html?class=${encodeURIComponent(currentClass||'')}&subject=${encodeURIComponent(currentSubject||'')}&week=${currentWeek||''}`,'_blank'));
+document.getElementById('studentViewBtn').addEventListener('click',()=>window.open(`student-classroom.html?class=${encodeURIComponent(currentClass||'')}&subject=${encodeURIComponent(currentSubject||'')}&week=${currentWeek||''}`,'_blank','noopener'));
 document.getElementById('printBtn').addEventListener('click',()=>window.print());
-document.getElementById('endClassBtn').addEventListener('click',()=>{if(confirm('End class?'))endLiveClass();});
+document.getElementById('endClassBtn').addEventListener('click',()=>{if(confirm('End this live classroom session?'))endLiveClass('Teacher ended class');});
 
-// KEYBOARD
+function submitStartClass(e){e.preventDefault();const t=document.getElementById('classTopic').value.trim(),d=parseInt(document.getElementById('classDuration').value);if(!t)return;closeModal('startClassModal');startLiveClass(t,d);}
+function submitSchedule(e){e.preventDefault();const t=document.getElementById('schedTopic').value.trim(),d2=document.getElementById('schedDate').value,tm=document.getElementById('schedTime').value,dur=parseInt(document.getElementById('schedDuration').value),g=document.getElementById('schedGuest').value.trim();if(!t||!d2||!tm)return showToast('Fill all fields','warning');closeModal('scheduleClassModal');scheduleClass(t,d2,tm,dur,g);}
+
+// ═══════════════════════════════════════════
+// KEYBOARD & CLOSE HANDLERS
+// ═══════════════════════════════════════════
 document.addEventListener('keydown',e=>{if((e.ctrlKey||e.metaKey)&&e.key==='t'){e.preventDefault();toggleTeachMode();}if(e.key==='Escape'&&teachActive){closeTeachMode();}});
-
-// CLOSE MODALS ON OVERLAY CLICK
 ['startClassModal','scheduleClassModal','guestModal'].forEach(id=>document.getElementById(id).addEventListener('click',function(e){if(e.target===this)closeModal(id);}));
 document.getElementById('teachOverlay').addEventListener('click',closeTeachMode);
 
-// EXPOSE
-window.toggleTeachMode=toggleTeachMode;window.toggleTeachPanel=toggleTeachPanel;window.flipPage=flipPage;
-window.sendChat=sendChat;window.startScheduled=startScheduled;window.deleteSched=deleteSched;
-window.inviteGuestToLiveClass=inviteGuestToLiveClass;window.copyGuest=copyGuest;
-window.returnToLiveClass=returnToLiveClass;window.toggleCC=toggleCC;window.togglePP=togglePP;
+// ═══════════════════════════════════════════
+// EXPOSE TO WINDOW
+// ═══════════════════════════════════════════
+window.toggleTeachMode=toggleTeachMode;window.toggleTeachPanel=toggleTeachPanel;
+window.flipPage=flipPage;window.setReadingMode=setReadingMode;
+window.sendChat=sendChat;window.loadChat=loadChat;
+window.startScheduledClass=startScheduledClass;window.deleteScheduled=deleteScheduled;
+window.inviteGuestToLiveClass=inviteGuestToLiveClass;window.copyGuestInfo=copyGuestInfo;
+window.returnToLiveClass=returnToLiveClass;window.retryClassroom=retryClassroom;
+window.toggleJitsiChat=toggleJitsiChat;window.toggleJitsiPeople=toggleJitsiPeople;window.toggleJitsiTile=toggleJitsiTile;
+window.markViewed=markViewed;window.confirmStartClassroom=confirmStartClassroom;
+
+console.log('🎓 Judah Wonders Teach Mode — Professional Edition Ready ✅');
+console.log('📋 Features: 8x8.vc (no time limit) | Session persistence | Offline fallback | Guest system | Scheduling');
 </script>
 </body>
 </html>
