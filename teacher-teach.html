@@ -92,7 +92,6 @@
         .card-header { display:flex; justify-content:space-between; align-items:flex-start; margin-bottom:1rem; flex-wrap:wrap; gap:1rem; padding-bottom:1rem; border-bottom:1px solid var(--border); }
         .card-header h3 { font-size:1.15rem; font-weight:700; display:flex; align-items:center; gap:0.5rem; }
 
-        /* ── VIRTUAL CLASSROOM CARD ── */
         .classroom-card { background:var(--classroom-bg); border:3px solid var(--live-room-border); border-radius:1.5rem; overflow:hidden; box-shadow:0 0 40px rgba(34,197,94,0.15); animation:classroomGlow 3s ease-in-out infinite; }
         @keyframes classroomGlow { 0%,100%{box-shadow:0 0 40px rgba(34,197,94,0.15)} 50%{box-shadow:0 0 60px rgba(34,197,94,0.3)} }
         .classroom-header { background:linear-gradient(135deg,#0A2540,#065f46); padding:1rem 1.5rem; display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:1rem; }
@@ -224,7 +223,6 @@
         .past-session-item { display:flex; justify-content:space-between; align-items:center; padding:0.8rem; border-bottom:1px solid var(--border); flex-wrap:wrap; gap:0.5rem; }
         .past-session-item:last-child { border-bottom:none; }
 
-        /* DEBUG */
         .debug-panel { position:fixed; bottom:80px; right:1rem; z-index:9999; background:var(--debug-bg); border:2px solid var(--debug-border); border-radius:1rem; padding:1rem; width:450px; max-width:calc(100vw - 2rem); max-height:55vh; overflow-y:auto; box-shadow:0 10px 40px rgba(0,0,0,0.8); font-family:'Space Grotesk',monospace; font-size:0.7rem; display:none; color:var(--debug-text); }
         .debug-panel.show { display:block; }
         .debug-panel h4 { margin-bottom:0.5rem; font-size:0.85rem; display:flex; justify-content:space-between; align-items:center; }
@@ -329,13 +327,13 @@
             </div>
         </div>
         <div class="jitsi-container" id="jitsiContainer">
-            <div class="empty-state" style="background:#000;color:white;"><i class="fas fa-video" style="opacity:0.3;"></i><h3>Loading classroom...</h3><p style="color:#94a3b8;">Please allow camera & microphone access</p></div>
+            <div class="empty-state" style="background:#000;color:white;"><i class="fas fa-video" style="opacity:0.3;"></i><h3>Loading classroom...</h3><p style="color:#94a3b8;">Everything stays in your browser — no app needed</p></div>
         </div>
         <div class="classroom-info-bar">
-            <div class="classroom-status"><span class="live-dot"></span> <span>Session Active</span></div>
+            <div class="classroom-status"><span class="live-dot"></span> <span>Session Active — All in-browser, no downloads</span></div>
             <div class="classroom-controls">
-                <button class="btn btn-sm btn-outline" onclick="toggleClassroomChat()" title="Toggle Chat Panel"><i class="fas fa-comments"></i> Chat</button>
-                <button class="btn btn-sm btn-outline" onclick="toggleClassroomParticipants()" title="Toggle Participant List"><i class="fas fa-users"></i> People</button>
+                <button class="btn btn-sm btn-outline" onclick="toggleClassroomChat()" title="Chat"><i class="fas fa-comments"></i> Chat</button>
+                <button class="btn btn-sm btn-outline" onclick="toggleClassroomParticipants()" title="Participants"><i class="fas fa-users"></i> People</button>
                 <button class="btn btn-sm btn-outline" onclick="toggleClassroomTileView()" title="Tile View"><i class="fas fa-th"></i> Tile</button>
                 <button class="btn btn-end-class btn-sm" id="endClassBtn" title="End Classroom"><i class="fas fa-stop"></i> End Class</button>
             </div>
@@ -389,7 +387,7 @@
         <form id="startClassForm">
             <div class="form-group"><label class="form-label">Class Topic / Title</label><input type="text" id="classTopic" class="form-control" placeholder="e.g., Mathematics - Fractions" required></div>
             <div class="form-group"><label class="form-label">Duration</label><select id="classDuration" class="form-control"><option value="20">20 minutes</option><option value="30">30 minutes</option><option value="45">45 minutes</option><option value="60" selected>1 hour</option><option value="90">1.5 hours</option><option value="120">2 hours</option></select></div>
-            <p style="font-size:0.8rem;color:var(--text-secondary);margin-bottom:1rem;"><i class="fas fa-info-circle"></i> Students will see a <strong>"Join Live Class"</strong> button on their classroom page. No external apps or downloads needed. Built-in raise hand ✋, chat 💬, and screen sharing 📹.</p>
+            <p style="font-size:0.8rem;color:var(--text-secondary);margin-bottom:1rem;"><i class="fas fa-info-circle"></i> Everything stays <strong>in your browser</strong>. No app downloads, no external logins. Raise hand ✋, chat 💬, screen share 📹 — all built in.</p>
             <div class="modal-actions"><button type="button" class="btn btn-outline" id="startClassCancelBtn">Cancel</button><button type="submit" class="btn btn-start-class"><i class="fas fa-play"></i> Start Live Classroom</button></div>
         </form>
     </div>
@@ -403,7 +401,7 @@
             <div class="form-group"><label class="form-label">Guest Name</label><input type="text" id="guestName" class="form-control" placeholder="e.g., Dr. Adeola" required></div>
             <div class="form-group"><label class="form-label">Purpose / Topic</label><input type="text" id="guestPurpose" class="form-control" placeholder="e.g., Health talk on hygiene" required></div>
             <div class="form-group"><label class="form-label">Classroom Duration</label><select id="guestDuration" class="form-control"><option value="20">20 minutes</option><option value="30">30 minutes</option><option value="45">45 minutes</option><option value="60" selected>1 hour</option><option value="120">2 hours</option></select></div>
-            <p style="font-size:0.8rem;color:var(--text-secondary);margin-bottom:1rem;"><i class="fas fa-info-circle"></i> Guest receives a <strong>link + one-time code</strong>. No sign-up required. They use our built-in live classroom to teach students directly.</p>
+            <p style="font-size:0.8rem;color:var(--text-secondary);margin-bottom:1rem;"><i class="fas fa-info-circle"></i> Guest gets a <strong>link + one-time code</strong>. No sign-up, no app download. Everything works in their browser.</p>
             <div class="modal-actions"><button type="button" class="btn btn-outline" id="guestCancelBtn">Cancel</button><button type="submit" class="btn btn-primary"><i class="fas fa-link"></i> Generate Invite</button></div>
         </form>
         <div class="guest-link-box" id="guestLinkBox">
@@ -411,16 +409,13 @@
             <p style="margin-top:0.5rem;"><strong>Link:</strong><br><span id="guestLinkText" style="word-break:break-all;"></span></p>
             <p style="margin-top:0.8rem;"><strong>One-Time Access Code:</strong></p>
             <div class="guest-code-display" id="guestCodeDisplay">------</div>
-            <p style="font-size:0.75rem;color:var(--text-secondary);">No account needed. Guest clicks link → enters code → teaches in live classroom.</p>
+            <p style="font-size:0.75rem;color:var(--text-secondary);">No account, no app — just open the link, enter the code, and start teaching.</p>
             <button class="btn btn-primary btn-sm" id="copyGuestInviteBtn" style="margin-top:0.5rem;"><i class="fas fa-copy"></i> Copy Link + Code</button>
         </div>
     </div>
 </div>
 
 <script>
-// ╔══════════════════════════════════════════╗
-// ║  FIREBASE CONFIGURATION                 ║
-// ╚══════════════════════════════════════════╝
 const firebaseConfig = {
     apiKey: "AIzaSyADXHEiaSQ146QsGsaOCElARtpwrLE8svs",
     authDomain: "judah-c737e.firebaseapp.com",
@@ -435,9 +430,6 @@ const auth = firebase.auth();
 const db = firebase.firestore();
 db.enablePersistence({synchronizeTabs:true}).catch(()=>{});
 
-// ╔══════════════════════════════════════════╗
-// ║  DEBUG SYSTEM                           ║
-// ╚══════════════════════════════════════════╝
 const debugLogs = [];
 function debugLog(key, value, type = 'info') {
     debugLogs.push({ key, value, type, time: new Date().toLocaleTimeString() });
@@ -454,9 +446,6 @@ function updateDebugPanel() {
 function clearDebugLogs() { debugLogs.length = 0; updateDebugPanel(); }
 document.getElementById('debugToggleBtn').addEventListener('click', () => document.getElementById('debugPanel').classList.toggle('show'));
 
-// ╔══════════════════════════════════════════╗
-// ║  GLOBAL STATE                           ║
-// ╚══════════════════════════════════════════╝
 let currentUser=null,userData=null,currentClass=null;
 let allClasses=[],subjects=[],currentSubject=null,currentWeek=null;
 let lessonNotesMap={},currentNote=null;
@@ -466,13 +455,10 @@ let bookPages={lessonNote:{pages:[],current:0},teachingProcess:{pages:[],current
 let selectedVideoIdx=0,unsubChat=null,unsubSubmissions=null,unsubLiveSession=null;
 let jitsiApi=null,currentLiveSessionId=null,classTimerInterval=null,classSeconds=0,classDuration=0;
 
-// Jitsi domains — 8x8.vc is free with NO time limit for embedded use
-const JITSI_DOMAINS=['8x8.vc','framatalk.org','meet.ffmuc.net'];
+// FREE PUBLIC JITSI SERVERS — no login, no moderator approval, no time limit, no app prompts
+const JITSI_DOMAINS=['meet.ffmuc.net','framatalk.org','meet.mayfirst.org'];
 let currentJitsiDomainIdx=0;
 
-// ╔══════════════════════════════════════════╗
-// ║  UTILITIES                              ║
-// ╚══════════════════════════════════════════╝
 function escapeHtml(s){const d=document.createElement('div');d.textContent=s||'';return d.innerHTML;}
 function showToast(msg,type='info',dur=4000){
     const icons={success:'fa-check-circle',error:'fa-exclamation-circle',warning:'fa-exclamation-triangle',info:'fa-info-circle'};
@@ -485,9 +471,6 @@ function showToast(msg,type='info',dur=4000){
 function extractYouTubeId(url){if(!url)return null;const p=[/(?:youtube\.com\/watch\?v=)([a-zA-Z0-9_-]{11})/,/(?:youtu\.be\/)([a-zA-Z0-9_-]{11})/,/(?:youtube\.com\/embed\/)([a-zA-Z0-9_-]{11})/];for(const r of p){const m=url.match(r);if(m)return m[1];}return null;}
 function generateRoomName(base){return`judah-${base}-${Date.now().toString(36)}-${Math.random().toString(36).substring(2,6)}`;}
 
-// ╔══════════════════════════════════════════╗
-// ║  THEME                                  ║
-// ╚══════════════════════════════════════════╝
 (function(){
     const html=document.documentElement,tt=document.getElementById('themeToggle');
     const saved=localStorage.getItem('judah-theme')||'dark';
@@ -500,16 +483,13 @@ function generateRoomName(base){return`judah-${base}-${Date.now().toString(36)}-
     });
 })();
 
-// ╔══════════════════════════════════════════╗
-// ║  IMAGE POPUP                            ║
-// ╚══════════════════════════════════════════╝
 function openImagePopup(url){document.getElementById('imagePopupImg').src=url;document.getElementById('imagePopup').classList.add('active');}
 function closeImagePopup(){document.getElementById('imagePopup').classList.remove('active');}
 document.addEventListener('keydown',e=>{if(e.key==='Escape'&&!teachActive)closeImagePopup();});
 
-// ╔══════════════════════════════════════════╗
-// ║  LIVE CLASSROOM (JITSI EMBEDDED)        ║
-// ╚══════════════════════════════════════════╝
+// ═══════════════════════════════════════════
+// LIVE CLASSROOM — NO APP, NO LOGIN, ALL IN BROWSER
+// ═══════════════════════════════════════════
 function startClassTimer(){
     classSeconds=0;updateTimerDisplay();
     classTimerInterval=setInterval(()=>{classSeconds++;updateTimerDisplay();
@@ -526,7 +506,7 @@ function stopClassTimer(){if(classTimerInterval){clearInterval(classTimerInterva
 
 function initJitsiMeet(roomName,topic){
     const container=document.getElementById('jitsiContainer');
-    container.innerHTML='<div class="empty-state" style="background:#000;color:white;"><i class="fas fa-spinner fa-spin" style="opacity:0.5;"></i><h3>Connecting to classroom...</h3></div>';
+    container.innerHTML='<div class="empty-state" style="background:#000;color:white;"><i class="fas fa-spinner fa-spin" style="opacity:0.5;"></i><h3>Connecting to classroom...</h3><p style="color:#94a3b8;">Allow camera & microphone when prompted</p></div>';
     
     const domain=JITSI_DOMAINS[currentJitsiDomainIdx];
     debugLog('Jitsi connecting',`Domain: ${domain}, Room: ${roomName}`);
@@ -536,12 +516,17 @@ function initJitsiMeet(roomName,topic){
         width:'100%',
         height:'100%',
         parentNode:container,
-        userInfo:{displayName:userData?`${userData.firstName||'Teacher'} ${userData.surname||''}`.trim():'Teacher'},
+        userInfo:{displayName:userData?`${userData.firstName||'Teacher'} ${userData.surname||''}`.trim():(document.getElementById('profileName')?.textContent||'Teacher')},
         configOverrides:{
             startWithAudioMuted:false,
             startWithVideoMuted:false,
             disableDeepLinking:true,
             prejoinPageEnabled:false,
+            requireDisplayName:false,
+            enableWelcomePage:false,
+            enableClosePage:false,
+            disableProfile:true,
+            enableNoisyMicDetection:false,
             disableThirdPartyRequests:false,
             analytics:{disabled:true},
             toolbarButtons:[
@@ -564,18 +549,19 @@ function initJitsiMeet(roomName,topic){
             JITSI_WATERMARK_LINK:'',
             APP_NAME:'Judah Wonders Classroom',
             NATIVE_APP_NAME:'Judah Classroom',
-            PROVIDER_NAME:'Judah Wonders Model School'
+            PROVIDER_NAME:'Judah Wonders Model School',
+            FILM_STRIP_MAX_HEIGHT:120,
+            DEFAULT_BACKGROUND:'#0a0f1e',
+            DISABLE_VIDEO_BACKGROUND:false
         }
     };
     
     try{
         jitsiApi=new JitsiMeetExternalAPI(domain,options);
-        
         jitsiApi.addListener('participantJoined',(p)=>{debugLog('Joined',p.displayName);updateParticipantCount();});
         jitsiApi.addListener('participantLeft',(p)=>{debugLog('Left',p.displayName);updateParticipantCount();});
-        jitsiApi.addListener('videoConferenceJoined',()=>{debugLog('Conference','Ready');updateParticipantCount();container.querySelector('.empty-state')?.remove();});
+        jitsiApi.addListener('videoConferenceJoined',()=>{debugLog('Conference','Ready');updateParticipantCount();const empty=container.querySelector('.empty-state');if(empty)empty.remove();});
         jitsiApi.addListener('videoConferenceLeft',()=>debugLog('Conference','Disconnected'));
-        jitsiApi.addListener('readyToClose',()=>endLiveClass('Session closed'));
     }catch(e){
         debugLog('Jitsi init ERROR',e.message,'error');
         currentJitsiDomainIdx++;
@@ -584,7 +570,7 @@ function initJitsiMeet(roomName,topic){
             showToast('Switching server...','Trying alternative classroom server','warning',3000);
             setTimeout(()=>initJitsiMeet(roomName,topic),1500);
         }else{
-            container.innerHTML='<div class="empty-state" style="background:#000;color:white;"><i class="fas fa-exclamation-triangle" style="color:#f59e0b;"></i><h3>Classroom Unavailable</h3><p style="color:#94a3b8;">All servers are currently unreachable. Please try again later.</p></div>';
+            container.innerHTML='<div class="empty-state" style="background:#000;color:white;"><i class="fas fa-exclamation-triangle" style="color:#f59e0b;"></i><h3>Classroom Unavailable</h3><p style="color:#94a3b8;">Please try again in a moment.</p></div>';
             showToast('Error','Could not start classroom','error');
         }
     }
@@ -593,7 +579,6 @@ function initJitsiMeet(roomName,topic){
 function updateParticipantCount(){
     if(jitsiApi){try{document.getElementById('participantCount').textContent=jitsiApi.getNumberOfParticipants()||0;}catch(e){}}
 }
-
 function toggleClassroomChat(){if(jitsiApi)jitsiApi.executeCommand('toggleChat');}
 function toggleClassroomParticipants(){if(jitsiApi)jitsiApi.executeCommand('toggleFilmStrip');}
 function toggleClassroomTileView(){if(jitsiApi)jitsiApi.executeCommand('toggleTileView');}
@@ -621,7 +606,7 @@ async function startLiveClass(topic,duration){
     initJitsiMeet(roomName,topic);
     startClassTimer();
     document.getElementById('liveClassroomCard').scrollIntoView({behavior:'smooth'});
-    showToast('Live Classroom Started!','Students can join from their classroom page. Built-in raise hand ✋, chat 💬, screen share 📹.','success',8000);
+    showToast('Live Classroom Started!','Students can join from their page. Raise hand ✋, chat 💬, screen share 📹 — all in browser.','success',8000);
 }
 
 async function endLiveClass(reason='Teacher ended class'){
@@ -636,11 +621,10 @@ async function endLiveClass(reason='Teacher ended class'){
                 status:'ended',endedAt:firebase.firestore.FieldValue.serverTimestamp(),
                 endedReason:reason,durationActual:classSeconds
             });
-            debugLog('Session ended',currentLiveSessionId);
         }catch(e){debugLog('End error',e.message,'error');}
     }
     currentLiveSessionId=null;classSeconds=0;classDuration=0;
-    showToast('Class Ended','Live classroom has been closed. Session saved to history.','info');
+    showToast('Class Ended','Session saved to history.','info');
     loadPastSessions();
 }
 
@@ -662,9 +646,9 @@ async function loadPastSessions(){
     }catch(e){debugLog('Past sessions error',e.message,'error');}
 }
 
-// ╔══════════════════════════════════════════╗
-// ║  TEACH MODE (LESSON NOTE FLIP-THROUGH)  ║
-// ╚══════════════════════════════════════════╝
+// ═══════════════════════════════════════════
+// TEACH MODE (LESSON NOTE FLIP-THROUGH)
+// ═══════════════════════════════════════════
 function paginateContent(text,wordsPerPage=150){
     if(!text||!text.trim())return['No content available.'];
     const clean=text.replace(/<[^>]*>/g,' ').replace(/\s+/g,' ').trim();
@@ -711,9 +695,9 @@ function closeTeachMode(){teachActive=false;document.getElementById('teachOverla
 function toggleTeachMode(){teachActive?closeTeachMode():openTeachMode();}
 function populateTeachPanels(){if(!currentNote)return;['lessonNote','teachingProcess'].forEach(pk=>setReadingMode(pk,teachModes[pk]));}
 
-// ╔══════════════════════════════════════════╗
-// ║  LOAD TEACH DATA                        ║
-// ╚══════════════════════════════════════════╝
+// ═══════════════════════════════════════════
+// LOAD TEACH DATA
+// ═══════════════════════════════════════════
 async function loadTeachData(){
     if(!currentUser||!currentClass){debugLog('loadTeachData skipped','No user/class','warn');return;}
     debugLog('loadTeachData','Class: '+currentClass);
@@ -725,15 +709,15 @@ async function loadTeachData(){
         Object.values(lessonNotesMap).forEach(n=>{if(n.teachable||n.lessonNote||n.teachingProcess||n.studentResource||n.videoLinks?.length||n.handwritingImages?.length)weeks.add(n.week);});
         const wSel=document.getElementById('weekSelect');wSel.innerHTML='<option value="">Select Week</option>';
         [...weeks].sort((a,b)=>a-b).forEach(w=>{const o=document.createElement('option');o.value=w;o.textContent=`Week ${w}`;wSel.appendChild(o);});
-        debugLog('Weeks',[...weeks]);renderResources();
+        renderResources();
     }catch(e){debugLog('loadTeachData ERROR',e.message,'error');}
 }
 function onSubjectChange(){currentSubject=document.getElementById('subjectSelect').value;document.getElementById('weekSelect').value='';currentWeek=null;currentNote=null;renderResources();}
 function onWeekChange(){currentWeek=parseInt(document.getElementById('weekSelect').value)||null;renderResources();}
 
-// ╔══════════════════════════════════════════╗
-// ║  RENDER RESOURCES                       ║
-// ╚══════════════════════════════════════════╝
+// ═══════════════════════════════════════════
+// RENDER RESOURCES
+// ═══════════════════════════════════════════
 function renderResources(){
     const container=document.getElementById('resourcesContainer'),title=document.getElementById('resourceTitle');
     if(!currentSubject||!currentWeek){container.innerHTML='<div class="empty-state"><i class="fas fa-folder-open"></i><h3>Select Subject & Week</h3></div>';title.textContent='Select a subject and week';currentNote=null;return;}
@@ -758,9 +742,9 @@ function renderResources(){
     container.querySelectorAll('.pub-btn').forEach(b=>b.addEventListener('click',async function(){const d=this.dataset.doc,f=this.dataset.f,o=this.innerHTML;this.disabled=true;this.innerHTML='<i class="fas fa-spinner fa-spin"></i>';try{await db.collection('lessonNotes').doc(d).update({[f]:true,updatedAt:firebase.firestore.FieldValue.serverTimestamp()});showToast('Published!','success');await loadTeachData();renderResources();}catch(e){showToast('Error',e.message,'error');this.disabled=false;this.innerHTML=o;}}));
 }
 
-// ╔══════════════════════════════════════════╗
-// ║  STUDENT SUBMISSIONS                    ║
-// ╚══════════════════════════════════════════╝
+// ═══════════════════════════════════════════
+// STUDENT SUBMISSIONS
+// ═══════════════════════════════════════════
 function setupSubmissionsListener(){
     if(unsubSubmissions)unsubSubmissions();if(!currentUser||!currentClass)return;
     unsubSubmissions=db.collection('studentSubmissions').where('teacherId','==',currentUser.uid).where('classId','==',currentClass).orderBy('createdAt','desc').limit(50).onSnapshot(s=>renderStudentSubmissions(s),e=>debugLog('Subs ERROR',e.message,'error'));
@@ -775,9 +759,9 @@ function renderStudentSubmissions(snap){
 }
 async function markSubmissionViewed(id){await db.collection('studentSubmissions').doc(id).update({viewedByTeacher:true,viewedAt:firebase.firestore.FieldValue.serverTimestamp()});showToast('Marked','Done','success');}
 
-// ╔══════════════════════════════════════════╗
-// ║  STUDENT CHAT                           ║
-// ╚══════════════════════════════════════════╝
+// ═══════════════════════════════════════════
+// STUDENT CHAT
+// ═══════════════════════════════════════════
 function setupChatListener(){
     if(unsubChat)unsubChat();if(!currentUser||!currentClass)return;
     unsubChat=db.collection('teacherStudentChats').where('teacherId','==',currentUser.uid).where('classId','==',currentClass).orderBy('createdAt','asc').onSnapshot(s=>renderChatMessages(s),e=>debugLog('Chat ERROR',e.message,'error'));
@@ -790,17 +774,17 @@ function renderChatMessages(snap){
 async function sendChatMessage(){const i=document.getElementById('chatInput'),m=i.value.trim();if(!m||!currentUser||!currentClass)return;i.value='';try{await db.collection('teacherStudentChats').add({teacherId:currentUser.uid,teacherName:`${userData?.firstName||''} ${userData?.surname||''}`.trim(),studentId:null,studentName:'Teacher',classId:currentClass,subject:currentSubject||'',week:currentWeek||null,message:m,senderRole:'teacher',createdAt:firebase.firestore.FieldValue.serverTimestamp(),readByStudent:false});}catch(e){showToast('Error','error');}}
 function loadChatMessages(){if(!currentClass)return;db.collection('teacherStudentChats').where('teacherId','==',currentUser.uid).where('classId','==',currentClass).orderBy('createdAt','asc').get().then(s=>renderChatMessages(s)).catch(()=>{});}
 
-// ╔══════════════════════════════════════════╗
-// ║  LIVE SESSION MONITOR                   ║
-// ╚══════════════════════════════════════════╝
+// ═══════════════════════════════════════════
+// LIVE SESSION MONITOR
+// ═══════════════════════════════════════════
 function setupLiveSessionListener(){
     if(unsubLiveSession)unsubLiveSession();if(!currentClass)return;
     unsubLiveSession=db.collection('liveClassSessions').where('classId','==',currentClass).where('status','==','live').limit(1).onSnapshot(()=>{},()=>{});
 }
 
-// ╔══════════════════════════════════════════╗
-// ║  AUTH                                   ║
-// ╚══════════════════════════════════════════╝
+// ═══════════════════════════════════════════
+// AUTH
+// ═══════════════════════════════════════════
 auth.onAuthStateChanged(async user=>{
     debugLog('Auth',user?'User: '+user.uid:'No user');
     const params=new URLSearchParams(window.location.search);
@@ -824,9 +808,9 @@ auth.onAuthStateChanged(async user=>{
 });
 document.getElementById('logoutBtn').addEventListener('click',async()=>{stopClassTimer();if(jitsiApi)try{jitsiApi.dispose();}catch(e){}if(unsubChat)unsubChat();if(unsubSubmissions)unsubSubmissions();if(unsubLiveSession)unsubLiveSession();await auth.signOut();window.location.href='index.html';});
 
-// ╔══════════════════════════════════════════╗
-// ║  BUTTON BINDINGS                        ║
-// ╚══════════════════════════════════════════╝
+// ═══════════════════════════════════════════
+// BUTTON BINDINGS
+// ═══════════════════════════════════════════
 document.getElementById('teachModeBtn').addEventListener('click',toggleTeachMode);
 document.getElementById('startClassBtn').addEventListener('click',()=>{document.getElementById('classTopic').value=currentSubject?`${currentSubject} - Week ${currentWeek||'?'}`:'';document.getElementById('startClassModal').classList.add('active');});
 document.getElementById('startClassModalClose').addEventListener('click',()=>document.getElementById('startClassModal').classList.remove('active'));
@@ -837,9 +821,9 @@ document.getElementById('guestInviteBtn').addEventListener('click',()=>{if(!curr
 document.getElementById('studentViewBtn').addEventListener('click',()=>{if(!currentSubject||!currentWeek)return showToast('Select subject and week first','warning');window.open(`student-classroom.html?class=${encodeURIComponent(currentClass||'')}&subject=${encodeURIComponent(currentSubject)}&week=${currentWeek}`,'_blank','noopener');});
 document.getElementById('printBtn').addEventListener('click',()=>window.print());
 
-// ╔══════════════════════════════════════════╗
-// ║  GUEST MODAL                            ║
-// ╚══════════════════════════════════════════╝
+// ═══════════════════════════════════════════
+// GUEST MODAL
+// ═══════════════════════════════════════════
 document.getElementById('guestModalClose').addEventListener('click',()=>{document.getElementById('guestModal').classList.remove('active');document.getElementById('guestLinkBox').classList.remove('show');});
 document.getElementById('guestCancelBtn').addEventListener('click',()=>{document.getElementById('guestModal').classList.remove('active');document.getElementById('guestLinkBox').classList.remove('show');});
 document.getElementById('guestForm').addEventListener('submit',async function(e){
@@ -847,14 +831,14 @@ document.getElementById('guestForm').addEventListener('submit',async function(e)
     const guestId=Math.random().toString(36).substring(2,14),code=Math.random().toString(36).substring(2,8).toUpperCase(),expires=new Date(Date.now()+dur*60000),roomName=generateRoomName('guest');
     try{await db.collection('guestAccess').add({guestId,oneTimeCode:code,guestName:name,purpose,roomName,teacherId:currentUser.uid,teacherName:`${userData.firstName||''} ${userData.surname||''}`.trim(),classId:currentClass,subject:currentSubject,week:currentWeek,durationMinutes:dur,expiresAt:firebase.firestore.Timestamp.fromDate(expires),createdAt:firebase.firestore.FieldValue.serverTimestamp(),used:false,usedAt:null});
         const link=`${window.location.origin}${window.location.pathname}?guest=${guestId}&code=${code}`;document.getElementById('guestLinkText').textContent=link;document.getElementById('guestCodeDisplay').textContent=code;document.getElementById('guestLinkBox').classList.add('show');
-        showToast('Invite Ready!','Guest uses link + code to enter live classroom. No login needed.','success',8000);
+        showToast('Invite Ready!','Guest uses link + code to enter live classroom. No login, no app needed.','success',8000);
     }catch(e){debugLog('Guest ERROR',e.message,'error');showToast('Error',e.message,'error');}
 });
-document.getElementById('copyGuestInviteBtn').addEventListener('click',()=>{const l=document.getElementById('guestLinkText').textContent,c=document.getElementById('guestCodeDisplay').textContent;navigator.clipboard.writeText(`Link: ${l}\nOne-Time Code: ${c}\n\nNo login needed. Open the link and enter the code.`).then(()=>showToast('Copied!','success')).catch(()=>showToast('Failed','error'));});
+document.getElementById('copyGuestInviteBtn').addEventListener('click',()=>{const l=document.getElementById('guestLinkText').textContent,c=document.getElementById('guestCodeDisplay').textContent;navigator.clipboard.writeText(`Link: ${l}\nOne-Time Code: ${c}\n\nNo login needed — open the link, enter the code.`).then(()=>showToast('Copied!','success')).catch(()=>showToast('Failed','error'));});
 
-// ╔══════════════════════════════════════════╗
-// ║  GUEST ACCESS HANDLER                   ║
-// ╚══════════════════════════════════════════╝
+// ═══════════════════════════════════════════
+// GUEST ACCESS
+// ═══════════════════════════════════════════
 async function handleGuestAccess(guestId,guestCode){
     debugLog('Guest access',{guestId,guestCode});
     try{
@@ -873,13 +857,10 @@ async function handleGuestAccess(guestId,guestCode){
         lessonNotesMap={};lnSnap.forEach(d=>{const dd=d.data();lessonNotesMap[`${dd.subject}_${dd.week}`]={id:d.id,...dd};});
         renderResources();setupReadingToggles();
         if(g.roomName){startLiveClass(`${g.subject||'Class'} - ${g.purpose}`,g.durationMinutes);}
-        showToast(`Welcome ${g.guestName}!`,'Live classroom is ready.','info',12000);
+        showToast(`Welcome ${g.guestName}!`,'Live classroom is ready — all in your browser.','info',12000);
     }catch(e){debugLog('Guest handler ERROR',e.message,'error');}
 }
 
-// ╔══════════════════════════════════════════╗
-// ║  KEYBOARD SHORTCUTS                     ║
-// ╚══════════════════════════════════════════╝
 document.addEventListener('keydown',function(e){
     if((e.ctrlKey||e.metaKey)&&e.key==='t'){e.preventDefault();toggleTeachMode();}
     if(e.key==='Escape'&&teachActive){e.preventDefault();closeTeachMode();}
@@ -897,7 +878,7 @@ window.markSubmissionViewed=markSubmissionViewed;window.sendChatMessage=sendChat
 window.startLiveClass=startLiveClass;window.endLiveClass=endLiveClass;
 window.toggleClassroomChat=toggleClassroomChat;window.toggleClassroomParticipants=toggleClassroomParticipants;window.toggleClassroomTileView=toggleClassroomTileView;
 
-console.log('🎓 Judah Wonders Teach Mode — Professional Live Classroom Ready ✅');
+console.log('🎓 Judah Wonders Teach Mode — Browser-Only Live Classroom Ready ✅');
 </script>
 </body>
 </html>
