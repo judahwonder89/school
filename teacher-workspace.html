@@ -73,6 +73,8 @@
         .nav-btn { background:transparent; border:1px solid var(--border); border-radius:2rem; padding:0.5rem 1rem; color:var(--text-primary); font-weight:500; font-size:0.85rem; cursor:pointer; transition:0.2s; text-decoration:none; display:flex; align-items:center; gap:0.4rem; white-space:nowrap; }
         .nav-btn:hover { background:var(--hover-bg); border-color:var(--accent); color:var(--accent); }
         .nav-btn.active-co { background:var(--co-plan-bg); border-color:var(--co-plan-text); color:var(--co-plan-text); }
+        .nav-btn.btn-teach-link { background:linear-gradient(135deg,#8b5cf6,#6366f1); color:white; border-color:transparent; font-weight:600; }
+        .nav-btn.btn-teach-link:hover { box-shadow:0 4px 20px rgba(99,102,241,0.4); transform:translateY(-2px); }
         .profile-dropdown { position:relative; cursor:pointer; }
         .profile-trigger { display:flex; align-items:center; gap:0.5rem; background:var(--card-bg); backdrop-filter:blur(8px); -webkit-backdrop-filter:blur(8px); border:1px solid var(--border); border-radius:3rem; padding:0.3rem 0.3rem 0.3rem 0.8rem; }
         .profile-name { font-weight:600; color:var(--text-primary); font-size:0.85rem; }
@@ -249,6 +251,12 @@
         .request-type.late { background:var(--warning-bg); color:var(--warning-text); }
         .request-type.early { background:var(--info-bg); color:var(--info-text); }
 
+        .video-preview-box { margin-top:0.8rem; border-radius:0.8rem; overflow:hidden; background:#000; position:relative; display:none; }
+        .video-preview-box.show { display:block; }
+        .video-preview-box .close-video-preview { position:absolute; top:8px; right:8px; z-index:5; width:32px; height:32px; border-radius:50%; background:rgba(0,0,0,0.7); color:white; border:none; cursor:pointer; font-size:1rem; display:flex; align-items:center; justify-content:center; }
+        .upload-area { border:2px dashed var(--border); border-radius:1rem; padding:1.5rem; text-align:center; cursor:pointer; margin-top:0.5rem; transition:0.2s; }
+        .upload-area:hover { border-color:var(--accent); background:var(--hover-bg); }
+
         @media(max-width:768px) {
             .top-nav { flex-direction:column; align-items:stretch; }
             .nav-left,.nav-right { justify-content:center; }
@@ -267,6 +275,8 @@
 <div class="top-nav">
     <div class="nav-left">
         <a href="teacher-dashboard.html" class="nav-btn"><i class="fas fa-arrow-left"></i> Dashboard</a>
+        <!-- UPDATE #1: Move to Teach link added at top -->
+        <a href="teacher-teach.html" class="nav-btn btn-teach-link"><i class="fas fa-chalkboard"></i> Move to Teach</a>
         <select id="classSelector" class="nav-btn" style="width:auto;"></select>
         <span class="points-badge" id="pointsDisplay">⭐ 0 pts</span>
         <span class="offline-indicator" id="offlineIndicator"><i class="fas fa-wifi-slash"></i> Offline</span>
@@ -376,38 +386,58 @@
             </div>
 
             <div id="postApprovalSection" style="display:none;">
+                <!-- UPDATE #3: Teaching Process - button says "Move to Teach" instead of "Publish to Students" -->
                 <div class="card" id="teachingProcessCard">
-                    <div class="card-header"><h3><i class="fas fa-chalkboard-teacher"></i> Teaching Process</h3><button class="btn btn-outline btn-sm" onclick="aiFormatTP()"><i class="fas fa-magic"></i> Auto-Format</button></div>
+                    <div class="card-header"><h3><i class="fas fa-chalkboard-teacher"></i> Teaching Process (For Teacher Only)</h3><button class="btn btn-outline btn-sm" onclick="aiFormatTP()"><i class="fas fa-magic"></i> Auto-Format</button></div>
                     <button class="btn btn-primary btn-sm" id="aiGenerateTPBtn2" style="margin-bottom:0.5rem;"><i class="fas fa-robot"></i> AI Generate</button>
                     <div class="editor-container"><div id="teachingProcessEditor"></div></div>
                     <button class="btn btn-primary btn-sm" id="saveTPBtn" style="margin-top:0.5rem;">Save Teaching Process</button>
-                    <button class="btn btn-success btn-sm" id="publishTPBtn2" style="margin-top:0.5rem;">📤 Publish to Students</button>
+                    <!-- UPDATE #3: Changed from "Publish to Students" to "Move to Teach" -->
+                    <button class="btn btn-success btn-sm" id="moveTPToTeachBtn" style="margin-top:0.5rem;"><i class="fas fa-arrow-right"></i> Move to Teach</button>
                 </div>
+                <!-- UPDATE #4: Resources with textbook-style depth; publish also sends teacher copy -->
                 <div class="card" id="studentResourceCard">
-                    <div class="card-header"><h3><i class="fas fa-book-reader"></i> Student Resources</h3><button class="btn btn-outline btn-sm" onclick="aiFormatResource()"><i class="fas fa-magic"></i> Auto-Format</button></div>
-                    <button class="btn btn-primary btn-sm" id="aiGenerateResourceBtn2" style="margin-bottom:0.5rem;"><i class="fas fa-robot"></i> AI Generate</button>
+                    <div class="card-header"><h3><i class="fas fa-book-reader"></i> Student Resources (Textbook-Style)</h3><button class="btn btn-outline btn-sm" onclick="aiFormatResource()"><i class="fas fa-magic"></i> Auto-Format</button></div>
+                    <p style="font-size:0.8rem;color:var(--text-secondary);margin-bottom:0.5rem;">Write a detailed textbook-style explanation. Publishing will also send a teacher copy to Teach.</p>
+                    <button class="btn btn-primary btn-sm" id="aiGenerateResourceBtn2" style="margin-bottom:0.5rem;"><i class="fas fa-robot"></i> AI Generate Textbook-Style</button>
                     <div class="editor-container"><div id="studentResourceEditor"></div></div>
                     <button class="btn btn-primary btn-sm" id="saveResourceBtn" style="margin-top:0.5rem;">Save Resources</button>
-                    <button class="btn btn-success btn-sm" id="publishResourceBtn2" style="margin-top:0.5rem;">📤 Publish to Students</button>
+                    <!-- UPDATE #4: Publish sends to students AND auto-copies to teach -->
+                    <button class="btn btn-success btn-sm" id="publishResourceBtn2" style="margin-top:0.5rem;">📤 Publish to Students (Auto-Copy to Teach)</button>
                 </div>
+                <!-- UPDATE #5 & #6: Handwriting with image/audio upload + fixed generation -->
                 <div class="card" id="handwritingCard">
                     <div class="card-header"><h3><i class="fas fa-paint-brush"></i> Handwriting / Visual Notes</h3></div>
-                    <div style="display:flex;gap:0.5rem;margin-bottom:0.5rem;">
-                        <input type="text" id="handwritingPrompt" placeholder="Describe the image..." class="form-control">
+                    <p style="font-size:0.8rem;color:var(--text-secondary);margin-bottom:0.5rem;">Generate visual notes or upload images/audio. All published content auto-copies to Teach.</p>
+                    <div style="display:flex;gap:0.5rem;margin-bottom:0.5rem;flex-wrap:wrap;">
+                        <input type="text" id="handwritingPrompt" placeholder="Describe the image..." class="form-control" style="flex:1;min-width:200px;">
                         <button class="btn btn-primary btn-sm" id="generateHandwritingBtn"><i class="fas fa-robot"></i> Generate Image</button>
+                    </div>
+                    <!-- UPDATE #5: Upload image or audio -->
+                    <div style="display:flex;gap:0.5rem;margin-bottom:0.5rem;flex-wrap:wrap;">
+                        <label class="btn btn-outline btn-sm" style="cursor:pointer;"><i class="fas fa-image"></i> Upload Image<input type="file" id="handwritingImageUpload" accept="image/*" style="display:none;" onchange="uploadHandwritingImage(this)"></label>
+                        <label class="btn btn-outline btn-sm" style="cursor:pointer;"><i class="fas fa-microphone"></i> Upload Audio<input type="file" id="handwritingAudioUpload" accept="audio/*" style="display:none;" onchange="uploadHandwritingAudio(this)"></label>
                     </div>
                     <div id="aiImageDebug" class="ai-debug-box"></div>
                     <div class="handwriting-grid" id="handwritingImagesGrid"></div>
-                    <button class="btn btn-success btn-sm" id="publishHandwritingBtn" style="margin-top:0.5rem;">📤 Publish Images to Students</button>
+                    <div id="handwritingAudioList" style="margin-top:0.5rem;"></div>
+                    <button class="btn btn-success btn-sm" id="publishHandwritingBtn" style="margin-top:0.5rem;">📤 Publish to Students (Auto-Copy to Teach)</button>
                 </div>
+                <!-- UPDATE #16: Video with preview and X button -->
                 <div class="card" id="videoCard">
                     <div class="card-header"><h3><i class="fas fa-video"></i> Video Links</h3></div>
                     <div style="display:flex;gap:0.5rem;margin-bottom:0.5rem;">
                         <input type="url" id="videoLinkInput" placeholder="YouTube URL..." class="form-control">
                         <button class="btn btn-primary btn-sm" onclick="addVideoLink()">Add</button>
+                        <button class="btn btn-outline btn-sm" id="previewVideoBtn" onclick="previewWorkspaceVideo()"><i class="fas fa-play"></i> Preview</button>
+                    </div>
+                    <!-- UPDATE #16: Video preview box with X button -->
+                    <div class="video-preview-box" id="workspaceVideoPreview">
+                        <button class="close-video-preview" onclick="closeWorkspaceVideoPreview()">✕</button>
+                        <div id="workspaceVideoPlayer" style="width:100%;min-height:200px;display:flex;align-items:center;justify-content:center;color:white;"></div>
                     </div>
                     <div id="videoList"></div>
-                    <button class="btn btn-success btn-sm" id="publishVideoBtn2" style="margin-top:0.5rem;">📤 Publish to Students</button>
+                    <button class="btn btn-success btn-sm" id="publishVideoBtn2" style="margin-top:0.5rem;">📤 Publish to Students (Auto-Copy to Teach)</button>
                 </div>
             </div>
         </div>
@@ -535,11 +565,14 @@ const remoteConfig = firebase.remoteConfig();
 remoteConfig.settings.minimumFetchIntervalMillis = 0;
 db.enablePersistence({synchronizeTabs:true}).catch(err=>{if(err.code==='failed-precondition')console.warn('Multi-tab offline limited.');});
 
+const CLOUD_NAME='dda7kpir8';
+const UPLOAD_PRESET='Judahschool';
+
 let currentUser=null,userData=null,currentClass=null,allAssignedClasses=[],subjects=[];
 let currentSubject=null,currentWeek=null,currentTerm='First Term';
 let lessonNotesMap={},syllabusMap={},coTeachers=[],coTeacherNames=[];
 let quill,teachingProcessQuill,studentResourceQuill;
-let videoLinks=[],handwritingImages=[],aiConversation=[],lastGeneratedLN=null;
+let videoLinks=[],handwritingImages=[],handwritingAudios=[],aiConversation=[],lastGeneratedLN=null;
 let editTimer=null,editSeconds=0,isOffline=!navigator.onLine;
 let selectedCoTeacherIds=[],selectedCoTeacherNames=[];
 let pointsChart=null,qualityChart=null;
@@ -596,6 +629,31 @@ document.getElementById('confirmActionBtn').addEventListener('click',()=>{if(con
 function startTimer(){if(editTimer)return;editTimer=setInterval(()=>{editSeconds++;const m=Math.floor(editSeconds/60),s=editSeconds%60;document.getElementById('timerValue').textContent=`${String(m).padStart(2,'0')}:${String(s).padStart(2,'0')}`;},1000);}
 function stopTimer(){if(editTimer){clearInterval(editTimer);editTimer=null;}}
 function resetTimer(){stopTimer();editSeconds=0;document.getElementById('timerValue').textContent='00:00';}
+function extractYouTubeId(url){if(!url)return null;const p=[/(?:youtube\.com\/watch\?v=)([a-zA-Z0-9_-]{11})/,/(?:youtu\.be\/)([a-zA-Z0-9_-]{11})/,/(?:youtube\.com\/embed\/)([a-zA-Z0-9_-]{11})/];for(const r of p){const m=url.match(r);if(m)return m[1];}return null;}
+function getVideoPlatform(url){if(!url)return'other';if(url.includes('youtube.com')||url.includes('youtu.be'))return'youtube';if(url.includes('vimeo.com'))return'vimeo';return'other';}
+
+// UPDATE #16: Video preview in workspace
+function previewWorkspaceVideo(){
+    const url=document.getElementById('videoLinkInput').value.trim();
+    if(!url){if(videoLinks.length>0)showVideoPreview(videoLinks[videoLinks.length-1]);else return showToast('Error','Add or enter a video URL','warning');return;}
+    showVideoPreview(url);
+}
+function showVideoPreview(url){
+    const box=document.getElementById('workspaceVideoPreview');
+    const player=document.getElementById('workspaceVideoPlayer');
+    const ytId=extractYouTubeId(url);
+    if(ytId){
+        box.classList.add('show');
+        player.innerHTML=`<iframe src="https://www.youtube.com/embed/${ytId}?rel=0&modestbranding=1" style="width:100%;aspect-ratio:16/9;border:none;" allowfullscreen></iframe>`;
+    }else if(getVideoPlatform(url)==='vimeo'){
+        const m=url.match(/vimeo\.com\/(\d+)/);
+        if(m){box.classList.add('show');player.innerHTML=`<iframe src="https://player.vimeo.com/video/${m[1]}" style="width:100%;aspect-ratio:16/9;border:none;" allowfullscreen></iframe>`;}
+    }else{showToast('Preview','Only YouTube/Vimeo links support preview','info');}
+}
+function closeWorkspaceVideoPreview(){
+    document.getElementById('workspaceVideoPreview').classList.remove('show');
+    document.getElementById('workspaceVideoPlayer').innerHTML='';
+}
 
 document.getElementById('mainTabs').addEventListener('click',e=>{
     const tab=e.target.closest('.main-tab');if(!tab)return;
@@ -621,7 +679,7 @@ document.getElementById('lnSubTabs').addEventListener('click',e=>{
 
 quill=new Quill('#editor',{theme:'snow',modules:{toolbar:[['bold','italic','underline'],[{header:[1,2,3,false]}],[{list:'ordered'},{list:'bullet'}],['link','blockquote'],['clean']]},placeholder:'Write your lesson note here...'});
 teachingProcessQuill=new Quill('#teachingProcessEditor',{theme:'snow',modules:{toolbar:[['bold','italic'],[{header:[1,2,false]}],[{list:'ordered'},{list:'bullet'}],['link'],['clean']]},placeholder:'Teaching process...'});
-studentResourceQuill=new Quill('#studentResourceEditor',{theme:'snow',modules:{toolbar:[['bold','italic'],[{header:[1,2,false]}],[{list:'ordered'},{list:'bullet'}],['link'],['clean']]},placeholder:'Student resources...'});
+studentResourceQuill=new Quill('#studentResourceEditor',{theme:'snow',modules:{toolbar:[['bold','italic'],[{header:[1,2,false]}],[{list:'ordered'},{list:'bullet'}],['link'],['clean']]},placeholder:'Write textbook-style student resources...'});
 quill.on('text-change',()=>{setAutoSaveStatus('unsaved');startTimer();});
 
 auth.onAuthStateChanged(async user=>{
@@ -710,11 +768,24 @@ function selectWeek(week){
         teachingProcessQuill.root.innerHTML=note.teachingProcess||'';
         studentResourceQuill.root.innerHTML=note.studentResource||'';
         videoLinks=note.videoLinks||[];renderVideoList();
-        handwritingImages=note.handwritingImages||[];renderHandwritingImages();
+        handwritingImages=note.handwritingImages||[];handwritingAudios=note.handwritingAudios||[];renderHandwritingImages();renderHandwritingAudios();
+        // UPDATE #9: Lock sections that have been published/moved
+        if(note.teachingProcessReady)document.getElementById('teachingProcessCard').classList.add('locked');
+        else document.getElementById('teachingProcessCard').classList.remove('locked');
+        if(note.resourcePublished||note.studentResourceReady)document.getElementById('studentResourceCard').classList.add('locked');
+        else document.getElementById('studentResourceCard').classList.remove('locked');
+        if(note.handwritingImagesPublished)document.getElementById('handwritingCard').classList.add('locked');
+        else document.getElementById('handwritingCard').classList.remove('locked');
+        if(note.videosPublished)document.getElementById('videoCard').classList.add('locked');
+        else document.getElementById('videoCard').classList.remove('locked');
     }else{
         document.getElementById('lessonNoteCard').classList.remove('locked');
+        document.getElementById('teachingProcessCard').classList.remove('locked');
+        document.getElementById('studentResourceCard').classList.remove('locked');
+        document.getElementById('handwritingCard').classList.remove('locked');
+        document.getElementById('videoCard').classList.remove('locked');
         teachingProcessQuill.root.innerHTML='';studentResourceQuill.root.innerHTML='';videoLinks=[];renderVideoList();
-        handwritingImages=[];renderHandwritingImages();
+        handwritingImages=[];handwritingAudios=[];renderHandwritingImages();renderHandwritingAudios();
     }
     renderComments(note);
     resetTimer();startTimer();
@@ -842,71 +913,244 @@ function useTemplate(){
     const topic=syllabusMap[currentSubject]?.weeks?.find(w=>w.week==currentWeek)?.topic||'___';
     quill.root.innerHTML=`<h2>LESSON NOTE</h2><p><strong>Subject:</strong> ${currentSubject||'___'} &nbsp; <strong>Class:</strong> ${currentClass||'___'}</p><p><strong>Week:</strong> ${currentWeek||'___'} &nbsp; <strong>Topic:</strong> ${topic}</p><p><strong>Duration:</strong> 40 minutes</p><h3>Instructional Materials:</h3><ul><li>...</li></ul><h3>Objectives:</h3><ol><li>...</li></ol><h3>Presentation:</h3><p>...</p><h3>Evaluation:</h3><ol><li>...</li></ol><h3>Assignment:</h3><ol><li>...</li></ol>`;
 }
-async function aiFormatEditor(){if(!groq)return showToast('Error','AI not available','error');const c=quill.getText();if(!c.trim())return;try{const f=await groq.chat.completions.create({messages:[{role:'system',content:'Format with HTML headings, lists, bold.'},{role:'user',content:c}],model:'llama-3.3-70b-versatile',temperature:0.3,max_tokens:2000});const r=f.choices[0].message.content.replace(/```html|```/g,'').trim();if(r){quill.root.innerHTML=r;showToast('Formatted','Done','success');}}catch(e){showToast('Error',e.message,'error');}}
-async function aiFormatTP(){const c=teachingProcessQuill.getText();if(!c.trim()||!groq)return;try{const f=await groq.chat.completions.create({messages:[{role:'system',content:'Format with HTML.'},{role:'user',content:c}],model:'llama-3.3-70b-versatile',temperature:0.3,max_tokens:2000});teachingProcessQuill.root.innerHTML=f.choices[0].message.content.replace(/```html|```/g,'').trim();}catch(e){}}
-async function aiFormatResource(){const c=studentResourceQuill.getText();if(!c.trim()||!groq)return;try{const f=await groq.chat.completions.create({messages:[{role:'system',content:'Format with HTML.'},{role:'user',content:c}],model:'llama-3.3-70b-versatile',temperature:0.3,max_tokens:2000});studentResourceQuill.root.innerHTML=f.choices[0].message.content.replace(/```html|```/g,'').trim();}catch(e){}}
+// UPDATE #2: Fixed auto-format to preserve content
+async function aiFormatEditor(){
+    if(!groq)return showToast('Error','AI not available','error');
+    const c=quill.getText();
+    if(!c.trim())return;
+    showToast('Formatting','Please wait...','info',5000);
+    try{
+        const completion=await groq.chat.completions.create({
+            messages:[
+                {role:'system',content:'You are a formatter. Take the lesson note text and format it with HTML. IMPORTANT: Preserve ALL the original content. Do NOT shorten, summarize, or remove anything. Add HTML headings (<h2>, <h3>), bold key terms (<strong>), lists (<ol>, <ul>), and paragraphs (<p>). Keep every single word. Return ONLY the formatted HTML.'},
+                {role:'user',content:c}
+            ],
+            model:'llama-3.3-70b-versatile',temperature:0.3,max_tokens:6000
+        });
+        let r=completion.choices[0].message.content;
+        r=r.replace(/```html\n?/g,'').replace(/```\n?/g,'').trim();
+        if(r.length<20){showToast('Error','Format returned too little content. Try again.','error');return;}
+        quill.root.innerHTML=r;
+        showToast('Formatted','Done','success');
+    }catch(e){showToast('Error',e.message,'error');}
+}
+async function aiFormatTP(){const c=teachingProcessQuill.getText();if(!c.trim()||!groq)return;try{const completion=await groq.chat.completions.create({messages:[{role:'system',content:'Format with HTML. Preserve ALL content.'},{role:'user',content:c}],model:'llama-3.3-70b-versatile',temperature:0.3,max_tokens:6000});let r=completion.choices[0].message.content;r=r.replace(/```html\n?/g,'').replace(/```\n?/g,'').trim();if(r.length>20)teachingProcessQuill.root.innerHTML=r;}catch(e){}}
+async function aiFormatResource(){const c=studentResourceQuill.getText();if(!c.trim()||!groq)return;try{const completion=await groq.chat.completions.create({messages:[{role:'system',content:'Format with HTML. Preserve ALL content.'},{role:'user',content:c}],model:'llama-3.3-70b-versatile',temperature:0.3,max_tokens:6000});let r=completion.choices[0].message.content;r=r.replace(/```html\n?/g,'').replace(/```\n?/g,'').trim();if(r.length>20)studentResourceQuill.root.innerHTML=r;}catch(e){}}
 
+// UPDATE #4: AI Generate Resource - Textbook style
 document.getElementById('aiGenerateTPBtn2').addEventListener('click',async()=>{
     if(!groq)return showToast('Error','AI not available','error');
     const topic=syllabusMap[currentSubject]?.weeks?.find(w=>w.week==currentWeek)?.topic||'this topic';
     try{const c=await groq.chat.completions.create({messages:[{role:'system',content:'You are a Nigerian teacher. Write step-by-step teaching process.'},{role:'user',content:`Create teaching process for ${currentSubject} Week ${currentWeek}: ${topic}`}],model:'llama-3.3-70b-versatile',temperature:0.5,max_tokens:2000});teachingProcessQuill.root.innerHTML=c.choices[0].message.content;showToast('Generated','Teaching process ready','success');}catch(e){showToast('Error',e.message,'error');}
 });
+// UPDATE #4: Resources with textbook depth
 document.getElementById('aiGenerateResourceBtn2').addEventListener('click',async()=>{
     if(!groq)return showToast('Error','AI not available','error');
     const topic=syllabusMap[currentSubject]?.weeks?.find(w=>w.week==currentWeek)?.topic||'this topic';
-    try{const c=await groq.chat.completions.create({messages:[{role:'system',content:'You are a Nigerian teacher. Write textbook-style student resources.'},{role:'user',content:`Create student resources for ${currentSubject} Week ${currentWeek}: ${topic}`}],model:'llama-3.3-70b-versatile',temperature:0.5,max_tokens:2000});studentResourceQuill.root.innerHTML=c.choices[0].message.content;showToast('Generated','Resources ready','success');}catch(e){showToast('Error',e.message,'error');}
+    showToast('Generating','Creating textbook-style resources...','info',8000);
+    try{const c=await groq.chat.completions.create({messages:[{role:'system',content:'You are an expert Nigerian textbook author. Write comprehensive textbook-style student resources that are rich, detailed, and in-depth. Include: clear explanations, diagrams described in text, key points boxes, examples with Nigerian context, practice questions, summaries, and vocabulary. Think of this as a chapter from a proper textbook. Use headings, bullet points, and clear organization.'},{role:'user',content:`Create textbook-style student resources for ${currentSubject} Week ${currentWeek}: ${topic}. Make it comprehensive like a textbook chapter with all necessary depth.`}],model:'llama-3.3-70b-versatile',temperature:0.5,max_tokens:4000});studentResourceQuill.root.innerHTML=c.choices[0].message.content;showToast('Generated','Textbook-style resources ready','success');}catch(e){showToast('Error',e.message,'error');}
 });
 
 function renderHandwritingImages(){
     const grid=document.getElementById('handwritingImagesGrid');
-    grid.innerHTML=handwritingImages.length?handwritingImages.map((img,i)=>`<div class="handwriting-card"><img src="${img.url}" alt="${escapeHtml(img.prompt||'')}" onclick="window.open('${img.url}')" onerror="this.src='data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 width=%22180%22 height=%22140%22><rect fill=%22%23333%22 width=%22180%22 height=%22140%22/><text fill=%22%23999%22 x=%2290%22 y=%2275%22 text-anchor=%22middle%22 font-size=%2212%22>Image unavailable</text></svg>';"><div class="caption"><span>${escapeHtml((img.prompt||'').substring(0,25))}...</span><button class="btn btn-danger btn-sm" onclick="event.stopPropagation();removeHandwriting(${i})" style="padding:0.1rem 0.4rem;font-size:0.6rem;">×</button></div></div>`).join(''):'<p style="color:var(--text-muted);font-size:0.8rem;">No images yet.</p>';
+    grid.innerHTML=handwritingImages.length?handwritingImages.map((img,i)=>`<div class="handwriting-card"><img src="${img.url}" alt="${escapeHtml(img.prompt||'')}" onclick="window.open('${img.url}')" onerror="this.src='data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 width=%22180%22 height=%22140%22><rect fill=%22%23333%22 width=%22180%22 height=%22140%22/><text fill=%22%23999%22 x=%2290%22 y=%2275%22 text-anchor=%22middle%22 font-size=%2212%22>Image</text></svg>';"><div class="caption"><span>${escapeHtml((img.prompt||'').substring(0,25))}...</span><button class="btn btn-danger btn-sm" onclick="event.stopPropagation();removeHandwriting(${i})" style="padding:0.1rem 0.4rem;font-size:0.6rem;">×</button></div></div>`).join(''):'<p style="color:var(--text-muted);font-size:0.8rem;">No images yet.</p>';
+}
+function renderHandwritingAudios(){
+    const list=document.getElementById('handwritingAudioList');
+    list.innerHTML=handwritingAudios.length?handwritingAudios.map((a,i)=>`<div style="display:flex;align-items:center;gap:0.5rem;padding:0.3rem 0;"><audio controls src="${a.url}" style="height:30px;"></audio><span style="font-size:0.75rem;">${escapeHtml(a.name||'Audio '+(i+1))}</span><button class="btn btn-danger btn-sm" onclick="removeHandwritingAudio(${i})">×</button></div>`).join(''):'';
 }
 function removeHandwriting(i){handwritingImages.splice(i,1);renderHandwritingImages();}
+function removeHandwritingAudio(i){handwritingAudios.splice(i,1);renderHandwritingAudios();}
 
+// UPDATE #5: Upload image/audio for handwriting
+async function uploadHandwritingImage(input){
+    const file=input.files[0];if(!file)return;
+    const btn=input.parentElement;const origHTML=btn.innerHTML;
+    btn.disabled=true;btn.innerHTML='<i class="fas fa-spinner fa-spin"></i> Uploading...';
+    try{
+        const formData=new FormData();formData.append('file',file);formData.append('upload_preset',UPLOAD_PRESET);formData.append('folder','handwriting_notes');
+        const res=await fetch(`https://api.cloudinary.com/v1_1/${CLOUD_NAME}/image/upload`,{method:'POST',body:formData});
+        const data=await res.json();
+        if(!res.ok)throw new Error(data.error?.message||'Upload failed');
+        handwritingImages.push({url:data.secure_url,prompt:file.name,cloudinaryId:data.public_id,createdAt:new Date().toISOString()});
+        renderHandwritingImages();
+        showToast('Uploaded','Image uploaded to Cloudinary','success');
+    }catch(e){showToast('Error',e.message,'error');}
+    finally{btn.disabled=false;btn.innerHTML=origHTML;input.value='';}
+}
+async function uploadHandwritingAudio(input){
+    const file=input.files[0];if(!file)return;
+    const btn=input.parentElement;const origHTML=btn.innerHTML;
+    btn.disabled=true;btn.innerHTML='<i class="fas fa-spinner fa-spin"></i> Uploading...';
+    try{
+        const formData=new FormData();formData.append('file',file);formData.append('upload_preset',UPLOAD_PRESET);formData.append('folder','handwriting_audio');
+        const res=await fetch(`https://api.cloudinary.com/v1_1/${CLOUD_NAME}/video/upload`,{method:'POST',body:formData});
+        const data=await res.json();
+        if(!res.ok)throw new Error(data.error?.message||'Upload failed');
+        handwritingAudios.push({url:data.secure_url,name:file.name,cloudinaryId:data.public_id,createdAt:new Date().toISOString()});
+        renderHandwritingAudios();
+        showToast('Uploaded','Audio uploaded to Cloudinary','success');
+    }catch(e){showToast('Error',e.message,'error');}
+    finally{btn.disabled=false;btn.innerHTML=origHTML;input.value='';}
+}
+
+// UPDATE #6: Fixed handwriting generation (using old code's pollinations.ai approach)
 document.getElementById('generateHandwritingBtn').addEventListener('click',async()=>{
     const prompt=document.getElementById('handwritingPrompt').value.trim();
     const debugBox=document.getElementById('aiImageDebug');
     debugBox.classList.remove('show');debugBox.innerHTML='';
     if(!prompt)return showToast('Error','Write a prompt first','warning');
     if(!currentSubject||!currentWeek)return showToast('Error','Select subject and week first','error');
-    let replicateKey=null;
-    try{replicateKey=remoteConfig.getString('Judahimage');debugBox.classList.add('show');debugBox.innerHTML=`<strong>🔍 Debug:</strong> Key fetched. Length: ${replicateKey?.length||0}`;}catch(e){debugBox.classList.add('show');debugBox.innerHTML=`<strong>❌ Debug:</strong> Remote Config error: ${e.message}`;return showToast('Error','Config error','error');}
-    if(!replicateKey||replicateKey.length<5){debugBox.classList.add('show');debugBox.innerHTML=`<strong>❌ Debug:</strong> Key missing or too short`;return showToast('Error','API key not configured','error');}
+    
     const btn=document.getElementById('generateHandwritingBtn');const origHTML=btn.innerHTML;btn.disabled=true;btn.innerHTML='<i class="fas fa-spinner fa-spin"></i> Generating...';
+    
     try{
-        debugBox.innerHTML+=`<br>🔄 Sending prediction request...`;
-        const replicateRes=await fetch('https://api.replicate.com/v1/predictions',{method:'POST',headers:{'Content-Type':'application/json','Authorization':`Token ${replicateKey}`},body:JSON.stringify({version:'be04660a5b93ef2aff61e3668dedb4cbeb14941e62a3fd5998364a0b7e3a0d00',input:{prompt:prompt,negative_prompt:'blurry, messy, low quality, text errors',width:768,height:768,num_outputs:1,scheduler:'K_EULER',num_inference_steps:30}})});
-        const prediction=await replicateRes.json();
-        debugBox.innerHTML+=`<br>✅ Prediction ID: ${prediction.id}<br>⏳ Polling for result...`;
-        let imageUrl=null;let attempts=0;
-        while(!imageUrl&&attempts<60){await new Promise(r=>setTimeout(r,3000));const pollRes=await fetch(`https://api.replicate.com/v1/predictions/${prediction.id}`,{headers:{'Authorization':`Token ${replicateKey}`}});const pollData=await pollRes.json();debugBox.innerHTML+=`<br>⏳ Poll #${attempts+1}: ${pollData.status}`;if(pollData.status==='succeeded')imageUrl=pollData.output?.[0];else if(pollData.status==='failed')throw new Error('Generation failed: '+(pollData.error||'Unknown'));attempts++;}
-        if(!imageUrl)throw new Error('Timed out after 3 minutes');
+        // Use pollinations.ai as primary (same approach as old working code)
+        const topic=syllabusMap[currentSubject]?.weeks?.find(w=>w.week==currentWeek)?.topic||'';
+        const imgPrompt=`Educational diagram for ${currentSubject} topic ${topic}: ${prompt}`;
+        const directUrl=`https://image.pollinations.ai/prompt/${encodeURIComponent(imgPrompt)}?width=800&height=600&nologo=true`;
+        
+        debugBox.classList.add('show');
+        debugBox.innerHTML=`<strong>🔄 Debug:</strong> Generating image via pollinations.ai...<br>Prompt: ${escapeHtml(imgPrompt.substring(0,100))}...`;
+        
+        // Fetch the image from pollinations
+        const resp=await fetch(directUrl);
+        if(!resp.ok)throw new Error('Pollinations generation failed');
+        const blob=await resp.blob();
+        
+        // Upload to Cloudinary
         debugBox.innerHTML+=`<br>🔄 Uploading to Cloudinary...`;
-        const formData=new FormData();formData.append('file',imageUrl);formData.append('upload_preset','Judahschool');formData.append('folder','handwriting_notes');
-        const cloudRes=await fetch('https://api.cloudinary.com/v1_1/dda7kpir8/image/upload',{method:'POST',body:formData});const cloudData=await cloudRes.json();
-        if(!cloudRes.ok)throw new Error(cloudData.error?.message||'Upload failed');
-        const finalUrl=cloudData.secure_url;debugBox.innerHTML+=`<br>✅ Done! ${finalUrl.substring(0,50)}...`;
-        handwritingImages.push({url:finalUrl,prompt:prompt,createdAt:new Date().toISOString()});renderHandwritingImages();
+        const formData=new FormData();formData.append('file',blob,'image.png');formData.append('upload_preset',UPLOAD_PRESET);formData.append('folder','handwriting_notes');
+        const cloudRes=await fetch(`https://api.cloudinary.com/v1_1/${CLOUD_NAME}/image/upload`,{method:'POST',body:formData});
+        const cloudData=await cloudRes.json();
+        
+        if(!cloudRes.ok)throw new Error(cloudData.error?.message||'Cloudinary upload failed');
+        
+        const finalUrl=cloudData.secure_url;
+        debugBox.innerHTML+=`<br>✅ Done! Image saved to Cloudinary.`;
+        
+        handwritingImages.push({url:finalUrl,prompt:prompt,cloudinaryId:cloudData.public_id,createdAt:new Date().toISOString()});
+        renderHandwritingImages();
+        
         const key=`${currentSubject}_${currentWeek}`;const existing=lessonNotesMap[key]||{};
-        if(existing.id)await db.collection('lessonNotes').doc(existing.id).update({handwritingImages,updatedAt:firebase.firestore.FieldValue.serverTimestamp()});
+        if(existing.id)await db.collection('lessonNotes').doc(existing.id).update({handwritingImages,handwritingAudios,updatedAt:firebase.firestore.FieldValue.serverTimestamp()});
         showToast('Generated','Image saved!','success');document.getElementById('handwritingPrompt').value='';
-    }catch(err){debugBox.innerHTML+=`<br>❌ <strong>Error:</strong> ${err.message}`;showToast('Error',err.message,'error');}
+    }catch(err){
+        debugBox.innerHTML+=`<br>❌ <strong>Error:</strong> ${err.message}`;
+        // Fallback: use direct URL without Cloudinary
+        const topic=syllabusMap[currentSubject]?.weeks?.find(w=>w.week==currentWeek)?.topic||'';
+        const fallbackUrl=`https://image.pollinations.ai/prompt/${encodeURIComponent(`Educational diagram: ${prompt} for ${topic}`)}?width=800&height=600&nologo=true`;
+        handwritingImages.push({url:fallbackUrl,prompt:prompt,createdAt:new Date().toISOString()});
+        renderHandwritingImages();
+        showToast('Generated','Image created (direct link)','warning');
+    }
     finally{btn.disabled=false;btn.innerHTML=origHTML;}
 });
-document.getElementById('publishHandwritingBtn').addEventListener('click',async()=>{
-    if(!handwritingImages.length)return showToast('Empty','No images to publish','warning');
-    const key=`${currentSubject}_${currentWeek}`;const note=lessonNotesMap[key];if(!note?.id)return;
-    await db.collection('lessonNotes').doc(note.id).update({handwritingImagesPublished:true,handwritingImages});
-    showToast('Published','Images published to students','success');
+
+// UPDATE #4: Publish Resources also auto-copies to teach
+document.getElementById('publishTPBtn2')?.remove(); // Remove old button reference
+document.getElementById('moveTPToTeachBtn').addEventListener('click',async()=>{
+    if(!currentSubject||!currentWeek)return;
+    const key=`${currentSubject}_${currentWeek}`;const note=lessonNotesMap[key];
+    if(!note?.id)return showToast('Error','Save teaching process first','error');
+    const tp=teachingProcessQuill.root.innerHTML;
+    if(!tp.trim())return showToast('Empty','Write teaching process','warning');
+    try{
+        await db.collection('lessonNotes').doc(note.id).update({
+            teachingProcess:tp,
+            teachingProcessReady:true,
+            teachable:true,
+            updatedAt:firebase.firestore.FieldValue.serverTimestamp()
+        });
+        document.getElementById('teachingProcessCard').classList.add('locked');
+        showToast('Moved','Teaching process moved to Teach. Locked from editing.','success');
+        await loadAllData();renderWeekSelector();if(currentWeek)selectWeek(currentWeek);
+    }catch(e){showToast('Error',e.message,'error');}
 });
 
-document.getElementById('saveTPBtn').addEventListener('click',async()=>{const key=`${currentSubject}_${currentWeek}`;const note=lessonNotesMap[key];if(!note?.id)return;await db.collection('lessonNotes').doc(note.id).update({teachingProcess:teachingProcessQuill.root.innerHTML});showToast('Saved','Teaching process saved','success');});
-document.getElementById('saveResourceBtn').addEventListener('click',async()=>{const key=`${currentSubject}_${currentWeek}`;const note=lessonNotesMap[key];if(!note?.id)return;await db.collection('lessonNotes').doc(note.id).update({studentResource:studentResourceQuill.root.innerHTML});showToast('Saved','Resources saved','success');});
-document.getElementById('publishTPBtn2').addEventListener('click',async()=>{const key=`${currentSubject}_${currentWeek}`;const note=lessonNotesMap[key];if(!note?.id)return;await db.collection('lessonNotes').doc(note.id).update({teachable:true,teachingProcess:teachingProcessQuill.root.innerHTML});showToast('Published','Teaching process published','success');});
-document.getElementById('publishResourceBtn2').addEventListener('click',async()=>{const key=`${currentSubject}_${currentWeek}`;const note=lessonNotesMap[key];if(!note?.id)return;await db.collection('lessonNotes').doc(note.id).update({resourcePublished:true,studentResource:studentResourceQuill.root.innerHTML});showToast('Published','Resources published','success');});
-document.getElementById('publishVideoBtn2').addEventListener('click',async()=>{const key=`${currentSubject}_${currentWeek}`;const note=lessonNotesMap[key];if(!note?.id)return;await db.collection('lessonNotes').doc(note.id).update({videosPublished:true,videoLinks});showToast('Published','Videos published','success');});
-function addVideoLink(){const url=document.getElementById('videoLinkInput').value.trim();if(!url)return;videoLinks.push(url);renderVideoList();document.getElementById('videoLinkInput').value='';}
-function renderVideoList(){document.getElementById('videoList').innerHTML=videoLinks.length?videoLinks.map((v,i)=>`<div style="display:flex;justify-content:space-between;padding:0.3rem 0;"><span>${escapeHtml(v)}</span><button class="btn btn-danger btn-sm" onclick="removeVideo(${i})">×</button></div>`).join(''):'<p style="color:var(--text-muted);">No videos.</p>';}
+document.getElementById('saveTPBtn').addEventListener('click',async()=>{
+    const key=`${currentSubject}_${currentWeek}`;const note=lessonNotesMap[key];
+    if(!note?.id)return showToast('Error','No note found','error');
+    await db.collection('lessonNotes').doc(note.id).update({teachingProcess:teachingProcessQuill.root.innerHTML,updatedAt:firebase.firestore.FieldValue.serverTimestamp()});
+    showToast('Saved','Teaching process saved','success');
+});
+
+document.getElementById('saveResourceBtn').addEventListener('click',async()=>{
+    const key=`${currentSubject}_${currentWeek}`;const note=lessonNotesMap[key];
+    if(!note?.id)return showToast('Error','No note found','error');
+    await db.collection('lessonNotes').doc(note.id).update({studentResource:studentResourceQuill.root.innerHTML,updatedAt:firebase.firestore.FieldValue.serverTimestamp()});
+    showToast('Saved','Resources saved','success');
+});
+
+// UPDATE #4: Publish resources auto-copies to teach
+document.getElementById('publishResourceBtn2').addEventListener('click',async()=>{
+    const key=`${currentSubject}_${currentWeek}`;const note=lessonNotesMap[key];
+    if(!note?.id)return showToast('Error','No note found','error');
+    const sr=studentResourceQuill.root.innerHTML;
+    if(!sr.trim())return showToast('Empty','Write resources first','warning');
+    try{
+        await db.collection('lessonNotes').doc(note.id).update({
+            studentResource:sr,
+            resourcePublished:true,
+            studentResourceReady:true,
+            teachable:true,
+            updatedAt:firebase.firestore.FieldValue.serverTimestamp()
+        });
+        document.getElementById('studentResourceCard').classList.add('locked');
+        showToast('Published','Resources published to students AND copied to Teach. Locked from editing.','success');
+        await loadAllData();renderWeekSelector();if(currentWeek)selectWeek(currentWeek);
+    }catch(e){showToast('Error',e.message,'error');}
+});
+
+// UPDATE #5: Publish handwriting auto-copies to teach
+document.getElementById('publishHandwritingBtn').addEventListener('click',async()=>{
+    if(!handwritingImages.length&&!handwritingAudios.length)return showToast('Empty','No images or audio to publish','warning');
+    const key=`${currentSubject}_${currentWeek}`;const note=lessonNotesMap[key];
+    if(!note?.id)return showToast('Error','No note found','error');
+    try{
+        await db.collection('lessonNotes').doc(note.id).update({
+            handwritingImages,
+            handwritingAudios,
+            handwritingImagesPublished:true,
+            handwritingImagesReady:true,
+            teachable:true,
+            updatedAt:firebase.firestore.FieldValue.serverTimestamp()
+        });
+        document.getElementById('handwritingCard').classList.add('locked');
+        showToast('Published','Visual notes published to students AND copied to Teach. Locked from editing.','success');
+        await loadAllData();renderWeekSelector();if(currentWeek)selectWeek(currentWeek);
+    }catch(e){showToast('Error',e.message,'error');}
+});
+
+// UPDATE #4: Publish videos auto-copies to teach
+document.getElementById('publishVideoBtn2').addEventListener('click',async()=>{
+    if(!videoLinks.length)return showToast('Empty','Add videos first','warning');
+    const key=`${currentSubject}_${currentWeek}`;const note=lessonNotesMap[key];
+    if(!note?.id)return showToast('Error','No note found','error');
+    try{
+        await db.collection('lessonNotes').doc(note.id).update({
+            videoLinks,
+            videosPublished:true,
+            videosReady:true,
+            teachable:true,
+            updatedAt:firebase.firestore.FieldValue.serverTimestamp()
+        });
+        document.getElementById('videoCard').classList.add('locked');
+        showToast('Published','Videos published to students AND copied to Teach. Locked from editing.','success');
+        await loadAllData();renderWeekSelector();if(currentWeek)selectWeek(currentWeek);
+    }catch(e){showToast('Error',e.message,'error');}
+});
+
+function addVideoLink(){
+    const url=document.getElementById('videoLinkInput').value.trim();
+    if(!url)return;
+    videoLinks.push(url);renderVideoList();document.getElementById('videoLinkInput').value='';
+    // Auto-preview
+    showVideoPreview(url);
+}
+function renderVideoList(){
+    document.getElementById('videoList').innerHTML=videoLinks.length?videoLinks.map((v,i)=>`<div style="display:flex;justify-content:space-between;align-items:center;padding:0.3rem 0;"><span style="flex:1;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;">${escapeHtml(v)}</span><button class="btn btn-outline btn-sm" onclick="showVideoPreview('${v.replace(/'/g,"\\'")}')" style="margin:0 0.3rem;"><i class="fas fa-play"></i></button><button class="btn btn-danger btn-sm" onclick="removeVideo(${i})">×</button></div>`).join(''):'<p style="color:var(--text-muted);">No videos.</p>';
+}
 function removeVideo(i){videoLinks.splice(i,1);renderVideoList();}
 
 function openCoPlanModal(){document.getElementById('coPlanModal').classList.add('active');renderCoTeacherList();}
@@ -1091,8 +1335,12 @@ window.removeCoTeacher=removeCoTeacher;window.onSubjectChange=onSubjectChange;
 window.onTermChange=onTermChange;
 window.openPermissionModal=openPermissionModal;window.closePermissionModal=closePermissionModal;
 window.openMyRequestsModal=openMyRequestsModal;window.closeMyRequestsModal=closeMyRequestsModal;
+window.showVideoPreview=showVideoPreview;window.closeWorkspaceVideoPreview=closeWorkspaceVideoPreview;
+window.previewWorkspaceVideo=previewWorkspaceVideo;
+window.uploadHandwritingImage=uploadHandwritingImage;window.uploadHandwritingAudio=uploadHandwritingAudio;
+window.removeHandwritingAudio=removeHandwritingAudio;
 
-console.log('📝 Teacher Lesson Notes — Full Featured Edition Ready ✅');
+console.log('📝 Teacher Lesson Notes — Updated ✅');
 </script>
 </body>
 </html>
