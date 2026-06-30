@@ -271,7 +271,7 @@
             <pre id="debugSubjects">Loading...</pre>
         </div>
         <div class="debug-section">
-            <strong>Syllabus Weeks:</strong>
+            <strong>Syllabus Weeks (collection: syllabi):</strong>
             <pre id="debugWeeks">No subject selected</pre>
         </div>
         <div class="debug-section">
@@ -710,6 +710,11 @@ firebase.initializeApp(firebaseConfig);
 const auth=firebase.auth(),db=firebase.firestore(),remoteConfig=firebase.remoteConfig();
 remoteConfig.settings.minimumFetchIntervalMillis=3600000;
 
+// ============================================
+// IMPORTANT: Your Firebase collection is "syllabi" (not "syllabus")
+// ============================================
+const SYLLABUS_COLLECTION = 'syllabi';
+
 let currentUser=null,userData=null,currentType='test',subjects=[],currentSubject=null;
 let questions=[],selectedWeeks=[],syllabusWeeks=[],currentStep=1;
 let currentSource='ai',currentManualQType='mcq',groq=null;
@@ -738,86 +743,116 @@ function refreshDebug(){
     document.getElementById('debugSubjects').textContent = subjects.length ? 
         subjects.join(', ') : 'No subjects loaded';
     document.getElementById('debugWeeks').textContent = syllabusWeeks.length ? 
-        syllabusWeeks.map(w=>`Week ${w.week}: ${w.topic} (${w.syllabusId})`).join('\n') :
-        currentSubject ? `No syllabus weeks found for "${currentSubject}"` : 'No subject selected';
+        syllabusWeeks.map(w=>`Week ${w.week}: ${w.topic} (doc: ${w.syllabusId})`).join('\n') :
+        currentSubject ? `No syllabus weeks found for "${currentSubject}" in collection "${SYLLABUS_COLLECTION}"` : 'No subject selected';
     document.getElementById('debugQuestions').textContent = questions.length ?
         questions.map((q,i)=>`Q${i+1}: [${q.type}] ${q.question?.substring(0,60)}... (${q.points}pt, ${q.difficulty})`).join('\n') :
         '0 questions';
-    document.getElementById('debugFirestore').textContent = '✅ Connected (check console for errors)';
+    document.getElementById('debugFirestore').textContent = `✅ Connected | Collection: "${SYLLABUS_COLLECTION}"`;
     document.getElementById('debugState').textContent = JSON.stringify({
         currentUser: currentUser?.email||'null',
         userData: userData ? {role:userData.role,classTeaching:userData.classTeaching,subjects:userData.subjects?.length+' subjects'} : 'null',
         currentType, currentSubject, currentStep, currentSource,
         selectedWeeks, questionsCount: questions.length,
         syllabusWeeksCount: syllabusWeeks.length,
+        syllabusCollection: SYLLABUS_COLLECTION,
         groqReady: !!groq,
         aiGeneratedCount: aiGeneratedQuestions.length,
         bankQuestionsCount: bankQuestions.length,
         csvQuestionsCount: csvQuestions.length,
         uploadedDocTextLength: uploadedDocText.length
     }, null, 2);
-    console.log('🔍 Debug refreshed - check debug modal or console');
+    console.log('🔍 Debug refreshed');
 }
 window.refreshDebug = refreshDebug;
 
 async function testSyllabusFetch(){
     if(!currentUser){showToast('Error','Not logged in.','error');return;}
     if(!currentSubject){showToast('Error','Select a subject first.','warning');return;}
-    showLoading('Testing syllabus fetch...');
+    showLoading('Testing syllabus fetch from "'+SYLLABUS_COLLECTION+'"...');
     try{
-        console.log('🧪 Testing syllabus fetch for:',{teacherId:currentUser.uid,subject:currentSubject});
-        document.getElementById('debugFirestore').textContent = 'Fetching syllabus...';
+        console.log('🧪 Testing syllabus fetch:',{
+            collection:SYLLABUS_COLLECTION,
+            teacherId:currentUser.uid,
+            subject:currentSubject
+        });
         
-        const snap = await db.collection('syllabus')
+        // Try with all filters first
+        const snap = await db.collection(SYLLABUS_COLLECTION)
             .where('teacherId','==',currentUser.uid)
             .where('subject','==',currentSubject)
             .where('status','==','approved')
             .get();
         
-        console.log('📋 Syllabus query result:',{empty:snap.empty,size:snap.size,docs:snap.docs.length});
+        console.log('📋 Query result (with status filter):',{
+            empty:snap.empty,
+            size:snap.size,
+            docs:snap.docs.length
+        });
         
         if(snap.empty){
             // Try without status filter
-            const snap2 = await db.collection('syllabus')
+            console.log('📋 Trying without status filter...');
+            const snap2 = await db.collection(SYLLABUS_COLLECTION)
                 .where('teacherId','==',currentUser.uid)
                 .where('subject','==',currentSubject)
                 .get();
             console.log('📋 Without status filter:',{empty:snap2.empty,size:snap2.size});
             
             if(!snap2.empty){
-                const statuses = snap2.docs.map(d=>({id:d.id,status:d.data().status,...d.data()}));
-                console.log('📋 Found documents with statuses:',statuses);
+                const statuses = snap2.docs.map(d=>({id:d.id,status:d.data().status,subject:d.data().subject}));
+                console.log('📋 Found documents:',statuses);
                 document.getElementById('debugFirestore').textContent = 
-                    `⚠️ No approved syllabus found, but found ${snap2.size} document(s) with statuses: ${statuses.map(s=>s.status).join(', ')}\n\nFull data: ${JSON.stringify(statuses,null,2)}`;
+                    `⚠️ No "approved" syllabus, but found ${snap2.size} doc(s) with statuses: ${statuses.map(s=>s.status).join(', ')}\n\nFull: ${JSON.stringify(statuses,null,2)}`;
+                
+                let allWeeks = [];
+                snap2.forEach(doc=>{
+                    const data = doc.data();
+                    (data.weeks||[]).forEach(w=>allWeeks.push({...w,syllabusId:doc.id}));
+                });
                 document.getElementById('debugWeeks').textContent = 
-                    'Found documents but none with status="approved":\n' + 
-                    statuses.map(s=>`Doc: ${s.id}, Status: "${s.status}", Subject: "${s.subject}"`).join('\n');
-                showToast('Debug','Found syllabus but not "approved". Check debug console.','warning');
+                    'Found but not "approved":\n' + 
+                    allWeeks.map(w=>`Week ${w.week}: ${w.topic}`).join('\n');
+                showToast('Found','Syllabus exists but status is not "approved". Check debug.','warning');
             } else {
-                document.getElementById('debugFirestore').textContent = 
-                    `❌ No syllabus documents found at all for teacherId="${currentUser.uid}" and subject="${currentSubject}"\n\nCheck:\n- Is the syllabus collection name correct?\n- Are you using the right teacherId?\n- Does the subject match exactly?`;
-                showToast('No Syllabus','No documents found. Check debug panel.','error');
+                // Try with just teacherId
+                console.log('📋 Trying with just teacherId...');
+                const snap3 = await db.collection(SYLLABUS_COLLECTION)
+                    .where('teacherId','==',currentUser.uid)
+                    .limit(5)
+                    .get();
+                console.log('📋 With just teacherId:',{empty:snap3.empty,size:snap3.size});
+                
+                if(snap3.empty){
+                    document.getElementById('debugFirestore').textContent = 
+                        `❌ No documents in "${SYLLABUS_COLLECTION}" for teacherId="${currentUser.uid}"\n\nPossible issues:\n- Collection name might be different\n- No syllabus created yet\n- teacherId mismatch`;
+                    showToast('Empty','No syllabus documents found at all.','error');
+                } else {
+                    const subjects = snap3.docs.map(d=>({id:d.id,subject:d.data().subject,status:d.data().status}));
+                    document.getElementById('debugFirestore').textContent = 
+                        `Found ${snap3.size} doc(s) but none match subject "${currentSubject}":\n${JSON.stringify(subjects,null,2)}`;
+                    showToast('Wrong Subject',`Syllabus exists for other subjects: ${subjects.map(s=>s.subject).join(', ')}`,'warning');
+                }
             }
         } else {
             let allWeeks = [];
             snap.forEach(doc=>{
                 const data = doc.data();
-                console.log('📄 Syllabus doc:',{id:doc.id,...data});
-                const weeks = data.weeks||[];
-                weeks.forEach(w=>allWeeks.push({...w,syllabusId:doc.id}));
+                console.log('📄 Syllabus doc:',{id:doc.id,subject:data.subject,weeks:data.weeks});
+                (data.weeks||[]).forEach(w=>allWeeks.push({...w,syllabusId:doc.id}));
             });
             document.getElementById('debugFirestore').textContent = 
-                `✅ Found ${snap.size} approved syllabus document(s) with ${allWeeks.length} total weeks`;
+                `✅ Found ${snap.size} approved syllabus doc(s) with ${allWeeks.length} total weeks`;
             document.getElementById('debugWeeks').textContent = 
                 allWeeks.map(w=>`Week ${w.week}: ${w.topic} (doc: ${w.syllabusId})`).join('\n');
-            showToast('Success',`Found ${snap.size} syllabus doc(s), ${allWeeks.length} weeks.`,'success');
+            showToast('Success!',`Found ${snap.size} syllabus doc(s), ${allWeeks.length} weeks.`,'success');
         }
         hideLoading();
         refreshDebug();
     } catch(e) {
         hideLoading();
-        console.error('🧪 Syllabus test error:',e);
-        document.getElementById('debugFirestore').textContent = `❌ Error: ${e.message}\n\nStack: ${e.stack}`;
+        console.error('🧪 Test error:',e);
+        document.getElementById('debugFirestore').textContent = `❌ Error: ${e.message}\n\nStack: ${e.stack}\n\nCollection: "${SYLLABUS_COLLECTION}"\n\nMake sure the collection exists and has proper indexes.`;
         showToast('Error',e.message,'error');
     }
 }
@@ -871,28 +906,38 @@ function selectType(type,card){
 }
 window.selectType=selectType;
 
-// SUBJECT & WEEKS
+// SUBJECT & WEEKS - NOW USING "syllabi" COLLECTION
 document.getElementById('subject').addEventListener('change',async e=>{
-    currentSubject=e.target.value;selectedWeeks=[];
+    currentSubject=e.target.value;
+    selectedWeeks=[];
     if(!currentSubject||!currentUser){
         document.getElementById('weeksCheckboxes').innerHTML='<p style="grid-column:1/-1;text-align:center;padding:2rem;color:var(--text-secondary);"><i class="fas fa-arrow-up"></i> Select a subject</p>';
         return;
     }
-    showLoading('Loading syllabus weeks...');
+    showLoading('Loading syllabus weeks from '+SYLLABUS_COLLECTION+'...');
     try{
-        console.log('📚 Loading syllabus for:',{teacherId:currentUser.uid,subject:currentSubject});
-        const snap=await db.collection('syllabus')
+        console.log('📚 Loading syllabus:',{
+            collection:SYLLABUS_COLLECTION,
+            teacherId:currentUser.uid,
+            subject:currentSubject
+        });
+        
+        const snap=await db.collection(SYLLABUS_COLLECTION)
             .where('teacherId','==',currentUser.uid)
             .where('subject','==',currentSubject)
             .where('status','==','approved')
             .get();
         
-        console.log('📚 Syllabus query result:',{empty:snap.empty,size:snap.size});
+        console.log('📚 Query result:',{
+            empty:snap.empty,
+            size:snap.size,
+            docs:snap.docs.length
+        });
         
         syllabusWeeks=[];
         snap.forEach(doc=>{
             const data=doc.data();
-            console.log('📄 Processing doc:',{id:doc.id,weeks:data.weeks});
+            console.log('📄 Processing doc:',{id:doc.id,subject:data.subject,weeksCount:(data.weeks||[]).length});
             (data.weeks||[]).forEach(w=>syllabusWeeks.push({...w,syllabusId:doc.id}));
         });
         
@@ -904,7 +949,7 @@ document.getElementById('subject').addEventListener('change',async e=>{
             return true;
         }).sort((a,b)=>a.week-b.week);
         
-        console.log('📚 Processed syllabus weeks:',syllabusWeeks);
+        console.log('📚 Processed weeks:',syllabusWeeks);
         
         const c=document.getElementById('weeksCheckboxes');
         if(syllabusWeeks.length){
@@ -917,7 +962,8 @@ document.getElementById('subject').addEventListener('change',async e=>{
         } else {
             c.innerHTML='<p style="grid-column:1/-1;text-align:center;color:var(--warning-text);padding:1rem;">'+
                 '<i class="fas fa-exclamation-triangle" style="font-size:1.5rem;display:block;margin-bottom:0.5rem;"></i>'+
-                'No approved syllabus weeks found. <br><small>Try the debug button (🐛) to investigate.</small></p>';
+                'No approved syllabus weeks found in "'+SYLLABUS_COLLECTION+'" collection.<br>'+
+                '<small>Click the 🐛 debug button to investigate, or create a syllabus first.</small></p>';
         }
         hideLoading();
         refreshDebug();
@@ -1014,7 +1060,6 @@ async function generateFromAllSources(){
     showLoading(`Generating ${count} questions...`);
     aiGeneratedQuestions=[];
     
-    // Generate in batches for large counts
     const batchSize=15,totalBatches=Math.ceil(count/batchSize);
     for(let b=0;b<totalBatches;b++){
         const batchCount=Math.min(batchSize,count-b*batchSize);
@@ -1180,7 +1225,6 @@ function addManualQuestion(){
         fromManual:true
     };
     questions.push(q);
-    // Auto-save to bank
     saveToQuestionBank(q);
     renderQuestions();updateQuickStats();
     document.getElementById('mqQuestion').value='';['mqOptA','mqOptB','mqOptC','mqOptD'].forEach(id=>document.getElementById(id).value='');
@@ -1203,7 +1247,7 @@ async function saveToQuestionBank(q){
 }
 
 // ============================================
-// DOCUMENT UPLOAD & EXTRACTION
+// DOCUMENT UPLOAD
 // ============================================
 document.getElementById('docUploadArea').addEventListener('click',()=>document.getElementById('docFile').click());
 document.getElementById('docFile').addEventListener('change',e=>{if(e.target.files[0])processDocument(e.target.files[0]);});
@@ -1357,7 +1401,6 @@ function validateAssessment(status){
         if(!end)errors.push('Set an exam end date.');
         if(start&&end&&new Date(start)>=new Date(end))errors.push('End date must be after start date.');
     }
-    // Validate individual questions
     questions.forEach((q,i)=>{
         if(!q.question||!q.question.trim())errors.push(`Question ${i+1} has empty text.`);
         if(q.type==='mcq'){
