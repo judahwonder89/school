@@ -272,7 +272,7 @@
             <pre id="debugSubjects">Loading...</pre>
         </div>
         <div class="debug-section">
-            <strong>Syllabus Weeks (collection: syllabi):</strong>
+            <strong>Weeks (from lessonNotes fallback):</strong>
             <pre id="debugWeeks">No subject selected</pre>
         </div>
         <div class="debug-section">
@@ -290,11 +290,8 @@
         <button class="btn btn-primary btn-sm" onclick="refreshDebug()">
             <i class="fas fa-sync-alt"></i> Refresh
         </button>
-        <button class="btn btn-outline btn-sm" onclick="testSyllabusFetch()" style="margin-left:0.5rem;">
-            <i class="fas fa-vial"></i> Test Syllabus Fetch
-        </button>
-        <button class="btn btn-outline btn-sm" onclick="testLessonNotesFetch()" style="margin-left:0.5rem;">
-            <i class="fas fa-vial"></i> Test Lesson Notes
+        <button class="btn btn-outline btn-sm" onclick="testAllCollections()" style="margin-left:0.5rem;">
+            <i class="fas fa-vial"></i> Test All Collections
         </button>
     </div>
 </div>
@@ -413,7 +410,7 @@
                     </label>
                     <div id="weeksCheckboxes" class="weeks-grid">
                         <p style="grid-column:1/-1;text-align:center;padding:2rem;color:var(--text-secondary);">
-                            <i class="fas fa-arrow-up"></i> Select a subject to load weeks from your approved syllabus
+                            <i class="fas fa-arrow-up"></i> Select a subject to load weeks
                         </p>
                     </div>
                 </div>
@@ -786,7 +783,7 @@ const remoteConfig = firebase.remoteConfig();
 remoteConfig.settings.minimumFetchIntervalMillis = 3600000;
 
 // ============================================
-// COLLECTION NAMES (your Firebase uses "syllabi" not "syllabus")
+// COLLECTION NAMES
 // ============================================
 const SYLLABUS_COLLECTION = 'syllabi';
 const LESSON_NOTES_COLLECTION = 'lessonNotes';
@@ -880,234 +877,108 @@ function refreshDebug() {
         : 'No subjects loaded';
     
     document.getElementById('debugWeeks').textContent = syllabusWeeks.length 
-        ? syllabusWeeks.map(w => `Week ${w.week}: ${w.topic} (doc: ${w.syllabusId})`).join('\n') 
+        ? syllabusWeeks.map(w => `Week ${w.week}: ${w.topic} (source: ${w.source})`).join('\n') 
         : currentSubject 
-            ? `No syllabus weeks found for "${currentSubject}" in collection "${SYLLABUS_COLLECTION}"` 
+            ? `No weeks found for "${currentSubject}"\nTried: syllabi collection & lessonNotes fallback` 
             : 'No subject selected';
     
     document.getElementById('debugQuestions').textContent = questions.length 
         ? questions.map((q, i) => `Q${i + 1}: [${q.type}] ${q.question?.substring(0, 60)}... (${q.points}pt, ${q.difficulty})`).join('\n') 
         : '0 questions';
     
-    document.getElementById('debugFirestore').textContent = `✅ Connected\nCollections in use:\n- Syllabus: "${SYLLABUS_COLLECTION}"\n- Lesson Notes: "${LESSON_NOTES_COLLECTION}"\n- Assessments: "assessments"\n- Question Bank: "questionBank"`;
+    document.getElementById('debugFirestore').textContent = 
+        `✅ Connected\n` +
+        `Syllabus source: "${SYLLABUS_COLLECTION}"\n` +
+        `Lesson notes source: "${LESSON_NOTES_COLLECTION}"\n` +
+        `Weeks found: ${syllabusWeeks.length}\n` +
+        `Groq ready: ${!!groq}`;
     
     document.getElementById('debugState').textContent = JSON.stringify({
         currentUser: currentUser?.email || 'null',
-        userData: userData ? {
-            role: userData.role,
-            classTeaching: userData.classTeaching,
-            subjects: userData.subjects?.length + ' subjects'
-        } : 'null',
-        currentType: currentType,
-        currentSubject: currentSubject,
-        currentStep: currentStep,
-        currentSource: currentSource,
-        selectedWeeks: selectedWeeks,
-        questionsCount: questions.length,
+        classTeaching: userData?.classTeaching,
+        currentType, currentSubject, currentStep,
+        selectedWeeks, questionsCount: questions.length,
         syllabusWeeksCount: syllabusWeeks.length,
-        syllabusCollection: SYLLABUS_COLLECTION,
-        groqReady: !!groq,
-        aiGeneratedCount: aiGeneratedQuestions.length,
-        bankQuestionsCount: bankQuestions.length,
-        csvQuestionsCount: csvQuestions.length,
-        uploadedDocTextLength: uploadedDocText.length
+        groqReady: !!groq
     }, null, 2);
-    
-    console.log('🔍 Debug refreshed');
 }
 window.refreshDebug = refreshDebug;
 
-async function testSyllabusFetch() {
-    if (!currentUser) {
-        showToast('Error', 'Not logged in.', 'error');
-        return;
-    }
-    if (!currentSubject) {
-        showToast('Error', 'Select a subject first.', 'warning');
-        return;
-    }
-    showLoading('Testing syllabus fetch from "' + SYLLABUS_COLLECTION + '"...');
+async function testAllCollections() {
+    if (!currentUser) { showToast('Error', 'Not logged in.', 'error'); return; }
+    if (!currentSubject) { showToast('Error', 'Select a subject first.', 'warning'); return; }
+    
+    showLoading('Testing all collections...');
+    let report = '';
+    
     try {
-        console.log('🧪 Testing SYLLABUS fetch:', {
-            collection: SYLLABUS_COLLECTION,
-            teacherId: currentUser.uid,
-            subject: currentSubject
-        });
-
-        // Try with status filter first
-        const snap = await db.collection(SYLLABUS_COLLECTION)
+        // Test 1: syllabi collection
+        const s1 = await db.collection(SYLLABUS_COLLECTION)
             .where('teacherId', '==', currentUser.uid)
             .where('subject', '==', currentSubject)
-            .where('status', '==', 'approved')
             .get();
-
-        console.log('📋 Result (with status=approved):', {
-            empty: snap.empty,
-            size: snap.size,
-            docs: snap.docs.length
-        });
-
-        if (!snap.empty) {
-            let allWeeks = [];
-            snap.forEach(doc => {
-                const data = doc.data();
-                console.log('📄 Doc:', { id: doc.id, subject: data.subject, weeks: data.weeks });
-                (data.weeks || []).forEach(w => allWeeks.push({ ...w, syllabusId: doc.id }));
+        report += `📋 "${SYLLABUS_COLLECTION}" (teacherId+subject): ${s1.size} docs\n`;
+        if (!s1.empty) {
+            s1.docs.forEach(d => {
+                const dd = d.data();
+                report += `  - id:${d.id} status:${dd.status} weeks:${(dd.weeks||[]).length}\n`;
             });
-            document.getElementById('debugFirestore').textContent = 
-                `✅ SUCCESS! Found ${snap.size} approved syllabus doc(s) with ${allWeeks.length} total weeks in "${SYLLABUS_COLLECTION}"`;
-            document.getElementById('debugWeeks').textContent = 
-                allWeeks.map(w => `Week ${w.week}: ${w.topic} (doc: ${w.syllabusId})`).join('\n');
-            showToast('Success!', `Found ${snap.size} syllabus doc(s), ${allWeeks.length} weeks.`, 'success');
-        } else {
-            // Try without status filter
-            console.log('📋 Trying without status filter...');
-            const snap2 = await db.collection(SYLLABUS_COLLECTION)
-                .where('teacherId', '==', currentUser.uid)
-                .where('subject', '==', currentSubject)
-                .get();
-            console.log('📋 Without status filter:', {
-                empty: snap2.empty,
-                size: snap2.size
-            });
-
-            if (!snap2.empty) {
-                const statuses = snap2.docs.map(d => ({
-                    id: d.id,
-                    status: d.data().status,
-                    subject: d.data().subject,
-                    weeksCount: (d.data().weeks || []).length
-                }));
-                document.getElementById('debugFirestore').textContent = 
-                    `⚠️ Found ${snap2.size} doc(s) but none with status="approved":\n${JSON.stringify(statuses, null, 2)}\n\nThese documents exist but their status field is not "approved".`;
-                showToast('Found but not approved', `Statuses: ${statuses.map(s => s.status).join(', ')}`, 'warning');
-            } else {
-                // Try with just teacherId
-                const snap3 = await db.collection(SYLLABUS_COLLECTION)
-                    .where('teacherId', '==', currentUser.uid)
-                    .limit(10)
-                    .get();
-                
-                if (snap3.empty) {
-                    document.getElementById('debugFirestore').textContent = 
-                        `❌ ZERO documents in "${SYLLABUS_COLLECTION}" for teacherId="${currentUser.uid}"\n\n` +
-                        `The collection "${SYLLABUS_COLLECTION}" exists but has no documents for this teacher.\n` +
-                        `You need to CREATE a syllabus in the syllabi collection first.`;
-                    showToast('Empty Collection', 'No syllabus documents exist for this teacher.', 'error');
-                } else {
-                    const subs = snap3.docs.map(d => ({
-                        id: d.id,
-                        subject: d.data().subject,
-                        status: d.data().status
-                    }));
-                    document.getElementById('debugFirestore').textContent = 
-                        `Found ${snap3.size} syllabi doc(s) but subject mismatch:\n${JSON.stringify(subs, null, 2)}\n\n` +
-                        `Your selected subject: "${currentSubject}"\n` +
-                        `Available subjects: ${[...new Set(subs.map(s => s.subject))].join(', ')}`;
-                    showToast('Subject Mismatch', `Available subjects: ${[...new Set(subs.map(s => s.subject))].join(', ')}`, 'warning');
-                }
-            }
         }
-        hideLoading();
-        refreshDebug();
-    } catch (e) {
-        hideLoading();
-        console.error('🧪 Test error:', e);
-        document.getElementById('debugFirestore').textContent = 
-            `❌ Error: ${e.message}\n\nStack: ${e.stack}\n\nCollection: "${SYLLABUS_COLLECTION}"\n\n` +
-            `Possible issues:\n- Missing Firestore index\n- Collection name wrong\n- Permission denied`;
-        showToast('Error', e.message, 'error');
-    }
-}
-window.testSyllabusFetch = testSyllabusFetch;
-
-async function testLessonNotesFetch() {
-    if (!currentUser) {
-        showToast('Error', 'Not logged in.', 'error');
-        return;
-    }
-    if (!currentSubject) {
-        showToast('Error', 'Select a subject first.', 'warning');
-        return;
-    }
-    showLoading('Testing lesson notes fetch...');
-    try {
-        console.log('🧪 Testing LESSON NOTES:', {
-            collection: LESSON_NOTES_COLLECTION,
-            teacherId: currentUser.uid,
-            subject: currentSubject
-        });
-
-        const snap = await db.collection(LESSON_NOTES_COLLECTION)
+        
+        // Test 2: syllabi without status
+        const s2 = await db.collection(SYLLABUS_COLLECTION)
             .where('teacherId', '==', currentUser.uid)
-            .where('subject', '==', currentSubject)
-            .where('status', '==', 'approved')
             .limit(5)
             .get();
-
-        console.log('📋 Lesson notes result:', {
-            empty: snap.empty,
-            size: snap.size
-        });
-
-        if (!snap.empty) {
-            const data = snap.docs.map(d => ({
-                id: d.id,
-                classId: d.data().classId,
-                week: d.data().week,
-                topic: d.data().topic,
-                hasLessonNote: !!d.data().lessonNote,
-                hasStudentResource: !!d.data().studentResource,
-                hasTeachingProcess: !!d.data().teachingProcess
-            }));
-            document.getElementById('debugFirestore').textContent = 
-                `✅ SUCCESS! Found ${snap.size} approved lesson note(s):\n${JSON.stringify(data, null, 2)}\n\n` +
-                `Your class: ${userData?.classTeaching || 'not set'}`;
-            showToast('Success!', `Found ${snap.size} approved lesson notes.`, 'success');
-        } else {
-            const snap2 = await db.collection(LESSON_NOTES_COLLECTION)
-                .where('teacherId', '==', currentUser.uid)
-                .where('subject', '==', currentSubject)
-                .limit(5)
-                .get();
-            
-            if (!snap2.empty) {
-                const data = snap2.docs.map(d => ({
-                    id: d.id,
-                    classId: d.data().classId,
-                    status: d.data().status,
-                    week: d.data().week,
-                    topic: d.data().topic
-                }));
-                document.getElementById('debugFirestore').textContent = 
-                    `⚠️ Found ${snap2.size} lesson note(s) but not "approved":\n${JSON.stringify(data, null, 2)}\n\n` +
-                    `Statuses: ${data.map(d => d.status).join(', ')}`;
-                showToast('Not Approved', `Statuses: ${data.map(d => d.status).join(', ')}`, 'warning');
-            } else {
-                document.getElementById('debugFirestore').textContent = 
-                    `❌ No lesson notes for "${currentSubject}"\n\n` +
-                    `Teacher ID: ${currentUser.uid}\n` +
-                    `Your class: ${userData?.classTeaching || 'not set'}\n\n` +
-                    `NOTE: Your lesson notes have classId="Primary 6" but you teach "${userData?.classTeaching}". This may be intentional (sharing across classes) or a mismatch.`;
-                showToast('No Lesson Notes', 'No lesson notes found for this subject.', 'error');
-            }
+        report += `\n📋 "${SYLLABUS_COLLECTION}" (teacherId only): ${s2.size} docs\n`;
+        if (!s2.empty) {
+            s2.docs.forEach(d => {
+                const dd = d.data();
+                report += `  - id:${d.id} subject:"${dd.subject}" status:${dd.status}\n`;
+            });
         }
-        hideLoading();
-        refreshDebug();
-    } catch (e) {
-        hideLoading();
-        console.error('🧪 Test error:', e);
+        
+        // Test 3: lessonNotes
+        const s3 = await db.collection(LESSON_NOTES_COLLECTION)
+            .where('teacherId', '==', currentUser.uid)
+            .where('subject', '==', currentSubject)
+            .limit(5)
+            .get();
+        report += `\n📋 "${LESSON_NOTES_COLLECTION}" (teacherId+subject): ${s3.size} docs\n`;
+        if (!s3.empty) {
+            s3.docs.forEach(d => {
+                const dd = d.data();
+                report += `  - id:${d.id} classId:"${dd.classId}" week:${dd.week} topic:"${dd.topic}" status:${dd.status}\n`;
+            });
+        }
+        
+        // Test 4: lessonNotes without subject filter (check all)
+        const s4 = await db.collection(LESSON_NOTES_COLLECTION)
+            .where('teacherId', '==', currentUser.uid)
+            .limit(3)
+            .get();
+        report += `\n📋 "${LESSON_NOTES_COLLECTION}" (teacherId only): ${s4.size} docs\n`;
+        if (!s4.empty) {
+            s4.docs.forEach(d => {
+                const dd = d.data();
+                report += `  - id:${d.id} subject:"${dd.subject}" week:${dd.week} classId:"${dd.classId}"\n`;
+            });
+        }
+        
+        document.getElementById('debugFirestore').textContent = report || 'All collections returned empty.';
+        showToast('Test Complete', `Check debug panel for results.`, 'success');
+    } catch(e) {
+        document.getElementById('debugFirestore').textContent = `❌ Error: ${e.message}\n${e.stack}`;
         showToast('Error', e.message, 'error');
     }
+    hideLoading();
+    refreshDebug();
 }
-window.testLessonNotesFetch = testLessonNotesFetch;
+window.testAllCollections = testAllCollections;
 
-// Debug button handlers
 document.getElementById('debugBtn').addEventListener('click', () => {
     document.getElementById('debugModal').classList.toggle('active');
-    if (document.getElementById('debugModal').classList.contains('active')) {
-        refreshDebug();
-    }
+    if (document.getElementById('debugModal').classList.contains('active')) refreshDebug();
 });
 
 // ============================================
@@ -1146,10 +1017,7 @@ function goToStep(s) {
     document.querySelectorAll('.step-panel').forEach(p => p.classList.remove('active'));
     document.getElementById('step' + s).classList.add('active');
     if (s === 2) updateQuickStats();
-    if (s === 3) {
-        renderDynamicSettings();
-        updateAssessmentSummary();
-    }
+    if (s === 3) { renderDynamicSettings(); updateAssessmentSummary(); }
 }
 window.goToStep = goToStep;
 
@@ -1161,16 +1029,12 @@ function selectType(type, card) {
     document.querySelectorAll('.type-card').forEach(c => c.classList.remove('active'));
     card.classList.add('active');
     document.getElementById('weeksSection').style.display = (type === 'test' || type === 'exam') ? 'block' : 'none';
-    document.getElementById('settingsTitle').textContent = {
-        test: 'Test',
-        assignment: 'Assignment',
-        exam: 'Examination'
-    } [type];
+    document.getElementById('settingsTitle').textContent = { test: 'Test', assignment: 'Assignment', exam: 'Examination' }[type];
 }
 window.selectType = selectType;
 
 // ============================================
-// SUBJECT & WEEKS (USING "syllabi" COLLECTION)
+// SUBJECT & WEEKS - FALLBACK TO lessonNotes
 // ============================================
 document.getElementById('subject').addEventListener('change', async (e) => {
     currentSubject = e.target.value;
@@ -1184,50 +1048,52 @@ document.getElementById('subject').addEventListener('change', async (e) => {
         return;
     }
 
-    showLoading('Loading syllabus weeks from ' + SYLLABUS_COLLECTION + '...');
+    showLoading('Loading weeks...');
     try {
-        console.log('📚 Loading syllabus:', {
-            collection: SYLLABUS_COLLECTION,
-            teacherId: currentUser.uid,
-            subject: currentSubject
-        });
-
-        // Try with all filters (teacherId + subject + status=approved)
+        // STEP 1: Try syllabi collection first
         let snap = await db.collection(SYLLABUS_COLLECTION)
             .where('teacherId', '==', currentUser.uid)
             .where('subject', '==', currentSubject)
             .where('status', '==', 'approved')
             .get();
 
-        console.log('📚 Result (with status filter):', {
-            empty: snap.empty,
-            size: snap.size,
-            docs: snap.docs.length
-        });
-
-        // FALLBACK: If no approved documents, try without status filter
         if (snap.empty) {
-            console.log('📚 No approved docs, trying without status filter...');
             snap = await db.collection(SYLLABUS_COLLECTION)
                 .where('teacherId', '==', currentUser.uid)
                 .where('subject', '==', currentSubject)
                 .get();
-            console.log('📚 Fallback result (no status filter):', {
-                empty: snap.empty,
-                size: snap.size
+        }
+
+        if (!snap.empty) {
+            snap.forEach(doc => {
+                (doc.data().weeks || []).forEach(w => {
+                    syllabusWeeks.push({ ...w, syllabusId: doc.id, source: 'syllabi' });
+                });
             });
         }
 
-        syllabusWeeks = [];
-        snap.forEach(doc => {
-            const data = doc.data();
-            console.log('📄 Processing doc:', {
-                id: doc.id,
-                subject: data.subject,
-                weeksCount: (data.weeks || []).length
+        // STEP 2: FALLBACK - If no syllabi data, get weeks from lessonNotes
+        if (!syllabusWeeks.length) {
+            console.log('📚 No syllabi data, falling back to lessonNotes...');
+            const lnSnap = await db.collection(LESSON_NOTES_COLLECTION)
+                .where('teacherId', '==', currentUser.uid)
+                .where('subject', '==', currentSubject)
+                .get();
+            
+            lnSnap.forEach(doc => {
+                const data = doc.data();
+                if (data.week && data.topic) {
+                    syllabusWeeks.push({
+                        week: data.week,
+                        topic: data.topic,
+                        term: data.term || '',
+                        syllabusId: doc.id,
+                        source: 'lessonNotes',
+                        status: data.status || 'unknown'
+                    });
+                }
             });
-            (data.weeks || []).forEach(w => syllabusWeeks.push({ ...w, syllabusId: doc.id }));
-        });
+        }
 
         // Deduplicate by week number
         const seen = new Set();
@@ -1237,30 +1103,39 @@ document.getElementById('subject').addEventListener('change', async (e) => {
             return true;
         }).sort((a, b) => a.week - b.week);
 
-        console.log('📚 Processed weeks:', syllabusWeeks);
+        console.log('📚 Final weeks:', syllabusWeeks);
 
         const c = document.getElementById('weeksCheckboxes');
         if (syllabusWeeks.length) {
-            c.innerHTML = syllabusWeeks.map(w => `
-                <label class="week-checkbox">
-                    <input type="checkbox" value="${w.week}" onchange="toggleWeek(this)">
-                    <span><strong>Week ${w.week}</strong>: ${escapeHtml(w.topic || 'No topic')}</span>
-                </label>
-            `).join('');
+            const sourceLabel = syllabusWeeks[0].source === 'lessonNotes' ? ' (from lesson notes)' : '';
+            c.innerHTML = `
+                <p style="grid-column:1/-1;font-size:0.8rem;color:var(--text-muted);margin-bottom:0.5rem;">
+                    <i class="fas fa-info-circle"></i> Loaded ${syllabusWeeks.length} weeks${sourceLabel}
+                </p>
+                ${syllabusWeeks.map(w => `
+                    <label class="week-checkbox">
+                        <input type="checkbox" value="${w.week}" onchange="toggleWeek(this)">
+                        <span>
+                            <strong>Week ${w.week}</strong>: ${escapeHtml(w.topic || 'No topic')}
+                            ${w.status && w.status !== 'approved' ? `<small style="color:var(--warning-text);">(${w.status})</small>` : ''}
+                        </span>
+                    </label>
+                `).join('')}`;
         } else {
             c.innerHTML = '<p style="grid-column:1/-1;text-align:center;color:var(--warning-text);padding:1rem;">' +
                 '<i class="fas fa-exclamation-triangle" style="font-size:1.5rem;display:block;margin-bottom:0.5rem;"></i>' +
-                'No syllabus weeks found in "' + SYLLABUS_COLLECTION + '" collection.<br>' +
-                '<small>Click the 🐛 debug button to investigate, or create a syllabus first.</small></p>';
+                `No weeks found for "${currentSubject}".<br>` +
+                '<small>Checked both "syllabi" and "lessonNotes" collections.<br>' +
+                'Click 🐛 then "Test All Collections" to diagnose.</small></p>';
         }
         hideLoading();
         refreshDebug();
     } catch (e) {
         hideLoading();
-        console.error('❌ Syllabus load error:', e);
+        console.error('❌ Week load error:', e);
         document.getElementById('weeksCheckboxes').innerHTML = 
             '<p style="grid-column:1/-1;text-align:center;color:var(--danger-text);">' +
-            'Error loading weeks: ' + escapeHtml(e.message) + '</p>';
+            'Error: ' + escapeHtml(e.message) + '</p>';
     }
 });
 
@@ -1303,7 +1178,7 @@ function updateQuickStats() {
 }
 
 // ============================================
-// AI GENERATION (Lesson Notes + Resources + Teaching Process)
+// AI GENERATION
 // ============================================
 async function fetchContentForAI() {
     if (!currentSubject || !selectedWeeks.length || !currentUser) return null;
@@ -1335,7 +1210,6 @@ async function fetchContentForAI() {
             });
         });
 
-        // Update source badges
         document.getElementById('sourceLN').className = 'ai-source-badge ' + (content.lessonNotes.length ? 'active' : 'inactive');
         document.getElementById('sourceRes').className = 'ai-source-badge ' + (content.resources.length ? 'active' : 'inactive');
         document.getElementById('sourceTP').className = 'ai-source-badge ' + (content.teachingProcess.length ? 'active' : 'inactive');
@@ -1343,7 +1217,6 @@ async function fetchContentForAI() {
             content.documentText = uploadedDocText;
             document.getElementById('sourceDoc').className = 'ai-source-badge active';
         }
-
         return content;
     } catch (e) {
         console.error('fetchContentForAI error:', e);
@@ -1352,13 +1225,9 @@ async function fetchContentForAI() {
 }
 
 async function generateFromAllSources() {
-    if (!groq) {
-        showToast('AI Not Ready', 'Contact administrator.', 'error');
-        return;
-    }
+    if (!groq) { showToast('AI Not Ready', 'Contact administrator.', 'error'); return; }
     if (!currentSubject || !selectedWeeks.length) {
-        showToast('Required', 'Select subject and weeks first.', 'warning');
-        return;
+        showToast('Required', 'Select subject and weeks first.', 'warning'); return;
     }
 
     const count = parseInt(document.getElementById('aiCountVal').textContent) || 20;
@@ -1373,29 +1242,20 @@ async function generateFromAllSources() {
         return;
     }
 
-    // Build context from all sources
     let context = '';
     if (content.lessonNotes.length) {
         context += '=== LESSON NOTES ===\n';
-        content.lessonNotes.forEach(n => {
-            context += `WEEK ${n.week}: ${n.topic}\n${n.content?.substring(0, 1500) || ''}\n\n`;
-        });
+        content.lessonNotes.forEach(n => context += `WEEK ${n.week}: ${n.topic}\n${n.content?.substring(0, 1500) || ''}\n\n`);
     }
     if (content.resources.length) {
         context += '=== STUDENT RESOURCES ===\n';
-        content.resources.forEach(r => {
-            context += `WEEK ${r.week}: ${r.topic}\n${r.content?.substring(0, 1500) || ''}\n\n`;
-        });
+        content.resources.forEach(r => context += `WEEK ${r.week}: ${r.topic}\n${r.content?.substring(0, 1500) || ''}\n\n`);
     }
     if (content.teachingProcess.length) {
         context += '=== TEACHING PROCESS ===\n';
-        content.teachingProcess.forEach(t => {
-            context += `WEEK ${t.week}: ${t.topic}\n${t.content?.substring(0, 1500) || ''}\n\n`;
-        });
+        content.teachingProcess.forEach(t => context += `WEEK ${t.week}: ${t.topic}\n${t.content?.substring(0, 1500) || ''}\n\n`);
     }
-    if (content.documentText) {
-        context += '=== UPLOADED DOCUMENT ===\n' + content.documentText.substring(0, 3000) + '\n\n';
-    }
+    if (content.documentText) context += '=== UPLOADED DOCUMENT ===\n' + content.documentText.substring(0, 3000) + '\n\n';
 
     const typeMap = {
         mcq: 'multiple choice with 4 options (A,B,C,D)',
@@ -1407,27 +1267,23 @@ async function generateFromAllSources() {
     showLoading(`Generating ${count} questions in batches...`);
     aiGeneratedQuestions = [];
 
-    // Batch processing for large counts
     const batchSize = 15;
     const totalBatches = Math.ceil(count / batchSize);
 
     for (let b = 0; b < totalBatches; b++) {
         const batchCount = Math.min(batchSize, count - b * batchSize);
         try {
-            const prompt = `Generate exactly ${batchCount} ${difficulty} ${typeMap[type]} questions based STRICTLY on the content below. Return ONLY a JSON array.\n\nCONTENT:\n${context}\n\nFormat: [{"question":"...","options":["A","B","C","D"],"correct":"A","points":1,"type":"mcq","difficulty":"medium"},{"question":"...","correct":"True","points":1,"type":"truefalse","difficulty":"easy"}]`;
-            
+            const prompt = `Generate exactly ${batchCount} ${difficulty} ${typeMap[type]} questions based STRICTLY on the content below. Return ONLY a JSON array.\n\nCONTENT:\n${context}\n\nFormat: [{"question":"...","options":["A","B","C","D"],"correct":"A","points":1,"type":"mcq","difficulty":"medium"}]`;
             const res = await groq.chat.completions.create({
                 messages: [{ role: 'user', content: prompt }],
                 model: 'llama-3.3-70b-versatile',
                 temperature: 0.3,
                 max_tokens: 4000
             });
-
             const text = res.choices[0].message.content;
             const match = text.match(/\[[\s\S]*\]/);
             if (match) {
-                const parsed = JSON.parse(match[0]);
-                parsed.forEach(q => {
+                JSON.parse(match[0]).forEach(q => {
                     aiGeneratedQuestions.push({
                         type: q.type || (q.options ? 'mcq' : (q.correct === 'True' || q.correct === 'False') ? 'truefalse' : 'fillblank'),
                         question: q.question,
@@ -1439,79 +1295,62 @@ async function generateFromAllSources() {
                     });
                 });
             }
-        } catch (e) {
-            console.error('Batch error:', e);
-        }
+        } catch (e) { console.error('Batch error:', e); }
     }
 
     hideLoading();
-
-    if (!aiGeneratedQuestions.length) {
-        showToast('Error', 'Could not generate questions. Try again.', 'error');
-        return;
-    }
+    if (!aiGeneratedQuestions.length) { showToast('Error', 'Could not generate questions.', 'error'); return; }
 
     renderAIReview();
     document.getElementById('aiReviewGrid').style.display = 'block';
     document.getElementById('aiReviewActions').style.display = 'flex';
     document.getElementById('aiCount').textContent = aiGeneratedQuestions.length;
-    showToast('Generated!', `${aiGeneratedQuestions.length} questions created from your content.`, 'success');
+    showToast('Generated!', `${aiGeneratedQuestions.length} questions created.`, 'success');
 }
 window.generateFromAllSources = generateFromAllSources;
 
 function renderAIReview() {
-    const grid = document.getElementById('aiReviewGrid');
-    grid.innerHTML = aiGeneratedQuestions.map((q, i) => {
-        const diffClass = 'difficulty-' + q.difficulty;
-        return `<div class="ai-review-item">
+    document.getElementById('aiReviewGrid').innerHTML = aiGeneratedQuestions.map((q, i) => `
+        <div class="ai-review-item">
             <input type="checkbox" checked data-ai="${i}" onchange="updateAISelected()">
             <span class="q-type">${q.type}</span>
-            <span class="q-diff ${diffClass}">${q.difficulty}</span>
+            <span class="q-diff difficulty-${q.difficulty}">${q.difficulty}</span>
             <span style="flex:1;">${escapeHtml(q.question?.substring(0, 80))}...</span>
             <span style="color:var(--text-muted);font-size:0.75rem;">${q.points}pt</span>
-        </div>`;
-    }).join('');
+        </div>
+    `).join('');
     updateAISelected();
 }
 
 function updateAISelected() {
-    const count = document.querySelectorAll('#aiReviewGrid input:checked').length;
-    document.getElementById('aiSelectedCount').textContent = count;
+    document.getElementById('aiSelectedCount').textContent = document.querySelectorAll('#aiReviewGrid input:checked').length;
 }
-
 function selectAllAI() {
     document.querySelectorAll('#aiReviewGrid input').forEach(cb => cb.checked = true);
     updateAISelected();
 }
-
 function deselectAllAI() {
     document.querySelectorAll('#aiReviewGrid input').forEach(cb => cb.checked = false);
     updateAISelected();
 }
-
 function insertSelectedAI() {
     const selected = [];
     document.querySelectorAll('#aiReviewGrid input:checked').forEach(cb => {
         const i = parseInt(cb.dataset.ai);
         if (aiGeneratedQuestions[i]) selected.push({ ...aiGeneratedQuestions[i], fromAI: true });
     });
-    if (!selected.length) {
-        showToast('None Selected', 'Select at least one question.', 'warning');
-        return;
-    }
+    if (!selected.length) { showToast('None Selected', 'Select at least one.', 'warning'); return; }
     questions = questions.concat(selected);
     renderQuestions();
     updateQuickStats();
     document.getElementById('aiReviewGrid').style.display = 'none';
     document.getElementById('aiReviewActions').style.display = 'none';
-    showToast('Added', `${selected.length} questions added to assessment.`, 'success');
+    showToast('Added', `${selected.length} questions added.`, 'success');
 }
-
 function regenerateAI() {
     aiGeneratedQuestions = [];
     generateFromAllSources();
 }
-
 window.selectAllAI = selectAllAI;
 window.deselectAllAI = deselectAllAI;
 window.insertSelectedAI = insertSelectedAI;
@@ -1540,74 +1379,52 @@ async function loadBankQuestions() {
         const snap = await query.limit(100).get();
         bankQuestions = [];
         snap.forEach(d => bankQuestions.push({ id: d.id, ...d.data() }));
-
-        if (search) {
-            bankQuestions = bankQuestions.filter(q =>
-                (q.question || '').toLowerCase().includes(search) ||
-                (q.topic || '').toLowerCase().includes(search)
-            );
-        }
-
+        if (search) bankQuestions = bankQuestions.filter(q => (q.question || '').toLowerCase().includes(search));
         renderBankList();
-    } catch (e) {
-        console.error('Bank load error:', e);
-    }
+    } catch (e) { console.error('Bank load error:', e); }
 }
 
 function renderBankList() {
     const c = document.getElementById('bankQuestionsList');
     if (!bankQuestions.length) {
-        c.innerHTML = '<p style="text-align:center;padding:2rem;color:var(--text-secondary);">' +
-            '<i class="fas fa-inbox" style="font-size:2rem;display:block;margin-bottom:0.5rem;opacity:0.3;"></i>' +
-            'No questions found in the bank.</p>';
+        c.innerHTML = '<p style="text-align:center;padding:2rem;color:var(--text-secondary);"><i class="fas fa-inbox" style="font-size:2rem;display:block;margin-bottom:0.5rem;opacity:0.3;"></i>No questions found.</p>';
         return;
     }
-    c.innerHTML = bankQuestions.map((q, i) => {
-        const diffClass = 'difficulty-' + q.difficulty;
-        return `<div class="ai-review-item">
+    c.innerHTML = bankQuestions.map((q, i) => `
+        <div class="ai-review-item">
             <input type="checkbox" data-bank="${i}" onchange="updateBankSelected()">
             <span class="q-type">${q.type}</span>
-            <span class="q-diff ${diffClass}">${q.difficulty}</span>
+            <span class="q-diff difficulty-${q.difficulty}">${q.difficulty}</span>
             <span style="flex:1;">${escapeHtml((q.question || '').substring(0, 80))}...</span>
             <span style="color:var(--text-muted);font-size:0.7rem;">${q.shared ? '🌍' : ''} ${q.subject || ''}</span>
             <span style="color:var(--text-muted);font-size:0.75rem;">${q.points || 1}pt</span>
-        </div>`;
-    }).join('');
+        </div>
+    `).join('');
     updateBankSelected();
 }
 
 function updateBankSelected() {
-    const count = document.querySelectorAll('#bankQuestionsList input:checked').length;
-    document.getElementById('bankSelectedCount').textContent = count;
+    document.getElementById('bankSelectedCount').textContent = document.querySelectorAll('#bankQuestionsList input:checked').length;
 }
-
 function toggleAllBank() {
     const all = document.querySelectorAll('#bankQuestionsList input');
     const any = Array.from(all).some(cb => cb.checked);
     all.forEach(cb => cb.checked = !any);
     updateBankSelected();
 }
-
 function addBankToAssessment() {
     const selected = [];
     document.querySelectorAll('#bankQuestionsList input:checked').forEach(cb => {
         const i = parseInt(cb.dataset.bank);
         if (bankQuestions[i]) selected.push({ ...bankQuestions[i], fromBank: true });
     });
-    if (!selected.length) {
-        showToast('None Selected', 'Select questions first.', 'warning');
-        return;
-    }
+    if (!selected.length) { showToast('None', 'Select questions first.', 'warning'); return; }
     questions = questions.concat(selected);
     renderQuestions();
     updateQuickStats();
-    showToast('Added', `${selected.length} bank questions added to assessment.`, 'success');
+    showToast('Added', `${selected.length} bank questions added.`, 'success');
 }
-
-function closeBankModal() {
-    document.getElementById('bankModal').classList.remove('active');
-}
-
+function closeBankModal() { document.getElementById('bankModal').classList.remove('active'); }
 window.loadBankQuestions = loadBankQuestions;
 window.updateBankSelected = updateBankSelected;
 window.toggleAllBank = toggleAllBank;
@@ -1632,22 +1449,17 @@ function setManualQType(type, btn) {
 
 function addManualQuestion() {
     const qText = document.getElementById('mqQuestion').value.trim();
-    if (!qText) {
-        showToast('Required', 'Enter question text.', 'warning');
-        return;
-    }
+    if (!qText) { showToast('Required', 'Enter question text.', 'warning'); return; }
 
     const q = {
         type: currentManualQType,
         question: qText,
-        options: currentManualQType === 'mcq' 
-            ? [
-                document.getElementById('mqOptA').value.trim(),
-                document.getElementById('mqOptB').value.trim(),
-                document.getElementById('mqOptC').value.trim(),
-                document.getElementById('mqOptD').value.trim()
-              ]
-            : ['', '', '', ''],
+        options: currentManualQType === 'mcq' ? [
+            document.getElementById('mqOptA').value.trim(),
+            document.getElementById('mqOptB').value.trim(),
+            document.getElementById('mqOptC').value.trim(),
+            document.getElementById('mqOptD').value.trim()
+        ] : ['', '', '', ''],
         correct: currentManualQType === 'theory' ? '' : document.getElementById('mqCorrect').value,
         points: parseInt(document.getElementById('mqPoints').value) || 1,
         difficulty: document.getElementById('mqDifficulty').value,
@@ -1655,20 +1467,13 @@ function addManualQuestion() {
     };
 
     questions.push(q);
-
-    // Auto-save to question bank
     saveToQuestionBank(q);
-
     renderQuestions();
     updateQuickStats();
-
-    // Clear form
     document.getElementById('mqQuestion').value = '';
     ['mqOptA', 'mqOptB', 'mqOptC', 'mqOptD'].forEach(id => document.getElementById(id).value = '');
-
-    showToast('Added', 'Question added & saved to question bank.', 'success');
+    showToast('Added', 'Question added & saved to bank.', 'success');
 }
-
 window.setManualQType = setManualQType;
 window.addManualQuestion = addManualQuestion;
 
@@ -1689,21 +1494,14 @@ async function saveToQuestionBank(q) {
             usageCount: 0,
             createdAt: firebase.firestore.FieldValue.serverTimestamp()
         });
-    } catch (e) {
-        console.error('Bank save error:', e);
-    }
+    } catch (e) { console.error('Bank save error:', e); }
 }
 
 // ============================================
 // DOCUMENT UPLOAD
 // ============================================
-document.getElementById('docUploadArea').addEventListener('click', () => {
-    document.getElementById('docFile').click();
-});
-
-document.getElementById('docFile').addEventListener('change', (e) => {
-    if (e.target.files[0]) processDocument(e.target.files[0]);
-});
+document.getElementById('docUploadArea').addEventListener('click', () => document.getElementById('docFile').click());
+document.getElementById('docFile').addEventListener('change', e => { if (e.target.files[0]) processDocument(e.target.files[0]); });
 
 async function processDocument(file) {
     showLoading('Reading document...');
@@ -1712,39 +1510,22 @@ async function processDocument(file) {
         uploadedDocText = text;
         hideLoading();
         document.getElementById('sourceDoc').className = 'ai-source-badge active';
-        showToast('Document Loaded', 'Use AI Generate to extract questions from this document.', 'success');
+        showToast('Document Loaded', 'Use AI Generate to extract questions.', 'success');
         document.getElementById('docResult').style.display = 'block';
-        document.getElementById('docResult').innerHTML = 
-            `<p><strong>📄 ${escapeHtml(file.name)}</strong> — ${text.length} characters loaded. Click "AI Generate" tab to create questions from this document.</p>`;
+        document.getElementById('docResult').innerHTML = `<p><strong>📄 ${escapeHtml(file.name)}</strong> — ${text.length} characters loaded.</p>`;
         document.getElementById('docActions').style.display = 'flex';
-    } catch (e) {
-        hideLoading();
-        showToast('Error', 'Could not read file. Try .txt format.', 'error');
-    }
+    } catch (e) { hideLoading(); showToast('Error', 'Could not read file.', 'error'); }
 }
-
-function selectAllDoc() {
-    // Placeholder for future multi-select
-}
-
-function insertDocQuestions() {
-    showToast('Info', 'Use the "AI Generate" tab to extract questions from the uploaded document.', 'info');
-}
-
+function selectAllDoc() {}
+function insertDocQuestions() { showToast('Info', 'Use AI Generate tab.', 'info'); }
 window.selectAllDoc = selectAllDoc;
 window.insertDocQuestions = insertDocQuestions;
 
 // ============================================
 // CSV UPLOAD
 // ============================================
-document.getElementById('csvUploadArea').addEventListener('click', () => {
-    document.getElementById('csvFileInput').click();
-});
-
-document.getElementById('csvFileInput').addEventListener('change', (e) => {
-    if (e.target.files[0]) parseCSVFile(e.target.files[0]);
-});
-
+document.getElementById('csvUploadArea').addEventListener('click', () => document.getElementById('csvFileInput').click());
+document.getElementById('csvFileInput').addEventListener('change', e => { if (e.target.files[0]) parseCSVFile(e.target.files[0]); });
 document.getElementById('downloadTemplateBtn').addEventListener('click', () => {
     const csv = 'Question,Option A,Option B,Option C,Option D,Correct,Points,Difficulty\n"What is 2+2?",1,2,3,4,C,1,easy\n"Capital of Nigeria?",Lagos,Abuja,Kano,Ibadan,B,2,medium';
     const blob = new Blob([csv], { type: 'text/csv' });
@@ -1756,57 +1537,25 @@ document.getElementById('downloadTemplateBtn').addEventListener('click', () => {
 
 function parseCSVFile(file) {
     const reader = new FileReader();
-    reader.onload = (e) => {
+    reader.onload = e => {
         const lines = e.target.result.split('\n').filter(l => l.trim());
-        if (lines.length < 2) {
-            showToast('Invalid', 'CSV needs a header row and at least one data row.', 'error');
-            return;
-        }
+        if (lines.length < 2) { showToast('Invalid', 'CSV needs header + data.', 'error'); return; }
         csvQuestions = [];
         for (let i = 1; i < lines.length; i++) {
             const row = parseCSVLine(lines[i]).map(c => c.replace(/^"|"$/g, '').trim());
             if (row.length >= 6 && row[0]) {
                 const correct = row[5].toUpperCase();
                 if (['A', 'B', 'C', 'D'].includes(correct)) {
-                    csvQuestions.push({
-                        type: 'mcq',
-                        question: row[0],
-                        options: [row[1] || '', row[2] || '', row[3] || '', row[4] || ''],
-                        correct: correct,
-                        points: parseInt(row[6]) || 1,
-                        difficulty: row[7] || 'medium',
-                        fromCSV: true
-                    });
+                    csvQuestions.push({ type: 'mcq', question: row[0], options: [row[1] || '', row[2] || '', row[3] || '', row[4] || ''], correct, points: parseInt(row[6]) || 1, difficulty: row[7] || 'medium', fromCSV: true });
                 } else if (correct === 'TRUE' || correct === 'FALSE') {
-                    csvQuestions.push({
-                        type: 'truefalse',
-                        question: row[0],
-                        options: ['', '', '', ''],
-                        correct: correct === 'TRUE' ? 'True' : 'False',
-                        points: parseInt(row[6]) || 1,
-                        difficulty: row[7] || 'medium',
-                        fromCSV: true
-                    });
+                    csvQuestions.push({ type: 'truefalse', question: row[0], options: ['', '', '', ''], correct: correct === 'TRUE' ? 'True' : 'False', points: parseInt(row[6]) || 1, difficulty: row[7] || 'medium', fromCSV: true });
                 } else {
-                    csvQuestions.push({
-                        type: 'fillblank',
-                        question: row[0],
-                        options: ['', '', '', ''],
-                        correct: row[5],
-                        points: parseInt(row[6]) || 1,
-                        difficulty: row[7] || 'medium',
-                        fromCSV: true
-                    });
+                    csvQuestions.push({ type: 'fillblank', question: row[0], options: ['', '', '', ''], correct: row[5], points: parseInt(row[6]) || 1, difficulty: row[7] || 'medium', fromCSV: true });
                 }
             }
         }
         document.getElementById('csvPreview').style.display = 'block';
-        document.getElementById('csvPreview').innerHTML = 
-            `<table><thead><tr><th>#</th><th>Question</th><th>Type</th><th>Correct</th><th>Pts</th></tr></thead><tbody>` +
-            csvQuestions.slice(0, 10).map((q, i) => 
-                `<tr><td>${i + 1}</td><td>${escapeHtml(q.question.substring(0, 50))}</td><td>${q.type}</td><td>${q.correct}</td><td>${q.points}</td></tr>`
-            ).join('') +
-            `</tbody></table><p style="margin-top:0.5rem;color:var(--text-secondary);">${csvQuestions.length} questions loaded from CSV.</p>`;
+        document.getElementById('csvPreview').innerHTML = `<table><thead><tr><th>#</th><th>Question</th><th>Type</th><th>Correct</th><th>Pts</th></tr></thead><tbody>${csvQuestions.slice(0, 10).map((q, i) => `<tr><td>${i + 1}</td><td>${escapeHtml(q.question.substring(0, 50))}</td><td>${q.type}</td><td>${q.correct}</td><td>${q.points}</td></tr>`).join('')}</tbody></table><p>${csvQuestions.length} questions loaded.</p>`;
         document.getElementById('csvActions').style.display = 'flex';
     };
     reader.readAsText(file);
@@ -1820,7 +1569,7 @@ function importCSVQuestions() {
     updateQuickStats();
     document.getElementById('csvPreview').style.display = 'none';
     document.getElementById('csvActions').style.display = 'none';
-    showToast('Imported', `${csvQuestions.length} questions added & saved to question bank.`, 'success');
+    showToast('Imported', `${csvQuestions.length} questions added.`, 'success');
 }
 window.importCSVQuestions = importCSVQuestions;
 
@@ -1832,102 +1581,45 @@ function renderQuestions() {
     document.getElementById('totalQCount').textContent = questions.length;
 
     if (!questions.length) {
-        c.innerHTML = '<p style="text-align:center;color:var(--text-secondary);padding:2rem;">' +
-            '<i class="fas fa-inbox" style="font-size:2rem;display:block;margin-bottom:0.5rem;opacity:0.3;"></i>' +
-            'No questions yet. Use the tabs above to add questions.</p>';
+        c.innerHTML = '<p style="text-align:center;color:var(--text-secondary);padding:2rem;"><i class="fas fa-inbox" style="font-size:2rem;display:block;margin-bottom:0.5rem;opacity:0.3;"></i>No questions yet.</p>';
         return;
     }
 
     c.innerHTML = questions.map((q, i) => {
         let opts = '';
         if (q.type === 'mcq') {
-            opts = `<div class="question-options">${
-                ['A', 'B', 'C', 'D'].map(l => 
-                    `<div class="question-option">
-                        <input type="radio" name="qc_${i}" ${q.correct === l ? 'checked' : ''} onclick="setCorrect(${i},'${l}')">
-                        <span><strong>${l}.</strong> ${escapeHtml(q.options[l.charCodeAt(0) - 65] || '(empty)')}</span>
-                    </div>`
-                ).join('')
-            }</div>`;
+            opts = `<div class="question-options">${['A', 'B', 'C', 'D'].map(l => `<div class="question-option"><input type="radio" name="qc_${i}" ${q.correct === l ? 'checked' : ''} onclick="setCorrect(${i},'${l}')"><span><strong>${l}.</strong> ${escapeHtml(q.options[l.charCodeAt(0) - 65] || '(empty)')}</span></div>`).join('')}</div>`;
         } else if (q.type === 'truefalse') {
-            opts = `<div class="question-options">
-                <div class="question-option">
-                    <input type="radio" name="qc_${i}" ${q.correct === 'True' ? 'checked' : ''} onclick="setCorrect(${i},'True')">
-                    <span>True</span>
-                </div>
-                <div class="question-option">
-                    <input type="radio" name="qc_${i}" ${q.correct === 'False' ? 'checked' : ''} onclick="setCorrect(${i},'False')">
-                    <span>False</span>
-                </div>
-            </div>`;
+            opts = `<div class="question-options"><div class="question-option"><input type="radio" name="qc_${i}" ${q.correct === 'True' ? 'checked' : ''} onclick="setCorrect(${i},'True')"><span>True</span></div><div class="question-option"><input type="radio" name="qc_${i}" ${q.correct === 'False' ? 'checked' : ''} onclick="setCorrect(${i},'False')"><span>False</span></div></div>`;
         } else if (q.type === 'fillblank') {
             opts = `<p style="color:var(--success-text);font-size:0.85rem;">Answer: ${escapeHtml(q.correct || '')}</p>`;
         } else if (q.type === 'theory') {
             opts = `<p style="color:var(--text-secondary);font-size:0.85rem;">Model Answer: ${escapeHtml((q.correct || '').substring(0, 100))}</p>`;
         }
 
-        // Source badges
         const badges = [];
-        if (q.fromAI) badges.push('<span class="type-badge-sm">🤖 AI Generated</span>');
-        if (q.fromBank) badges.push('<span class="type-badge-sm">📚 From Bank</span>');
+        if (q.fromAI) badges.push('<span class="type-badge-sm">🤖 AI</span>');
+        if (q.fromBank) badges.push('<span class="type-badge-sm">📚 Bank</span>');
         if (q.fromManual) badges.push('<span class="type-badge-sm">✍️ Manual</span>');
-        if (q.fromCSV) badges.push('<span class="type-badge-sm">📊 CSV Import</span>');
+        if (q.fromCSV) badges.push('<span class="type-badge-sm">📊 CSV</span>');
 
-        return `<div class="question-item">
-            <div class="question-header">
-                <span class="question-text"><strong>Q${i + 1}:</strong> ${escapeHtml(q.question || '')}</span>
-                <div style="display:flex;gap:0.4rem;align-items:center;flex-wrap:wrap;">
-                    ${badges.join('')}
-                    <span class="type-badge-sm">${q.type}</span>
-                    <span class="difficulty-${q.difficulty}" style="padding:0.2rem 0.7rem;border-radius:1rem;font-size:0.7rem;font-weight:700;">${q.difficulty}</span>
-                    <span class="correct-badge">${q.points || 1}pt</span>
-                    <button class="btn btn-sm btn-outline" onclick="editQ(${i})"><i class="fas fa-edit"></i></button>
-                    <button class="btn btn-sm btn-danger" onclick="removeQ(${i})"><i class="fas fa-trash"></i></button>
-                </div>
-            </div>
-            ${opts}
-        </div>`;
+        return `<div class="question-item"><div class="question-header"><span class="question-text"><strong>Q${i + 1}:</strong> ${escapeHtml(q.question || '')}</span><div style="display:flex;gap:0.4rem;align-items:center;flex-wrap:wrap;">${badges.join('')}<span class="type-badge-sm">${q.type}</span><span class="difficulty-${q.difficulty}" style="padding:0.2rem 0.7rem;border-radius:1rem;font-size:0.7rem;font-weight:700;">${q.difficulty}</span><span class="correct-badge">${q.points || 1}pt</span><button class="btn btn-sm btn-outline" onclick="editQ(${i})"><i class="fas fa-edit"></i></button><button class="btn btn-sm btn-danger" onclick="removeQ(${i})"><i class="fas fa-trash"></i></button></div></div>${opts}</div>`;
     }).join('');
 
     updateQuickStats();
 }
 
-function setCorrect(i, v) {
-    if (questions[i]) questions[i].correct = v;
-}
-
-function removeQ(i) {
-    if (confirm('Delete question ' + (i + 1) + '?')) {
-        questions.splice(i, 1);
-        renderQuestions();
-    }
-}
-
+function setCorrect(i, v) { if (questions[i]) questions[i].correct = v; }
+function removeQ(i) { if (confirm('Delete question ' + (i + 1) + '?')) { questions.splice(i, 1); renderQuestions(); } }
 function editQ(i) {
-    const q = questions[i];
-    if (!q) return;
-    const t = prompt('Question text:', q.question);
-    if (t !== null) q.question = t;
-    if (q.type === 'mcq') {
-        for (let j = 0; j < 4; j++) {
-            const o = prompt(`Option ${String.fromCharCode(65 + j)}:`, q.options[j] || '');
-            if (o !== null) q.options[j] = o;
-        }
-    }
-    const p = prompt('Points:', q.points || 1);
-    if (p !== null) q.points = parseInt(p) || 1;
-    const d = prompt('Difficulty (easy/medium/hard):', q.difficulty || 'medium');
-    if (d && ['easy', 'medium', 'hard'].includes(d)) q.difficulty = d;
+    const q = questions[i]; if (!q) return;
+    const t = prompt('Question text:', q.question); if (t !== null) q.question = t;
+    if (q.type === 'mcq') { for (let j = 0; j < 4; j++) { const o = prompt(`Option ${String.fromCharCode(65 + j)}:`, q.options[j] || ''); if (o !== null) q.options[j] = o; } }
+    const p = prompt('Points:', q.points || 1); if (p !== null) q.points = parseInt(p) || 1;
+    const d = prompt('Difficulty (easy/medium/hard):', q.difficulty || 'medium'); if (d && ['easy', 'medium', 'hard'].includes(d)) q.difficulty = d;
     renderQuestions();
 }
-
-function clearAllQuestions() {
-    if (confirm('Remove ALL questions from this assessment?')) {
-        questions = [];
-        renderQuestions();
-    }
-}
-
+function clearAllQuestions() { if (confirm('Remove ALL questions?')) { questions = []; renderQuestions(); } }
 window.setCorrect = setCorrect;
 window.removeQ = removeQ;
 window.editQ = editQ;
@@ -1939,160 +1631,65 @@ window.clearAllQuestions = clearAllQuestions;
 function renderDynamicSettings() {
     const div = document.getElementById('dynamicSettings');
     if (currentType === 'test') {
-        div.innerHTML = `
-            <div class="form-group">
-                <label><i class="fas fa-clock"></i> Duration (minutes) *</label>
-                <input type="number" id="duration" class="form-control" value="${Math.round(questions.length * 1.5) || 30}" min="1">
-            </div>
-            <div class="form-group">
-                <label><i class="fas fa-random"></i> Randomization</label>
-                <div class="checkbox-item">
-                    <input type="checkbox" id="randomizeQuestions" checked>
-                    <span>Randomize question order</span>
-                </div>
-                <div class="checkbox-item" style="margin-top:0.5rem;">
-                    <input type="checkbox" id="randomizeOptions" checked>
-                    <span>Randomize MCQ options</span>
-                </div>
-            </div>
-            <div class="form-group">
-                <label><i class="fas fa-eye"></i> Auto Grade</label>
-                <div class="checkbox-item">
-                    <input type="checkbox" id="autoGrade" checked>
-                    <span>Auto-grade on submission</span>
-                </div>
-            </div>`;
+        div.innerHTML = `<div class="form-group"><label><i class="fas fa-clock"></i> Duration (minutes) *</label><input type="number" id="duration" class="form-control" value="${Math.round(questions.length * 1.5) || 30}" min="1"></div><div class="form-group"><label><i class="fas fa-random"></i> Randomization</label><div class="checkbox-item"><input type="checkbox" id="randomizeQuestions" checked><span>Randomize question order</span></div><div class="checkbox-item" style="margin-top:0.5rem;"><input type="checkbox" id="randomizeOptions" checked><span>Randomize MCQ options</span></div></div><div class="form-group"><label><i class="fas fa-eye"></i> Auto Grade</label><div class="checkbox-item"><input type="checkbox" id="autoGrade" checked><span>Auto-grade on submission</span></div></div>`;
     } else if (currentType === 'assignment') {
-        div.innerHTML = `
-            <div class="form-group">
-                <label><i class="fas fa-calendar-alt"></i> Due Date *</label>
-                <input type="datetime-local" id="dueDate" class="form-control" required>
-            </div>
-            <div class="form-group">
-                <label><i class="fas fa-star"></i> Total Marks</label>
-                <input type="number" id="totalMarks" class="form-control" value="20" min="1">
-            </div>
-            <div class="form-group">
-                <label><i class="fas fa-upload"></i> Submission Type</label>
-                <select id="submissionType" class="form-control">
-                    <option value="text">Text</option>
-                    <option value="file">File</option>
-                    <option value="both">Both</option>
-                </select>
-            </div>`;
+        div.innerHTML = `<div class="form-group"><label><i class="fas fa-calendar-alt"></i> Due Date *</label><input type="datetime-local" id="dueDate" class="form-control" required></div><div class="form-group"><label><i class="fas fa-star"></i> Total Marks</label><input type="number" id="totalMarks" class="form-control" value="20" min="1"></div><div class="form-group"><label><i class="fas fa-upload"></i> Submission Type</label><select id="submissionType" class="form-control"><option value="text">Text</option><option value="file">File</option><option value="both">Both</option></select></div>`;
     } else {
-        div.innerHTML = `
-            <div class="form-group">
-                <label><i class="fas fa-clock"></i> Duration (minutes) *</label>
-                <input type="number" id="duration" class="form-control" value="120" min="1">
-            </div>
-            <div class="form-group">
-                <label><i class="fas fa-calendar-alt"></i> Start *</label>
-                <input type="datetime-local" id="startDate" class="form-control" required>
-            </div>
-            <div class="form-group">
-                <label><i class="fas fa-calendar-check"></i> End *</label>
-                <input type="datetime-local" id="endDate" class="form-control" required>
-            </div>
-            <div class="form-group">
-                <label><i class="fas fa-random"></i> Randomization</label>
-                <div class="checkbox-item">
-                    <input type="checkbox" id="randomizeQuestions" checked>
-                    <span>Randomize question order</span>
-                </div>
-                <div class="checkbox-item">
-                    <input type="checkbox" id="randomizeOptions" checked>
-                    <span>Randomize options</span>
-                </div>
-            </div>`;
+        div.innerHTML = `<div class="form-group"><label><i class="fas fa-clock"></i> Duration (minutes) *</label><input type="number" id="duration" class="form-control" value="120" min="1"></div><div class="form-group"><label><i class="fas fa-calendar-alt"></i> Start *</label><input type="datetime-local" id="startDate" class="form-control" required></div><div class="form-group"><label><i class="fas fa-calendar-check"></i> End *</label><input type="datetime-local" id="endDate" class="form-control" required></div><div class="form-group"><label><i class="fas fa-random"></i> Randomization</label><div class="checkbox-item"><input type="checkbox" id="randomizeQuestions" checked><span>Randomize questions</span></div><div class="checkbox-item"><input type="checkbox" id="randomizeOptions" checked><span>Randomize options</span></div></div>`;
     }
 }
 
 function updateAssessmentSummary() {
-    const div = document.getElementById('assessmentSummary');
     const totalPts = questions.reduce((s, q) => s + (q.points || 1), 0);
-    div.innerHTML = `<strong>📋 Assessment Summary:</strong><br>
-        📝 ${questions.length} questions | 
-        ⭐ ${totalPts} total points | 
-        📂 Type: ${currentType} | 
-        📚 Subject: ${currentSubject || 'Not set'}`;
+    document.getElementById('assessmentSummary').innerHTML = `<strong>📋 Assessment Summary:</strong><br>📝 ${questions.length} questions | ⭐ ${totalPts} total points | 📂 Type: ${currentType} | 📚 Subject: ${currentSubject || 'Not set'}`;
 }
 
 // ============================================
-// VALIDATION
+// VALIDATION & SAVE
 // ============================================
 function validateAssessment(status) {
     const errors = [];
     if (!currentSubject) errors.push('Select a subject.');
     const title = document.getElementById('title')?.value?.trim();
     if (!title) errors.push('Enter an assessment title.');
-    if (currentType !== 'assignment' && !questions.length) {
-        errors.push('Add at least one question for tests and exams.');
-    }
-    if (currentType === 'assignment') {
-        const dueDate = document.getElementById('dueDate')?.value;
-        if (!dueDate) errors.push('Set a due date for the assignment.');
-    }
+    if (currentType !== 'assignment' && !questions.length) errors.push('Add at least one question.');
+    if (currentType === 'assignment' && !document.getElementById('dueDate')?.value) errors.push('Set a due date.');
     if (currentType === 'exam') {
         const start = document.getElementById('startDate')?.value;
         const end = document.getElementById('endDate')?.value;
-        if (!start) errors.push('Set an exam start date.');
-        if (!end) errors.push('Set an exam end date.');
-        if (start && end && new Date(start) >= new Date(end)) {
-            errors.push('End date must be after start date.');
-        }
+        if (!start) errors.push('Set exam start date.');
+        if (!end) errors.push('Set exam end date.');
+        if (start && end && new Date(start) >= new Date(end)) errors.push('End must be after start.');
     }
-    // Validate individual questions
     questions.forEach((q, i) => {
-        if (!q.question || !q.question.trim()) {
-            errors.push(`Question ${i + 1} has empty text.`);
-        }
-        if (q.type === 'mcq') {
-            const emptyOpts = q.options.filter(o => !o || !o.trim());
-            if (emptyOpts.length > 2) errors.push(`Question ${i + 1}: MCQ needs at least 2 options filled.`);
-            if (!q.correct || !['A', 'B', 'C', 'D'].includes(q.correct)) {
-                errors.push(`Question ${i + 1}: Select the correct answer.`);
-            }
-        }
-        if (q.type === 'truefalse' && !['True', 'False'].includes(q.correct)) {
-            errors.push(`Question ${i + 1}: True/False needs correct answer set.`);
-        }
+        if (!q.question?.trim()) errors.push(`Q${i + 1} has empty text.`);
+        if (q.type === 'mcq' && q.options.filter(o => !o?.trim()).length > 2) errors.push(`Q${i + 1}: Fill at least 2 options.`);
     });
     return errors;
 }
 
-// ============================================
-// SAVE / PUBLISH
-// ============================================
 async function saveAssessment(status) {
     const errors = validateAssessment(status);
-    if (errors.length) {
-        showToast('Validation Error', errors.join('<br>'), 'error');
-        return;
-    }
-
+    if (errors.length) { showToast('Validation Error', errors.join('<br>'), 'error'); return; }
     const title = document.getElementById('title').value.trim();
-    if (status === 'published' && !confirm(`Publish this ${currentType} to students?`)) return;
+    if (status === 'published' && !confirm(`Publish this ${currentType}?`)) return;
 
-    showLoading('Saving assessment...');
+    showLoading('Saving...');
     try {
         const data = {
             teacherId: currentUser.uid,
             teacherName: `${userData.firstName || ''} ${userData.surname || ''}`.trim(),
             type: currentType,
             subject: currentSubject,
-            title: title,
+            title,
             classId: userData.classTeaching || '',
             instructions: document.getElementById('instructions')?.value || '',
             weeksCovered: selectedWeeks,
             questions: currentType === 'assignment' ? [] : questions,
-            totalPoints: currentType === 'assignment'
-                ? (parseInt(document.getElementById('totalMarks')?.value) || 20)
-                : questions.reduce((s, q) => s + (q.points || 1), 0),
-            status: status,
+            totalPoints: currentType === 'assignment' ? (parseInt(document.getElementById('totalMarks')?.value) || 20) : questions.reduce((s, q) => s + (q.points || 1), 0),
+            status,
             createdAt: firebase.firestore.FieldValue.serverTimestamp()
         };
-
         if (currentType === 'test') {
             data.duration = parseInt(document.getElementById('duration')?.value) || 30;
             data.autoGrade = document.getElementById('autoGrade')?.checked || false;
@@ -2109,111 +1706,57 @@ async function saveAssessment(status) {
             data.randomizeQuestions = document.getElementById('randomizeQuestions')?.checked || false;
             data.randomizeOptions = document.getElementById('randomizeOptions')?.checked || false;
         }
-
         await db.collection('assessments').add(data);
         hideLoading();
-        showToast('Success!', `Assessment ${status === 'published' ? 'published' : 'saved as draft'}!`, 'success');
+        showToast('Success!', `Assessment ${status === 'published' ? 'published' : 'saved'}!`, 'success');
         setTimeout(() => window.location.href = 'teacher-assessment-history.html', 1500);
     } catch (e) {
         hideLoading();
         showToast('Error', e.message, 'error');
-        console.error('Save error:', e);
     }
 }
-
 document.getElementById('saveDraftBtn').addEventListener('click', () => saveAssessment('draft'));
 document.getElementById('publishBtn').addEventListener('click', () => saveAssessment('published'));
 
 // ============================================
-// AUTH STATE LISTENER
+// AUTH
 // ============================================
 auth.onAuthStateChanged(async (user) => {
-    if (!user) {
-        console.log('🔒 No user, redirecting to login');
-        window.location.href = 'teacher-login.html';
-        return;
-    }
+    if (!user) { window.location.href = 'teacher-login.html'; return; }
     try {
-        console.log('👤 User authenticated:', user.email);
         const doc = await db.collection('users').doc(user.uid).get();
-        if (!doc.exists || doc.data().role !== 'teacher') {
-            console.log('⛔ Not a teacher, signing out');
-            await auth.signOut();
-            window.location.href = 'index.html';
-            return;
-        }
+        if (!doc.exists || doc.data().role !== 'teacher') { await auth.signOut(); window.location.href = 'index.html'; return; }
         currentUser = user;
         userData = doc.data();
-        console.log('✅ User data loaded:', {
-            role: userData.role,
-            classTeaching: userData.classTeaching,
-            subjects: userData.subjects
-        });
 
-        // Profile pic
         const pic = document.getElementById('profilePic');
-        if (userData.photoURL) {
-            pic.innerHTML = `<img src="${userData.photoURL}" alt="Profile">`;
-        } else {
-            pic.textContent = (userData.firstName?.[0] || 'T') + (userData.surname?.[0] || 'E');
-        }
+        if (userData.photoURL) pic.innerHTML = `<img src="${userData.photoURL}" alt="Profile">`;
+        else pic.textContent = (userData.firstName?.[0] || 'T') + (userData.surname?.[0] || 'E');
 
-        // Populate subjects
         subjects = userData.subjects || [];
-        console.log('📚 Subjects:', subjects);
-
         const sel = document.getElementById('subject');
         sel.innerHTML = '<option value="">Select a subject...</option>';
-        subjects.forEach(s => {
-            const o = document.createElement('option');
-            o.value = s;
-            o.textContent = s;
-            sel.appendChild(o);
-        });
+        subjects.forEach(s => { const o = document.createElement('option'); o.value = s; o.textContent = s; sel.appendChild(o); });
 
-        // Populate bank subject filter
         const bankSub = document.getElementById('bankSubjectFilter');
         if (bankSub) {
             bankSub.innerHTML = '<option value="">All Subjects</option>';
-            subjects.forEach(s => {
-                const o = document.createElement('option');
-                o.value = s;
-                o.textContent = s;
-                bankSub.appendChild(o);
-            });
+            subjects.forEach(s => { const o = document.createElement('option'); o.value = s; o.textContent = s; bankSub.appendChild(o); });
         }
 
-        // Load Groq API key from Remote Config
         try {
-            console.log('🔑 Fetching remote config...');
             await remoteConfig.fetchAndActivate();
             const key = remoteConfig.getString('groq_api_key');
-            console.log('🔑 Remote config fetched, key exists:', !!key);
-            if (key) {
-                const { default: Groq } = await import('groq-sdk');
-                groq = new Groq({ apiKey: key, dangerouslyAllowBrowser: true });
-                console.log('✅ Groq SDK initialized');
-            } else {
-                console.warn('⚠️ No Groq API key in remote config');
-            }
-        } catch (e) {
-            console.error('❌ Groq init error:', e);
-        }
+            if (key) { const { default: Groq } = await import('groq-sdk'); groq = new Groq({ apiKey: key, dangerouslyAllowBrowser: true }); }
+        } catch (e) {}
 
         renderDynamicSettings();
         renderQuestions();
         refreshDebug();
-        console.log('✅ Initialization complete');
-    } catch (e) {
-        console.error('❌ Auth init error:', e);
-    }
+    } catch (e) { console.error(e); }
 });
 
-// Logout
-document.getElementById('logoutBtn').addEventListener('click', async () => {
-    await auth.signOut();
-    window.location.href = 'index.html';
-});
+document.getElementById('logoutBtn').addEventListener('click', async () => { await auth.signOut(); window.location.href = 'index.html'; });
 </script>
 </body>
 </html>
