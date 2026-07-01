@@ -485,6 +485,34 @@
         .stat-card.danger .val { color: var(--danger-text); }
         .stat-card.info .val { color: var(--info-text); }
 
+        /* Search Bar */
+        .search-bar {
+            display: flex;
+            gap: 0.5rem;
+            margin-bottom: 1rem;
+            flex-wrap: wrap;
+            align-items: center;
+        }
+        .search-input {
+            flex: 1;
+            min-width: 200px;
+            padding: 0.6rem 1rem;
+            background: var(--input-bg);
+            border: 2px solid var(--input-border);
+            border-radius: 2rem;
+            color: var(--text-primary);
+            font-size: 0.85rem;
+            font-family: inherit;
+            transition: border-color 0.2s;
+        }
+        .search-input:focus {
+            outline: none;
+            border-color: var(--accent);
+        }
+        .search-input::placeholder {
+            color: var(--text-muted);
+        }
+
         /* Card Container */
         .card {
             background: var(--card-bg);
@@ -529,6 +557,8 @@
             transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
             position: relative;
             overflow: hidden;
+            display: flex;
+            flex-direction: column;
         }
         .assessment-card::before {
             content: '';
@@ -636,6 +666,26 @@
             border: 1px solid var(--danger-border);
         }
 
+        /* Score display in card */
+        .score-display {
+            background: var(--hover-bg);
+            border-radius: 0.8rem;
+            padding: 0.6rem 0.8rem;
+            margin-top: 0.8rem;
+            text-align: center;
+        }
+        .score-display .score-val {
+            font-size: 1.4rem;
+            font-weight: 800;
+            font-family: 'Space Grotesk', monospace;
+            color: var(--accent);
+        }
+        .score-display .score-label {
+            font-size: 0.7rem;
+            color: var(--text-muted);
+            text-transform: uppercase;
+        }
+
         /* Buttons */
         .btn {
             padding: 0.55rem 1.3rem;
@@ -679,10 +729,35 @@
         .btn:active {
             transform: scale(0.97) !important;
         }
+        .btn:disabled {
+            opacity: 0.5;
+            cursor: not-allowed;
+        }
         .btn-group {
             display: flex;
             gap: 0.5rem;
             flex-wrap: wrap;
+            margin-top: auto;
+            padding-top: 0.8rem;
+        }
+
+        /* Countdown Timer */
+        .countdown {
+            font-size: 0.75rem;
+            color: var(--warning-text);
+            display: flex;
+            align-items: center;
+            gap: 0.3rem;
+            margin-top: 0.5rem;
+        }
+        .countdown.urgent {
+            color: var(--danger-text);
+            font-weight: 600;
+            animation: pulse 1.5s infinite;
+        }
+        @keyframes pulse {
+            0%, 100% { opacity: 1; }
+            50% { opacity: 0.6; }
         }
 
         /* Empty State */
@@ -707,6 +782,45 @@
             font-size: 0.9rem;
             max-width: 400px;
             margin: 0 auto;
+        }
+
+        /* Loading Overlay */
+        .loading-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: var(--overlay-bg);
+            backdrop-filter: blur(10px);
+            -webkit-backdrop-filter: blur(10px);
+            display: none;
+            justify-content: center;
+            align-items: center;
+            z-index: 3000;
+        }
+        .loading-overlay.active {
+            display: flex;
+        }
+        .loading-content {
+            background: var(--card-bg-solid);
+            padding: 2.5rem;
+            border-radius: 1.5rem;
+            text-align: center;
+            box-shadow: var(--shadow-lg);
+        }
+        .loading-spinner {
+            width: 50px;
+            height: 50px;
+            border: 4px solid var(--border);
+            border-top: 4px solid var(--accent);
+            border-radius: 50%;
+            animation: spin 1s linear infinite;
+            margin: 0 auto 1rem;
+        }
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
         }
 
         /* Toast Notifications */
@@ -743,6 +857,11 @@
         @keyframes slideOutRight {
             from { transform: translateX(0); opacity: 1; }
             to { transform: translateX(120%); opacity: 0; }
+        }
+
+        /* Refresh button animation */
+        .refreshing {
+            animation: spin 1s linear infinite;
         }
 
         /* Mobile Responsive */
@@ -907,6 +1026,14 @@
             </div>
         </div>
 
+        <!-- SEARCH & REFRESH -->
+        <div class="search-bar">
+            <input type="text" class="search-input" id="searchInput" placeholder="Search assessments by title or subject...">
+            <button class="btn btn-outline btn-sm" id="refreshBtn" title="Refresh assessments">
+                <i class="fas fa-sync-alt"></i> Refresh
+            </button>
+        </div>
+
         <!-- ASSESSMENTS GRID -->
         <div class="card">
             <div class="card-header">
@@ -923,6 +1050,15 @@
                     <p>Please wait while we fetch your assessments</p>
                 </div>
             </div>
+        </div>
+    </div>
+
+    <!-- LOADING OVERLAY -->
+    <div class="loading-overlay" id="loadingOverlay">
+        <div class="loading-content">
+            <div class="loading-spinner"></div>
+            <h3 style="margin-top:1rem;">Loading...</h3>
+            <p style="color:var(--text-secondary);font-size:0.85rem;">Fetching your assessments</p>
         </div>
     </div>
 
@@ -1010,27 +1146,30 @@
             }, 4000);
         }
 
+        function showLoading() {
+            document.getElementById('loadingOverlay').classList.add('active');
+        }
+
+        function hideLoading() {
+            document.getElementById('loadingOverlay').classList.remove('active');
+        }
+
         /**
          * Determines the status of an assessment for the student
-         * @param {Object} assessment - The assessment document
-         * @param {Object} submission - The student's submission (if any)
-         * @returns {Object} Status info with status, label, cls, and icon
          */
         function getStatusInfo(assessment, submission) {
             const now = new Date();
             
-            // Parse dates (handle Firestore Timestamp objects)
             const dueDate = assessment.dueDate ? 
                 new Date(assessment.dueDate.seconds ? assessment.dueDate.seconds * 1000 : assessment.dueDate) : null;
             const endDate = assessment.endDate ? 
                 new Date(assessment.endDate.seconds ? assessment.endDate.seconds * 1000 : assessment.endDate) : null;
 
-            // If student has submitted
             if (submission) {
                 if (submission.graded === true) {
                     return { 
                         status: 'done', 
-                        label: 'Done', 
+                        label: 'Graded', 
                         cls: 'status-done', 
                         icon: 'fa-check-circle' 
                     };
@@ -1045,7 +1184,6 @@
                 }
             }
             
-            // Check deadlines
             if (endDate && now > endDate) {
                 return { 
                     status: 'missed', 
@@ -1063,7 +1201,6 @@
                 };
             }
             
-            // Still available
             return { 
                 status: 'available', 
                 label: 'Available', 
@@ -1074,8 +1211,6 @@
 
         /**
          * Formats a date for display
-         * @param {*} dateValue - Firestore Timestamp, Date object, or string
-         * @returns {string} Formatted date string
          */
         function formatDate(dateValue) {
             if (!dateValue) return null;
@@ -1087,6 +1222,29 @@
             });
         }
 
+        /**
+         * Formats time remaining for countdown
+         */
+        function getTimeRemaining(endDate) {
+            if (!endDate) return null;
+            const end = new Date(endDate.seconds ? endDate.seconds * 1000 : endDate);
+            const now = new Date();
+            const diff = end - now;
+            
+            if (diff <= 0) return { text: 'Deadline passed', urgent: true };
+            
+            const days = Math.floor(diff / (1000 * 60 * 60 * 24));
+            const hours = Math.floor((diff % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
+            const minutes = Math.floor((diff % (1000 * 60 * 60)) / (1000 * 60));
+            
+            let text = '';
+            if (days > 0) text += `${days}d `;
+            if (hours > 0) text += `${hours}h `;
+            text += `${minutes}m remaining`;
+            
+            return { text, urgent: days === 0 && hours < 6 };
+        }
+
         // ============================================
         // GLOBAL STATE
         // ============================================
@@ -1095,6 +1253,7 @@
         let allAssessments = [];
         let submissionsMap = {};
         let currentTab = 'all';
+        let searchQuery = '';
 
         // Read initial tab from URL parameter
         const urlParams = new URLSearchParams(window.location.search);
@@ -1163,6 +1322,7 @@
         // LOAD ASSESSMENTS
         // ============================================
         async function loadAssessments() {
+            showLoading();
             const classId = userData.class;
             
             if (!classId) {
@@ -1173,11 +1333,12 @@
                         <p>You haven't been assigned to a class yet. Please contact your teacher or administrator.</p>
                     </div>`;
                 updateStats(0, 0, 0, 0, 0);
+                hideLoading();
                 return;
             }
 
             try {
-                // Load assessments and submissions in parallel for better performance
+                // Load assessments and submissions in parallel
                 const [assessmentsSnapshot, submissionsSnapshot] = await Promise.all([
                     db.collection('assessments')
                         .where('classId', '==', classId)
@@ -1195,7 +1356,7 @@
                     ...doc.data()
                 }));
 
-                // Build submissions map (keyed by assessmentId for quick lookup)
+                // Build submissions map from both collections
                 submissionsMap = {};
                 submissionsSnapshot.forEach(doc => {
                     const data = doc.data();
@@ -1207,10 +1368,35 @@
                     }
                 });
 
+                // Also check studentSubmissions collection (where teachers save grades)
+                const studentSubSnap = await db.collection('studentSubmissions')
+                    .where('studentId', '==', currentUser.uid)
+                    .get();
+                
+                studentSubSnap.forEach(doc => {
+                    const data = doc.data();
+                    if (data.assessmentId && !submissionsMap[data.assessmentId]) {
+                        submissionsMap[data.assessmentId] = {
+                            id: doc.id,
+                            ...data
+                        };
+                    } else if (data.assessmentId && data.graded) {
+                        // Update with graded data if available
+                        submissionsMap[data.assessmentId] = {
+                            ...submissionsMap[data.assessmentId],
+                            score: data.score,
+                            feedback: data.feedback,
+                            graded: true,
+                            grade: data.grade,
+                            percentage: data.percentage
+                        };
+                    }
+                });
+
                 // Set initial tab and render
                 setActiveTab(currentTab);
                 
-                console.log(`Loaded ${allAssessments.length} assessments and ${Object.keys(submissionsMap).length} submissions`);
+                console.log(`✅ Loaded ${allAssessments.length} assessments and ${Object.keys(submissionsMap).length} submissions`);
                 
             } catch (e) {
                 console.error('Error loading assessments:', e);
@@ -1221,6 +1407,8 @@
                         <p>Something went wrong. Please refresh the page or try again later.</p>
                     </div>`;
                 updateStats(0, 0, 0, 0, 0);
+            } finally {
+                hideLoading();
             }
         }
 
@@ -1262,10 +1450,20 @@
         // RENDER ASSESSMENT GRID
         // ============================================
         function renderGrid() {
-            // Filter assessments by current tab
-            const filtered = currentTab === 'all' 
+            // Filter assessments by current tab and search query
+            let filtered = currentTab === 'all' 
                 ? allAssessments 
                 : allAssessments.filter(a => a.type === currentTab);
+
+            // Apply search filter
+            if (searchQuery) {
+                const query = searchQuery.toLowerCase();
+                filtered = filtered.filter(a => 
+                    (a.title || '').toLowerCase().includes(query) ||
+                    (a.subject || '').toLowerCase().includes(query) ||
+                    (a.type || '').toLowerCase().includes(query)
+                );
+            }
 
             // Update result count
             document.getElementById('resultCount').textContent = 
@@ -1278,11 +1476,12 @@
             // Handle empty state
             if (!filtered.length) {
                 const typeLabel = currentTab === 'all' ? 'assessments' : currentTab + 's';
+                const searchMsg = searchQuery ? ` matching "${searchQuery}"` : '';
                 grid.innerHTML = `
                     <div class="empty-state">
                         <i class="fas fa-inbox"></i>
-                        <h3>No ${currentTab === 'all' ? '' : 'Published '}${typeLabel} Yet</h3>
-                        <p>Check back when your teacher publishes new ${typeLabel}.</p>
+                        <h3>No ${currentTab === 'all' ? '' : 'Published '}${typeLabel}${searchMsg}</h3>
+                        <p>${searchQuery ? 'Try a different search term.' : 'Check back when your teacher publishes new ' + typeLabel + '.'}</p>
                     </div>`;
                 updateStats(allAssessments.length, 0, 0, 0, 0);
                 return;
@@ -1308,33 +1507,61 @@
                 const typeIcon = assessment.type === 'test' ? 'fa-laptop' : 
                                  assessment.type === 'assignment' ? 'fa-tasks' : 'fa-pen-fancy';
                 
+                // Format dates and details
+                const dueDateStr = formatDate(assessment.dueDate);
+                const endDateStr = formatDate(assessment.endDate);
+                const questionCount = assessment.questions?.length || 0;
+                const totalPoints = assessment.totalPoints || 
+                    (assessment.questions ? assessment.questions.reduce((sum, q) => sum + (q.points || 1), 0) : '—');
+                const duration = assessment.duration || 
+                    (assessment.settings?.timeLimit || null);
+
+                // Countdown timer for available/late assessments
+                let countdownHtml = '';
+                if ((info.status === 'available' || info.status === 'late') && assessment.endDate) {
+                    const remaining = getTimeRemaining(assessment.endDate);
+                    if (remaining) {
+                        countdownHtml = `<div class="countdown${remaining.urgent ? ' urgent' : ''}">
+                            <i class="fas fa-hourglass-end"></i> ${remaining.text}
+                        </div>`;
+                    }
+                }
+
+                // Score display for graded submissions
+                let scoreHtml = '';
+                if (submission && submission.graded && submission.score !== undefined) {
+                    const pct = submission.percentage || 
+                        (totalPoints > 0 ? ((submission.score / totalPoints) * 100).toFixed(1) : '—');
+                    const grade = submission.grade || '—';
+                    scoreHtml = `
+                        <div class="score-display">
+                            <div class="score-val">${submission.score}/${totalPoints} <span style="font-size:0.9rem;">(${pct}%)</span></div>
+                            <div class="score-label">Grade: ${grade}</div>
+                            ${submission.feedback ? `<div style="font-size:0.75rem;color:var(--text-secondary);margin-top:0.3rem;">"${escapeHtml(submission.feedback.substring(0, 60))}${submission.feedback.length > 60 ? '...' : ''}"</div>` : ''}
+                        </div>`;
+                }
+
                 // Determine action button
                 let actionBtn;
                 if (info.status === 'available' || info.status === 'late') {
-                    // Can still take the assessment
+                    const takeUrl = assessment.type === 'assignment' 
+                        ? `take-assignment.html?id=${assessment.id}`
+                        : `take-assessment.html?id=${assessment.id}`;
                     actionBtn = `
-                        <a href="take-assessment.html?id=${assessment.id}" class="btn btn-primary btn-sm">
+                        <a href="${takeUrl}" class="btn btn-primary btn-sm">
                             <i class="fas fa-play"></i> Start Now
                         </a>`;
                 } else if (info.status === 'done' || info.status === 'grading') {
-                    // Already submitted - view results
                     actionBtn = `
                         <a href="my-analysis.html?id=${assessment.id}" class="btn btn-outline btn-sm">
                             <i class="fas fa-eye"></i> View Result
                         </a>`;
                 } else {
-                    // Missed the deadline
                     actionBtn = `
                         <span class="btn btn-outline btn-sm" style="opacity:0.4;cursor:not-allowed;">
-                            <i class="fas fa-lock"></i> Missed
+                            <i class="fas fa-lock"></i> Closed
                         </span>`;
                 }
-
-                // Format dates
-                const dueDateStr = formatDate(assessment.dueDate);
-                const questionCount = assessment.questions?.length || 0;
-                const totalPoints = assessment.totalPoints || 
-                    (assessment.questions ? assessment.questions.reduce((sum, q) => sum + (q.points || 1), 0) : '—');
 
                 return `
                     <div class="assessment-card">
@@ -1349,7 +1576,7 @@
                         <h3>${escapeHtml(assessment.title || 'Untitled Assessment')}</h3>
                         <div class="meta">
                             <span><i class="fas fa-book"></i> ${escapeHtml(assessment.subject || 'General')}</span>
-                            ${assessment.duration ? `<span><i class="fas fa-clock"></i> ${assessment.duration} min</span>` : ''}
+                            ${duration ? `<span><i class="fas fa-clock"></i> ${duration} min</span>` : ''}
                             ${dueDateStr ? `<span><i class="fas fa-calendar-alt"></i> Due: ${dueDateStr}</span>` : ''}
                         </div>
                         <div class="meta">
@@ -1357,7 +1584,10 @@
                             <span><i class="fas fa-star"></i> ${totalPoints} point${totalPoints !== 1 ? 's' : ''}</span>
                             ${assessment.teacherName ? `<span><i class="fas fa-chalkboard-teacher"></i> ${escapeHtml(assessment.teacherName)}</span>` : ''}
                         </div>
-                        <div class="btn-group" style="margin-top:0.8rem;">
+                        ${endDateStr ? `<div class="meta"><span><i class="fas fa-door-closed"></i> Closes: ${endDateStr}</span></div>` : ''}
+                        ${countdownHtml}
+                        ${scoreHtml}
+                        <div class="btn-group">
                             ${actionBtn}
                         </div>
                     </div>
@@ -1380,6 +1610,25 @@
         }
 
         // ============================================
+        // SEARCH HANDLER
+        // ============================================
+        document.getElementById('searchInput').addEventListener('input', (e) => {
+            searchQuery = e.target.value;
+            renderGrid();
+        });
+
+        // ============================================
+        // REFRESH HANDLER
+        // ============================================
+        document.getElementById('refreshBtn').addEventListener('click', async () => {
+            const icon = document.querySelector('#refreshBtn i');
+            icon.classList.add('refreshing');
+            await loadAssessments();
+            setTimeout(() => icon.classList.remove('refreshing'), 1000);
+            showToast('Refreshed', 'Assessments updated successfully.', 'success');
+        });
+
+        // ============================================
         // TAB CLICK HANDLER
         // ============================================
         document.getElementById('tabNav').addEventListener('click', (e) => {
@@ -1389,12 +1638,24 @@
         });
 
         // ============================================
+        // KEYBOARD SHORTCUT: Ctrl+R to refresh
+        // ============================================
+        document.addEventListener('keydown', (e) => {
+            if (e.ctrlKey && e.key === 'r') {
+                // Let browser handle Ctrl+R normally (page refresh)
+                // Only intercept if we want custom refresh behavior
+            }
+        });
+
+        // ============================================
         // INITIALIZATION LOG
         // ============================================
         console.log('📚 My Assessments page initialized');
         console.log('   - Sidebar navigation ready');
         console.log('   - Theme:', savedTheme);
         console.log('   - Initial tab:', currentTab);
+        console.log('   - Connected to: assessments, submissions, studentSubmissions collections');
+        console.log('   - Links: take-assessment.html, take-assignment.html, my-analysis.html');
     </script>
 </body>
 </html>
