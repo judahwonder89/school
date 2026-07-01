@@ -21,6 +21,8 @@
             --danger-bg: rgba(239,68,68,0.15); --danger-text: #b91c1c;
             --info-bg: rgba(10,37,64,0.1); --info-text: #0A2540;
             --gradient-start: #0A2540; --gradient-end: #C8963E;
+            --shared-bg: rgba(34,197,94,0.1); --shared-text: #16a34a;
+            --bulk-highlight: rgba(200,150,62,0.15);
         }
         :root[data-theme="dark"] {
             --bg-primary: #0a0f1e; --bg-sidebar: rgba(15,23,42,0.8); --text-primary: #f0f4fa;
@@ -32,6 +34,8 @@
             --danger-bg: rgba(239,68,68,0.15); --danger-text: #f87171;
             --info-bg: rgba(200,150,62,0.15); --info-text: #D4AF37;
             --gradient-start: #0A2540; --gradient-end: #C8963E;
+            --shared-bg: rgba(34,197,94,0.1); --shared-text: #4ade80;
+            --bulk-highlight: rgba(200,150,62,0.15);
         }
 
         body { font-family: 'Inter', sans-serif; background: var(--bg-primary); color: var(--text-primary); min-height: 100vh; display: flex; position: relative; overflow-x: hidden; }
@@ -50,8 +54,6 @@
         .sidebar .logo-area h2 { font-family: 'Playfair Display', serif; font-size: 1.1rem; font-weight: 700; white-space: nowrap; color: var(--accent); line-height: 1.2; }
         .sidebar .logo-area h2 span { display: block; font-size: 0.6rem; letter-spacing: 1.5px; color: var(--accent-glow); }
         .sidebar.collapsed .logo-area h2 { display: none; }
-        .sidebar .nav-section { margin: 0.5rem 0.5rem 0.2rem; padding-left: 0.5rem; font-size: 0.6rem; color: var(--text-secondary); letter-spacing: 1.5px; font-weight: 700; text-transform: uppercase; }
-        .sidebar.collapsed .nav-section { display: none; }
         .sidebar .nav-item { display: flex; align-items: center; gap: 0.9rem; padding: 0.7rem 1rem; border-radius: 1rem; color: var(--text-secondary); transition: all 0.2s; cursor: pointer; margin-bottom: 0.25rem; text-decoration: none; font-weight: 500; white-space: nowrap; border: 1px solid transparent; font-size: 0.9rem; }
         .sidebar .nav-item:hover { background: var(--hover-bg); color: var(--accent); border-color: var(--border); transform: translateX(3px); }
         .sidebar .nav-item.active { background: linear-gradient(135deg, var(--accent), var(--accent-glow)); color: white; box-shadow: 0 6px 15px -5px var(--accent); }
@@ -79,16 +81,18 @@
         .dropdown-item:hover { background: var(--hover-bg); color: var(--accent); }
 
         .stats-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(150px, 1fr)); gap: 1rem; margin-bottom: 1.5rem; }
-        .stat-card { background: var(--card-bg); border: 1px solid var(--border); border-radius: 1.2rem; padding: 1rem; text-align: center; }
+        .stat-card { background: var(--card-bg); border: 1px solid var(--border); border-radius: 1.2rem; padding: 1rem; text-align: center; cursor: pointer; transition: 0.2s; }
+        .stat-card:hover { border-color: var(--accent); }
         .stat-card .val { font-size: 1.8rem; font-weight: 700; color: var(--accent); }
         .stat-card .lbl { font-size: 0.7rem; color: var(--text-secondary); }
 
-        .filters-bar { display: flex; gap: 1rem; margin-bottom: 1.5rem; flex-wrap: wrap; align-items: center; }
+        .filters-bar { display: flex; gap: 0.5rem; margin-bottom: 1.5rem; flex-wrap: wrap; align-items: center; }
         .search-box { flex: 1; min-width: 200px; position: relative; }
         .search-box i { position: absolute; left: 1rem; top: 50%; transform: translateY(-50%); color: var(--text-secondary); }
-        .search-box input { width: 100%; padding: 0.75rem 1rem 0.75rem 2.5rem; background: var(--card-bg); border: 1px solid var(--border); border-radius: 2rem; color: var(--text-primary); font-family: inherit; }
-        .filter-btn { padding: 0.6rem 1.2rem; background: var(--card-bg); border: 1px solid var(--border); border-radius: 2rem; color: var(--text-secondary); cursor: pointer; transition: 0.2s; font-weight: 500; font-size: 0.8rem; font-family: inherit; }
+        .search-box input { width: 100%; padding: 0.75rem 1rem 0.75rem 2.5rem; background: var(--card-bg); border: 1px solid var(--border); border-radius: 2rem; color: var(--text-primary); font-family: inherit; font-size: 0.85rem; }
+        .filter-btn { padding: 0.5rem 1rem; background: var(--card-bg); border: 1px solid var(--border); border-radius: 2rem; color: var(--text-secondary); cursor: pointer; transition: 0.2s; font-weight: 500; font-size: 0.78rem; font-family: inherit; white-space: nowrap; }
         .filter-btn.active { background: var(--accent); color: white; border-color: var(--accent); }
+        .filter-btn:hover:not(.active) { background: var(--hover-bg); border-color: var(--accent); }
         .btn { padding: 0.6rem 1.3rem; border: none; border-radius: 2rem; font-weight: 500; font-size: 0.85rem; cursor: pointer; transition: 0.2s; display: inline-flex; align-items: center; gap: 0.4rem; white-space: nowrap; font-family: inherit; text-decoration: none; }
         .btn-primary { background: linear-gradient(135deg, var(--gradient-start), var(--gradient-end)); color: white; }
         .btn-outline { background: transparent; border: 1px solid var(--border); color: var(--text-primary); }
@@ -96,13 +100,17 @@
         .btn-danger { background: var(--danger-text); color: white; }
         .btn-sm { padding: 0.35rem 0.9rem; font-size: 0.75rem; border-radius: 1.5rem; }
         .btn:hover { opacity: 0.9; transform: translateY(-1px); }
-        .btn-group { display: flex; gap: 0.75rem; flex-wrap: wrap; }
+        .btn-group { display: flex; gap: 0.5rem; flex-wrap: wrap; }
 
         .questions-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(380px, 1fr)); gap: 1rem; }
-        .question-card { background: var(--card-bg); border: 1px solid var(--border); border-radius: 1.2rem; overflow: hidden; transition: all 0.2s; }
+        .question-card { background: var(--card-bg); border: 1px solid var(--border); border-radius: 1.2rem; overflow: hidden; transition: all 0.2s; position: relative; }
         .question-card:hover { transform: translateY(-3px); box-shadow: var(--shadow); border-color: var(--accent); }
+        .question-card.selected { border: 2px solid var(--accent); background: var(--bulk-highlight); }
+        .question-card .select-checkbox { position: absolute; top: 0.8rem; right: 0.8rem; width: 22px; height: 22px; z-index: 5; accent-color: var(--accent); cursor: pointer; display: none; }
+        .question-card.bulk-mode .select-checkbox { display: block; }
         .question-header { padding: 1rem; background: var(--hover-bg); border-bottom: 1px solid var(--border); display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 0.5rem; }
         .type-badge { padding: 0.25rem 0.75rem; border-radius: 2rem; font-size: 0.7rem; font-weight: 600; background: var(--info-bg); color: var(--info-text); }
+        .shared-badge { padding: 0.25rem 0.75rem; border-radius: 2rem; font-size: 0.7rem; font-weight: 600; background: var(--shared-bg); color: var(--shared-text); }
         .difficulty-badge { padding: 0.25rem 0.75rem; border-radius: 2rem; font-size: 0.7rem; font-weight: 600; }
         .difficulty-easy { background: var(--success-bg); color: var(--success-text); }
         .difficulty-medium { background: var(--warning-bg); color: var(--warning-text); }
@@ -111,7 +119,7 @@
         .question-text { font-weight: 600; margin-bottom: 0.75rem; line-height: 1.5; }
         .question-options { font-size: 0.85rem; color: var(--text-secondary); margin-top: 0.5rem; padding-left: 1rem; }
         .correct-answer { margin-top: 0.75rem; padding: 0.5rem; background: var(--success-bg); border-radius: 0.75rem; font-size: 0.8rem; color: var(--success-text); }
-        .question-footer { padding: 1rem; border-top: 1px solid var(--border); display: flex; justify-content: space-between; align-items: center; }
+        .question-footer { padding: 1rem; border-top: 1px solid var(--border); display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 0.5rem; }
 
         .modal-overlay { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.8); backdrop-filter: blur(5px); display: none; justify-content: center; align-items: center; z-index: 2000; }
         .modal-overlay.active { display: flex; }
@@ -134,7 +142,7 @@
         .loading-content { background: var(--card-bg); padding: 2rem; border-radius: 1.5rem; text-align: center; }
 
         .toast-container { position: fixed; top: 1rem; right: 1rem; z-index: 5000; display: flex; flex-direction: column; gap: 0.5rem; }
-        .toast { background: var(--card-bg); backdrop-filter: blur(16px); border: 1px solid var(--border); border-radius: 1rem; padding: 1rem 1.5rem; min-width: 300px; max-width: 450px; box-shadow: 0 15px 35px rgba(0,0,0,0.4); display: flex; align-items: flex-start; gap: 0.8rem; animation: slideInRight 0.3s; }
+        .toast { background: var(--card-bg); backdrop-filter: blur(16px); border: 1px solid var(--border); border-radius: 1rem; padding: 1rem 1.5rem; min-width: 300px; max-width: 450px; box-shadow: 0 15px 35px rgba(0,0,0,0.4); display: flex; align-items: flex-start; gap: 0.8rem; animation: slideInRight 0.3s; font-size: 0.85rem; }
         .toast.removing { animation: slideOutRight 0.3s ease-in forwards; }
         .toast-icon { font-size: 1.2rem; margin-top: 2px; }
         .toast-icon.success { color: var(--success-text); }
@@ -145,7 +153,7 @@
 
         @media (max-width: 768px) {
             .sidebar { width: 85px; }
-            .sidebar .logo-area h2, .sidebar .nav-item span, .sidebar .nav-section { display: none; }
+            .sidebar .logo-area h2, .sidebar .nav-item span { display: none; }
             .main-content { margin-left: 85px; max-width: calc(100vw - 85px); padding: 1rem; }
             .questions-grid { grid-template-columns: 1fr; }
         }
@@ -162,21 +170,12 @@
             <img src="https://res.cloudinary.com/dda7kpir8/image/upload/q_auto/f_auto/v1781038310/ChatGPT_Image_Jun_9_2026_09_25_06_AM_elnine.png" alt="JWMS Logo">
             <h2>Judah Wonders<span>Model School</span></h2>
         </a>
-        <div class="nav-section">Main</div>
         <a href="teacher-dashboard.html" class="nav-item"><i class="fas fa-chart-pie"></i><span>Dashboard</span></a>
-        <div class="nav-section">Teaching</div>
         <a href="teacher-workspace.html" class="nav-item"><i class="fas fa-book-open"></i><span>Workspace</span></a>
-        <a href="teacher-class-hub.html" class="nav-item"><i class="fas fa-users"></i><span>Class Hub</span></a>
-        <div class="nav-section">Assessments</div>
         <a href="teacher-assessments.html" class="nav-item"><i class="fas fa-pen-fancy"></i><span>Create Assessment</span></a>
+        <a href="question-bank.html" class="nav-item active"><i class="fas fa-layer-group"></i><span>Question Bank</span></a>
         <a href="teacher-assessment-history.html" class="nav-item"><i class="fas fa-history"></i><span>History</span></a>
         <a href="teacher-assessment-evaluation.html" class="nav-item"><i class="fas fa-clipboard-check"></i><span>Evaluation</span></a>
-        <div class="nav-section">Resources</div>
-        <a href="teacher-question-bank.html" class="nav-item active"><i class="fas fa-database"></i><span>Question Bank</span></a>
-        <div class="nav-section">Grading & Reports</div>
-        <a href="teacher-scoring-engine.html" class="nav-item"><i class="fas fa-calculator"></i><span>Scoring Engine</span></a>
-        <a href="teacher-report-card.html" class="nav-item"><i class="fas fa-graduation-cap"></i><span>Report Card</span></a>
-        <div class="nav-section">Personal</div>
         <a href="teacher-profile.html" class="nav-item"><i class="fas fa-user-edit"></i><span>Profile</span></a>
         <div class="toggle-btn" id="sidebarToggle"><i class="fas fa-chevron-left"></i></div>
     </div>
@@ -184,9 +183,12 @@
     <!-- MAIN CONTENT -->
     <div class="main-content" id="mainContent">
         <div class="top-bar">
-            <div class="page-title"><h1>Question Bank</h1><p>Create and manage reusable questions for assessments</p></div>
+            <div class="page-title">
+                <h1>Question Bank</h1>
+                <p>Create and manage reusable questions — feed your assessments effortlessly</p>
+            </div>
             <div class="profile-area">
-                <div class="theme-toggle" id="themeToggle"><i class="fas fa-sun"></i><span>Light</span><i class="fas fa-moon"></i></div>
+                <div class="theme-toggle" id="themeToggle"><i class="fas fa-sun"></i><span>Light</span></div>
                 <div class="profile-dropdown">
                     <div class="profile-pic" id="profilePic">TE</div>
                     <div class="dropdown-menu"><div class="dropdown-item" id="logoutBtn"><i class="fas fa-sign-out-alt"></i> Logout</div></div>
@@ -196,103 +198,230 @@
 
         <!-- STATS -->
         <div class="stats-grid">
-            <div class="stat-card"><div class="val" id="totalCount">0</div><div class="lbl">Total Questions</div></div>
-            <div class="stat-card"><div class="val" id="mcqCount">0</div><div class="lbl">Multiple Choice</div></div>
-            <div class="stat-card"><div class="val" id="tfCount">0</div><div class="lbl">True/False</div></div>
-            <div class="stat-card"><div class="val" id="fbCount">0</div><div class="lbl">Fill in the Blank</div></div>
-            <div class="stat-card"><div class="val" id="theoryCount">0</div><div class="lbl">Theory/Essay</div></div>
+            <div class="stat-card" onclick="clearFilters()"><div class="val" id="totalCount">0</div><div class="lbl">Total Questions</div></div>
+            <div class="stat-card" onclick="setTypeFilter('mcq')"><div class="val" id="mcqCount">0</div><div class="lbl">Multiple Choice</div></div>
+            <div class="stat-card" onclick="setTypeFilter('truefalse')"><div class="val" id="tfCount">0</div><div class="lbl">True/False</div></div>
+            <div class="stat-card" onclick="setTypeFilter('fillblank')"><div class="val" id="fbCount">0</div><div class="lbl">Fill in the Blank</div></div>
+            <div class="stat-card" onclick="setTypeFilter('theory')"><div class="val" id="theoryCount">0</div><div class="lbl">Theory/Essay</div></div>
         </div>
 
         <!-- FILTERS -->
         <div class="filters-bar">
             <div class="search-box"><i class="fas fa-search"></i><input type="text" id="searchInput" placeholder="Search by question, subject, or topic..."></div>
-            <button class="filter-btn active" data-filter="all">All</button>
-            <button class="filter-btn" data-filter="mcq">MCQ</button>
-            <button class="filter-btn" data-filter="truefalse">True/False</button>
-            <button class="filter-btn" data-filter="fillblank">Fill Blank</button>
-            <button class="filter-btn" data-filter="theory">Theory</button>
-            <button class="btn btn-primary" id="addQuestionBtn"><i class="fas fa-plus"></i> Add Question</button>
+            <button class="filter-btn active" data-filter="all" onclick="setTypeFilter('all',this)">All</button>
+            <button class="filter-btn" data-filter="mcq" onclick="setTypeFilter('mcq',this)">MCQ</button>
+            <button class="filter-btn" data-filter="truefalse" onclick="setTypeFilter('truefalse',this)">True/False</button>
+            <button class="filter-btn" data-filter="fillblank" onclick="setTypeFilter('fillblank',this)">Fill Blank</button>
+            <button class="filter-btn" data-filter="theory" onclick="setTypeFilter('theory',this)">Theory</button>
+            <button class="filter-btn" data-filter="mine" onclick="setVisibilityFilter('mine',this)">👤 Mine</button>
+            <button class="filter-btn" data-filter="shared" onclick="setVisibilityFilter('shared',this)">🌍 Shared</button>
+            <button class="btn btn-outline btn-sm" id="bulkSelectBtn" onclick="toggleBulkMode()">
+                <i class="fas fa-check-square"></i> Bulk Select
+            </button>
+            <button class="btn btn-primary btn-sm" id="addToAssessmentBtn" style="display:none;" onclick="addSelectedToAssessment()">
+                <i class="fas fa-plus-circle"></i> Add to Assessment (<span id="selectedCount">0</span>)
+            </button>
+            <a href="teacher-assessments.html" class="btn btn-outline btn-sm">
+                <i class="fas fa-external-link-alt"></i> Assessment Creator
+            </a>
+            <button class="btn btn-primary btn-sm" id="addQuestionBtn"><i class="fas fa-plus"></i> Add Question</button>
         </div>
 
         <!-- QUESTIONS GRID -->
-        <div class="questions-grid" id="questionsGrid"><div class="empty-state"><i class="fas fa-spinner fa-spin"></i><h3>Loading questions...</h3></div></div>
+        <div class="questions-grid" id="questionsGrid">
+            <div class="empty-state"><i class="fas fa-spinner fa-spin"></i><h3>Loading questions...</h3></div>
+        </div>
     </div>
 
     <!-- ADD/EDIT MODAL -->
     <div class="modal-overlay" id="questionModal">
         <div class="modal-content">
-            <div class="modal-header"><h3 id="modalTitle">Add New Question</h3><i class="fas fa-times" onclick="closeModal()" style="cursor:pointer;"></i></div>
+            <div class="modal-header">
+                <h3 id="modalTitle">Add New Question</h3>
+                <i class="fas fa-times" onclick="closeModal()" style="cursor:pointer;"></i>
+            </div>
             <form id="questionForm">
                 <input type="hidden" id="questionId">
-                <div class="form-group"><label>Question Type</label><select id="questionType" class="form-control" required><option value="mcq">Multiple Choice (MCQ)</option><option value="truefalse">True/False</option><option value="fillblank">Fill in the Blank</option><option value="theory">Theory/Essay</option></select></div>
-                <div class="form-group"><label>Subject *</label><select id="questionSubject" class="form-control" required></select></div>
-                <div class="form-group"><label>Difficulty</label><select id="questionDifficulty" class="form-control" required><option value="easy">Easy</option><option value="medium" selected>Medium</option><option value="hard">Hard</option></select></div>
-                <div class="form-group"><label>Question Text *</label><textarea id="questionText" class="form-control" rows="3" required placeholder="Enter the question..."></textarea></div>
+                <div class="form-group">
+                    <label>Question Type *</label>
+                    <select id="questionType" class="form-control" required>
+                        <option value="mcq">Multiple Choice (MCQ)</option>
+                        <option value="truefalse">True/False</option>
+                        <option value="fillblank">Fill in the Blank</option>
+                        <option value="theory">Theory/Essay</option>
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label>Subject *</label>
+                    <select id="questionSubject" class="form-control" required></select>
+                </div>
+                <div class="form-group">
+                    <label>Difficulty</label>
+                    <select id="questionDifficulty" class="form-control" required>
+                        <option value="easy">Easy</option>
+                        <option value="medium" selected>Medium</option>
+                        <option value="hard">Hard</option>
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label>Question Text *</label>
+                    <textarea id="questionText" class="form-control" rows="3" required placeholder="Enter the question..."></textarea>
+                </div>
                 <div id="mcqOptions">
-                    <div class="form-group"><label>Option A</label><input type="text" id="optA" class="form-control" placeholder="Option A"></div>
-                    <div class="form-group"><label>Option B</label><input type="text" id="optB" class="form-control" placeholder="Option B"></div>
+                    <div class="form-group"><label>Option A *</label><input type="text" id="optA" class="form-control" placeholder="Option A"></div>
+                    <div class="form-group"><label>Option B *</label><input type="text" id="optB" class="form-control" placeholder="Option B"></div>
                     <div class="form-group"><label>Option C</label><input type="text" id="optC" class="form-control" placeholder="Option C"></div>
                     <div class="form-group"><label>Option D</label><input type="text" id="optD" class="form-control" placeholder="Option D"></div>
                 </div>
-                <div class="form-group"><label>Correct Answer *</label><input type="text" id="correctAnswer" class="form-control" required placeholder="A, B, C, D, True, False, or the correct word"></div>
-                <div class="form-group"><label>Points</label><input type="number" id="points" class="form-control" value="1" min="1" max="10"></div>
-                <div class="form-group"><label>Topic (Optional)</label><input type="text" id="topic" class="form-control" placeholder="e.g., Verbs, Algebra, Photosynthesis"></div>
-                <div class="btn-group" style="margin-top:1rem;justify-content:flex-end;"><button type="submit" class="btn btn-primary">Save Question</button><button type="button" class="btn btn-outline" onclick="closeModal()">Cancel</button></div>
+                <div class="form-group">
+                    <label>Correct Answer *</label>
+                    <input type="text" id="correctAnswer" class="form-control" required placeholder="A, B, C, D, True, False, or the correct word/phrase">
+                </div>
+                <div class="form-group">
+                    <label>Points</label>
+                    <input type="number" id="points" class="form-control" value="1" min="1" max="10">
+                </div>
+                <div class="form-group">
+                    <label>Topic (Optional)</label>
+                    <input type="text" id="topic" class="form-control" placeholder="e.g., Verbs, Algebra, Photosynthesis">
+                </div>
+                <div class="form-group">
+                    <label>Visibility</label>
+                    <select id="questionVisibility" class="form-control">
+                        <option value="false">🔒 Personal (Only Me)</option>
+                        <option value="true">🌍 Shared (All Teachers Can Use)</option>
+                    </select>
+                </div>
+                <div class="btn-group" style="margin-top:1rem;justify-content:flex-end;">
+                    <button type="submit" class="btn btn-primary"><i class="fas fa-save"></i> Save Question</button>
+                    <button type="button" class="btn btn-outline" onclick="closeModal()">Cancel</button>
+                </div>
             </form>
         </div>
     </div>
 
-    <div class="loading-overlay" id="loadingOverlay"><div class="loading-content"><i class="fas fa-spinner fa-spin fa-2x"></i><h3 style="margin-top:1rem;">Processing...</h3></div></div>
+    <div class="loading-overlay" id="loadingOverlay">
+        <div class="loading-content">
+            <i class="fas fa-spinner fa-spin fa-2x" style="color:var(--accent);"></i>
+            <h3 style="margin-top:1rem;">Processing...</h3>
+        </div>
+    </div>
 
     <script>
-        // ==================== FIREBASE ====================
         const firebaseConfig = {
             apiKey: "AIzaSyADXHEiaSQ146QsGsaOCElARtpwrLE8svs",
             authDomain: "judah-c737e.firebaseapp.com",
             projectId: "judah-c737e",
             storageBucket: "judah-c737e.firebasestorage.app",
             messagingSenderId: "739196063078",
-            appId: "1:739196063078:web:c0ee1c1da2cc3794ca8ca7",
-            measurementId: "G-YEM22F1C39"
+            appId: "1:739196063078:web:c0ee1c1da2cc3794ca8ca7"
         };
         firebase.initializeApp(firebaseConfig);
         const auth = firebase.auth();
         const db = firebase.firestore();
 
-        // ==================== SIDEBAR & THEME ====================
         const sidebar = document.getElementById('sidebar'), mainContent = document.getElementById('mainContent');
-        document.getElementById('sidebarToggle').addEventListener('click', () => { sidebar.classList.toggle('collapsed'); mainContent.classList.toggle('expanded'); const icon = document.getElementById('sidebarToggle').querySelector('i'); icon.classList.toggle('fa-chevron-left'); icon.classList.toggle('fa-chevron-right'); });
-        const html = document.documentElement, themeToggle = document.getElementById('themeToggle');
-        const savedTheme = localStorage.getItem('judah-theme') || 'dark';
-        html.setAttribute('data-theme', savedTheme);
-        themeToggle.querySelector('span').textContent = savedTheme === 'dark' ? 'Light' : 'Dark';
-        themeToggle.addEventListener('click', () => { const next = html.getAttribute('data-theme') === 'dark' ? 'light' : 'dark'; html.setAttribute('data-theme', next); localStorage.setItem('judah-theme', next); themeToggle.querySelector('span').textContent = next === 'dark' ? 'Light' : 'Dark'; });
+        document.getElementById('sidebarToggle').addEventListener('click', () => {
+            sidebar.classList.toggle('collapsed');
+            mainContent.classList.toggle('expanded');
+            const icon = document.getElementById('sidebarToggle').querySelector('i');
+            icon.classList.toggle('fa-chevron-left');
+            icon.classList.toggle('fa-chevron-right');
+        });
 
-        // ==================== HELPERS ====================
-        function showToast(title, message, type = 'info') { const icons = { success: 'fa-check-circle', error: 'fa-exclamation-circle', info: 'fa-info-circle' }; const container = document.getElementById('toastContainer'); const toast = document.createElement('div'); toast.className = 'toast'; toast.innerHTML = `<i class="fas ${icons[type]} toast-icon ${type}"></i><div class="toast-content"><div class="toast-title">${title}</div><div class="toast-message">${message}</div></div><button class="toast-close" onclick="this.parentElement.remove()"><i class="fas fa-times"></i></button>`; container.appendChild(toast); setTimeout(() => { toast.classList.add('removing'); setTimeout(() => toast.remove(), 300); }, 4000); }
+        const htmlEl = document.documentElement, themeToggle = document.getElementById('themeToggle');
+        const savedTheme = localStorage.getItem('judah-theme') || 'dark';
+        htmlEl.setAttribute('data-theme', savedTheme);
+        themeToggle.querySelector('span').textContent = savedTheme === 'dark' ? 'Light' : 'Dark';
+        themeToggle.addEventListener('click', () => {
+            const next = htmlEl.getAttribute('data-theme') === 'dark' ? 'light' : 'dark';
+            htmlEl.setAttribute('data-theme', next);
+            localStorage.setItem('judah-theme', next);
+            themeToggle.querySelector('span').textContent = next === 'dark' ? 'Light' : 'Dark';
+        });
+
+        function showToast(title, message, type = 'info') {
+            const icons = { success: 'fa-check-circle', error: 'fa-exclamation-circle', info: 'fa-info-circle' };
+            const container = document.getElementById('toastContainer');
+            const toast = document.createElement('div');
+            toast.className = 'toast';
+            toast.innerHTML = `<i class="fas ${icons[type]} toast-icon ${type}"></i><div><strong>${title}</strong><br><span style="font-size:0.8rem;color:var(--text-secondary);">${escapeHtml(message)}</span></div>`;
+            container.appendChild(toast);
+            setTimeout(() => { toast.classList.add('removing'); setTimeout(() => toast.remove(), 300); }, 4000);
+        }
+
         function showLoading() { document.getElementById('loadingOverlay').classList.add('active'); }
         function hideLoading() { document.getElementById('loadingOverlay').classList.remove('active'); }
         function escapeHtml(t) { const d = document.createElement('div'); d.textContent = t || ''; return d.innerHTML; }
 
-        // ==================== STATE ====================
-        let currentUser = null, userData = null, allQuestions = [], subjects = [], currentFilter = 'all';
+        let currentUser = null, userData = null, allQuestions = [], subjects = [];
+        let currentTypeFilter = 'all', currentVisibilityFilter = 'all';
+        let bulkMode = false, selectedQuestionIds = new Set();
 
-        // ==================== LOAD DATA ====================
-        async function loadSubjects() {
-            const snap = await db.collection('syllabus').where('teacherId','==',currentUser.uid).where('status','==','approved').get();
-            const set = new Set(); snap.forEach(d => set.add(d.data().subject));
+        // ============================================
+        // FIXED: Load subjects from userData (not syllabi)
+        // ============================================
+        function loadSubjects() {
+            const set = new Set();
+            if (userData?.subjects) userData.subjects.forEach(s => set.add(s));
             subjects = Array.from(set).sort();
             const sel = document.getElementById('questionSubject');
-            sel.innerHTML = '<option value="">-- Select Subject --</option>' + subjects.map(s => `<option value="${s}">${s}</option>`).join('');
+            if (subjects.length) {
+                sel.innerHTML = '<option value="">-- Select Subject --</option>' + 
+                    subjects.map(s => `<option value="${s}">${s}</option>`).join('');
+            } else {
+                sel.innerHTML = '<option value="">No subjects found — check your profile</option>';
+            }
+            console.log('📚 Subjects loaded:', subjects);
         }
 
+        // ============================================
+        // FIXED: Load questions without index-dependent queries
+        // ============================================
         async function loadQuestions() {
             showLoading();
             try {
-                const snap = await db.collection('questionBank').where('teacherId','==',currentUser.uid).orderBy('createdAt','desc').get();
-                allQuestions = snap.docs.map(d => ({ id: d.id, ...d.data() }));
-                updateStats(); renderQuestions();
-            } catch(e) { console.error(e); } finally { hideLoading(); }
+                // Load user's own questions
+                const mySnap = await db.collection('questionBank')
+                    .where('teacherId', '==', currentUser.uid)
+                    .get();
+                
+                allQuestions = mySnap.docs.map(d => ({ id: d.id, ...d.data() }));
+                console.log('📋 My questions:', allQuestions.length);
+                
+                // Load shared questions (separate query to avoid composite index issues)
+                try {
+                    const sharedSnap = await db.collection('questionBank')
+                        .where('shared', '==', true)
+                        .get();
+                    
+                    sharedSnap.forEach(d => {
+                        // Only add if not already in the list and not owned by current user
+                        if (!allQuestions.find(q => q.id === d.id) && d.data().teacherId !== currentUser.uid) {
+                            allQuestions.push({ id: d.id, ...d.data() });
+                        }
+                    });
+                    console.log('📋 Total questions (with shared):', allQuestions.length);
+                } catch (sharedErr) {
+                    console.warn('⚠️ Could not load shared questions (may need index):', sharedErr.message);
+                }
+                
+                // Sort by createdAt descending
+                allQuestions.sort((a, b) => {
+                    const aTime = a.createdAt?.toDate?.() || new Date(0);
+                    const bTime = b.createdAt?.toDate?.() || new Date(0);
+                    return bTime - aTime;
+                });
+                
+                updateStats();
+                renderQuestions();
+            } catch(e) {
+                console.error('Load questions error:', e);
+                document.getElementById('questionsGrid').innerHTML = 
+                    `<div class="empty-state"><i class="fas fa-exclamation-triangle"></i><h3>Error loading questions</h3><p>${escapeHtml(e.message)}</p></div>`;
+            } finally {
+                hideLoading();
+            }
         }
 
         function updateStats() {
@@ -306,54 +435,255 @@
         function renderQuestions() {
             const search = document.getElementById('searchInput').value.toLowerCase();
             const grid = document.getElementById('questionsGrid');
-            const filtered = allQuestions.filter(q => {
-                if (currentFilter !== 'all' && q.type !== currentFilter) return false;
-                if (search && !(q.question||'').toLowerCase().includes(search) && !(q.subject||'').toLowerCase().includes(search) && !(q.topic||'').toLowerCase().includes(search)) return false;
+            
+            let filtered = allQuestions.filter(q => {
+                if (currentTypeFilter !== 'all' && q.type !== currentTypeFilter) return false;
+                if (currentVisibilityFilter === 'mine' && q.shared) return false;
+                if (currentVisibilityFilter === 'shared' && !q.shared) return false;
+                if (search && !(q.question||'').toLowerCase().includes(search) && 
+                    !(q.subject||'').toLowerCase().includes(search) && 
+                    !(q.topic||'').toLowerCase().includes(search) &&
+                    !(q.teacherName||'').toLowerCase().includes(search)) return false;
                 return true;
             });
-            if (!filtered.length) { grid.innerHTML = `<div class="empty-state"><i class="fas fa-inbox"></i><h3>No questions found</h3><p>${search ? 'Try a different search' : 'Add your first question to build your bank'}</p></div>`; return; }
+            
+            if (!filtered.length) {
+                grid.innerHTML = `<div class="empty-state"><i class="fas fa-inbox"></i><h3>No questions found</h3><p>${search ? 'Try a different search term' : 'Add your first question to build your bank'}</p></div>`;
+                return;
+            }
+            
             grid.innerHTML = filtered.map(q => {
                 const typeNames = { mcq: 'MCQ', truefalse: 'True/False', fillblank: 'Fill in the Blank', theory: 'Theory/Essay' };
                 let opts = '';
-                if (q.type === 'mcq' && q.options) opts = `<div class="question-options">${q.options.map((o,i) => `<div>${String.fromCharCode(65+i)}. ${escapeHtml(o)}</div>`).join('')}</div>`;
-                return `<div class="question-card">
-                    <div class="question-header"><span class="type-badge">${typeNames[q.type]||q.type}</span><span class="difficulty-badge difficulty-${q.difficulty||'medium'}">${(q.difficulty||'medium').toUpperCase()}</span></div>
-                    <div class="question-body"><div class="question-text">${escapeHtml(q.question)}</div>${opts}<div class="correct-answer"><strong>✓ Answer:</strong> ${escapeHtml(q.correct)}</div></div>
-                    <div class="question-footer"><div><small><i class="fas fa-book"></i> ${escapeHtml(q.subject)}</small>${q.topic?` <small><i class="fas fa-tag"></i> ${escapeHtml(q.topic)}</small>`:''} <small><i class="fas fa-star"></i> ${q.points||1} pt</small></div>
-                    <div class="btn-group"><button class="btn btn-outline btn-sm" onclick="editQuestion('${q.id}')"><i class="fas fa-edit"></i></button><button class="btn btn-danger btn-sm" onclick="deleteQuestion('${q.id}')"><i class="fas fa-trash"></i></button></div></div>
+                if (q.type === 'mcq' && q.options) {
+                    opts = `<div class="question-options">${q.options.map((o,i) => `<div>${String.fromCharCode(65+i)}. ${escapeHtml(o)}</div>`).join('')}</div>`;
+                }
+                const isShared = q.shared;
+                const isSelected = selectedQuestionIds.has(q.id);
+                const isMine = q.teacherId === currentUser?.uid;
+                
+                return `
+                <div class="question-card ${bulkMode ? 'bulk-mode' : ''} ${isSelected ? 'selected' : ''}">
+                    <input type="checkbox" class="select-checkbox" ${isSelected ? 'checked' : ''} 
+                           onchange="toggleQuestionSelection('${q.id}', this.checked)" 
+                           onclick="event.stopPropagation()">
+                    <div class="question-header">
+                        <div style="display:flex;gap:0.4rem;align-items:center;flex-wrap:wrap;">
+                            <span class="type-badge">${typeNames[q.type]||q.type}</span>
+                            <span class="difficulty-badge difficulty-${q.difficulty||'medium'}">${(q.difficulty||'medium').toUpperCase()}</span>
+                            ${isShared ? '<span class="shared-badge">🌍 Shared</span>' : '<span class="type-badge">🔒 Personal</span>'}
+                            ${!isMine ? `<span class="type-badge">👤 ${escapeHtml(q.teacherName||'Colleague')}</span>` : ''}
+                        </div>
+                    </div>
+                    <div class="question-body">
+                        <div class="question-text">${escapeHtml(q.question)}</div>
+                        ${opts}
+                        <div class="correct-answer"><strong>✓ Answer:</strong> ${escapeHtml(String(q.correct))}</div>
+                    </div>
+                    <div class="question-footer">
+                        <div style="font-size:0.75rem;color:var(--text-secondary);display:flex;gap:1rem;flex-wrap:wrap;">
+                            <span><i class="fas fa-book"></i> ${escapeHtml(q.subject)}</span>
+                            ${q.topic ? `<span><i class="fas fa-tag"></i> ${escapeHtml(q.topic)}</span>` : ''}
+                            <span><i class="fas fa-star"></i> ${q.points||1} pt</span>
+                            <span><i class="fas fa-chart-bar"></i> Used: ${q.usageCount||0}x</span>
+                        </div>
+                        <div class="btn-group">
+                            ${isMine ? `
+                                <button class="btn btn-outline btn-sm" onclick="editQuestion('${q.id}')"><i class="fas fa-edit"></i></button>
+                                <button class="btn btn-outline btn-sm" onclick="toggleShare('${q.id}', ${!isShared})">
+                                    <i class="fas ${isShared ? 'fa-lock' : 'fa-share-alt'}"></i>
+                                </button>
+                                <button class="btn btn-danger btn-sm" onclick="deleteQuestion('${q.id}')"><i class="fas fa-trash"></i></button>
+                            ` : `
+                                <button class="btn btn-outline btn-sm" onclick="cloneQuestion('${q.id}')"><i class="fas fa-clone"></i> Clone to My Bank</button>
+                            `}
+                        </div>
+                    </div>
                 </div>`;
             }).join('');
+            
+            updateBulkUI();
         }
 
-        // ==================== MODAL ====================
+        // ============================================
+        // BULK SELECT MODE
+        // ============================================
+        function toggleBulkMode() {
+            bulkMode = !bulkMode;
+            selectedQuestionIds.clear();
+            
+            const btn = document.getElementById('bulkSelectBtn');
+            if (bulkMode) {
+                btn.classList.add('active');
+                btn.innerHTML = '<i class="fas fa-times"></i> Cancel Bulk';
+            } else {
+                btn.classList.remove('active');
+                btn.innerHTML = '<i class="fas fa-check-square"></i> Bulk Select';
+            }
+            
+            renderQuestions();
+        }
+
+        function toggleQuestionSelection(questionId, isChecked) {
+            if (isChecked) {
+                selectedQuestionIds.add(questionId);
+            } else {
+                selectedQuestionIds.delete(questionId);
+            }
+            updateBulkUI();
+        }
+
+        function updateBulkUI() {
+            const addBtn = document.getElementById('addToAssessmentBtn');
+            const countSpan = document.getElementById('selectedCount');
+            
+            if (bulkMode && selectedQuestionIds.size > 0) {
+                addBtn.style.display = 'inline-flex';
+                countSpan.textContent = selectedQuestionIds.size;
+            } else {
+                addBtn.style.display = 'none';
+            }
+        }
+
+        function addSelectedToAssessment() {
+            if (selectedQuestionIds.size === 0) {
+                showToast('None Selected', 'Please select at least one question.', 'warning');
+                return;
+            }
+            
+            const selected = allQuestions.filter(q => selectedQuestionIds.has(q.id));
+            sessionStorage.setItem('selectedBankQuestions', JSON.stringify(selected));
+            window.location.href = 'teacher-assessments.html?source=bank';
+        }
+
+        // ============================================
+        // QUICK FILTERS
+        // ============================================
+        function setTypeFilter(type, btn) {
+            currentTypeFilter = type;
+            if (btn) {
+                document.querySelectorAll('.filter-btn[data-filter="mcq"],.filter-btn[data-filter="truefalse"],.filter-btn[data-filter="fillblank"],.filter-btn[data-filter="theory"],.filter-btn[data-filter="all"]').forEach(b => b.classList.remove('active'));
+                btn.classList.add('active');
+            }
+            renderQuestions();
+        }
+
+        function setVisibilityFilter(filter, btn) {
+            currentVisibilityFilter = currentVisibilityFilter === filter ? 'all' : filter;
+            document.querySelectorAll('.filter-btn[data-filter="mine"],.filter-btn[data-filter="shared"]').forEach(b => b.classList.remove('active'));
+            if (currentVisibilityFilter !== 'all' && btn) btn.classList.add('active');
+            renderQuestions();
+        }
+
+        function clearFilters() {
+            currentTypeFilter = 'all';
+            currentVisibilityFilter = 'all';
+            document.querySelectorAll('.filter-btn').forEach(b => b.classList.remove('active'));
+            document.querySelector('.filter-btn[data-filter="all"]')?.classList.add('active');
+            document.getElementById('searchInput').value = '';
+            renderQuestions();
+        }
+
+        // ============================================
+        // SHARE / CLONE
+        // ============================================
+        async function toggleShare(questionId, makeShared) {
+            try {
+                await db.collection('questionBank').doc(questionId).update({ shared: makeShared });
+                showToast(makeShared ? 'Shared' : 'Private', 
+                    makeShared ? 'Question is now visible to all teachers.' : 'Question is now private.', 
+                    'success');
+                loadQuestions();
+            } catch(e) { showToast('Error', e.message, 'error'); }
+        }
+
+        async function cloneQuestion(questionId) {
+            const q = allQuestions.find(x => x.id === questionId);
+            if (!q) return;
+            
+            try {
+                const cloneData = {
+                    teacherId: currentUser.uid,
+                    teacherName: `${userData?.firstName || ''} ${userData?.surname || ''}`.trim(),
+                    type: q.type,
+                    subject: q.subject,
+                    difficulty: q.difficulty,
+                    question: q.question,
+                    options: q.options || [],
+                    correct: q.correct,
+                    points: q.points || 1,
+                    topic: q.topic || '',
+                    shared: false,
+                    usageCount: 0,
+                    createdAt: firebase.firestore.FieldValue.serverTimestamp()
+                };
+                await db.collection('questionBank').add(cloneData);
+                showToast('Cloned!', 'Question added to your personal bank.', 'success');
+                loadQuestions();
+            } catch(e) { showToast('Error', e.message, 'error'); }
+        }
+        window.toggleShare = toggleShare;
+        window.cloneQuestion = cloneQuestion;
+
+        // ============================================
+        // MODAL
+        // ============================================
         function toggleOptions() {
             const type = document.getElementById('questionType').value;
             document.getElementById('mcqOptions').style.display = type === 'mcq' ? 'block' : 'none';
-            document.getElementById('correctAnswer').placeholder = type === 'truefalse' ? '"True" or "False"' : type === 'fillblank' ? 'Correct word/phrase' : type === 'theory' ? 'Model answer / marking guide' : 'A, B, C, or D';
+            const correctInput = document.getElementById('correctAnswer');
+            if (type === 'truefalse') correctInput.placeholder = '"True" or "False"';
+            else if (type === 'fillblank') correctInput.placeholder = 'Correct word/phrase';
+            else if (type === 'theory') correctInput.placeholder = 'Model answer / marking guide (optional)';
+            else correctInput.placeholder = 'A, B, C, or D';
         }
         document.getElementById('questionType').addEventListener('change', toggleOptions);
 
-        window.openModal = () => { document.getElementById('questionId').value = ''; document.getElementById('questionForm').reset(); document.getElementById('modalTitle').textContent = 'Add New Question'; document.getElementById('mcqOptions').style.display = 'block'; document.getElementById('questionModal').classList.add('active'); };
+        window.openModal = () => {
+            document.getElementById('questionId').value = '';
+            document.getElementById('questionForm').reset();
+            document.getElementById('modalTitle').textContent = 'Add New Question';
+            document.getElementById('mcqOptions').style.display = 'block';
+            document.getElementById('questionVisibility').value = 'false';
+            document.getElementById('questionModal').classList.add('active');
+        };
         window.closeModal = () => { document.getElementById('questionModal').classList.remove('active'); };
         document.getElementById('addQuestionBtn').addEventListener('click', openModal);
 
         window.editQuestion = (id) => {
-            const q = allQuestions.find(x => x.id === id); if (!q) return;
+            const q = allQuestions.find(x => x.id === id);
+            if (!q) return;
             document.getElementById('questionId').value = q.id;
             document.getElementById('questionType').value = q.type;
             document.getElementById('questionSubject').value = q.subject;
             document.getElementById('questionDifficulty').value = q.difficulty||'medium';
             document.getElementById('questionText').value = q.question;
-            document.getElementById('correctAnswer').value = q.correct;
+            document.getElementById('correctAnswer').value = q.correct || '';
             document.getElementById('points').value = q.points||1;
             document.getElementById('topic').value = q.topic||'';
-            if (q.type==='mcq'&&q.options){ document.getElementById('optA').value=q.options[0]||''; document.getElementById('optB').value=q.options[1]||''; document.getElementById('optC').value=q.options[2]||''; document.getElementById('optD').value=q.options[3]||''; }
+            document.getElementById('questionVisibility').value = q.shared ? 'true' : 'false';
+            if (q.type==='mcq' && q.options) {
+                document.getElementById('optA').value = q.options[0]||'';
+                document.getElementById('optB').value = q.options[1]||'';
+                document.getElementById('optC').value = q.options[2]||'';
+                document.getElementById('optD').value = q.options[3]||'';
+            }
             toggleOptions();
             document.getElementById('modalTitle').textContent = 'Edit Question';
             document.getElementById('questionModal').classList.add('active');
         };
 
-        window.deleteQuestion = async (id) => { if (!confirm('Delete this question?')) return; showLoading(); try { await db.collection('questionBank').doc(id).delete(); await loadQuestions(); showToast('Deleted', 'Question removed.', 'success'); } catch(e) { showToast('Error', e.message, 'error'); } finally { hideLoading(); } };
+        window.deleteQuestion = async (id) => {
+            if (!confirm('Delete this question? This cannot be undone.')) return;
+            showLoading();
+            try {
+                await db.collection('questionBank').doc(id).delete();
+                selectedQuestionIds.delete(id);
+                await loadQuestions();
+                showToast('Deleted', 'Question removed from bank.', 'success');
+            } catch(e) { showToast('Error', e.message, 'error'); } 
+            finally { hideLoading(); }
+        };
 
         document.getElementById('questionForm').addEventListener('submit', async (e) => {
             e.preventDefault();
@@ -365,36 +695,78 @@
             const correct = document.getElementById('correctAnswer').value.trim();
             const points = parseInt(document.getElementById('points').value)||1;
             const topic = document.getElementById('topic').value.trim();
-            if (!subject || !question || !correct) { showToast('Required', 'Fill subject, question, and correct answer.', 'error'); return; }
-            const data = { teacherId: currentUser.uid, type, subject, difficulty, question, correct, points, topic, updatedAt: firebase.firestore.FieldValue.serverTimestamp() };
-            if (type === 'mcq') { const opts = [document.getElementById('optA').value.trim(), document.getElementById('optB').value.trim(), document.getElementById('optC').value.trim(), document.getElementById('optD').value.trim()]; if (opts.some(o=>!o)) { showToast('Options Required', 'Fill all four options.', 'error'); return; } data.options = opts; }
+            const shared = document.getElementById('questionVisibility').value === 'true';
+            
+            if (!subject) { showToast('Required', 'Select a subject.', 'error'); return; }
+            if (!question) { showToast('Required', 'Enter the question text.', 'error'); return; }
+            if (type !== 'theory' && !correct) { showToast('Required', 'Enter the correct answer.', 'error'); return; }
+            
+            const data = {
+                teacherId: currentUser.uid,
+                teacherName: `${userData?.firstName || ''} ${userData?.surname || ''}`.trim(),
+                type, subject, difficulty, question, correct, points, topic, shared,
+                updatedAt: firebase.firestore.FieldValue.serverTimestamp()
+            };
+            
+            if (type === 'mcq') {
+                const opts = [
+                    document.getElementById('optA').value.trim(),
+                    document.getElementById('optB').value.trim(),
+                    document.getElementById('optC').value.trim(),
+                    document.getElementById('optD').value.trim()
+                ];
+                if (opts.slice(0,2).some(o=>!o)) {
+                    showToast('Options Required', 'Fill at least Options A and B.', 'error');
+                    return;
+                }
+                data.options = opts;
+            }
+            
             showLoading();
             try {
-                if (id) await db.collection('questionBank').doc(id).update(data);
-                else { data.createdAt = firebase.firestore.FieldValue.serverTimestamp(); await db.collection('questionBank').add(data); }
-                closeModal(); await loadQuestions(); showToast('Saved', 'Question saved to bank.', 'success');
-            } catch(e) { showToast('Error', e.message, 'error'); } finally { hideLoading(); }
+                if (id) {
+                    await db.collection('questionBank').doc(id).update(data);
+                } else {
+                    data.createdAt = firebase.firestore.FieldValue.serverTimestamp();
+                    data.usageCount = 0;
+                    await db.collection('questionBank').add(data);
+                }
+                closeModal();
+                await loadQuestions();
+                showToast('Saved', 'Question saved to bank successfully.', 'success');
+            } catch(e) { showToast('Error', e.message, 'error'); } 
+            finally { hideLoading(); }
         });
 
-        // ==================== FILTERS ====================
+        // ============================================
+        // SEARCH
+        // ============================================
         document.getElementById('searchInput').addEventListener('input', renderQuestions);
-        document.querySelectorAll('.filter-btn').forEach(b => b.addEventListener('click', function() {
-            document.querySelectorAll('.filter-btn').forEach(x => x.classList.remove('active'));
-            this.classList.add('active'); currentFilter = this.dataset.filter; renderQuestions();
-        }));
 
-        // ==================== AUTH ====================
+        // ============================================
+        // AUTH
+        // ============================================
         auth.onAuthStateChanged(async user => {
             if (!user) { window.location.href = 'teacher-login.html'; return; }
             const doc = await db.collection('users').doc(user.uid).get();
             if (!doc.exists || doc.data().role !== 'teacher') { auth.signOut(); window.location.href = 'index.html'; return; }
-            currentUser = user; userData = doc.data();
+            currentUser = user;
+            userData = doc.data();
             const pic = document.getElementById('profilePic');
             if (userData.photoURL) pic.innerHTML = `<img src="${userData.photoURL}" alt="Profile">`;
             else pic.textContent = (userData.firstName?.[0]||'T')+(userData.surname?.[0]||'E');
-            await loadSubjects(); await loadQuestions();
+            loadSubjects();
+            await loadQuestions();
         });
         document.getElementById('logoutBtn').addEventListener('click', () => auth.signOut().then(() => window.location.href = 'index.html'));
+
+        // Expose to window
+        window.toggleBulkMode = toggleBulkMode;
+        window.toggleQuestionSelection = toggleQuestionSelection;
+        window.addSelectedToAssessment = addSelectedToAssessment;
+        window.setTypeFilter = setTypeFilter;
+        window.setVisibilityFilter = setVisibilityFilter;
+        window.clearFilters = clearFilters;
     </script>
 </body>
 </html>
