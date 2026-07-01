@@ -459,7 +459,6 @@
             display: flex;
             gap: 0.5rem;
             flex-wrap: wrap;
-            margin-top: 1rem;
         }
 
         /* Stats Row */
@@ -579,6 +578,29 @@
         .grade-D { color: #f97316; font-weight: 800; }
         .grade-E { color: #fb923c; font-weight: 800; }
         .grade-F { color: var(--danger-text); font-weight: 800; }
+
+        /* Assessment Selector */
+        .assessment-selector { display: flex; gap: 0.5rem; flex-wrap: wrap; margin-bottom: 1rem; align-items: center; }
+        .assessment-selector label { font-weight: 600; font-size: 0.85rem; color: var(--text-secondary); }
+        .assessment-selector select { padding: 0.6rem 1rem; background: var(--card-bg); border: 2px solid var(--border); border-radius: 2rem; color: var(--text-primary); font-family: inherit; font-size: 0.85rem; cursor: pointer; min-width: 280px; }
+        .assessment-selector select:focus { border-color: var(--accent); outline: none; }
+
+        /* Toggle Switch */
+        .toggle-wrapper { display: flex; align-items: center; gap: 0.5rem; }
+        .toggle-switch { position: relative; width: 44px; height: 24px; display: inline-block; }
+        .toggle-switch input { opacity: 0; width: 0; height: 0; }
+        .toggle-slider { position: absolute; cursor: pointer; top: 0; left: 0; right: 0; bottom: 0; background: var(--border); border-radius: 24px; transition: 0.3s; }
+        .toggle-slider:before { position: absolute; content: ""; height: 18px; width: 18px; left: 3px; bottom: 3px; background: white; border-radius: 50%; transition: 0.3s; }
+        input:checked + .toggle-slider { background: var(--success-text); }
+        input:checked + .toggle-slider:before { transform: translateX(20px); }
+
+        /* Feedback Templates */
+        .feedback-templates { display: flex; gap: 0.3rem; flex-wrap: wrap; margin-bottom: 0.5rem; }
+        .feedback-chip { padding: 0.25rem 0.6rem; border-radius: 1rem; font-size: 0.7rem; cursor: pointer; background: var(--info-bg); color: var(--info-text); border: 1px solid var(--info-border); transition: 0.2s; }
+        .feedback-chip:hover { background: var(--accent); color: white; border-color: var(--accent); }
+
+        .score-input { width: 70px; padding: 0.35rem; border-radius: 0.5rem; background: var(--input-bg); border: 1px solid var(--border); color: var(--text-primary); text-align: center; font-weight: 600; font-family: inherit; }
+        .feedback-input { width: 150px; padding: 0.35rem; border-radius: 0.5rem; background: var(--input-bg); border: 1px solid var(--border); color: var(--text-primary); font-size: 0.75rem; font-family: inherit; }
 
         /* Modals */
         .modal-overlay {
@@ -854,8 +876,14 @@
         <a href="teacher-assessment-history.html" class="nav-item">
             <i class="fas fa-history"></i><span>History</span>
         </a>
+        <a href="question-bank.html" class="nav-item">
+            <i class="fas fa-layer-group"></i><span>Question Bank</span>
+        </a>
         <a href="teacher-assessment-evaluation.html" class="nav-item active">
             <i class="fas fa-clipboard-check"></i><span>Evaluation</span>
+        </a>
+        <a href="teacher-scoring-engine.html" class="nav-item">
+            <i class="fas fa-calculator"></i><span>Scoring Engine</span>
         </a>
         <a href="teacher-profile.html" class="nav-item">
             <i class="fas fa-user-edit"></i><span>Profile</span>
@@ -886,6 +914,22 @@
                         </div>
                     </div>
                 </div>
+            </div>
+        </div>
+
+        <!-- ASSESSMENT SELECTOR -->
+        <div class="card">
+            <div class="assessment-selector">
+                <label><i class="fas fa-file-alt"></i> Assessment:</label>
+                <select id="assessmentSelect">
+                    <option value="">-- Select an assessment --</option>
+                </select>
+                <button class="btn btn-outline btn-sm" onclick="refreshData()">
+                    <i class="fas fa-sync-alt"></i> Refresh
+                </button>
+                <a href="teacher-scoring-engine.html" class="btn btn-primary btn-sm">
+                    <i class="fas fa-calculator"></i> Scoring Engine
+                </a>
             </div>
         </div>
 
@@ -927,15 +971,22 @@
         <div class="card">
             <div class="card-header">
                 <h3><i class="fas fa-list-ul"></i> Student Submissions</h3>
-                <div style="display:flex;gap:0.5rem;flex-wrap:wrap;">
-                    <button class="btn btn-outline btn-sm" onclick="refreshData()">
-                        <i class="fas fa-sync-alt"></i> Refresh
+                <div class="btn-group">
+                    <div class="toggle-wrapper">
+                        <span style="font-size:0.78rem;">Bulk Grade</span>
+                        <label class="toggle-switch">
+                            <input type="checkbox" id="bulkModeToggle" onchange="toggleBulkMode()">
+                            <span class="toggle-slider"></span>
+                        </label>
+                    </div>
+                    <button class="btn btn-success btn-sm" id="saveAllGradesBtn" onclick="saveAllGrades()" style="display:none;">
+                        <i class="fas fa-save"></i> Save All Grades
                     </button>
-                    <button class="btn btn-primary btn-sm" id="exportBtn">
+                    <button class="btn btn-outline btn-sm" onclick="autoGradeAll()">
+                        <i class="fas fa-magic"></i> Auto-Grade All
+                    </button>
+                    <button class="btn btn-outline btn-sm" onclick="exportCSV()">
                         <i class="fas fa-download"></i> Export CSV
-                    </button>
-                    <button class="btn btn-success btn-sm" id="generateReportCardBtn">
-                        <i class="fas fa-graduation-cap"></i> Generate Report Data
                     </button>
                 </div>
             </div>
@@ -951,12 +1002,13 @@
                             <th>Grade</th>
                             <th>Status</th>
                             <th>Submitted</th>
+                            <th>Feedback</th>
                             <th>Actions</th>
                         </tr>
                     </thead>
                     <tbody id="studentsBody">
                         <tr>
-                            <td colspan="9">
+                            <td colspan="10">
                                 <div class="empty-state">
                                     <i class="fas fa-spinner fa-spin"></i>
                                     <p>Loading students...</p>
@@ -969,7 +1021,7 @@
         </div>
 
         <!-- PERFORMANCE CHART -->
-        <div class="card">
+        <div class="card" id="chartCard">
             <div class="card-header">
                 <h3><i class="fas fa-chart-bar"></i> Score Distribution</h3>
                 <span id="chartNote" style="font-size:0.75rem;color:var(--text-muted);"></span>
@@ -1158,53 +1210,46 @@
         let submissionsMap = {};
         let currentGradeStudentId = null;
         let scoreChart = null;
+        let allAssessments = [];
+        let currentAssessment = null;
+        let bulkMode = false;
+        let bulkScores = {};
+        let bulkFeedbacks = {};
+
+        // ============================================
+        // FEEDBACK TEMPLATES
+        // ============================================
+        const FEEDBACK_TEMPLATES = [
+            'Excellent work! Keep it up.',
+            'Good effort. Review the topic for better understanding.',
+            'Satisfactory. Needs more practice.',
+            'Please review your notes and re-attempt.',
+            'Incomplete work. See me after class.',
+            'Great improvement from last assessment!'
+        ];
+
+        function insertFeedback(text) {
+            const ta = document.getElementById('gradeFeedback');
+            ta.value = ta.value ? ta.value + ' ' + text : text;
+        }
+        window.insertFeedback = insertFeedback;
 
         // ============================================
         // AUTHENTICATION
         // ============================================
         auth.onAuthStateChanged(async (user) => {
-            if (!user) {
-                window.location.href = 'teacher-login.html';
-                return;
-            }
-            
+            if (!user) { window.location.href = 'teacher-login.html'; return; }
             try {
                 const doc = await db.collection('users').doc(user.uid).get();
-                
-                if (!doc.exists || doc.data().role !== 'teacher') {
-                    await auth.signOut();
-                    window.location.href = 'index.html';
-                    return;
-                }
-                
-                currentUser = user;
-                userData = doc.data();
-                
-                // Set profile picture
+                if (!doc.exists || doc.data().role !== 'teacher') { await auth.signOut(); window.location.href = 'index.html'; return; }
+                currentUser = user; userData = doc.data();
                 const pic = document.getElementById('profilePic');
-                if (userData.photoURL) {
-                    pic.innerHTML = `<img src="${userData.photoURL}" alt="Profile">`;
-                } else {
-                    pic.textContent = (userData.firstName?.[0] || 'T') + (userData.surname?.[0] || 'E');
-                }
-
-                // Get assessment ID from URL
-                assessmentId = new URLSearchParams(window.location.search).get('id');
-                if (!assessmentId) {
-                    showToast('Error', 'No assessment specified.', 'error');
-                    document.getElementById('assessmentMeta').textContent = 'No assessment ID provided';
-                    return;
-                }
-
-                await loadAssessmentData();
-                
-            } catch (e) {
-                console.error('Auth error:', e);
-                showToast('Error', 'Authentication failed.', 'error');
-                setTimeout(() => {
-                    window.location.href = 'teacher-login.html';
-                }, 2000);
-            }
+                if (userData.photoURL) pic.innerHTML = `<img src="${userData.photoURL}" alt="Profile">`;
+                else pic.textContent = (userData.firstName?.[0] || 'T') + (userData.surname?.[0] || 'E');
+                await loadAssessmentList();
+                const urlId = new URLSearchParams(window.location.search).get('id');
+                if (urlId) { document.getElementById('assessmentSelect').value = urlId; await selectAssessment(urlId); }
+            } catch (e) { console.error('Auth error:', e); }
         });
 
         // Logout
@@ -1218,68 +1263,82 @@
         });
 
         // ============================================
-        // LOAD ASSESSMENT DATA
+        // ASSESSMENT LIST & SELECTION
         // ============================================
-        async function loadAssessmentData() {
-            showLoading();
-            
+        async function loadAssessmentList() {
             try {
-                // Load assessment
-                const aDoc = await db.collection('assessments').doc(assessmentId).get();
-                if (!aDoc.exists) {
-                    showToast('Error', 'Assessment not found.', 'error');
-                    hideLoading();
-                    return;
-                }
-                assessment = { id: aDoc.id, ...aDoc.data() };
-                
-                document.getElementById('assessmentMeta').textContent = 
-                    `${assessment.title || 'Untitled'} — ${assessment.subject || 'General'} (${assessment.type || 'test'})`;
+                const snap = await db.collection('assessments')
+                    .where('teacherId', '==', currentUser.uid)
+                    .where('status', '==', 'published')
+                    .orderBy('createdAt', 'desc')
+                    .get();
+                allAssessments = snap.docs.map(d => ({ id: d.id, ...d.data() }));
+                const sel = document.getElementById('assessmentSelect');
+                sel.innerHTML = '<option value="">-- Select an assessment --</option>' + 
+                    allAssessments.map(a => `<option value="${a.id}">${escapeHtml(a.title || 'Untitled')} — ${a.subject} (${a.type})</option>`).join('');
+            } catch (e) { console.error('Load list error:', e); }
+        }
 
-                // Load students in the class
-                const classId = assessment.classId || userData.classTeaching;
+        document.getElementById('assessmentSelect').addEventListener('change', async (e) => {
+            if (e.target.value) await selectAssessment(e.target.value);
+            else clearDisplay();
+        });
+
+        async function selectAssessment(id) {
+            currentAssessment = allAssessments.find(a => a.id === id);
+            if (!currentAssessment) {
+                const doc = await db.collection('assessments').doc(id).get();
+                if (doc.exists) currentAssessment = { id: doc.id, ...doc.data() };
+                else { showToast('Error', 'Assessment not found.', 'error'); return; }
+            }
+            assessment = currentAssessment;
+            assessmentId = id;
+            document.getElementById('assessmentMeta').textContent = 
+                `${currentAssessment.title || 'Untitled'} — ${currentAssessment.subject || 'General'} (${currentAssessment.type || 'test'})`;
+            await loadSubmissions();
+        }
+
+        function clearDisplay() {
+            currentAssessment = null; allStudents = []; submissionsMap = {};
+            document.getElementById('assessmentMeta').textContent = 'Select an assessment to evaluate';
+            document.getElementById('studentsBody').innerHTML = '<tr><td colspan="10"><div class="empty-state"><i class="fas fa-arrow-up"></i><p>Select an assessment above</p></div></td></tr>';
+            document.getElementById('chartCard').style.display = 'none';
+            updateStats();
+        }
+
+        // ============================================
+        // LOAD SUBMISSIONS
+        // ============================================
+        async function loadSubmissions() {
+            if (!currentAssessment) return;
+            showLoading();
+            try {
+                const classId = currentAssessment.classId || userData.classTeaching;
                 if (classId) {
-                    const studentsSnap = await db.collection('users')
+                    const stuSnap = await db.collection('users')
                         .where('role', '==', 'student')
                         .where('class', '==', classId)
                         .where('approved', '==', true)
                         .get();
-                    
-                    allStudents = studentsSnap.docs.map(d => ({ id: d.id, ...d.data() }));
-                    allStudents.sort((a, b) => 
-                        `${a.surname || ''}${a.firstName || ''}`.localeCompare(`${b.surname || ''}${b.firstName || ''}`)
-                    );
+                    allStudents = stuSnap.docs.map(d => ({ id: d.id, ...d.data() }));
+                    allStudents.sort((a, b) => `${a.surname||''}${a.firstName||''}`.localeCompare(`${b.surname||''}${b.firstName||''}`));
                 }
-
-                // Load submissions
-                const submissionsSnap = await db.collection('submissions')
-                    .where('assessmentId', '==', assessmentId)
+                // Primary: studentSubmissions collection
+                const subSnap = await db.collection('studentSubmissions')
+                    .where('assessmentId', '==', currentAssessment.id)
                     .get();
-                
                 submissionsMap = {};
-                submissionsSnap.forEach(d => {
-                    const data = d.data();
-                    if (data.studentId) {
-                        submissionsMap[data.studentId] = { id: d.id, ...data };
-                    }
-                });
-
-                // Render everything
-                updateStats();
-                renderStudentsTable();
-                renderChart();
-                
-                console.log(`📊 Loaded ${allStudents.length} students, ${Object.keys(submissionsMap).length} submissions`);
-                
-            } catch (e) {
-                console.error('Load error:', e);
-                showToast('Error', 'Failed to load data: ' + e.message, 'error');
-            } finally {
-                hideLoading();
-            }
+                subSnap.forEach(d => { const dd = d.data(); if (dd.studentId) submissionsMap[dd.studentId] = { id: d.id, ...dd }; });
+                // Fallback: submissions collection
+                const subSnap2 = await db.collection('submissions')
+                    .where('assessmentId', '==', currentAssessment.id)
+                    .get();
+                subSnap2.forEach(d => { const dd = d.data(); if (dd.studentId && !submissionsMap[dd.studentId]) submissionsMap[dd.studentId] = { id: d.id, ...dd }; });
+                updateStats(); renderTable(); renderChart();
+                document.getElementById('chartCard').style.display = 'block';
+            } catch (e) { console.error('Load error:', e); showToast('Error', e.message, 'error'); } finally { hideLoading(); }
         }
-
-        window.refreshData = loadAssessmentData;
+        window.refreshData = loadSubmissions;
 
         // ============================================
         // UPDATE STATISTICS
@@ -1293,9 +1352,10 @@
                 s => s.graded && s.score !== undefined && s.score !== null
             );
             
+            const totalPoints = currentAssessment?.totalPoints || 100;
             const scores = gradedSubmissions.map(s => ({
                 score: s.score,
-                total: s.totalPoints || assessment.totalPoints || 100
+                total: s.totalPoints || totalPoints
             }));
             
             const avg = scores.length 
@@ -1317,86 +1377,66 @@
         }
 
         // ============================================
-        // RENDER STUDENTS TABLE
+        // RENDER TABLE
         // ============================================
-        function renderStudentsTable() {
+        function renderTable() {
             const tbody = document.getElementById('studentsBody');
-            
             if (!allStudents.length) {
-                tbody.innerHTML = `
-                    <tr>
-                        <td colspan="9">
-                            <div class="empty-state">
-                                <i class="fas fa-user-slash"></i>
-                                <p>No students found in this class.</p>
-                            </div>
-                        </td>
-                    </tr>`;
+                tbody.innerHTML = '<tr><td colspan="10"><div class="empty-state"><i class="fas fa-user-slash"></i><p>No students found in this class.</p></div></td></tr>';
                 return;
             }
-
-            const totalPoints = assessment.totalPoints || 
-                (assessment.questions ? assessment.questions.reduce((sum, q) => sum + (q.points || 1), 0) : 100);
+            const totalPoints = currentAssessment?.totalPoints || 
+                (currentAssessment?.questions ? currentAssessment.questions.reduce((s, q) => s + (q.points || 1), 0) : 100);
 
             tbody.innerHTML = allStudents.map((student, i) => {
-                const submission = submissionsMap[student.id];
-                const name = `${student.firstName || ''} ${student.surname || ''}`.trim() || 'Unknown';
+                const name = `${student.firstName||''} ${student.surname||''}`.trim() || 'Unknown';
                 const studentId = student.userId || student.admissionNo || student.id?.substring(0, 8) || '—';
+                const submission = submissionsMap[student.id];
 
                 if (!submission) {
-                    return `
-                        <tr>
-                            <td>${i + 1}</td>
-                            <td><strong>${escapeHtml(name)}</strong></td>
-                            <td>${escapeHtml(studentId)}</td>
-                            <td>—</td>
-                            <td>—</td>
-                            <td>—</td>
-                            <td><span class="badge badge-warning"><i class="fas fa-clock"></i> Not Submitted</span></td>
-                            <td>—</td>
-                            <td>
-                                <button class="btn btn-sm btn-outline" disabled>
-                                    <i class="fas fa-pen"></i> Grade
-                                </button>
-                            </td>
-                        </tr>`;
-                }
-
-                const score = submission.score !== undefined && submission.score !== null ? submission.score : '—';
-                const pct = submission.graded && submission.score !== undefined 
-                    ? ((submission.score / totalPoints) * 100).toFixed(1) 
-                    : '—';
-                const grade = submission.graded && submission.score !== undefined 
-                    ? getGrade(submission.score, totalPoints) 
-                    : '—';
-                const gradeClass = submission.graded && submission.score !== undefined 
-                    ? getGradeClass(submission.score, totalPoints) 
-                    : '';
-                
-                const statusBadge = submission.graded 
-                    ? `<span class="badge badge-success"><i class="fas fa-check"></i> Graded</span>` 
-                    : `<span class="badge badge-warning"><i class="fas fa-hourglass-half"></i> Needs Grading</span>`;
-                
-                const submittedDate = formatDateTime(submission.submittedAt);
-
-                return `
-                    <tr>
-                        <td>${i + 1}</td>
+                    return `<tr>
+                        <td>${i+1}</td>
                         <td><strong>${escapeHtml(name)}</strong></td>
                         <td>${escapeHtml(studentId)}</td>
-                        <td><strong>${score}</strong> / ${totalPoints}</td>
-                        <td><strong>${pct}%</strong></td>
-                        <td><span class="${gradeClass}">${grade}</span></td>
-                        <td>${statusBadge}</td>
-                        <td>${submittedDate}</td>
-                        <td>
-                            <button class="btn btn-sm btn-primary" 
-                                    onclick="openGradeModal('${student.id}', '${escapeHtml(name).replace(/'/g, "\\'")}')">
-                                <i class="fas ${submission.graded ? 'fa-eye' : 'fa-pen'}"></i> 
-                                ${submission.graded ? 'View' : 'Grade'}
-                            </button>
-                        </td>
+                        <td>—</td><td>—</td><td>—</td>
+                        <td><span class="badge badge-warning">Not Submitted</span></td>
+                        <td>—</td><td>—</td>
+                        <td><button class="btn btn-sm btn-outline" disabled>Grade</button></td>
                     </tr>`;
+                }
+
+                const score = submission.score !== undefined && submission.score !== null 
+                    ? submission.score 
+                    : (submission.autoScore !== undefined ? submission.autoScore : '');
+                const isGraded = submission.graded === true;
+                const pct = isGraded && score !== '' 
+                    ? ((score / totalPoints) * 100).toFixed(1) 
+                    : (score !== '' ? ((score / totalPoints) * 100).toFixed(1) + ' (auto)' : '—');
+                const grade = isGraded && score !== '' ? getGrade(score, totalPoints) : '—';
+                const gradeClass = grade !== '—' ? `grade-${grade}` : '';
+                const statusBadge = isGraded 
+                    ? '<span class="badge badge-success">Graded</span>' 
+                    : '<span class="badge badge-warning">Needs Grading</span>';
+                const feedback = submission.feedback || '';
+
+                return `<tr>
+                    <td>${i+1}</td>
+                    <td><strong>${escapeHtml(name)}</strong></td>
+                    <td>${escapeHtml(studentId)}</td>
+                    <td>${bulkMode 
+                        ? `<input type="number" class="score-input" id="bulkScore_${student.id}" value="${score}" min="0" max="${totalPoints}" onchange="onBulkScoreChange('${student.id}', this.value)">` 
+                        : `<strong>${score}</strong> / ${totalPoints}`}</td>
+                    <td><strong>${pct}%</strong></td>
+                    <td><span class="${gradeClass}">${grade}</span></td>
+                    <td>${statusBadge}</td>
+                    <td>${formatDateTime(submission.submittedAt)}</td>
+                    <td>${bulkMode 
+                        ? `<input type="text" class="feedback-input" id="bulkFeedback_${student.id}" value="${escapeHtml(feedback)}" onchange="onBulkFeedbackChange('${student.id}', this.value)" placeholder="Feedback...">` 
+                        : `<span style="font-size:0.78rem;">${escapeHtml(feedback?.substring(0,30)||'')}${feedback?.length>30?'...':''}</span>`}</td>
+                    <td><button class="btn btn-sm btn-primary" onclick="openGradeModal('${student.id}', '${escapeHtml(name).replace(/'/g,"\\'")}')">
+                        <i class="fas ${isGraded?'fa-eye':'fa-pen'}"></i> ${isGraded?'View':'Grade'}
+                    </button></td>
+                </tr>`;
             }).join('');
         }
 
@@ -1404,8 +1444,8 @@
         // RENDER CHART
         // ============================================
         function renderChart() {
-            const totalPoints = assessment.totalPoints || 
-                (assessment.questions ? assessment.questions.reduce((sum, q) => sum + (q.points || 1), 0) : 100);
+            const totalPoints = currentAssessment?.totalPoints || 
+                (currentAssessment?.questions ? currentAssessment.questions.reduce((sum, q) => sum + (q.points || 1), 0) : 100);
             
             const gradedSubmissions = Object.values(submissionsMap).filter(
                 s => s.graded && s.score !== undefined && s.score !== null
@@ -1492,13 +1532,145 @@
         }
 
         // ============================================
+        // BULK MODE FUNCTIONS
+        // ============================================
+        function toggleBulkMode() {
+            bulkMode = document.getElementById('bulkModeToggle').checked;
+            document.getElementById('saveAllGradesBtn').style.display = bulkMode ? 'inline-flex' : 'none';
+            bulkScores = {}; bulkFeedbacks = {};
+            renderTable();
+        }
+        window.toggleBulkMode = toggleBulkMode;
+
+        function onBulkScoreChange(studentId, value) {
+            bulkScores[studentId] = parseFloat(value);
+        }
+        window.onBulkScoreChange = onBulkScoreChange;
+
+        function onBulkFeedbackChange(studentId, value) {
+            bulkFeedbacks[studentId] = value;
+        }
+        window.onBulkFeedbackChange = onBulkFeedbackChange;
+
+        async function saveAllGrades() {
+            const totalPoints = currentAssessment?.totalPoints || 
+                (currentAssessment?.questions ? currentAssessment.questions.reduce((s, q) => s + (q.points || 1), 0) : 100);
+            const toSave = [];
+            allStudents.forEach(s => {
+                const score = bulkScores[s.id];
+                if (score !== undefined && !isNaN(score)) {
+                    const sub = submissionsMap[s.id];
+                    toSave.push({
+                        studentId: s.id, score, totalPoints,
+                        feedback: bulkFeedbacks[s.id] || '',
+                        grade: getGrade(score, totalPoints),
+                        percentage: parseFloat(((score / totalPoints) * 100).toFixed(1)),
+                        existingSubmissionId: sub?.id || null
+                    });
+                }
+            });
+            if (!toSave.length) { showToast('No Changes', 'Enter scores in the bulk inputs.', 'warning'); return; }
+            if (!confirm(`Save grades for ${toSave.length} student(s)?`)) return;
+            showLoading();
+            try {
+                for (const item of toSave) {
+                    const data = {
+                        assessmentId: currentAssessment.id,
+                        studentId: item.studentId,
+                        score: item.score,
+                        totalPoints: item.totalPoints,
+                        feedback: item.feedback,
+                        grade: item.grade,
+                        percentage: item.percentage,
+                        graded: true,
+                        gradedBy: currentUser.uid,
+                        gradedByName: `${userData.firstName||''} ${userData.surname||''}`.trim(),
+                        gradedAt: firebase.firestore.FieldValue.serverTimestamp()
+                    };
+                    if (item.existingSubmissionId) {
+                        await db.collection('studentSubmissions').doc(item.existingSubmissionId).update(data);
+                    } else {
+                        const student = allStudents.find(s => s.id === item.studentId);
+                        data.studentName = `${student?.firstName||''} ${student?.surname||''}`.trim();
+                        data.studentUserId = student?.userId || '';
+                        data.teacherId = currentUser.uid;
+                        data.submittedAt = firebase.firestore.FieldValue.serverTimestamp();
+                        await db.collection('studentSubmissions').add(data);
+                    }
+                }
+                showToast('Saved!', `${toSave.length} grade(s) saved.`, 'success');
+                document.getElementById('bulkModeToggle').checked = false;
+                toggleBulkMode();
+                await loadSubmissions();
+            } catch (e) { showToast('Error', e.message, 'error'); } finally { hideLoading(); }
+        }
+        window.saveAllGrades = saveAllGrades;
+
+        // ============================================
+        // AUTO-GRADE ALL
+        // ============================================
+        async function autoGradeAll() {
+            const totalPoints = currentAssessment?.totalPoints || 
+                (currentAssessment?.questions ? currentAssessment.questions.reduce((s, q) => s + (q.points || 1), 0) : 100);
+            const ungraded = Object.entries(submissionsMap).filter(([_, s]) => !s.graded && s.answers?.length);
+            if (!ungraded.length) { showToast('Nothing', 'All submissions already graded or no answers available.', 'info'); return; }
+            if (!confirm(`Auto-grade ${ungraded.length} submission(s) based on correct answers? Theory questions will NOT be auto-graded.`)) return;
+            showLoading();
+            let count = 0;
+            try {
+                for (const [studentId, submission] of ungraded) {
+                    let earned = 0;
+                    (submission.answers || []).forEach(ans => {
+                        if (ans.type !== 'theory' && ans.isCorrect) earned += (ans.points || 1);
+                    });
+                    await db.collection('studentSubmissions').doc(submission.id).update({
+                        score: earned,
+                        totalPoints,
+                        graded: true,
+                        grade: getGrade(earned, totalPoints),
+                        percentage: parseFloat(((earned / totalPoints) * 100).toFixed(1)),
+                        gradedBy: currentUser.uid,
+                        gradedByName: `${userData.firstName||''} ${userData.surname||''}`.trim(),
+                        gradedAt: firebase.firestore.FieldValue.serverTimestamp()
+                    });
+                    count++;
+                }
+                showToast('Auto-Graded!', `${count} submission(s) graded automatically. Review theory answers manually.`, 'success');
+                await loadSubmissions();
+            } catch (e) { showToast('Error', e.message, 'error'); } finally { hideLoading(); }
+        }
+        window.autoGradeAll = autoGradeAll;
+
+        // ============================================
+        // EXPORT CSV
+        // ============================================
+        function exportCSV() {
+            const totalPoints = currentAssessment?.totalPoints || 100;
+            const rows = allStudents.map((s, i) => {
+                const sub = submissionsMap[s.id];
+                const name = `${s.firstName||''} ${s.surname||''}`.trim();
+                const score = sub?.score ?? '';
+                const pct = sub?.graded && sub?.score !== undefined ? ((sub.score/totalPoints)*100).toFixed(1) : '';
+                return `"${i+1}","${name}","${s.userId||''}","${score}","${totalPoints}","${pct}","${sub?.grade||''}","${sub?.graded?'Graded':sub?'Submitted':'Not Submitted'}","${(sub?.feedback||'').replace(/"/g,'""')}"`;
+            });
+            const csv = 'No,Name,Student ID,Score,Total,Percentage,Grade,Status,Feedback\n' + rows.join('\n');
+            const blob = new Blob([csv], { type: 'text/csv' });
+            const a = document.createElement('a');
+            a.href = URL.createObjectURL(blob);
+            a.download = `${(currentAssessment?.title||'assessment').replace(/\s+/g,'_')}_results.csv`;
+            a.click();
+            showToast('Exported', 'CSV downloaded.', 'success');
+        }
+        window.exportCSV = exportCSV;
+
+        // ============================================
         // GRADE MODAL
         // ============================================
         function openGradeModal(studentId, studentName) {
             currentGradeStudentId = studentId;
             const submission = submissionsMap[studentId];
-            const totalPoints = assessment.totalPoints || 
-                (assessment.questions ? assessment.questions.reduce((sum, q) => sum + (q.points || 1), 0) : 100);
+            const totalPoints = currentAssessment?.totalPoints || 
+                (currentAssessment?.questions ? currentAssessment.questions.reduce((sum, q) => sum + (q.points || 1), 0) : 100);
             
             const currentScore = submission?.score !== undefined ? submission.score : '';
             const currentFeedback = submission?.feedback || '';
@@ -1583,9 +1755,16 @@
                                placeholder="Enter score...">
                     </div>
                     <div class="form-group">
-                        <label><i class="fas fa-comment"></i> Feedback (optional)</label>
-                        <textarea id="gradeFeedback" class="form-control" rows="3" 
-                                  placeholder="Provide feedback to the student...">${escapeHtml(currentFeedback)}</textarea>
+                        <label><i class="fas fa-comment"></i> Feedback</label>
+                        <div class="feedback-templates" id="feedbackTemplates">
+                            <span class="feedback-chip" onclick="insertFeedback('Excellent work! Keep it up.')">Excellent work!...</span>
+                            <span class="feedback-chip" onclick="insertFeedback('Good effort. Review the topic for better understanding.')">Good effort...</span>
+                            <span class="feedback-chip" onclick="insertFeedback('Satisfactory. Needs more practice.')">Satisfactory...</span>
+                            <span class="feedback-chip" onclick="insertFeedback('Please review your notes and re-attempt.')">Review notes...</span>
+                            <span class="feedback-chip" onclick="insertFeedback('Incomplete work. See me after class.')">Incomplete work...</span>
+                            <span class="feedback-chip" onclick="insertFeedback('Great improvement from last assessment!')">Great improvement!...</span>
+                        </div>
+                        <textarea id="gradeFeedback" class="form-control" rows="2" placeholder="Provide feedback...">${escapeHtml(currentFeedback)}</textarea>
                     </div>
                 </div>
             `;
@@ -1603,76 +1782,53 @@
         // Save Grade
         document.getElementById('saveGradeBtn').addEventListener('click', async () => {
             if (!currentGradeStudentId) return;
-            
             const scoreInput = document.getElementById('gradeScore');
             const score = parseFloat(scoreInput.value);
             const feedback = document.getElementById('gradeFeedback').value.trim();
-            const totalPoints = assessment.totalPoints || 
-                (assessment.questions ? assessment.questions.reduce((sum, q) => sum + (q.points || 1), 0) : 100);
-
+            const totalPoints = currentAssessment?.totalPoints || 
+                (currentAssessment?.questions ? currentAssessment.questions.reduce((s, q) => s + (q.points || 1), 0) : 100);
+            
             if (isNaN(score) || score < 0 || score > totalPoints) {
-                showToast('Invalid Score', `Enter a score between 0 and ${totalPoints}.`, 'warning');
+                showToast('Invalid', `Score must be 0-${totalPoints}.`, 'warning');
                 scoreInput.focus();
                 return;
             }
-
+            
             const btn = document.getElementById('saveGradeBtn');
             btn.disabled = true;
             btn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Saving...';
             showLoading();
-
+            
             try {
-                const submission = submissionsMap[currentGradeStudentId];
-                const student = allStudents.find(s => s.id === currentGradeStudentId);
-                
                 const data = {
-                    score,
-                    feedback,
-                    totalPoints,
-                    graded: true,
+                    assessmentId: currentAssessment.id,
+                    studentId: currentGradeStudentId,
+                    score, totalPoints, feedback,
                     grade: getGrade(score, totalPoints),
                     percentage: parseFloat(((score / totalPoints) * 100).toFixed(1)),
+                    graded: true,
                     gradedBy: currentUser.uid,
-                    gradedByName: `${userData.firstName || ''} ${userData.surname || ''}`.trim(),
+                    gradedByName: `${userData.firstName||''} ${userData.surname||''}`.trim(),
                     gradedAt: firebase.firestore.FieldValue.serverTimestamp()
                 };
-
-                if (submission?.id) {
-                    await db.collection('submissions').doc(submission.id).update(data);
+                
+                const existingSub = submissionsMap[currentGradeStudentId];
+                if (existingSub?.id) {
+                    await db.collection('studentSubmissions').doc(existingSub.id).update(data);
                 } else {
-                    await db.collection('submissions').add({
-                        assessmentId,
-                        studentId: currentGradeStudentId,
-                        studentUserId: student?.userId || '',
-                        studentName: `${student?.firstName || ''} ${student?.surname || ''}`.trim(),
-                        ...data,
-                        submittedAt: firebase.firestore.FieldValue.serverTimestamp(),
-                        status: 'submitted'
-                    });
+                    const student = allStudents.find(s => s.id === currentGradeStudentId);
+                    data.studentName = `${student?.firstName||''} ${student?.surname||''}`.trim();
+                    data.studentUserId = student?.userId || '';
+                    data.teacherId = currentUser.uid;
+                    data.submittedAt = firebase.firestore.FieldValue.serverTimestamp();
+                    await db.collection('studentSubmissions').add(data);
                 }
-
-                // Audit log
-                await db.collection('auditLogs').add({
-                    userId: currentUser.uid,
-                    userName: `${userData.firstName || ''} ${userData.surname || ''}`.trim(),
-                    action: 'SUBMISSION_GRADED',
-                    details: {
-                        assessmentId,
-                        studentId: currentGradeStudentId,
-                        score,
-                        totalPoints,
-                        grade: getGrade(score, totalPoints)
-                    },
-                    timestamp: firebase.firestore.FieldValue.serverTimestamp()
-                }).catch(() => {});
-
+                
                 showToast('Saved!', 'Grade saved successfully.', 'success');
                 closeGradeModal();
-                await loadAssessmentData();
-                
+                await loadSubmissions();
             } catch (e) {
-                console.error('Save grade error:', e);
-                showToast('Error', 'Failed to save: ' + e.message, 'error');
+                showToast('Error', e.message, 'error');
             } finally {
                 btn.disabled = false;
                 btn.innerHTML = '<i class="fas fa-save"></i> Save Grade';
@@ -1689,118 +1845,11 @@
         });
 
         // ============================================
-        // EXPORT CSV
-        // ============================================
-        document.getElementById('exportBtn').addEventListener('click', () => {
-            const totalPoints = assessment.totalPoints || 
-                (assessment.questions ? assessment.questions.reduce((sum, q) => sum + (q.points || 1), 0) : 100);
-            
-            const rows = allStudents.map((student, i) => {
-                const submission = submissionsMap[student.id];
-                const name = `${student.firstName || ''} ${student.surname || ''}`.trim();
-                const studentId = student.userId || student.admissionNo || '';
-                const score = submission?.score ?? '';
-                const pct = submission?.graded && submission?.score !== undefined 
-                    ? ((submission.score / totalPoints) * 100).toFixed(1) : '';
-                const grade = submission?.graded && submission?.score !== undefined 
-                    ? getGrade(submission.score, totalPoints) : '';
-                const status = submission?.graded ? 'Graded' : submission ? 'Submitted' : 'Not Submitted';
-                const feedback = submission?.feedback || '';
-                
-                return `"${i + 1}","${name}","${studentId}","${score}","${totalPoints}","${pct}","${grade}","${status}","${feedback}"`;
-            });
-            
-            const csv = 'No,Name,Student ID,Score,Total,Percentage,Grade,Status,Feedback\n' + rows.join('\n');
-            const blob = new Blob([csv], { type: 'text/csv' });
-            const url = URL.createObjectURL(blob);
-            const a = document.createElement('a');
-            a.href = url;
-            a.download = `${(assessment.title || 'assessment').replace(/\s+/g, '_')}_results.csv`;
-            a.click();
-            URL.revokeObjectURL(url);
-            
-            showToast('Exported', 'CSV file downloaded.', 'success');
-        });
-
-        // ============================================
-        // GENERATE REPORT CARD DATA
-        // ============================================
-        document.getElementById('generateReportCardBtn').addEventListener('click', async () => {
-            const totalPoints = assessment.totalPoints || 
-                (assessment.questions ? assessment.questions.reduce((sum, q) => sum + (q.points || 1), 0) : 100);
-            
-            const gradedSubmissions = Object.values(submissionsMap).filter(
-                s => s.graded && s.score !== undefined && s.score !== null
-            );
-
-            if (!gradedSubmissions.length) {
-                showToast('No Data', 'No graded submissions to generate report card data.', 'warning');
-                return;
-            }
-
-            if (!confirm(`Generate report card data for ${gradedSubmissions.length} graded student(s)?`)) return;
-
-            showLoading();
-            
-            try {
-                const reportData = {
-                    assessmentId,
-                    title: assessment.title,
-                    subject: assessment.subject,
-                    type: assessment.type,
-                    term: assessment.term || '',
-                    session: assessment.session || '',
-                    totalPoints,
-                    classId: assessment.classId || userData.classTeaching,
-                    teacherId: currentUser.uid,
-                    teacherName: `${userData.firstName || ''} ${userData.surname || ''}`.trim(),
-                    generatedAt: firebase.firestore.FieldValue.serverTimestamp(),
-                    results: gradedSubmissions.map(s => ({
-                        studentId: s.studentId,
-                        studentName: s.studentName || '',
-                        studentUserId: s.studentUserId || '',
-                        score: s.score,
-                        percentage: parseFloat(((s.score / totalPoints) * 100).toFixed(1)),
-                        grade: getGrade(s.score, totalPoints),
-                        feedback: s.feedback || ''
-                    }))
-                };
-
-                await db.collection('reportCardData').add(reportData);
-                
-                // Audit log
-                await db.collection('auditLogs').add({
-                    userId: currentUser.uid,
-                    userName: reportData.teacherName,
-                    action: 'REPORT_CARD_DATA_GENERATED',
-                    details: {
-                        assessmentId,
-                        subject: assessment.subject,
-                        studentCount: gradedSubmissions.length
-                    },
-                    timestamp: firebase.firestore.FieldValue.serverTimestamp()
-                }).catch(() => {});
-
-                showToast(
-                    'Generated!', 
-                    `Report card data for ${gradedSubmissions.length} student(s) saved. Ready for report card creation.`,
-                    'success'
-                );
-                
-            } catch (e) {
-                console.error('Report generation error:', e);
-                showToast('Error', 'Failed to generate: ' + e.message, 'error');
-            } finally {
-                hideLoading();
-            }
-        });
-
-        // ============================================
-        // QUICK ACTIONS
+        // QUICK ACTIONS (Legacy)
         // ============================================
         window.gradeAllAutoGraded = async () => {
-            const totalPoints = assessment.totalPoints || 
-                (assessment.questions ? assessment.questions.reduce((sum, q) => sum + (q.points || 1), 0) : 100);
+            const totalPoints = currentAssessment?.totalPoints || 
+                (currentAssessment?.questions ? currentAssessment.questions.reduce((sum, q) => sum + (q.points || 1), 0) : 100);
             
             const ungradedSubmissions = Object.entries(submissionsMap).filter(
                 ([_, s]) => !s.graded && s.answers && s.answers.length > 0
@@ -1845,7 +1894,7 @@
                 }
 
                 showToast('Auto-Graded!', `${gradedCount} submission(s) graded automatically.`, 'success');
-                await loadAssessmentData();
+                await loadSubmissions();
                 
             } catch (e) {
                 console.error('Auto-grade error:', e);
@@ -1877,7 +1926,7 @@
                 }
 
                 showToast('Marked!', `${count} submission(s) marked as graded.`, 'success');
-                await loadAssessmentData();
+                await loadSubmissions();
                 
             } catch (e) {
                 showToast('Error', 'Failed: ' + e.message, 'error');
