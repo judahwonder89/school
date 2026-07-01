@@ -417,6 +417,28 @@
             color: var(--text-muted);
         }
 
+        /* Teacher Feedback Section */
+        .feedback-section {
+            background: var(--info-bg);
+            border: 1px solid var(--info-border);
+            border-radius: 1rem;
+            padding: 1rem;
+            margin-top: 0.8rem;
+        }
+        .feedback-section .feedback-label {
+            font-size: 0.7rem;
+            font-weight: 700;
+            text-transform: uppercase;
+            color: var(--info-text);
+            margin-bottom: 0.3rem;
+        }
+        .feedback-section .feedback-text {
+            font-size: 0.85rem;
+            color: var(--text-primary);
+            font-style: italic;
+            line-height: 1.4;
+        }
+
         /* Detailed Review Modal */
         .modal-overlay {
             position: fixed;
@@ -752,8 +774,10 @@
         </div>
     </div>
 
-    <script type="module">
-        // Firebase Config
+    <script>
+        // ============================================
+        // FIREBASE CONFIGURATION
+        // ============================================
         const firebaseConfig = {
             apiKey: "AIzaSyADXHEiaSQ146QsGsaOCElARtpwrLE8svs",
             authDomain: "judah-c737e.firebaseapp.com",
@@ -767,19 +791,25 @@
         const auth = firebase.auth();
         const db = firebase.firestore();
 
-        // Theme
+        // ============================================
+        // THEME
+        // ============================================
         const html = document.documentElement;
         const savedTheme = localStorage.getItem('judah-theme') || 'dark';
         html.setAttribute('data-theme', savedTheme);
 
-        // State
+        // ============================================
+        // STATE
+        // ============================================
         let currentUser = null;
         let userData = null;
         let allSubmissions = [];
         let currentTab = 'all';
         let performanceChart = null;
 
-        // Utility Functions
+        // ============================================
+        // UTILITY FUNCTIONS
+        // ============================================
         function showToast(title, message, type = 'info') {
             const icons = {
                 success: 'fa-check-circle',
@@ -817,7 +847,9 @@
             window.location.href = 'my-assessments.html';
         }
 
-        // Tab Switching
+        // ============================================
+        // TAB SWITCHING
+        // ============================================
         window.switchTab = function(tab) {
             currentTab = tab;
             document.querySelectorAll('.tab-btn').forEach(btn => btn.classList.remove('active'));
@@ -825,18 +857,58 @@
             renderAll();
         };
 
-        // Load Data
+        // ============================================
+        // LOAD DATA FROM BOTH COLLECTIONS
+        // ============================================
         async function loadSubmissions() {
             showLoading();
             try {
-                const snapshot = await db.collection('submissions')
+                // Load from submissions collection
+                const submissionsSnap = await db.collection('submissions')
                     .where('studentId', '==', currentUser.uid)
                     .orderBy('submittedAt', 'desc')
                     .get();
 
                 allSubmissions = [];
-                snapshot.forEach(doc => {
-                    allSubmissions.push({ id: doc.id, ...doc.data() });
+                submissionsSnap.forEach(doc => {
+                    allSubmissions.push({ id: doc.id, source: 'submissions', ...doc.data() });
+                });
+
+                // Also load from studentSubmissions (teacher-graded data)
+                const studentSubSnap = await db.collection('studentSubmissions')
+                    .where('studentId', '==', currentUser.uid)
+                    .get();
+
+                const existingIds = new Set(allSubmissions.map(s => s.assessmentId));
+                
+                studentSubSnap.forEach(doc => {
+                    const data = doc.data();
+                    if (data.assessmentId && !existingIds.has(data.assessmentId)) {
+                        allSubmissions.push({ id: doc.id, source: 'studentSubmissions', ...data });
+                    } else if (data.assessmentId && data.graded) {
+                        // Update existing submission with teacher's grade
+                        const existingIdx = allSubmissions.findIndex(s => s.assessmentId === data.assessmentId);
+                        if (existingIdx !== -1 && !allSubmissions[existingIdx].graded) {
+                            allSubmissions[existingIdx] = {
+                                ...allSubmissions[existingIdx],
+                                score: data.score,
+                                feedback: data.feedback,
+                                graded: true,
+                                grade: data.grade,
+                                percentage: data.percentage,
+                                gradedBy: data.gradedBy,
+                                gradedByName: data.gradedByName,
+                                gradedAt: data.gradedAt
+                            };
+                        }
+                    }
+                });
+
+                // Sort by submission date (newest first)
+                allSubmissions.sort((a, b) => {
+                    const dateA = a.submittedAt?.seconds || 0;
+                    const dateB = b.submittedAt?.seconds || 0;
+                    return dateB - dateA;
                 });
 
                 renderAll();
@@ -848,10 +920,12 @@
             }
         }
 
-        // Calculate Statistics
+        // ============================================
+        // CALCULATE STATISTICS
+        // ============================================
         function calculateStats(submissions) {
             const graded = submissions.filter(s => s.graded === true);
-            const pending = submissions.filter(s => s.graded === false);
+            const pending = submissions.filter(s => s.graded !== true);
             
             let totalScore = 0;
             let totalPoints = 0;
@@ -885,7 +959,9 @@
             };
         }
 
-        // Get Grade Class
+        // ============================================
+        // GRADE HELPERS
+        // ============================================
         function getGradeClass(percentage, graded) {
             if (!graded) return 'awaiting';
             if (percentage >= 80) return 'grade-a';
@@ -905,7 +981,9 @@
             return 'F';
         }
 
-        // Render Stats Overview
+        // ============================================
+        // RENDER STATS OVERVIEW
+        // ============================================
         function renderStatsOverview(submissions) {
             const stats = calculateStats(submissions);
             
@@ -945,7 +1023,9 @@
             `;
         }
 
-        // Render Chart
+        // ============================================
+        // RENDER CHART
+        // ============================================
         function renderChart(submissions) {
             const graded = submissions.filter(s => s.graded === true);
             
@@ -1035,7 +1115,9 @@
             });
         }
 
-        // Render Assessment Grid
+        // ============================================
+        // RENDER ASSESSMENT GRID
+        // ============================================
         function renderAssessmentsGrid(submissions) {
             const grid = document.getElementById('assessmentsGrid');
             
@@ -1068,6 +1150,16 @@
                         month: 'short', day: 'numeric', year: 'numeric'
                     }) : 'Unknown';
 
+                // Teacher feedback preview
+                let feedbackHtml = '';
+                if (sub.feedback && sub.feedback.trim()) {
+                    feedbackHtml = `
+                        <div class="feedback-section">
+                            <div class="feedback-label"><i class="fas fa-comment-dots"></i> Teacher Feedback</div>
+                            <div class="feedback-text">"${escapeHtml(sub.feedback.substring(0, 120))}${sub.feedback.length > 120 ? '...' : ''}"</div>
+                        </div>`;
+                }
+
                 return `
                     <div class="assessment-card" onclick="openDetailedReview('${sub.id}')">
                         <span class="card-type-badge ${typeBadgeClass}">
@@ -1087,6 +1179,7 @@
                                     <br>✅ ${sub.correctCount || 0} correct · ❌ ${sub.wrongCount || 0} wrong
                                     ${sub.unansweredCount ? `<br>⚠ ${sub.unansweredCount} unanswered` : ''}
                                     ${sub.theoryCount ? `<br>📝 ${sub.theoryCount} theory questions` : ''}
+                                    ${sub.grade ? `<br><strong>Grade: ${sub.grade}</strong>` : ''}
                                 ` : `
                                     <strong>Awaiting Grading</strong>
                                     <br>Teacher is reviewing your work
@@ -1094,6 +1187,7 @@
                                 `}
                             </div>
                         </div>
+                        ${feedbackHtml}
                         <div class="card-footer">
                             <span><i class="fas fa-calendar"></i> ${submittedDate}</span>
                             <span style="color:var(--accent);font-weight:600;">
@@ -1105,7 +1199,9 @@
             }).join('');
         }
 
-        // Open Detailed Review
+        // ============================================
+        // OPEN DETAILED REVIEW
+        // ============================================
         window.openDetailedReview = function(submissionId) {
             const sub = allSubmissions.find(s => s.id === submissionId);
             if (!sub) return;
@@ -1184,6 +1280,19 @@
                 }).join('');
             }
 
+            // Teacher feedback in modal
+            let feedbackSectionHtml = '';
+            if (sub.feedback && sub.feedback.trim()) {
+                feedbackSectionHtml = `
+                    <div style="background:var(--info-bg);border:1px solid var(--info-border);border-radius:1rem;padding:1rem;margin-bottom:1rem;">
+                        <div style="font-size:0.8rem;font-weight:700;color:var(--info-text);margin-bottom:0.3rem;">
+                            <i class="fas fa-comment-dots"></i> Teacher Feedback
+                        </div>
+                        <div style="font-style:italic;line-height:1.5;">${escapeHtml(sub.feedback)}</div>
+                        ${sub.gradedByName ? `<div style="font-size:0.75rem;color:var(--text-muted);margin-top:0.5rem;">— ${escapeHtml(sub.gradedByName)}</div>` : ''}
+                    </div>`;
+            }
+
             content.innerHTML = `
                 <div class="modal-header">
                     <div>
@@ -1192,6 +1301,7 @@
                             <i class="fas fa-book"></i> ${escapeHtml(sub.subject || 'General')} · 
                             <i class="fas fa-calendar"></i> ${submittedDate}
                             ${sub.timeSpent ? ` · <i class="fas fa-clock"></i> ${Math.floor(sub.timeSpent/60)}m ${sub.timeSpent%60}s spent` : ''}
+                            ${sub.source ? ` · <span style="font-size:0.7rem;opacity:0.6;">Source: ${sub.source}</span>` : ''}
                         </p>
                     </div>
                     <button class="modal-close" onclick="closeReviewModal()">
@@ -1226,8 +1336,11 @@
                         <span style="font-size:1.2rem;font-weight:700;color:var(--accent);">
                             Final Grade: ${sub.grade}
                         </span>
+                        ${sub.gradedByName ? `<div style="font-size:0.8rem;color:var(--text-muted);margin-top:0.3rem;">Graded by: ${escapeHtml(sub.gradedByName)}</div>` : ''}
                     </div>
                 ` : ''}
+
+                ${feedbackSectionHtml}
 
                 ${!graded ? `
                     <div style="text-align:center;padding:1rem;background:var(--warning-bg);border-radius:1rem;margin-bottom:1rem;border:1px solid var(--warning-border);color:var(--warning-text);">
@@ -1264,13 +1377,17 @@
             }
         });
 
-        // Filter submissions by tab
+        // ============================================
+        // FILTER SUBMISSIONS BY TAB
+        // ============================================
         function getFilteredSubmissions() {
             if (currentTab === 'all') return allSubmissions;
             return allSubmissions.filter(s => s.type === currentTab);
         }
 
-        // Update tab counts
+        // ============================================
+        // UPDATE TAB COUNTS
+        // ============================================
         function updateTabCounts() {
             document.getElementById('allCount').textContent = allSubmissions.length;
             document.getElementById('assignmentCount').textContent = allSubmissions.filter(s => s.type === 'assignment').length;
@@ -1278,7 +1395,9 @@
             document.getElementById('examCount').textContent = allSubmissions.filter(s => s.type === 'exam').length;
         }
 
-        // Render Everything
+        // ============================================
+        // RENDER EVERYTHING
+        // ============================================
         function renderAll() {
             const filtered = getFilteredSubmissions();
             updateTabCounts();
@@ -1287,7 +1406,9 @@
             renderAssessmentsGrid(filtered);
         }
 
-        // Auth
+        // ============================================
+        // AUTHENTICATION
+        // ============================================
         auth.onAuthStateChanged(async (user) => {
             if (!user) {
                 window.location.href = 'signin.html';
@@ -1321,7 +1442,10 @@
             }
         });
 
-        console.log('Analysis page initialized successfully');
+        console.log('📊 My Analysis page initialized');
+        console.log('   - Reads from: submissions + studentSubmissions collections');
+        console.log('   - Shows teacher feedback and grades');
+        console.log('   - Auto-opens review after submission redirect');
     </script>
 </body>
 </html>
