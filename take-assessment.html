@@ -854,8 +854,10 @@
         </div>
     </div>
 
-    <script type="module">
-        // Firebase Configuration
+    <script>
+        // ============================================
+        // FIREBASE CONFIGURATION
+        // ============================================
         const firebaseConfig = {
             apiKey: "AIzaSyADXHEiaSQ146QsGsaOCElARtpwrLE8svs",
             authDomain: "judah-c737e.firebaseapp.com",
@@ -869,12 +871,16 @@
         const auth = firebase.auth();
         const db = firebase.firestore();
 
-        // Theme Management
+        // ============================================
+        // THEME MANAGEMENT
+        // ============================================
         const html = document.documentElement;
         const savedTheme = localStorage.getItem('judah-theme') || 'dark';
         html.setAttribute('data-theme', savedTheme);
 
-        // Utility Functions
+        // ============================================
+        // UTILITY FUNCTIONS
+        // ============================================
         function showToast(title, message, type = 'info') {
             const icons = {
                 success: 'fa-check-circle',
@@ -931,7 +937,8 @@
             setTimeout(() => banner.classList.remove('show'), duration);
         }
 
-        // Global State Variables
+        // ============================================
+        // GLOBAL STATE VARIABLES        // ============================================
         let currentUser = null;
         let userData = null;
         let assessmentData = null;
@@ -944,7 +951,9 @@
         let tabSwitchCount = 0;
         let autoSaveInterval = null;
 
-        // Timer Functions
+        // ============================================
+        // TIMER FUNCTIONS
+        // ============================================
         function startTimer(seconds) {
             if (timerInterval) clearInterval(timerInterval);
             timeRemaining = seconds;
@@ -975,7 +984,9 @@
             setTimeout(() => submitAssessment(), 3000);
         }
 
-        // Anti-Cheat Measures
+        // ============================================
+        // ANTI-CHEAT MEASURES
+        // ============================================
         document.addEventListener('visibilitychange', () => {
             if (document.hidden && !isSubmitted && assessmentData) {
                 tabSwitchCount++;
@@ -1076,7 +1087,9 @@
             }
         });
 
-        // Render Functions
+        // ============================================
+        // RENDER FUNCTIONS
+        // ============================================
         function renderAssessment() {
             const questions = assessmentData.questions || [];
             const q = questions[currentIdx];
@@ -1235,7 +1248,9 @@
             }).join('');
         }
 
-        // Navigation Functions
+        // ============================================
+        // NAVIGATION FUNCTIONS
+        // ============================================
         window.selectAnswer = (answer) => {
             if (isSubmitted) return;
             const idx = studentAnswers.findIndex(a => a.questionIndex === currentIdx);
@@ -1281,7 +1296,9 @@
             renderAssessment();
         };
 
-        // Submit Functions
+        // ============================================
+        // SUBMIT FUNCTIONS
+        // ============================================
         window.openSubmitModal = () => {
             const totalQuestions = assessmentData.questions.length;
             const answeredCount = studentAnswers.filter(a => a.answer && a.answer.trim() !== '').length;
@@ -1427,8 +1444,15 @@
             };
 
             try {
-                // Save submission
-                await db.collection('submissions').add(submissionData);
+                // Save to submissions collection
+                const submissionRef = await db.collection('submissions').add(submissionData);
+                
+                // Also save to studentSubmissions for teacher evaluation page
+                await db.collection('studentSubmissions').doc(submissionRef.id).set({
+                    ...submissionData,
+                    submissionId: submissionRef.id,
+                    submittedAt: firebase.firestore.FieldValue.serverTimestamp()
+                });
                 
                 // Delete auto-save progress
                 await db.collection('assessmentProgress')
@@ -1489,7 +1513,9 @@
             submitAssessment();
         };
 
-        // Auto-save Progress
+        // ============================================
+        // AUTO-SAVE PROGRESS
+        // ============================================
         function startAutoSave() {
             autoSaveInterval = setInterval(async () => {
                 if (assessmentData && !isSubmitted && studentAnswers.length > 0) {
@@ -1511,7 +1537,9 @@
             }, 30000); // Save every 30 seconds
         }
 
-        // Restore Progress
+        // ============================================
+        // RESTORE PROGRESS
+        // ============================================
         async function restoreProgress() {
             try {
                 const progressDoc = await db.collection('assessmentProgress')
@@ -1542,7 +1570,9 @@
             return false;
         }
 
-        // Load Assessment
+        // ============================================
+        // LOAD ASSESSMENT
+        // ============================================
         async function loadAssessment() {
             const urlParams = new URLSearchParams(window.location.search);
             const id = urlParams.get('id');
@@ -1577,13 +1607,19 @@
                     return;
                 }
                 
-                // Check for existing submission
-                const existingSubmissions = await db.collection('submissions')
-                    .where('assessmentId', '==', id)
-                    .where('studentId', '==', currentUser.uid)
-                    .get();
+                // Check for existing submission in both collections
+                const [existingSubmissions, existingStudentSubs] = await Promise.all([
+                    db.collection('submissions')
+                        .where('assessmentId', '==', id)
+                        .where('studentId', '==', currentUser.uid)
+                        .get(),
+                    db.collection('studentSubmissions')
+                        .where('assessmentId', '==', id)
+                        .where('studentId', '==', currentUser.uid)
+                        .get()
+                ]);
                 
-                if (!existingSubmissions.empty) {
+                if (!existingSubmissions.empty || !existingStudentSubs.empty) {
                     alert('You have already submitted this assessment.');
                     window.location.href = 'my-analysis.html?id=' + id;
                     return;
@@ -1650,7 +1686,9 @@
             }
         }
 
-        // Authentication
+        // ============================================
+        // AUTHENTICATION
+        // ============================================
         auth.onAuthStateChanged(async (user) => {
             if (!user) {
                 window.location.href = 'signin.html';
@@ -1677,7 +1715,9 @@
             }
         });
 
-        // Logout function (if needed)
+        // ============================================
+        // LOGOUT FUNCTION
+        // ============================================
         window.logout = async () => {
             if (assessmentData && !isSubmitted) {
                 const confirm = window.confirm('You have an ongoing assessment. Are you sure you want to logout?');
@@ -1692,7 +1732,11 @@
             }
         };
 
-        console.log('Assessment page initialized successfully');
+        console.log('📝 Take Assessment page initialized');
+        console.log('   - Anti-cheat measures active');
+        console.log('   - Auto-save enabled (30s interval)');
+        console.log('   - Saves to: submissions + studentSubmissions collections');
+        console.log('   - Links to: my-analysis.html for results');
     </script>
 </body>
 </html>
