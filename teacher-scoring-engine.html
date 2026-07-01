@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=yes">
-    <title>Judah Wonders Model School · Analysis & Scoring Engine</title>
+    <title>Judah Wonders Model School · Report Card Generator</title>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
     <link href="https://fonts.googleapis.com/css2?family=Inter:opsz,wght@14..32,400;500;600;700;800&family=Playfair+Display:wght@600;700&display=swap" rel="stylesheet">
     <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-app-compat.js"></script>
@@ -76,9 +76,6 @@
         @keyframes fadeIn { from { opacity: 0; transform: translateY(-10px); } to { opacity: 1; transform: translateY(0); } }
         .dropdown-item { padding: 0.6rem 1rem; color: var(--text-primary); border-radius: 0.8rem; display: flex; align-items: center; gap: 0.6rem; font-size: 0.85rem; cursor: pointer; }
         .dropdown-item:hover { background: var(--hover-bg); color: var(--accent); }
-        .save-indicator { font-size: 0.75rem; display: flex; align-items: center; gap: 0.3rem; }
-        .save-indicator.saved { color: var(--success-text); }
-        .save-indicator.unsaved { color: var(--warning-text); }
 
         .card { background: var(--card-bg); border: 1px solid var(--border); border-radius: 1.5rem; padding: 1.5rem; box-shadow: var(--shadow); margin-bottom: 1.5rem; }
         .card-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 1rem; flex-wrap: wrap; gap: 0.75rem; padding-bottom: 1rem; border-bottom: 1px solid var(--border); }
@@ -86,60 +83,60 @@
         .btn { padding: 0.6rem 1.3rem; border: none; border-radius: 2rem; font-weight: 500; font-size: 0.85rem; cursor: pointer; transition: 0.2s; display: inline-flex; align-items: center; gap: 0.4rem; white-space: nowrap; font-family: inherit; text-decoration: none; }
         .btn-primary { background: linear-gradient(135deg, var(--gradient-start), var(--gradient-end)); color: white; }
         .btn-success { background: var(--success-text); color: white; }
+        .btn-warning { background: #f59e0b; color: #000; }
         .btn-outline { background: transparent; border: 1px solid var(--border); color: var(--text-primary); }
         .btn-outline:hover { background: var(--hover-bg); border-color: var(--accent); }
         .btn-sm { padding: 0.35rem 0.9rem; font-size: 0.75rem; border-radius: 1.5rem; }
         .btn:hover { opacity: 0.9; transform: translateY(-1px); }
         .btn-group { display: flex; gap: 0.75rem; flex-wrap: wrap; }
 
-        .weight-config { display: grid; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); gap: 1rem; }
-        .weight-card { background: var(--hover-bg); border: 2px solid var(--border); border-radius: 1rem; padding: 1rem; text-align: center; }
-        .weight-card.assign { border-color: #3b82f6; }
-        .weight-card.test { border-color: #8b5cf6; }
-        .weight-card.exam { border-color: #ec4899; }
-        .weight-card i { font-size: 1.5rem; margin-bottom: 0.5rem; display: block; }
-        .weight-card.assign i { color: #3b82f6; }
-        .weight-card.test i { color: #8b5cf6; }
-        .weight-card.exam i { color: #ec4899; }
-        .weight-card h4 { font-size: 0.8rem; margin-bottom: 0.5rem; text-transform: uppercase; letter-spacing: 0.04em; }
-        .weight-input { width: 70px; padding: 0.45rem; border-radius: 0.5rem; background: var(--input-bg); border: 1px solid var(--border); color: var(--text-primary); text-align: center; font-size: 1.2rem; font-weight: 700; }
-        .weight-card .select-count { margin-top: 0.4rem; }
-        .weight-card .select-count select { padding: 0.3rem 0.5rem; border-radius: 0.5rem; background: var(--input-bg); border: 1px solid var(--border); color: var(--text-primary); font-size: 0.75rem; }
-        .weight-total { text-align: center; margin-top: 0.75rem; padding: 0.6rem; border-radius: 0.75rem; font-weight: 600; font-size: 0.9rem; }
-        .weight-total.ok { background: var(--success-bg); color: var(--success-text); }
-        .weight-total.err { background: var(--danger-bg); color: var(--danger-text); }
+        .settings-row { display: grid; grid-template-columns: repeat(auto-fit, minmax(180px, 1fr)); gap: 0.8rem; }
+        .settings-row label { font-size: 0.75rem; color: var(--text-secondary); display: block; margin-bottom: 0.2rem; }
+        .form-control { width: 100%; padding: 0.5rem 0.8rem; background: var(--input-bg); border: 1px solid var(--border); border-radius: 0.8rem; color: var(--text-primary); font-size: 0.85rem; font-family: inherit; }
+        select.form-control { appearance: auto; }
+        textarea.form-control { min-height: 60px; resize: vertical; }
 
-        .subject-selector { display: flex; gap: 0.3rem; flex-wrap: wrap; margin-bottom: 1rem; }
-        .subject-chip { padding: 0.35rem 0.8rem; border-radius: 2rem; font-size: 0.75rem; cursor: pointer; background: var(--card-bg); border: 1px solid var(--border); color: var(--text-secondary); transition: 0.2s; }
-        .subject-chip.active { background: var(--accent); color: white; border-color: var(--accent); }
-        .subject-chip:hover:not(.active) { border-color: var(--accent); }
+        .two-col { display: grid; grid-template-columns: 280px 1fr; gap: 1.2rem; }
+        .student-list-panel { max-height: 600px; overflow-y: auto; }
+        .student-row { display: flex; align-items: center; gap: 0.6rem; padding: 0.55rem 0.7rem; border-radius: 0.8rem; cursor: pointer; transition: 0.2s; margin-bottom: 0.2rem; border: 1px solid transparent; background: var(--hover-bg); }
+        .student-row:hover { border-color: var(--accent); }
+        .student-row.active { background: var(--info-bg); border-color: var(--accent); }
+        .student-row .name { font-weight: 500; font-size: 0.8rem; flex: 1; }
+        .student-row .avg { font-weight: 700; font-size: 0.8rem; color: var(--accent); }
+        .student-photo-sm { width: 32px; height: 32px; border-radius: 50%; object-fit: cover; background: var(--hover-bg); flex-shrink: 0; }
 
-        .assignment-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(280px, 1fr)); gap: 0.75rem; margin-bottom: 1rem; }
-        .assignment-card { background: var(--hover-bg); border: 1px solid var(--border); border-radius: 0.75rem; padding: 0.75rem; cursor: pointer; transition: 0.2s; display: flex; gap: 0.5rem; align-items: center; }
-        .assignment-card:hover { border-color: var(--accent); }
-        .assignment-card.selected { border-color: var(--accent); background: var(--info-bg); }
-        .assignment-card input { accent-color: var(--accent); width: 1rem; height: 1rem; cursor: pointer; }
-        .assignment-card .info { flex: 1; font-size: 0.8rem; }
-        .assignment-card .info strong { font-size: 0.85rem; }
+        .rc-scroll { max-height: 65vh; overflow-y: auto; }
 
-        .table-scroll { overflow-x: auto; }
-        table { width: 100%; border-collapse: collapse; min-width: 900px; }
-        th { text-align: left; padding: 0.7rem 0.6rem; color: var(--text-secondary); font-weight: 600; border-bottom: 1px solid var(--border); background: var(--hover-bg); font-size: 0.72rem; white-space: nowrap; }
-        td { padding: 0.6rem; border-bottom: 1px solid var(--border); font-size: 0.78rem; }
-        tr:hover td { background: var(--hover-bg); }
-        .student-photo { width: 32px; height: 32px; border-radius: 50%; object-fit: cover; background: var(--hover-bg); }
-        .grade-A { color: #22c55e; font-weight: 700; }
-        .grade-B { color: #3b82f6; font-weight: 700; }
-        .grade-C { color: #f59e0b; font-weight: 700; }
-        .grade-D { color: #f97316; font-weight: 700; }
-        .grade-E { color: #ef4444; font-weight: 700; }
+        .report-card { background: #ffffff; color: #000000; font-family: 'Georgia', 'Times New Roman', serif; max-width: 1000px; margin: 0 auto; border: 3px double #1a1a2e; font-size: 12px; line-height: 1.45; }
+        .rc-header-bg { background: #1a1a2e; color: #ffffff; padding: 12px 20px; text-align: center; }
+        .rc-header-bg h1 { font-size: 18px; font-weight: bold; letter-spacing: 2px; text-transform: uppercase; margin: 0; }
+        .rc-header-bg .motto { font-size: 10px; font-style: italic; margin-top: 2px; opacity: 0.9; }
+        .rc-header-bg .address { font-size: 9px; margin-top: 2px; opacity: 0.8; }
+        .rc-title-bar { background: #e8ecf1; color: #1a1a2e; text-align: center; padding: 6px; font-weight: bold; font-size: 12px; border-bottom: 2px solid #1a1a2e; text-transform: uppercase; letter-spacing: 1px; }
+        .rc-info-grid { display: grid; grid-template-columns: 1fr 1fr 1fr; padding: 8px 15px; gap: 2px 15px; font-size: 10px; border-bottom: 1px solid #ccc; }
+        .rc-photo { width: 70px; height: 85px; border: 1px solid #ccc; float: right; margin-left: 10px; display: flex; align-items: center; justify-content: center; font-size: 8px; color: #999; }
+        .rc-photo img { width: 100%; height: 100%; object-fit: cover; }
+        .rc-table-wrap { padding: 8px 15px; }
+        .rc-table { width: 100%; border-collapse: collapse; font-size: 10px; }
+        .rc-table thead th { background: #1a1a2e; color: #ffffff; padding: 6px 4px; border: 1px solid #1a1a2e; text-align: center; font-size: 9px; font-weight: 600; }
+        .rc-table thead th.sub-col { text-align: left; min-width: 110px; }
+        .rc-table tbody td { padding: 5px 4px; border: 1px solid #ccc; text-align: center; }
+        .rc-table tbody td.sub-col { text-align: left; font-weight: 600; }
+        .rc-table tbody tr:nth-child(even) { background: #f8f9fa; }
+        .rc-table tbody tr.total-row { background: #e8ecf1; font-weight: bold; }
+        .no-data { color: #999; font-style: italic; }
+        .rc-summary { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; margin: 8px 15px; }
+        .rc-summary-box { border: 1px solid #ccc; padding: 8px; font-size: 10px; }
+        .rc-summary-box h5 { background: #e8ecf1; margin: -8px -8px 6px -8px; padding: 5px 8px; font-size: 9px; text-transform: uppercase; letter-spacing: 1px; }
+        .rc-attendance { margin: 8px 15px; display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 8px; }
+        .rc-signatures { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 20px; margin: 20px 15px 12px; text-align: center; font-size: 10px; }
+        .rc-sign-line { border-top: 1px solid #000; padding-top: 4px; margin-top: 35px; }
+        .rc-footer { text-align: center; font-size: 9px; padding: 6px; background: #e8ecf1; border-top: 2px solid #1a1a2e; }
+        .grade-A { color: #16a34a; font-weight: 700; }
+        .grade-B { color: #2563eb; font-weight: 700; }
+        .grade-C { color: #d97706; font-weight: 700; }
+        .grade-D { color: #ea580c; font-weight: 700; }
         .grade-F { color: #dc2626; font-weight: 700; }
-        .remark-input { width: 140px; padding: 0.3rem 0.5rem; border-radius: 0.5rem; background: var(--input-bg); border: 1px solid var(--border); color: var(--text-primary); font-size: 0.75rem; font-family: inherit; }
-
-        .loading-overlay { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.9); display: none; justify-content: center; align-items: center; z-index: 3000; }
-        .loading-overlay.active { display: flex; }
-        .loading-content { background: var(--card-bg); padding: 2rem; border-radius: 1.5rem; text-align: center; }
-        .loading-content i { font-size: 3rem; color: var(--accent); margin-bottom: 1rem; }
 
         .toast-container { position: fixed; top: 1rem; right: 1rem; z-index: 5000; display: flex; flex-direction: column; gap: 0.5rem; }
         .toast { background: var(--card-bg); backdrop-filter: blur(16px); border: 1px solid var(--border); border-radius: 1rem; padding: 1rem 1.5rem; min-width: 300px; max-width: 450px; box-shadow: 0 15px 35px rgba(0,0,0,0.4); display: flex; align-items: flex-start; gap: 0.8rem; animation: slideInRight 0.3s; }
@@ -148,14 +145,33 @@
         .toast-icon.success { color: var(--success-text); }
         .toast-icon.error { color: var(--danger-text); }
         .toast-icon.info { color: var(--info-text); }
+        .toast-content { flex: 1; }
+        .toast-title { font-weight: 600; margin-bottom: 2px; }
+        .toast-message { font-size: 0.8rem; color: var(--text-secondary); }
+        .toast-close { background: none; border: none; color: var(--text-muted); cursor: pointer; padding: 0; font-size: 0.8rem; margin-left: 0.5rem; }
+        .toast-close:hover { color: var(--danger-text); }
         @keyframes slideInRight { from { transform: translateX(120%); opacity: 0; } to { transform: translateX(0); opacity: 1; } }
         @keyframes slideOutRight { from { transform: translateX(0); opacity: 1; } to { transform: translateX(120%); opacity: 0; } }
+
+        .loading-overlay { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.9); display: none; justify-content: center; align-items: center; z-index: 3000; }
+        .loading-overlay.active { display: flex; }
+        .loading-content { background: var(--card-bg); padding: 2rem; border-radius: 1.5rem; text-align: center; }
+        .loading-content i { font-size: 3rem; color: var(--accent); margin-bottom: 1rem; }
 
         @media (max-width: 768px) {
             .sidebar { width: 85px; }
             .sidebar .logo-area h2, .sidebar .nav-item span { display: none; }
             .main-content { margin-left: 85px; max-width: calc(100vw - 85px); padding: 1rem; }
-            .weight-config { grid-template-columns: 1fr; }
+            .two-col { grid-template-columns: 1fr; }
+            .student-list-panel { max-height: 200px; }
+        }
+        @media print {
+            body { background: white !important; }
+            .orb, .sidebar, .top-bar, .card:not(.print-visible), .student-list-panel, .btn, .loading-overlay, .theme-toggle, .profile-dropdown, .settings-row, .two-col, .toast-container, .debug-btn { display: none !important; }
+            .main-content { margin-left: 0 !important; padding: 0 !important; max-width: 100% !important; }
+            .rc-scroll { max-height: none !important; overflow: visible !important; }
+            .report-card { border: 2px solid #000 !important; box-shadow: none !important; margin: 0 !important; }
+            @page { margin: 0.4cm; size: A4; }
         }
     </style>
 </head>
@@ -163,6 +179,11 @@
     <img src="https://res.cloudinary.com/dda7kpir8/image/upload/q_auto/f_auto/v1781038310/ChatGPT_Image_Jun_9_2026_09_25_06_AM_elnine.png" alt="" class="bg-logo" aria-hidden="true">
     <div class="orb orb-1"></div><div class="orb orb-2"></div>
     <div class="toast-container" id="toastContainer"></div>
+
+    <!-- DEBUG BUTTON -->
+    <div class="debug-btn" id="debugBtn" title="Debug" style="position:fixed;bottom:1rem;right:1rem;z-index:9000;background:var(--card-bg-solid);border:1px solid var(--border);border-radius:50%;width:40px;height:40px;display:flex;align-items:center;justify-content:center;cursor:pointer;font-size:1rem;color:var(--text-secondary);opacity:0.6;">
+        <i class="fas fa-bug"></i>
+    </div>
 
     <!-- SIDEBAR -->
     <div class="sidebar" id="sidebar">
@@ -173,9 +194,13 @@
         <a href="teacher-dashboard.html" class="nav-item"><i class="fas fa-chart-pie"></i><span>Dashboard</span></a>
         <a href="teacher-workspace.html" class="nav-item"><i class="fas fa-book-open"></i><span>Workspace</span></a>
         <a href="teacher-assessments.html" class="nav-item"><i class="fas fa-pen-fancy"></i><span>Create Assessment</span></a>
+        <a href="question-bank.html" class="nav-item">
+            <i class="fas fa-layer-group"></i><span>Question Bank</span>
+        </a>
         <a href="teacher-assessment-history.html" class="nav-item"><i class="fas fa-history"></i><span>History</span></a>
         <a href="teacher-assessment-evaluation.html" class="nav-item"><i class="fas fa-clipboard-check"></i><span>Evaluation</span></a>
-        <a href="teacher-scoring-engine.html" class="nav-item active"><i class="fas fa-calculator"></i><span>Scoring Engine</span></a>
+        <a href="teacher-scoring-engine.html" class="nav-item"><i class="fas fa-calculator"></i><span>Scoring Engine</span></a>
+        <a href="teacher-report-card.html" class="nav-item active"><i class="fas fa-graduation-cap"></i><span>Report Card</span></a>
         <a href="teacher-profile.html" class="nav-item"><i class="fas fa-user-edit"></i><span>Profile</span></a>
         <div class="toggle-btn" id="sidebarToggle"><i class="fas fa-chevron-left"></i></div>
     </div>
@@ -183,12 +208,8 @@
     <!-- MAIN CONTENT -->
     <div class="main-content" id="mainContent">
         <div class="top-bar">
-            <div class="page-title">
-                <h1>Scoring Engine</h1>
-                <p>Configure weights, compute scores, and push to report cards</p>
-            </div>
+            <div class="page-title"><h1>Report Card Generator</h1><p>Load scores, review, and submit for admin approval</p></div>
             <div class="profile-area">
-                <div class="save-indicator saved" id="saveIndicator"><i class="fas fa-check-circle"></i> Saved</div>
                 <div class="theme-toggle" id="themeToggle"><i class="fas fa-sun"></i><span>Light</span><i class="fas fa-moon"></i></div>
                 <div class="profile-dropdown">
                     <div class="profile-pic" id="profilePic">TE</div>
@@ -197,91 +218,56 @@
             </div>
         </div>
 
-        <!-- TERM SELECTOR + WEIGHT CONFIG -->
+        <!-- SETTINGS -->
         <div class="card">
             <div class="card-header">
-                <h3><i class="fas fa-sliders-h"></i> Scoring Configuration</h3>
+                <h3><i class="fas fa-cog"></i> Report Card Settings</h3>
                 <div class="btn-group">
-                    <select id="termSelect" class="btn btn-outline btn-sm" style="padding:0.5rem 1rem;">
-                        <option value="first">First Term</option>
-                        <option value="second">Second Term</option>
-                        <option value="third">Third Term</option>
-                    </select>
-                    <button class="btn btn-primary" id="saveConfigBtn"><i class="fas fa-save"></i> Save Configuration</button>
+                    <select id="termSelect" class="form-control" style="width:auto;padding:0.5rem 1rem;"><option value="first">First Term</option><option value="second">Second Term</option><option value="third">Third Term</option></select>
+                    <button class="btn btn-primary" id="loadDataBtn"><i class="fas fa-database"></i> Load Scores from Engine</button>
+                    <button class="btn btn-success btn-sm" id="bulkGenerateBtn"><i class="fas fa-layer-group"></i> Generate All</button>
                 </div>
             </div>
-            <p style="font-size:0.8rem;color:var(--text-secondary);margin-bottom:1rem;">
-                <strong>Session:</strong> <span id="sessionDisplay">2025/2026</span> &nbsp;|&nbsp;
-                <strong>Rules:</strong> Select assignments, tests, and exam. Weights must total 100. Scores are computed per student.
-            </p>
-            <div class="weight-config">
-                <div class="weight-card assign">
-                    <i class="fas fa-tasks"></i><h4>Assignments</h4>
-                    <input type="number" id="weightAssign" class="weight-input" value="10" min="0" max="100" onchange="onWeightChange()">
-                    <span style="font-size:0.75rem;">marks</span>
-                    <div class="select-count"><label style="font-size:0.7rem;">Use how many?</label>
-                        <select id="assignCountSelect"><option value="0">0 (None)</option><option value="1">1</option><option value="2" selected>2</option><option value="3">3</option></select>
+            <div class="settings-row">
+                <div><label>Session</label><input type="text" id="sessionInput" class="form-control" value="2025/2026"></div>
+                <div><label>Next Term Begins</label><input type="text" id="nextTermInput" class="form-control" value="12th January, 2026"></div>
+                <div><label>School Name</label><input type="text" id="schoolNameInput" class="form-control" value="Judah Wonders Model School"></div>
+                <div><label>School Motto</label><input type="text" id="schoolMotto" class="form-control" value="Raising Generational Wonders Among the Best"></div>
+                <div><label>School Address</label><input type="text" id="schoolAddress" class="form-control" value="Behind Family FM, Abiola Way, Abeokuta, Ogun State"></div>
+                <div><label>School Phone</label><input type="text" id="schoolPhone" class="form-control" value="09060473636"></div>
+                <div><label>School Email</label><input type="text" id="schoolEmail" class="form-control" value="judahwonder89@gmail.com"></div>
+                <div><label>Class Teacher</label><input type="text" id="teacherSignName" class="form-control" readonly></div>
+            </div>
+        </div>
+
+        <!-- TWO COLUMN LAYOUT -->
+        <div class="two-col">
+            <!-- STUDENT LIST -->
+            <div class="card">
+                <div class="card-header"><h3><i class="fas fa-users"></i> Students</h3><span id="studentCount" style="font-size:0.75rem;color:var(--text-secondary);"></span></div>
+                <div class="student-list-panel" id="studentList"><p style="color:var(--text-secondary);text-align:center;padding:2rem;">Click <strong>"Load Scores"</strong> to begin.</p></div>
+            </div>
+
+            <!-- REPORT CARD PREVIEW -->
+            <div class="card print-visible">
+                <div class="card-header">
+                    <h3><i class="fas fa-graduation-cap"></i> Preview</h3>
+                    <div class="btn-group">
+                        <button class="btn btn-sm btn-outline" id="prevBtn"><i class="fas fa-chevron-left"></i></button>
+                        <button class="btn btn-sm btn-outline" id="nextBtn"><i class="fas fa-chevron-right"></i></button>
+                        <button class="btn btn-sm btn-success" id="saveBtn"><i class="fas fa-save"></i> Save Draft</button>
+                        <button class="btn btn-sm btn-warning" id="submitBtn"><i class="fas fa-paper-plane"></i> Submit for Approval</button>
+                        <button class="btn btn-sm btn-outline" id="printBtn"><i class="fas fa-print"></i> Print</button>
                     </div>
                 </div>
-                <div class="weight-card test">
-                    <i class="fas fa-file-alt"></i><h4>Tests</h4>
-                    <input type="number" id="weightTest" class="weight-input" value="30" min="0" max="100" onchange="onWeightChange()">
-                    <span style="font-size:0.75rem;">marks</span>
-                    <div class="select-count"><label style="font-size:0.7rem;">Use how many?</label>
-                        <select id="testCountSelect"><option value="1">1</option><option value="2" selected>2</option></select>
-                    </div>
-                </div>
-                <div class="weight-card exam">
-                    <i class="fas fa-pen-fancy"></i><h4>Exam</h4>
-                    <input type="number" id="weightExam" class="weight-input" value="60" min="0" max="100" onchange="onWeightChange()">
-                    <span style="font-size:0.75rem;">marks</span>
-                </div>
+                <div class="rc-scroll" id="reportCardContainer"><p style="color:var(--text-secondary);text-align:center;padding:3rem;">Select a student to preview their report card.</p></div>
             </div>
-            <div class="weight-total ok" id="weightTotalMsg">Total: 100 marks ✓</div>
-        </div>
-
-        <!-- SUBJECT TABS -->
-        <div class="subject-selector" id="subjectSelector"></div>
-
-        <!-- ASSIGNMENT/TEST/EXAM SELECTION -->
-        <div class="card" id="selectionCard">
-            <div class="card-header">
-                <h3><i class="fas fa-check-square"></i> Select Items for: <span id="currentSubjectLabel">-</span></h3>
-                <button class="btn btn-outline btn-sm" id="fetchScoresBtn"><i class="fas fa-sync-alt"></i> Refresh Scores</button>
-            </div>
-            <div id="selectionContent"><p style="color:var(--text-secondary);font-size:0.85rem;">Select a subject above.</p></div>
-        </div>
-
-        <!-- STUDENT SCORES TABLE -->
-        <div class="card" id="scoresTableWrap" style="display:none;">
-            <div class="card-header">
-                <h3><i class="fas fa-table"></i> Student Scores — <span id="scoresSubjectLabel"></span></h3>
-                <div class="btn-group">
-                    <button class="btn btn-success btn-sm" id="saveScoresBtn"><i class="fas fa-save"></i> Save Scores</button>
-                    <button class="btn btn-primary btn-sm" id="pushToReportCardBtn"><i class="fas fa-graduation-cap"></i> Push to Report Card</button>
-                    <button class="btn btn-outline btn-sm" id="printTableBtn"><i class="fas fa-print"></i> Print</button>
-                </div>
-            </div>
-            <div class="table-scroll">
-                <table id="scoresTable">
-                    <thead id="scoresTableHead"></thead>
-                    <tbody id="scoresTableBody"><tr><td colspan="20" style="text-align:center;padding:2rem;">Fetch scores to see data.</td></tr></tbody>
-                </table>
-            </div>
-        </div>
-
-        <!-- SCORE DISTRIBUTION CHART -->
-        <div class="card" id="chartCard" style="display:none;">
-            <div class="card-header"><h3><i class="fas fa-chart-bar"></i> Score Distribution — <span id="chartSubjectLabel"></span></h3></div>
-            <canvas id="scoreChart" style="max-height:280px;"></canvas>
         </div>
     </div>
 
-    <!-- LOADING -->
     <div class="loading-overlay" id="loadingOverlay"><div class="loading-content"><i class="fas fa-spinner fa-spin fa-2x"></i><h3 style="margin-top:1rem;">Processing...</h3></div></div>
 
     <script>
-        // ==================== FIREBASE ====================
         const firebaseConfig = {
             apiKey: "AIzaSyADXHEiaSQ146QsGsaOCElARtpwrLE8svs",
             authDomain: "judah-c737e.firebaseapp.com",
@@ -295,366 +281,250 @@
         const auth = firebase.auth();
         const db = firebase.firestore();
 
-        // ==================== SIDEBAR & THEME ====================
         const sidebar = document.getElementById('sidebar'), mainContent = document.getElementById('mainContent');
-        document.getElementById('sidebarToggle').addEventListener('click', () => {
-            sidebar.classList.toggle('collapsed'); mainContent.classList.toggle('expanded');
-            const icon = document.getElementById('sidebarToggle').querySelector('i');
-            icon.classList.toggle('fa-chevron-left'); icon.classList.toggle('fa-chevron-right');
-        });
+        document.getElementById('sidebarToggle').addEventListener('click', () => { sidebar.classList.toggle('collapsed'); mainContent.classList.toggle('expanded'); const icon = document.getElementById('sidebarToggle').querySelector('i'); icon.classList.toggle('fa-chevron-left'); icon.classList.toggle('fa-chevron-right'); });
         const html = document.documentElement, themeToggle = document.getElementById('themeToggle');
         const savedTheme = localStorage.getItem('judah-theme') || 'dark';
         html.setAttribute('data-theme', savedTheme);
         themeToggle.querySelector('span').textContent = savedTheme === 'dark' ? 'Light' : 'Dark';
-        themeToggle.addEventListener('click', () => {
-            const next = html.getAttribute('data-theme') === 'dark' ? 'light' : 'dark';
-            html.setAttribute('data-theme', next); localStorage.setItem('judah-theme', next);
-            themeToggle.querySelector('span').textContent = next === 'dark' ? 'Light' : 'Dark';
-        });
+        themeToggle.addEventListener('click', () => { const next = html.getAttribute('data-theme') === 'dark' ? 'light' : 'dark'; html.setAttribute('data-theme', next); localStorage.setItem('judah-theme', next); themeToggle.querySelector('span').textContent = next === 'dark' ? 'Light' : 'Dark'; });
 
-        // ==================== HELPERS ====================
-        function showToast(title, message, type = 'info') {
-            const icons = { success: 'fa-check-circle', error: 'fa-exclamation-circle', info: 'fa-info-circle' };
-            const container = document.getElementById('toastContainer');
-            const toast = document.createElement('div'); toast.className = 'toast';
-            toast.innerHTML = `<i class="fas ${icons[type]} toast-icon ${type}"></i><div class="toast-content"><div class="toast-title">${title}</div><div class="toast-message">${message}</div></div><button class="toast-close" onclick="this.parentElement.remove()"><i class="fas fa-times"></i></button>`;
-            container.appendChild(toast);
-            setTimeout(() => { toast.classList.add('removing'); setTimeout(() => toast.remove(), 300); }, 4000);
-        }
+        function showToast(title, message, type = 'info') { const icons = { success: 'fa-check-circle', error: 'fa-exclamation-circle', info: 'fa-info-circle' }; const container = document.getElementById('toastContainer'); const toast = document.createElement('div'); toast.className = 'toast'; toast.innerHTML = `<i class="fas ${icons[type]} toast-icon ${type}"></i><div class="toast-content"><div class="toast-title">${title}</div><div class="toast-message">${message}</div></div><button class="toast-close" onclick="this.parentElement.remove()"><i class="fas fa-times"></i></button>`; container.appendChild(toast); setTimeout(() => { toast.classList.add('removing'); setTimeout(() => toast.remove(), 300); }, 4000); }
         function showLoading() { document.getElementById('loadingOverlay').classList.add('active'); }
         function hideLoading() { document.getElementById('loadingOverlay').classList.remove('active'); }
         function escapeHtml(t) { const d = document.createElement('div'); d.textContent = t || ''; return d.innerHTML; }
-        function getGrade(score) {
-            if (score >= 75) return 'A'; if (score >= 65) return 'B'; if (score >= 50) return 'C';
-            if (score >= 40) return 'D'; if (score < 40) return 'F'; return 'F';
-        }
-        function updateSaveIndicator(saved) {
-            const el = document.getElementById('saveIndicator');
-            if (saved) { el.innerHTML = '<i class="fas fa-check-circle"></i> Saved'; el.className = 'save-indicator saved'; }
-            else { el.innerHTML = '<i class="fas fa-exclamation-circle"></i> Unsaved'; el.className = 'save-indicator unsaved'; }
-        }
+        function getGrade(s) { if (s >= 75) return 'A'; if (s >= 65) return 'B'; if (s >= 50) return 'C'; if (s >= 40) return 'D'; return 'F'; }
+        function getRemark(g) { const r = { A: 'Excellent performance', B: 'Very Good performance', C: 'Good performance', D: 'Fair performance', F: 'Needs improvement' }; return r[g] || ''; }
 
-        // ==================== STATE ====================
-        let currentUser = null, userData = null, currentTerm = 'first';
-        let subjects = [], currentSubject = null, classId = null;
-        let allStudents = [], allAssignments = [], allTests = [], allExams = [];
-        let allSubmissions = [], allTestSubs = [], allExamSubs = [];
-        let selectedAssignIds = new Set(), selectedTestIds = new Set(), selectedExamId = null;
-        let studentScoreMap = {}, remarksMap = {};
-        let scoreChart = null;
+        let currentUser = null, userData = null, classId = null, currentTerm = 'first';
+        let allStudents = [], scoringConfig = null, reportCardDataMap = {}, attendanceData = { totalDays: 50, presentMap: {} };
+        let currentIdx = 0, studentRemarks = {}, teacherComments = {}, principalComments = {};
 
-        // ==================== WEIGHT VALIDATION ====================
-        function onWeightChange() {
-            const a = parseInt(document.getElementById('weightAssign').value) || 0;
-            const t = parseInt(document.getElementById('weightTest').value) || 0;
-            const e = parseInt(document.getElementById('weightExam').value) || 0;
-            const total = a + t + e;
-            const el = document.getElementById('weightTotalMsg');
-            el.textContent = `Total: ${total} marks${total === 100 ? ' ✓' : ' (must = 100)'}`;
-            el.className = total === 100 ? 'weight-total ok' : 'weight-total err';
-            if (currentSubject) { computeAndRenderScores(); updateSaveIndicator(false); }
-        }
-
-        // ==================== INIT ====================
-        async function init() {
+        async function loadAllData() {
             showLoading();
             try {
                 classId = userData.classTeaching || 'basic3';
-                document.getElementById('sessionDisplay').textContent = new Date().getFullYear() + '/' + (new Date().getFullYear() + 1);
-                subjects = userData.subjects || [];
                 currentTerm = document.getElementById('termSelect').value;
+                document.getElementById('teacherSignName').value = `${userData.firstName||''} ${userData.surname||''}`.trim();
 
-                const stuSnap = await db.collection('users').where('role', '==', 'student').where('class', '==', classId).where('approved', '==', true).get();
-                allStudents = [];
-                stuSnap.forEach(d => { const dd = d.data(); allStudents.push({ id: d.id, name: `${dd.firstName||''} ${dd.surname||''}`.trim(), photoURL: dd.photoURL || null, userId: dd.userId || '' }); });
-                allStudents.sort((a, b) => a.name.localeCompare(b.name));
+                // Auto-detect session from current date
+                const now = new Date();
+                const currentYear = now.getFullYear();
+                const currentMonth = now.getMonth() + 1;
+                const sessionYear = currentMonth >= 9 ? currentYear : currentYear - 1;
+                document.getElementById('sessionInput').value = `${sessionYear}/${sessionYear + 1}`;
 
-                const [aSnap, tSnap, eSnap] = await Promise.all([
-                    db.collection('assessments').where('classId', '==', classId).where('status', '==', 'published').get(),
-                    db.collection('assessments').where('classId', '==', classId).where('status', '==', 'published').get(),
-                    db.collection('assessments').where('classId', '==', classId).where('status', '==', 'published').get()
-                ]);
-                allAssignments = []; aSnap.forEach(d => { const dd = d.data(); if (dd.type === 'assignment') allAssignments.push({ id: d.id, title: dd.title, subject: dd.subject, totalPoints: dd.totalPoints || dd.totalMarks || 10 }); });
-                allTests = []; tSnap.forEach(d => { const dd = d.data(); if (dd.type === 'test') allTests.push({ id: d.id, title: dd.title, subject: dd.subject, totalPoints: dd.totalPoints || 30 }); });
-                allExams = []; eSnap.forEach(d => { const dd = d.data(); if (dd.type === 'exam') allExams.push({ id: d.id, title: dd.title, subject: dd.subject, totalPoints: dd.totalPoints || 60 }); });
-
-                const [sSnap, tsSnap, esSnap] = await Promise.all([
-                    db.collection('submissions').where('classId', '==', classId).get(),
-                    db.collection('testSubmissions').where('classId', '==', classId).get(),
-                    db.collection('examSubmissions').where('classId', '==', classId).get()
-                ]);
-                allSubmissions = []; sSnap.forEach(d => { const dd = d.data(); if (dd.studentId) allSubmissions.push({ id: d.id, assignmentId: dd.assessmentId || dd.assignmentId, studentId: dd.studentId, score: dd.score || 0 }); });
-                allTestSubs = []; tsSnap.forEach(d => { const dd = d.data(); if (dd.studentId) allTestSubs.push({ id: d.id, testId: dd.assessmentId || dd.testId, studentId: dd.studentId, score: dd.score || 0 }); });
-                allExamSubs = []; esSnap.forEach(d => { const dd = d.data(); if (dd.studentId) allExamSubs.push({ id: d.id, examId: dd.assessmentId || dd.examId, studentId: dd.studentId, score: dd.score || 0 }); });
-
-                await loadSavedConfig();
-                renderSubjectSelector();
-                if (subjects.length) selectSubject(subjects[0]);
-            } catch (e) { console.error('Init error:', e); showToast('Error', e.message, 'error'); } finally { hideLoading(); }
-        }
-
-        async function loadSavedConfig() {
-            try {
-                const doc = await db.collection('scoringConfigs').doc(`${currentUser.uid}_${classId}_${currentTerm}`).get();
-                if (doc.exists) {
-                    const cfg = doc.data();
-                    document.getElementById('weightAssign').value = cfg.weightAssign || 10;
-                    document.getElementById('weightTest').value = cfg.weightTest || 30;
-                    document.getElementById('weightExam').value = cfg.weightExam || 60;
-                    document.getElementById('assignCountSelect').value = cfg.assignCount || 2;
-                    document.getElementById('testCountSelect').value = cfg.testCount || 2;
-                    if (cfg.selectedAssignIds) selectedAssignIds = new Set(cfg.selectedAssignIds);
-                    if (cfg.selectedTestIds) selectedTestIds = new Set(cfg.selectedTestIds);
-                    if (cfg.selectedExamId) selectedExamId = cfg.selectedExamId;
-                    if (cfg.remarksMap) remarksMap = cfg.remarksMap;
-                    updateSaveIndicator(true);
+                // Load students
+                let stuSnap = await db.collection('users').where('role','==','student').where('class','==',classId).where('approved','==',true).get();
+                if (stuSnap.empty) {
+                    stuSnap = await db.collection('users').where('role','==','student').where('class','==',classId).get();
                 }
-                onWeightChange();
-            } catch (e) { updateSaveIndicator(false); }
-        }
+                allStudents = []; stuSnap.forEach(d => { const dd = d.data(); allStudents.push({ id: d.id, name: `${dd.surname||''} ${dd.firstName||''}`.trim(), firstName: dd.firstName||'', surname: dd.surname||'', userId: dd.userId||'', photoURL: dd.photoURL||null, gender: dd.gender||'N/A' }); });
+                allStudents.sort((a,b) => a.name.localeCompare(b.name));
 
-        function renderSubjectSelector() {
-            const el = document.getElementById('subjectSelector');
-            el.innerHTML = subjects.map(s => `<span class="subject-chip${s === currentSubject ? ' active' : ''}" onclick="selectSubject('${s.replace(/'/g, "\\'")}')">${s}</span>`).join('');
-        }
+                // Load scoring config
+                const configDoc = await db.collection('scoringConfigs').doc(`${currentUser.uid}_${classId}_${currentTerm}`).get();
+                if (!configDoc.exists) { showToast('No Data', 'Run the Scoring Engine first for this term.', 'error'); hideLoading(); return; }
+                scoringConfig = configDoc.data();
 
-        window.selectSubject = (sub) => {
-            currentSubject = sub;
-            document.querySelectorAll('.subject-chip').forEach(c => c.classList.remove('active'));
-            document.querySelectorAll('.subject-chip').forEach(c => { if (c.textContent === sub) c.classList.add('active'); });
-            document.getElementById('currentSubjectLabel').textContent = sub;
-            renderSelection();
-        };
-
-        function renderSelection() {
-            if (!currentSubject) return;
-            const subj = currentSubject;
-            const subjAssignments = allAssignments.filter(a => a.subject === subj);
-            const subjTests = allTests.filter(t => t.subject === subj);
-            const subjExams = allExams.filter(e => e.subject === subj);
-            const assignCount = parseInt(document.getElementById('assignCountSelect').value) || 0;
-            const testCount = parseInt(document.getElementById('testCountSelect').value) || 2;
-
-            if (subjExams.length && !selectedExamId) selectedExamId = subjExams[0].id;
-
-            let html = '<div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(300px,1fr));gap:1rem;">';
-            html += `<div><h4 style="font-size:0.85rem;margin-bottom:0.5rem;"><i class="fas fa-tasks"></i> Assignments (max ${assignCount})</h4>`;
-            if (!subjAssignments.length) html += '<p style="color:var(--text-secondary);font-size:0.8rem;">No assignments found.</p>';
-            else subjAssignments.forEach(a => {
-                const isSel = selectedAssignIds.has(a.id);
-                html += `<div class="assignment-card${isSel ? ' selected' : ''}" onclick="toggleAssign('${a.id}',${assignCount})"><input type="checkbox" ${isSel ? 'checked' : ''} onclick="event.stopPropagation();toggleAssign('${a.id}',${assignCount})"><div class="info"><strong>${escapeHtml(a.title)}</strong><br>${a.totalPoints} pts</div></div>`;
-            });
-            html += `</div><div><h4 style="font-size:0.85rem;margin-bottom:0.5rem;"><i class="fas fa-file-alt"></i> Tests (max ${testCount})</h4>`;
-            if (!subjTests.length) html += '<p style="color:var(--text-secondary);font-size:0.8rem;">No tests found.</p>';
-            else subjTests.forEach(t => {
-                const isSel = selectedTestIds.has(t.id);
-                html += `<div class="assignment-card${isSel ? ' selected' : ''}" onclick="toggleTest('${t.id}',${testCount})"><input type="checkbox" ${isSel ? 'checked' : ''} onclick="event.stopPropagation();toggleTest('${t.id}',${testCount})"><div class="info"><strong>${escapeHtml(t.title)}</strong><br>${t.totalPoints} pts</div></div>`;
-            });
-            html += `</div><div><h4 style="font-size:0.85rem;margin-bottom:0.5rem;"><i class="fas fa-pen-fancy"></i> Exam</h4>`;
-            if (!subjExams.length) html += '<p style="color:var(--text-secondary);font-size:0.8rem;">No exams found.</p>';
-            else subjExams.forEach(e => {
-                const isSel = selectedExamId === e.id;
-                html += `<div class="assignment-card${isSel ? ' selected' : ''}" onclick="selectExam('${e.id}')"><input type="radio" name="examSel" ${isSel ? 'checked' : ''} onclick="event.stopPropagation();selectExam('${e.id}')"><div class="info"><strong>${escapeHtml(e.title)}</strong><br>${e.totalPoints} pts</div></div>`;
-            });
-            html += '</div></div>';
-            document.getElementById('selectionContent').innerHTML = html;
-            document.getElementById('scoresTableWrap').style.display = 'block';
-            document.getElementById('chartCard').style.display = 'block';
-            computeAndRenderScores();
-        }
-
-        window.toggleAssign = (id, max) => {
-            if (selectedAssignIds.has(id)) { selectedAssignIds.delete(id); } else if (selectedAssignIds.size < max) { selectedAssignIds.add(id); } else { showToast('Limit', `Maximum ${max} assignments.`, 'error'); return; }
-            renderSelection(); updateSaveIndicator(false);
-        };
-        window.toggleTest = (id, max) => {
-            if (selectedTestIds.has(id)) { selectedTestIds.delete(id); } else if (selectedTestIds.size < max) { selectedTestIds.add(id); } else { showToast('Limit', `Maximum ${max} tests.`, 'error'); return; }
-            renderSelection(); updateSaveIndicator(false);
-        };
-        window.selectExam = (id) => { selectedExamId = id; renderSelection(); updateSaveIndicator(false); };
-
-        function computeAndRenderScores() {
-            if (!currentSubject) return;
-            const subj = currentSubject;
-            const weightA = parseInt(document.getElementById('weightAssign').value) || 0;
-            const weightT = parseInt(document.getElementById('weightTest').value) || 0;
-            const weightE = parseInt(document.getElementById('weightExam').value) || 0;
-            document.getElementById('scoresSubjectLabel').textContent = `${subj} (${currentTerm} term)`;
-            document.getElementById('chartSubjectLabel').textContent = subj;
-            studentScoreMap = {};
-
-            allStudents.forEach(stu => {
-                let assignSum = 0, assignCount = 0;
-                selectedAssignIds.forEach(aid => {
-                    const sub = allSubmissions.find(s => s.assignmentId === aid && s.studentId === stu.id);
-                    const assign = allAssignments.find(a => a.id === aid);
-                    if (sub && assign && assign.totalPoints > 0) { assignSum += (sub.score / assign.totalPoints) * weightA; assignCount++; }
-                });
-                const assignAvg = assignCount > 0 ? assignSum / assignCount : 0;
-                let testSum = 0, testCount = 0;
-                selectedTestIds.forEach(tid => {
-                    const sub = allTestSubs.find(s => s.testId === tid && s.studentId === stu.id);
-                    const test = allTests.find(t => t.id === tid);
-                    if (sub && test && test.totalPoints > 0) { testSum += (sub.score / test.totalPoints) * weightT; testCount++; }
-                });
-                const testAvg = testCount > 0 ? testSum / testCount : 0;
-                let examScore = 0;
-                if (selectedExamId) {
-                    const sub = allExamSubs.find(s => s.examId === selectedExamId && s.studentId === stu.id);
-                    const exam = allExams.find(e => e.id === selectedExamId);
-                    if (sub && exam && exam.totalPoints > 0) examScore = (sub.score / exam.totalPoints) * weightE;
+                if (!scoringConfig.subjects || !scoringConfig.subjects.length) {
+                    document.getElementById('studentList').innerHTML = '<p style="color:var(--warning-text);text-align:center;padding:2rem;"><i class="fas fa-exclamation-triangle"></i><br>No subjects configured. Run the Scoring Engine first.</p>';
+                    hideLoading();
+                    return;
                 }
-                const total = Math.round((assignAvg + testAvg + examScore) * 10) / 10;
-                studentScoreMap[stu.id] = {
-                    assignAvg: Math.round(assignAvg * 10) / 10,
-                    testAvg: Math.round(testAvg * 10) / 10,
-                    examScore: Math.round(examScore * 10) / 10,
-                    total,
-                    grade: getGrade(total)
-                };
-            });
-            renderScoresTable();
-            renderChart();
+
+                // Load report card data for each subject
+                reportCardDataMap = {};
+                const subjects = scoringConfig.subjects || [];
+                for (const subject of subjects) {
+                    // Try multiple possible document ID formats
+                    let rcDoc = await db.collection('reportCardData').doc(`${classId}_${subject}_${currentTerm}`).get();
+                    if (!rcDoc.exists) {
+                        rcDoc = await db.collection('reportCardData').doc(`${classId}_${subject}`).get();
+                    }
+                    if (rcDoc.exists) {
+                        reportCardDataMap[subject] = rcDoc.data();
+                    }
+                }
+
+                // Load attendance
+                const attSnap = await db.collection('attendance').where('classId','==',classId).get();
+                const dates = new Set(); const presentMap = {};
+                attSnap.forEach(doc => { const d = doc.data(); if (d.date) dates.add(d.date); if (!presentMap[d.studentId]) presentMap[d.studentId] = 0; if (d.status === 'present') presentMap[d.studentId]++; });
+                attendanceData = { totalDays: dates.size || 50, presentMap };
+
+                document.getElementById('studentCount').textContent = `${allStudents.length} students`;
+                renderStudentList();
+                if (allStudents.length) selectStudent(0);
+                showToast('Loaded', `Loaded scores for ${allStudents.length} students across ${scoringConfig.subjects?.length||0} subjects.`, 'success');
+            } catch (e) { console.error(e); showToast('Error', e.message, 'error'); } finally { hideLoading(); }
         }
 
-        function renderScoresTable() {
-            const head = document.getElementById('scoresTableHead');
-            const body = document.getElementById('scoresTableBody');
-            head.innerHTML = `<tr><th>#</th><th>Photo</th><th>Student</th><th>Student ID</th><th>Assign (/${document.getElementById('weightAssign').value||0})</th><th>Tests (/${document.getElementById('weightTest').value||0})</th><th>Exam (/${document.getElementById('weightExam').value||0})</th><th>Total (100)</th><th>Grade</th><th>Remark</th></tr>`;
-
-            const sorted = allStudents.map(s => ({ ...s, scores: studentScoreMap[s.id] || { assignAvg: 0, testAvg: 0, examScore: 0, total: 0, grade: 'F' } })).sort((a, b) => b.scores.total - a.scores.total);
-
-            body.innerHTML = sorted.map((s, i) => {
-                const sc = s.scores, g = sc.grade;
-                const photo = s.photoURL ? `<img src="${s.photoURL}" class="student-photo" alt="">` : `<div class="student-photo" style="display:flex;align-items:center;justify-content:center;font-size:0.7rem;">${(s.name||'?')[0]}</div>`;
-                const remark = remarksMap[s.id] || '';
-                return `<tr>
-                    <td>${i + 1}</td><td>${photo}</td>
-                    <td><strong>${escapeHtml(s.name)}</strong></td><td style="font-family:monospace;">${s.userId || '—'}</td>
-                    <td>${sc.assignAvg}</td><td>${sc.testAvg}</td><td>${sc.examScore}</td>
-                    <td><strong>${sc.total}</strong></td><td><strong class="grade-${g}">${g}</strong></td>
-                    <td><input type="text" class="remark-input" value="${escapeHtml(remark)}" onchange="updateRemark('${s.id}', this.value)" placeholder="Add remark..."></td>
-                </tr>`;
+        function renderStudentList() {
+            const el = document.getElementById('studentList');
+            const subjects = scoringConfig?.subjects || [];
+            if (!subjects.length) {
+                el.innerHTML = '<p style="color:var(--text-secondary);text-align:center;padding:2rem;">No subjects found.</p>';
+                return;
+            }
+            const sorted = [...allStudents].sort((a,b) => {
+                let sa=0, ca=0, sb=0, cb=0;
+                subjects.forEach(sub => {
+                    const scA = reportCardDataMap[sub]?.results?.find(r => r.studentId === a.id || r.studentUserId === a.userId);
+                    const scB = reportCardDataMap[sub]?.results?.find(r => r.studentId === b.id || r.studentUserId === b.userId);
+                    if (scA) { sa += scA.total || 0; ca++; }
+                    if (scB) { sb += scB.total || 0; cb++; }
+                });
+                return (cb>0 ? sb/cb : 0) - (ca>0 ? sa/ca : 0);
+            });
+            el.innerHTML = sorted.map((s,i) => {
+                let sum=0,cnt=0; subjects.forEach(sub => { const sc=reportCardDataMap[sub]?.results?.find(r=>r.studentId===s.id || r.studentUserId===s.userId); if(sc){sum+=sc.total;cnt++;} });
+                const avg=cnt>0?sum/cnt:0, idx=allStudents.indexOf(s);
+                const photo = s.photoURL ? `<img src="${s.photoURL}" class="student-photo-sm" alt="">` : `<div class="student-photo-sm" style="display:flex;align-items:center;justify-content:center;font-size:0.7rem;">${(s.name||'?')[0]}</div>`;
+                return `<div class="student-row${idx===currentIdx?' active':''}" onclick="selectStudent(${idx})">${photo}<span class="name">${escapeHtml(s.name)}</span><span class="avg">${avg.toFixed(1)}%</span></div>`;
             }).join('');
         }
 
-        window.updateRemark = (studentId, value) => {
-            remarksMap[studentId] = value;
-            updateSaveIndicator(false);
-        };
+        window.selectStudent = idx => { currentIdx = idx; renderStudentList(); if (allStudents[idx]) renderReportCard(allStudents[idx]); };
 
-        function renderChart() {
-            const scores = Object.values(studentScoreMap).map(s => s.total);
-            const ranges = { 'A (75+)': 0, 'B (65-74)': 0, 'C (50-64)': 0, 'D (40-49)': 0, 'F (<40)': 0 };
-            scores.forEach(s => {
-                if (s >= 75) ranges['A (75+)']++;
-                else if (s >= 65) ranges['B (65-74)']++;
-                else if (s >= 50) ranges['C (50-64)']++;
-                else if (s >= 40) ranges['D (40-49)']++;
-                else ranges['F (<40)']++;
+        function renderReportCard(student) {
+            if (!scoringConfig || !student) return;
+            const subjects = scoringConfig.subjects || [];
+            const term = currentTerm, termName = { first:'FIRST', second:'SECOND', third:'THIRD' }[term]||'FIRST';
+            const session = document.getElementById('sessionInput').value;
+            const schoolName = document.getElementById('schoolNameInput').value;
+            const useA = scoringConfig.useAssignments !== false;
+            const w = { a: scoringConfig.weightAssign||10, t: scoringConfig.weightTest||30, e: scoringConfig.weightExam||60 };
+
+            let rankings = []; allStudents.forEach(s => { let sum=0,cnt=0; subjects.forEach(sub => { const sc=reportCardDataMap[sub]?.results?.find(r=>r.studentId===s.id || r.studentUserId===s.userId); if(sc){sum+=sc.total;cnt++;} }); rankings.push({id:s.id,avg:cnt>0?sum/cnt:0}); });
+            rankings.sort((a,b)=>b.avg-a.avg);
+            const rank = rankings.findIndex(r=>r.id===student.id)+1;
+
+            let subjectRows = '', totalScored = 0, subjectCount = 0;
+            subjects.forEach(sub => {
+                const sc = reportCardDataMap[sub]?.results?.find(r => r.studentId === student.id || r.studentUserId === student.userId);
+                if (sc && sc.total > 0) {
+                    totalScored += sc.total; subjectCount++;
+                    const grade = getGrade(sc.total);
+                    subjectRows += `<tr><td class="sub-col">${escapeHtml(sub)}</td>${useA?`<td>${sc.assignAvg?.toFixed(1)||'—'}</td>`:''}<td>${sc.testAvg?.toFixed(1)||'—'}</td><td>${sc.examScore?.toFixed(1)||'—'}</td><td><strong>${Math.round(sc.total)}</strong></td><td><strong class="grade-${grade}">${grade}</strong></td><td>${getRemark(grade)}</td></tr>`;
+                } else {
+                    subjectRows += `<tr><td class="sub-col">${escapeHtml(sub)}</td>${useA?'<td><span class="no-data">—</span></td>':''}<td><span class="no-data">—</span></td><td><span class="no-data">—</span></td><td><span class="no-data">—</span></td><td><span class="no-data">—</span></td><td><span class="no-data">—</span></td></tr>`;
+                }
             });
-            const ctx = document.getElementById('scoreChart').getContext('2d');
-            if (scoreChart) scoreChart.destroy();
-            scoreChart = new Chart(ctx, {
-                type: 'bar',
-                data: {
-                    labels: Object.keys(ranges),
-                    datasets: [{ label: 'Students', data: Object.values(ranges), backgroundColor: ['#22c55e', '#3b82f6', '#f59e0b', '#f97316', '#dc2626'], borderRadius: 8 }]
-                },
-                options: { responsive: true, maintainAspectRatio: true, plugins: { legend: { display: false } }, scales: { y: { beginAtZero: true, ticks: { stepSize: 1 } } } }
-            });
+            const average = subjectCount>0 ? totalScored/subjectCount : 0, overallGrade = subjectCount>0 ? getGrade(average) : '—';
+            const att = { total: attendanceData.totalDays||50, present: attendanceData.presentMap?.[student.id]||45 };
+
+            const photoHtml = student.photoURL ? `<img src="${student.photoURL}" alt="">` : 'Photo';
+
+            document.getElementById('reportCardContainer').innerHTML = `
+                <div class="report-card">
+                    <div class="rc-header-bg"><h1>${escapeHtml(schoolName)}</h1><div class="motto">"Raising Generational Wonders Among the Best"</div><div class="address">Behind Family FM, Abiola Way, Abeokuta | Tel: 09060473636</div></div>
+                    <div class="rc-title-bar">Student Progress Report Card — ${termName} Term, ${session} Session</div>
+                    <div class="rc-info-grid">
+                        <div><strong>Name:</strong> ${escapeHtml(student.surname)} ${escapeHtml(student.firstName)}</div><div><strong>Student ID:</strong> ${student.userId||'—'}</div><div><strong>Class:</strong> ${classId?.toUpperCase()||''}</div>
+                        <div><strong>Gender:</strong> ${student.gender}</div><div><strong>No. in Class:</strong> ${allStudents.length}</div><div><strong>Position:</strong> ${subjectCount>0?rank+('th'):'—'}</div>
+                        <div><strong>Term:</strong> ${termName}</div><div><strong>Session:</strong> ${session}</div><div><strong>Next Term:</strong> ${document.getElementById('nextTermInput').value}</div>
+                    </div>
+                    <div style="position:relative;"><div class="rc-photo">${photoHtml}</div></div>
+                    <div class="rc-table-wrap">
+                        <table class="rc-table">
+                            <thead><tr><th rowspan="2" class="sub-col">SUBJECTS</th>${useA?`<th rowspan="2">Assign.<br>(${w.a}%)</th>`:''}<th rowspan="2">Test<br>(${w.t}%)</th><th rowspan="2">Exam<br>(${w.e}%)</th><th rowspan="2">TOTAL<br>(100%)</th><th rowspan="2">GRADE</th><th rowspan="2">REMARK</th></tr></thead>
+                            <tbody>${subjectRows}<tr class="total-row"><td class="sub-col"><strong>AGGREGATE</strong></td>${useA?'<td></td>':''}<td colspan="2"></td><td><strong>${subjectCount>0?Math.round(totalScored):'—'}</strong></td><td><strong class="grade-${overallGrade}">${overallGrade}</strong></td><td>${subjectCount>0?getRemark(overallGrade):'—'}</td></tr></tbody>
+                        </table>
+                    </div>
+                    <div class="rc-summary">
+                        <div class="rc-summary-box"><h5>📊 Academic Summary</h5><p><strong>Term Average:</strong> ${subjectCount>0?average.toFixed(1)+'%':'—'}</p><p><strong>Overall Grade:</strong> <strong class="grade-${overallGrade}">${overallGrade} — ${getRemark(overallGrade)}</strong></p></div>
+                        <div class="rc-summary-box"><h5>📝 Teacher's Comment</h5><textarea id="tc_${student.id}" style="width:100%;border:1px solid #ccc;padding:4px;font-family:inherit;font-size:9px;min-height:40px;" onchange="teacherComments['${student.id}']=this.value">${escapeHtml(teacherComments[student.id]||'')}</textarea></div>
+                    </div>
+                    <div class="rc-attendance">
+                        <div class="rc-summary-box"><h5>📅 Attendance</h5><p><strong>School Days:</strong> ${att.total}</p><p><strong>Days Present:</strong> ${att.present}</p><p><strong>Days Absent:</strong> ${att.total-att.present}</p><p><strong>Attendance:</strong> ${att.total>0?((att.present/att.total)*100).toFixed(1):0}%</p></div>
+                        <div class="rc-summary-box"><h5>💬 Principal's Comment</h5><textarea id="pc_${student.id}" style="width:100%;border:1px solid #ccc;padding:4px;font-family:inherit;font-size:9px;min-height:40px;" onchange="principalComments['${student.id}']=this.value">${escapeHtml(principalComments[student.id]||'')}</textarea></div>
+                        <div class="rc-summary-box"><h5>⭐ Grading System</h5><p>A: 75-100% | B: 65-74%</p><p>C: 50-64% | D: 40-49%</p><p>F: Below 40%</p></div>
+                    </div>
+                    <div class="rc-signatures">
+                        <div><div class="rc-sign-line">${escapeHtml(document.getElementById('teacherSignName').value)}<br><small>Class Teacher</small></div></div>
+                        <div><div class="rc-sign-line"><br><small>Principal</small></div></div>
+                        <div><div class="rc-sign-line"><br><small>Parent/Guardian</small></div></div>
+                    </div>
+                    <div class="rc-footer"><strong>Next Term Begins:</strong> ${document.getElementById('nextTermInput').value} | This report card is computer-generated.</div>
+                </div>`;
         }
 
-        async function saveConfig() {
-            if (parseInt(document.getElementById('weightAssign').value) + parseInt(document.getElementById('weightTest').value) + parseInt(document.getElementById('weightExam').value) !== 100) {
-                showToast('Invalid Weights', 'Weights must total 100.', 'error'); return;
-            }
+        async function saveReportCards(status) {
             showLoading();
             try {
-                const data = {
-                    teacherId: currentUser.uid, classId, term: currentTerm,
-                    weightAssign: parseInt(document.getElementById('weightAssign').value),
-                    weightTest: parseInt(document.getElementById('weightTest').value),
-                    weightExam: parseInt(document.getElementById('weightExam').value),
-                    assignCount: parseInt(document.getElementById('assignCountSelect').value),
-                    testCount: parseInt(document.getElementById('testCountSelect').value),
-                    selectedAssignIds: [...selectedAssignIds], selectedTestIds: [...selectedTestIds], selectedExamId,
-                    studentScoreMap, remarksMap, subjects,
-                    updatedAt: firebase.firestore.FieldValue.serverTimestamp()
-                };
-                await db.collection('scoringConfigs').doc(`${currentUser.uid}_${classId}_${currentTerm}`).set(data, { merge: true });
-                updateSaveIndicator(true);
-                showToast('Saved', 'Configuration and scores saved.', 'success');
-            } catch (e) { showToast('Error', e.message, 'error'); } finally { hideLoading(); }
+                const session = document.getElementById('sessionInput').value, term = currentTerm;
+                const schoolName = document.getElementById('schoolNameInput').value;
+                const results = allStudents.map(stu => {
+                    const subjects = scoringConfig.subjects || [];
+                    let sum=0,cnt=0;
+                    const subResults = subjects.map(sub => {
+                        const sc = reportCardDataMap[sub]?.results?.find(r=>r.studentId===stu.id || r.studentUserId===stu.userId);
+                        const total = sc?.total||0; if(total>0){sum+=total;cnt++;}
+                        return { name:sub, assignAvg:sc?.assignAvg||0, testAvg:sc?.testAvg||0, examScore:sc?.examScore||0, total:Math.round(total), grade:total>0?getGrade(total):'F' };
+                    });
+                    return { studentId:stu.id, studentName:stu.name, studentUserId:stu.userId, photoURL:stu.photoURL, subjects:subResults, totalScore:sum, averageScore:cnt>0?sum/cnt:0, teacherComment:teacherComments[stu.id]||'', principalComment:principalComments[stu.id]||'' };
+                });
+                const data = { teacherId:currentUser.uid, teacherName:document.getElementById('teacherSignName').value, classId, className:classId?.toUpperCase(), session, term, schoolName, useAssignments:scoringConfig.useAssignments!==false, globalWeights:{a:scoringConfig.weightAssign||10,t:scoringConfig.weightTest||30,e:scoringConfig.weightExam||60}, subjects:scoringConfig.subjects||[], studentResults:results, totalStudents:allStudents.length, attendanceTotalDays:attendanceData.totalDays, status, updatedAt:firebase.firestore.FieldValue.serverTimestamp() };
+                if (status==='pending_approval') data.submittedForApprovalAt = firebase.firestore.FieldValue.serverTimestamp();
+
+                // Try exact match first
+                let existingSnap = await db.collection('reportCards')
+                    .where('teacherId','==',currentUser.uid)
+                    .where('classId','==',classId)
+                    .where('session','==',session)
+                    .where('term','==',term)
+                    .limit(1).get();
+                // Fallback: check without term
+                if (existingSnap.empty) {
+                    existingSnap = await db.collection('reportCards')
+                        .where('teacherId','==',currentUser.uid)
+                        .where('classId','==',classId)
+                        .where('session','==',session)
+                        .limit(1).get();
+                }
+                if (!existingSnap.empty) await db.collection('reportCards').doc(existingSnap.docs[0].id).update(data);
+                else await db.collection('reportCards').add(data);
+                await db.collection('auditLogs').add({ userId:currentUser.uid, userName:data.teacherName, action:status==='pending_approval'?'REPORT_CARD_SUBMITTED':'REPORT_CARD_SAVED', timestamp:firebase.firestore.FieldValue.serverTimestamp() }).catch(()=>{});
+                showToast('Saved', `Report cards ${status==='pending_approval'?'submitted for approval':'saved as draft'}!`, 'success');
+            } catch(e) { showToast('Error', e.message, 'error'); } finally { hideLoading(); }
         }
 
-        async function pushToReportCard() {
-            if (!Object.keys(studentScoreMap).length) { showToast('No Data', 'Compute scores first.', 'error'); return; }
-            showLoading();
-            try {
-                const results = allStudents.map(s => ({
-                    studentId: s.id,
-                    studentName: s.name,
-                    studentUserId: s.userId,
-                    photoURL: s.photoURL,
-                    ...studentScoreMap[s.id] || { assignAvg: 0, testAvg: 0, examScore: 0, total: 0, grade: 'F' },
-                    remark: remarksMap[s.id] || ''
-                }));
-                await db.collection('reportCardData').doc(`${classId}_${currentSubject}_${currentTerm}`).set({
-                    teacherId: currentUser.uid,
-                    teacherName: `${userData.firstName||''} ${userData.surname||''}`.trim(),
-                    classId, subject: currentSubject, term: currentTerm,
-                    session: document.getElementById('sessionDisplay').textContent,
-                    weightAssign: parseInt(document.getElementById('weightAssign').value),
-                    weightTest: parseInt(document.getElementById('weightTest').value),
-                    weightExam: parseInt(document.getElementById('weightExam').value),
-                    results,
-                    studentCount: results.length,
-                    classAverage: results.length ? (results.reduce((a, r) => a + r.total, 0) / results.length).toFixed(1) : 0,
-                    generatedAt: firebase.firestore.FieldValue.serverTimestamp()
-                }, { merge: true });
-                await db.collection('auditLogs').add({
-                    userId: currentUser.uid,
-                    userName: `${userData.firstName||''} ${userData.surname||''}`.trim(),
-                    action: 'REPORT_CARD_DATA_PUSHED',
-                    details: { classId, subject: currentSubject, term: currentTerm, studentCount: results.length },
-                    timestamp: firebase.firestore.FieldValue.serverTimestamp()
-                }).catch(() => {});
-                showToast('Pushed', `Report card data for ${results.length} students saved.`, 'success');
-            } catch (e) { showToast('Error', e.message, 'error'); } finally { hideLoading(); }
-        }
-
-        function printTable() {
-            const w = window.open('', '_blank');
-            w.document.write(`<html><head><title>Scores - ${currentSubject} (${currentTerm} term)</title><style>body{font-family:Inter,sans-serif;padding:2rem;}table{border-collapse:collapse;width:100%;}th,td{border:1px solid #ccc;padding:0.5rem;font-size:0.8rem;}th{background:#f0f0f0;}.grade-A{color:#22c55e;font-weight:700;}.grade-B{color:#3b82f6;font-weight:700;}.grade-C{color:#f59e0b;font-weight:700;}.grade-D{color:#f97316;font-weight:700;}.grade-F{color:#dc2626;font-weight:700;}</style></head><body><h1>Judah Wonders Model School</h1><h2>${currentSubject} - ${currentTerm} Term Scores</h2>${document.getElementById('scoresTable').outerHTML}</body></html>`);
-            w.print();
-        }
-
-        document.getElementById('termSelect').addEventListener('change', async () => {
-            currentTerm = document.getElementById('termSelect').value;
-            selectedAssignIds = new Set(); selectedTestIds = new Set(); selectedExamId = null;
-            remarksMap = {};
-            studentScoreMap = {};
-            await loadSavedConfig();
-            if (currentSubject) renderSelection();
+        // Debug button
+        document.getElementById('debugBtn').addEventListener('click', () => {
+            const debugInfo = {
+                classId, currentTerm, studentsCount: allStudents.length,
+                scoringConfigSubjects: scoringConfig?.subjects || [],
+                reportCardDataSubjects: Object.keys(reportCardDataMap),
+                reportCardDataMap: Object.entries(reportCardDataMap).map(([sub, data]) => ({
+                    subject: sub,
+                    resultsCount: data.results?.length || 0,
+                    sampleStudent: data.results?.[0]?.studentName || 'none'
+                }))
+            };
+            console.log('🔍 Report Card Debug:', debugInfo);
+            showToast('Debug', `Students: ${allStudents.length}, Subjects in config: ${scoringConfig?.subjects?.length||0}, Subjects with data: ${Object.keys(reportCardDataMap).length}`, 'info');
+            console.table(debugInfo.reportCardDataSubjects);
         });
-        document.getElementById('saveConfigBtn').addEventListener('click', saveConfig);
-        document.getElementById('saveScoresBtn').addEventListener('click', saveConfig);
-        document.getElementById('pushToReportCardBtn').addEventListener('click', pushToReportCard);
-        document.getElementById('printTableBtn').addEventListener('click', printTable);
-        document.getElementById('fetchScoresBtn').addEventListener('click', () => { if (currentSubject) renderSelection(); });
-        document.getElementById('assignCountSelect').addEventListener('change', () => { if (currentSubject) renderSelection(); });
-        document.getElementById('testCountSelect').addEventListener('change', () => { if (currentSubject) renderSelection(); });
 
-        auth.onAuthStateChanged(async (user) => {
+        document.getElementById('loadDataBtn').addEventListener('click', loadAllData);
+        document.getElementById('termSelect').addEventListener('change', () => { currentTerm = document.getElementById('termSelect').value; });
+        document.getElementById('prevBtn').addEventListener('click', () => { if (currentIdx>0) selectStudent(currentIdx-1); });
+        document.getElementById('nextBtn').addEventListener('click', () => { if (currentIdx<allStudents.length-1) selectStudent(currentIdx+1); });
+        document.getElementById('saveBtn').addEventListener('click', () => saveReportCards('draft'));
+        document.getElementById('submitBtn').addEventListener('click', () => { if (confirm('Submit for admin approval?')) saveReportCards('pending_approval'); });
+        document.getElementById('printBtn').addEventListener('click', () => window.print());
+        document.getElementById('bulkGenerateBtn').addEventListener('click', async () => { for (let i=0; i<allStudents.length; i++) { selectStudent(i); await new Promise(r => setTimeout(r, 100)); } showToast('Generated', `Previewed all ${allStudents.length} report cards. Review and submit.`, 'success'); });
+
+        auth.onAuthStateChanged(async user => {
             if (!user) { window.location.href = 'teacher-login.html'; return; }
             const doc = await db.collection('users').doc(user.uid).get();
             if (!doc.exists || doc.data().role !== 'teacher') { auth.signOut(); window.location.href = 'index.html'; return; }
             currentUser = user; userData = doc.data();
             const pic = document.getElementById('profilePic');
             if (userData.photoURL) pic.innerHTML = `<img src="${userData.photoURL}" alt="Profile">`;
-            else pic.textContent = (userData.firstName?.[0]||'T') + (userData.surname?.[0]||'E');
-            await init();
+            else pic.textContent = (userData.firstName?.[0]||'T')+(userData.surname?.[0]||'E');
+            document.getElementById('teacherSignName').value = `${userData.firstName||''} ${userData.surname||''}`.trim();
         });
         document.getElementById('logoutBtn').addEventListener('click', () => auth.signOut().then(() => window.location.href = 'index.html'));
     </script>
