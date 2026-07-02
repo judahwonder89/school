@@ -268,11 +268,15 @@
             <pre id="debugAuth">Checking...</pre>
         </div>
         <div class="debug-section">
+            <strong>Classes Teaching:</strong>
+            <pre id="debugClasses">Loading...</pre>
+        </div>
+        <div class="debug-section">
             <strong>Subjects:</strong>
             <pre id="debugSubjects">Loading...</pre>
         </div>
         <div class="debug-section">
-            <strong>Weeks (from lessonNotes fallback):</strong>
+            <strong>Weeks:</strong>
             <pre id="debugWeeks">No subject selected</pre>
         </div>
         <div class="debug-section">
@@ -280,18 +284,11 @@
             <pre id="debugQuestions">0 questions</pre>
         </div>
         <div class="debug-section">
-            <strong>Firestore Status:</strong>
-            <pre id="debugFirestore">Checking...</pre>
-        </div>
-        <div class="debug-section">
             <strong>Current State:</strong>
             <pre id="debugState">{}</pre>
         </div>
         <button class="btn btn-primary btn-sm" onclick="refreshDebug()">
             <i class="fas fa-sync-alt"></i> Refresh
-        </button>
-        <button class="btn btn-outline btn-sm" onclick="testAllCollections()" style="margin-left:0.5rem;">
-            <i class="fas fa-vial"></i> Test All Collections
         </button>
     </div>
 </div>
@@ -320,6 +317,9 @@
     <a href="teacher-assessment-evaluation.html" class="nav-item">
         <i class="fas fa-clipboard-check"></i><span>Evaluation</span>
     </a>
+    <a href="teacher-scoring-engine.html" class="nav-item">
+        <i class="fas fa-calculator"></i><span>Scoring Engine</span>
+    </a>
     <a href="teacher-profile.html" class="nav-item">
         <i class="fas fa-user-edit"></i><span>Profile</span>
     </a>
@@ -333,7 +333,7 @@
     <div class="top-bar">
         <div class="page-title">
             <h1>Create Assessment</h1>
-            <p>Build tests, assignments, and exams easily</p>
+            <p>Build tests, assignments, and exams for your classes</p>
         </div>
         <div class="profile-area">
             <div class="theme-toggle" id="themeToggle">
@@ -369,7 +369,7 @@
         <div class="step-panel active" id="step1">
             <div class="card">
                 <div class="card-header">
-                    <h3><i class="fas fa-info-circle"></i> Assessment Type & Subject</h3>
+                    <h3><i class="fas fa-info-circle"></i> Assessment Type, Class & Subject</h3>
                 </div>
 
                 <!-- Type Selector -->
@@ -391,16 +391,26 @@
                     </div>
                 </div>
 
-                <div class="info-box">
-                    <i class="fas fa-lightbulb" style="font-size:1.5rem;"></i>
-                    <span><strong>Pro Tip:</strong> Select subject and weeks below. The AI will generate questions from your lesson notes, resources, and teaching process.</span>
+                <!-- ============ TARGET CLASS (NEW!) ============ -->
+                <div class="form-group">
+                    <label><i class="fas fa-chalkboard"></i> Target Class *</label>
+                    <select id="targetClass" class="form-control" required>
+                        <option value="">Select a class...</option>
+                    </select>
+                    <small style="color:var(--text-muted);">Choose which class this assessment is for. Only students in this class will see it.</small>
                 </div>
 
+                <!-- ============ SUBJECT ============ -->
                 <div class="form-group">
                     <label><i class="fas fa-book"></i> Subject *</label>
                     <select id="subject" class="form-control" required>
                         <option value="">Select a subject...</option>
                     </select>
+                </div>
+
+                <div class="info-box">
+                    <i class="fas fa-lightbulb" style="font-size:1.5rem;"></i>
+                    <span><strong>Pro Tip:</strong> Select subject and weeks below. The AI will generate questions from your lesson notes, resources, and teaching process.</span>
                 </div>
 
                 <div class="form-group" id="weeksSection">
@@ -433,341 +443,97 @@
             </div>
         </div>
 
-        <!-- ============ STEP 2: QUESTIONS ============ -->
+        <!-- ============ STEP 2: QUESTIONS (unchanged) ============ -->
         <div class="step-panel" id="step2">
-            <!-- QUICK STATS BAR -->
             <div class="quick-stats" id="quickStats">
-                <div class="quick-stat">
-                    <i class="fas fa-question-circle"></i> 
-                    <span>Questions: <strong class="stat-val" id="statQCount">0</strong></span>
-                </div>
-                <div class="quick-stat">
-                    <i class="fas fa-star"></i> 
-                    <span>Total Points: <strong class="stat-val" id="statPoints">0</strong></span>
-                </div>
-                <div class="quick-stat">
-                    <i class="fas fa-clock"></i> 
-                    <span>Suggested Time: <strong class="stat-val" id="statTime">0 min</strong></span>
-                </div>
-                <div class="quick-stat">
-                    <i class="fas fa-layer-group"></i> 
-                    <span>Bank Questions Used: <strong class="stat-val" id="statBank">0</strong></span>
-                </div>
+                <div class="quick-stat"><i class="fas fa-question-circle"></i><span>Questions: <strong class="stat-val" id="statQCount">0</strong></span></div>
+                <div class="quick-stat"><i class="fas fa-star"></i><span>Total Points: <strong class="stat-val" id="statPoints">0</strong></span></div>
+                <div class="quick-stat"><i class="fas fa-clock"></i><span>Suggested Time: <strong class="stat-val" id="statTime">0 min</strong></span></div>
+                <div class="quick-stat"><i class="fas fa-layer-group"></i><span>Bank Questions Used: <strong class="stat-val" id="statBank">0</strong></span></div>
             </div>
-
-            <!-- QUESTION SOURCE TABS -->
             <div class="source-tabs">
-                <div class="source-tab active" data-source="ai" onclick="switchSource('ai')">
-                    <i class="fas fa-robot"></i> AI Generate
-                    <span class="source-count" id="aiCount">0</span>
-                </div>
-                <div class="source-tab" data-source="bank" onclick="switchSource('bank')">
-                    <i class="fas fa-layer-group"></i> Question Bank
-                    <span class="source-count" id="bankCount">0</span>
-                </div>
-                <div class="source-tab" data-source="manual" onclick="switchSource('manual')">
-                    <i class="fas fa-edit"></i> Add Manually
-                </div>
-                <div class="source-tab" data-source="document" onclick="switchSource('document')">
-                    <i class="fas fa-file-alt"></i> Upload Document
-                </div>
-                <div class="source-tab" data-source="csv" onclick="switchSource('csv')">
-                    <i class="fas fa-file-csv"></i> CSV Upload
-                </div>
+                <div class="source-tab active" data-source="ai" onclick="switchSource('ai')"><i class="fas fa-robot"></i> AI Generate <span class="source-count" id="aiCount">0</span></div>
+                <div class="source-tab" data-source="bank" onclick="switchSource('bank')"><i class="fas fa-layer-group"></i> Question Bank <span class="source-count" id="bankCount">0</span></div>
+                <div class="source-tab" data-source="manual" onclick="switchSource('manual')"><i class="fas fa-edit"></i> Add Manually</div>
+                <div class="source-tab" data-source="document" onclick="switchSource('document')"><i class="fas fa-file-alt"></i> Upload Document</div>
+                <div class="source-tab" data-source="csv" onclick="switchSource('csv')"><i class="fas fa-file-csv"></i> CSV Upload</div>
             </div>
 
             <!-- AI GENERATION PANEL -->
             <div class="source-panel active" id="panel-ai">
                 <div class="ai-panel">
                     <h4><i class="fas fa-robot"></i> AI Question Generator</h4>
-                    <p style="color:var(--text-secondary);font-size:0.85rem;margin-bottom:1rem;">
-                        Generates questions from your <strong>Lesson Notes + Student Resources + Teaching Process</strong>
-                    </p>
-
-                    <!-- Content Sources Status -->
+                    <p style="color:var(--text-secondary);font-size:0.85rem;margin-bottom:1rem;">Generates questions from your <strong>Lesson Notes + Student Resources + Teaching Process</strong></p>
                     <div class="ai-sources" id="aiSources">
-                        <span class="ai-source-badge inactive" id="sourceLN">
-                            <i class="fas fa-book"></i> Lesson Notes
-                        </span>
-                        <span class="ai-source-badge inactive" id="sourceRes">
-                            <i class="fas fa-book-reader"></i> Student Resources
-                        </span>
-                        <span class="ai-source-badge inactive" id="sourceTP">
-                            <i class="fas fa-chalkboard-teacher"></i> Teaching Process
-                        </span>
-                        <span class="ai-source-badge inactive" id="sourceDoc">
-                            <i class="fas fa-file-alt"></i> Document
-                        </span>
+                        <span class="ai-source-badge inactive" id="sourceLN"><i class="fas fa-book"></i> Lesson Notes</span>
+                        <span class="ai-source-badge inactive" id="sourceRes"><i class="fas fa-book-reader"></i> Student Resources</span>
+                        <span class="ai-source-badge inactive" id="sourceTP"><i class="fas fa-chalkboard-teacher"></i> Teaching Process</span>
+                        <span class="ai-source-badge inactive" id="sourceDoc"><i class="fas fa-file-alt"></i> Document</span>
                     </div>
-
                     <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(200px,1fr));gap:1rem;">
-                        <div class="form-group">
-                            <label>Number of Questions</label>
-                            <input type="range" id="aiCountSlider" class="form-control" style="padding:0;border:none;height:8px;" min="5" max="50" value="20" oninput="document.getElementById('aiCountVal').textContent=this.value">
-                            <div style="text-align:center;font-weight:700;font-size:1.2rem;" id="aiCountVal">20</div>
-                        </div>
-                        <div class="form-group">
-                            <label>Question Mix</label>
-                            <select id="aiType" class="form-control">
-                                <option value="mixed" selected>Mixed (All Types)</option>
-                                <option value="mcq">Multiple Choice Only</option>
-                                <option value="truefalse">True/False Only</option>
-                                <option value="fillblank">Fill in Blank Only</option>
-                            </select>
-                        </div>
-                        <div class="form-group">
-                            <label>Difficulty</label>
-                            <select id="aiDifficulty" class="form-control">
-                                <option value="mixed" selected>Mixed</option>
-                                <option value="easy">Easy</option>
-                                <option value="medium">Medium</option>
-                                <option value="hard">Hard</option>
-                            </select>
-                        </div>
+                        <div class="form-group"><label>Number of Questions</label><input type="range" id="aiCountSlider" class="form-control" style="padding:0;border:none;height:8px;" min="5" max="50" value="20" oninput="document.getElementById('aiCountVal').textContent=this.value"><div style="text-align:center;font-weight:700;font-size:1.2rem;" id="aiCountVal">20</div></div>
+                        <div class="form-group"><label>Question Mix</label><select id="aiType" class="form-control"><option value="mixed" selected>Mixed (All Types)</option><option value="mcq">Multiple Choice Only</option><option value="truefalse">True/False Only</option><option value="fillblank">Fill in Blank Only</option></select></div>
+                        <div class="form-group"><label>Difficulty</label><select id="aiDifficulty" class="form-control"><option value="mixed" selected>Mixed</option><option value="easy">Easy</option><option value="medium">Medium</option><option value="hard">Hard</option></select></div>
                     </div>
-
-                    <div class="btn-group" style="justify-content:flex-start;">
-                        <button type="button" class="btn btn-primary" id="generateAIBtn" onclick="generateFromAllSources()">
-                            <i class="fas fa-robot"></i> Generate Questions
-                        </button>
-                    </div>
-
-                    <!-- AI Results Review Grid -->
+                    <div class="btn-group" style="justify-content:flex-start;"><button type="button" class="btn btn-primary" id="generateAIBtn" onclick="generateFromAllSources()"><i class="fas fa-robot"></i> Generate Questions</button></div>
                     <div class="ai-review-grid" id="aiReviewGrid" style="display:none;"></div>
                     <div class="btn-group" id="aiReviewActions" style="display:none;">
                         <button type="button" class="btn btn-outline btn-sm" onclick="selectAllAI()">Select All</button>
                         <button type="button" class="btn btn-outline btn-sm" onclick="deselectAllAI()">Deselect All</button>
-                        <button type="button" class="btn btn-primary" onclick="insertSelectedAI()">
-                            <i class="fas fa-plus-circle"></i> Insert Selected (<span id="aiSelectedCount">0</span>)
-                        </button>
-                        <button type="button" class="btn btn-outline btn-sm" onclick="regenerateAI()">
-                            <i class="fas fa-sync-alt"></i> Regenerate
-                        </button>
+                        <button type="button" class="btn btn-primary" onclick="insertSelectedAI()"><i class="fas fa-plus-circle"></i> Insert Selected (<span id="aiSelectedCount">0</span>)</button>
+                        <button type="button" class="btn btn-outline btn-sm" onclick="regenerateAI()"><i class="fas fa-sync-alt"></i> Regenerate</button>
                     </div>
                 </div>
             </div>
 
-            <!-- QUESTION BANK PANEL -->
+            <!-- All other panels remain unchanged (bank, manual, document, csv, question list) -->
             <div class="source-panel" id="panel-bank" style="display:none;">
-                <div class="card">
-                    <div class="card-header">
-                        <h3><i class="fas fa-layer-group"></i> Browse Question Bank</h3>
-                        <div style="display:flex;gap:0.5rem;flex-wrap:wrap;">
-                            <select id="bankSubjectFilter" class="form-control" style="width:auto;" onchange="loadBankQuestions()">
-                                <option value="">All Subjects</option>
-                            </select>
-                            <select id="bankTypeFilter" class="form-control" style="width:auto;" onchange="loadBankQuestions()">
-                                <option value="">All Types</option>
-                                <option value="mcq">MCQ</option>
-                                <option value="truefalse">True/False</option>
-                                <option value="fillblank">Fill Blank</option>
-                                <option value="theory">Theory</option>
-                            </select>
-                            <select id="bankDifficultyFilter" class="form-control" style="width:auto;" onchange="loadBankQuestions()">
-                                <option value="">All Difficulty</option>
-                                <option value="easy">Easy</option>
-                                <option value="medium">Medium</option>
-                                <option value="hard">Hard</option>
-                            </select>
-                            <select id="bankVisibilityFilter" class="form-control" style="width:auto;" onchange="loadBankQuestions()">
-                                <option value="all">All Questions</option>
-                                <option value="mine">My Questions</option>
-                                <option value="shared">Shared Only</option>
-                            </select>
-                            <input type="text" id="bankSearch" class="form-control" style="width:200px;" placeholder="🔍 Search..." oninput="loadBankQuestions()">
-                        </div>
-                    </div>
-                    <div id="bankQuestionsList" style="max-height:400px;overflow-y:auto;">
-                        <p style="text-align:center;padding:2rem;color:var(--text-secondary);">
-                            <i class="fas fa-inbox" style="font-size:2rem;display:block;margin-bottom:0.5rem;opacity:0.3;"></i>
-                            Loading question bank...
-                        </p>
-                    </div>
-                    <div class="btn-group">
-                        <button type="button" class="btn btn-outline btn-sm" onclick="toggleAllBank()">Select All</button>
-                        <button type="button" class="btn btn-primary" onclick="addBankToAssessment()">
-                            <i class="fas fa-plus-circle"></i> Add Selected to Assessment (<span id="bankSelectedCount">0</span>)
-                        </button>
-                    </div>
-                </div>
+                <div class="card"><div class="card-header"><h3><i class="fas fa-layer-group"></i> Browse Question Bank</h3><div style="display:flex;gap:0.5rem;flex-wrap:wrap;"><select id="bankSubjectFilter" class="form-control" style="width:auto;" onchange="loadBankQuestions()"><option value="">All Subjects</option></select><select id="bankTypeFilter" class="form-control" style="width:auto;" onchange="loadBankQuestions()"><option value="">All Types</option><option value="mcq">MCQ</option><option value="truefalse">True/False</option><option value="fillblank">Fill Blank</option><option value="theory">Theory</option></select><select id="bankDifficultyFilter" class="form-control" style="width:auto;" onchange="loadBankQuestions()"><option value="">All Difficulty</option><option value="easy">Easy</option><option value="medium">Medium</option><option value="hard">Hard</option></select><select id="bankVisibilityFilter" class="form-control" style="width:auto;" onchange="loadBankQuestions()"><option value="all">All Questions</option><option value="mine">My Questions</option><option value="shared">Shared Only</option></select><input type="text" id="bankSearch" class="form-control" style="width:200px;" placeholder="🔍 Search..." oninput="loadBankQuestions()"></div></div><div id="bankQuestionsList" style="max-height:400px;overflow-y:auto;"><p style="text-align:center;padding:2rem;color:var(--text-secondary);"><i class="fas fa-inbox" style="font-size:2rem;display:block;margin-bottom:0.5rem;opacity:0.3;"></i>Loading question bank...</p></div><div class="btn-group"><button type="button" class="btn btn-outline btn-sm" onclick="toggleAllBank()">Select All</button><button type="button" class="btn btn-primary" onclick="addBankToAssessment()"><i class="fas fa-plus-circle"></i> Add Selected to Assessment (<span id="bankSelectedCount">0</span>)</button></div></div>
             </div>
 
-            <!-- MANUAL ADD PANEL -->
             <div class="source-panel" id="panel-manual" style="display:none;">
-                <div class="card">
-                    <div class="card-header">
-                        <h3><i class="fas fa-edit"></i> Add Question Manually</h3>
-                        <div style="display:flex;gap:0.5rem;" id="qTypeBtns">
-                            <button class="btn btn-outline btn-sm active" data-qtype="mcq" onclick="setManualQType('mcq',this)">MCQ</button>
-                            <button class="btn btn-outline btn-sm" data-qtype="truefalse" onclick="setManualQType('truefalse',this)">True/False</button>
-                            <button class="btn btn-outline btn-sm" data-qtype="fillblank" onclick="setManualQType('fillblank',this)">Fill Blank</button>
-                            <button class="btn btn-outline btn-sm" data-qtype="theory" onclick="setManualQType('theory',this)">Theory</button>
-                        </div>
-                    </div>
-                    <div id="manualQuestionForm">
-                        <div class="form-group">
-                            <label>Question Text *</label>
-                            <textarea id="mqQuestion" class="form-control" rows="2" placeholder="Type your question here..."></textarea>
-                        </div>
-                        <div id="mqOptions" class="question-options">
-                            <div class="form-group"><label>Option A *</label><input type="text" id="mqOptA" class="form-control"></div>
-                            <div class="form-group"><label>Option B *</label><input type="text" id="mqOptB" class="form-control"></div>
-                            <div class="form-group"><label>Option C</label><input type="text" id="mqOptC" class="form-control"></div>
-                            <div class="form-group"><label>Option D</label><input type="text" id="mqOptD" class="form-control"></div>
-                        </div>
-                        <div class="form-group" id="mqCorrectGroup">
-                            <label>Correct Answer *</label>
-                            <select id="mqCorrect" class="form-control">
-                                <option value="A">A</option>
-                                <option value="B">B</option>
-                                <option value="C">C</option>
-                                <option value="D">D</option>
-                            </select>
-                        </div>
-                        <div class="form-group">
-                            <label>Difficulty</label>
-                            <select id="mqDifficulty" class="form-control">
-                                <option value="easy">Easy</option>
-                                <option value="medium" selected>Medium</option>
-                                <option value="hard">Hard</option>
-                            </select>
-                        </div>
-                        <div class="form-group">
-                            <label>Points</label>
-                            <input type="number" id="mqPoints" class="form-control" value="1" min="1">
-                        </div>
-                        <button type="button" class="btn btn-primary" onclick="addManualQuestion()">
-                            <i class="fas fa-plus"></i> Add Question
-                        </button>
-                    </div>
-                </div>
+                <div class="card"><div class="card-header"><h3><i class="fas fa-edit"></i> Add Question Manually</h3><div style="display:flex;gap:0.5rem;" id="qTypeBtns"><button class="btn btn-outline btn-sm active" data-qtype="mcq" onclick="setManualQType('mcq',this)">MCQ</button><button class="btn btn-outline btn-sm" data-qtype="truefalse" onclick="setManualQType('truefalse',this)">True/False</button><button class="btn btn-outline btn-sm" data-qtype="fillblank" onclick="setManualQType('fillblank',this)">Fill Blank</button><button class="btn btn-outline btn-sm" data-qtype="theory" onclick="setManualQType('theory',this)">Theory</button></div></div><div id="manualQuestionForm"><div class="form-group"><label>Question Text *</label><textarea id="mqQuestion" class="form-control" rows="2" placeholder="Type your question here..."></textarea></div><div id="mqOptions" class="question-options"><div class="form-group"><label>Option A *</label><input type="text" id="mqOptA" class="form-control"></div><div class="form-group"><label>Option B *</label><input type="text" id="mqOptB" class="form-control"></div><div class="form-group"><label>Option C</label><input type="text" id="mqOptC" class="form-control"></div><div class="form-group"><label>Option D</label><input type="text" id="mqOptD" class="form-control"></div></div><div class="form-group" id="mqCorrectGroup"><label>Correct Answer *</label><select id="mqCorrect" class="form-control"><option value="A">A</option><option value="B">B</option><option value="C">C</option><option value="D">D</option></select></div><div class="form-group"><label>Difficulty</label><select id="mqDifficulty" class="form-control"><option value="easy">Easy</option><option value="medium" selected>Medium</option><option value="hard">Hard</option></select></div><div class="form-group"><label>Points</label><input type="number" id="mqPoints" class="form-control" value="1" min="1"></div><button type="button" class="btn btn-primary" onclick="addManualQuestion()"><i class="fas fa-plus"></i> Add Question</button></div></div>
             </div>
 
-            <!-- DOCUMENT UPLOAD PANEL -->
             <div class="source-panel" id="panel-document" style="display:none;">
-                <div class="card">
-                    <div class="card-header">
-                        <h3><i class="fas fa-file-alt"></i> Upload Document & Extract Questions</h3>
-                    </div>
-                    <p style="color:var(--text-secondary);margin-bottom:1rem;">
-                        Upload a document (PDF, DOCX, TXT) and the AI will extract questions from it automatically.
-                    </p>
-                    <div class="upload-area" id="docUploadArea">
-                        <i class="fas fa-cloud-upload-alt"></i>
-                        <h4>Click or drag document here</h4>
-                        <p style="color:var(--text-muted);font-size:0.85rem;">Supports .txt, .pdf, .docx files</p>
-                        <input type="file" id="docFile" accept=".txt,.pdf,.docx" style="display:none;">
-                    </div>
-                    <div class="doc-upload-result" id="docResult"></div>
-                    <div class="btn-group" id="docActions" style="display:none;">
-                        <button type="button" class="btn btn-outline btn-sm" onclick="selectAllDoc()">Select All</button>
-                        <button type="button" class="btn btn-primary" onclick="insertDocQuestions()">
-                            <i class="fas fa-plus-circle"></i> Insert to Assessment
-                        </button>
-                    </div>
-                </div>
+                <div class="card"><div class="card-header"><h3><i class="fas fa-file-alt"></i> Upload Document & Extract Questions</h3></div><p style="color:var(--text-secondary);margin-bottom:1rem;">Upload a document (PDF, DOCX, TXT) and the AI will extract questions from it automatically.</p><div class="upload-area" id="docUploadArea"><i class="fas fa-cloud-upload-alt"></i><h4>Click or drag document here</h4><p style="color:var(--text-muted);font-size:0.85rem;">Supports .txt, .pdf, .docx files</p><input type="file" id="docFile" accept=".txt,.pdf,.docx" style="display:none;"></div><div class="doc-upload-result" id="docResult"></div><div class="btn-group" id="docActions" style="display:none;"><button type="button" class="btn btn-outline btn-sm" onclick="selectAllDoc()">Select All</button><button type="button" class="btn btn-primary" onclick="insertDocQuestions()"><i class="fas fa-plus-circle"></i> Insert to Assessment</button></div></div>
             </div>
 
-            <!-- CSV UPLOAD PANEL -->
             <div class="source-panel" id="panel-csv" style="display:none;">
-                <div class="card">
-                    <div class="card-header">
-                        <h3><i class="fas fa-file-csv"></i> CSV Upload</h3>
-                        <button type="button" class="btn btn-outline btn-sm" id="downloadTemplateBtn">
-                            <i class="fas fa-download"></i> CSV Template
-                        </button>
-                    </div>
-                    <div class="info-box">
-                        <i class="fas fa-info-circle"></i>
-                        <span>Format: <code>Question, Option A, Option B, Option C, Option D, Correct, Points, Difficulty</code></span>
-                    </div>
-                    <div class="upload-area" id="csvUploadArea">
-                        <i class="fas fa-cloud-upload-alt"></i>
-                        <h4>Click or drag CSV file here</h4>
-                        <input type="file" id="csvFileInput" accept=".csv" style="display:none;">
-                    </div>
-                    <div id="csvPreview" style="display:none;margin-top:1rem;max-height:300px;overflow-y:auto;"></div>
-                    <div class="btn-group" id="csvActions" style="display:none;">
-                        <button type="button" class="btn btn-primary" onclick="importCSVQuestions()">
-                            <i class="fas fa-check"></i> Import Questions
-                        </button>
-                    </div>
-                </div>
+                <div class="card"><div class="card-header"><h3><i class="fas fa-file-csv"></i> CSV Upload</h3><button type="button" class="btn btn-outline btn-sm" id="downloadTemplateBtn"><i class="fas fa-download"></i> CSV Template</button></div><div class="info-box"><i class="fas fa-info-circle"></i><span>Format: <code>Question, Option A, Option B, Option C, Option D, Correct, Points, Difficulty</code></span></div><div class="upload-area" id="csvUploadArea"><i class="fas fa-cloud-upload-alt"></i><h4>Click or drag CSV file here</h4><input type="file" id="csvFileInput" accept=".csv" style="display:none;"></div><div id="csvPreview" style="display:none;margin-top:1rem;max-height:300px;overflow-y:auto;"></div><div class="btn-group" id="csvActions" style="display:none;"><button type="button" class="btn btn-primary" onclick="importCSVQuestions()"><i class="fas fa-check"></i> Import Questions</button></div></div>
             </div>
 
-            <!-- ALL QUESTIONS LIST -->
             <div class="card">
-                <div class="card-header">
-                    <h3><i class="fas fa-list"></i> Questions in this Assessment (<span id="totalQCount">0</span>)</h3>
-                    <div style="display:flex;gap:0.5rem;">
-                        <button type="button" class="btn btn-outline btn-sm" onclick="clearAllQuestions()">
-                            <i class="fas fa-trash"></i> Clear All
-                        </button>
-                    </div>
-                </div>
-                <div id="questionsList">
-                    <p style="text-align:center;color:var(--text-secondary);padding:2rem;">
-                        <i class="fas fa-inbox" style="font-size:2rem;display:block;margin-bottom:0.5rem;opacity:0.3;"></i>
-                        No questions yet. Use the tabs above to add questions.
-                    </p>
-                </div>
+                <div class="card-header"><h3><i class="fas fa-list"></i> Questions in this Assessment (<span id="totalQCount">0</span>)</h3><div style="display:flex;gap:0.5rem;"><button type="button" class="btn btn-outline btn-sm" onclick="clearAllQuestions()"><i class="fas fa-trash"></i> Clear All</button></div></div>
+                <div id="questionsList"><p style="text-align:center;color:var(--text-secondary);padding:2rem;"><i class="fas fa-inbox" style="font-size:2rem;display:block;margin-bottom:0.5rem;opacity:0.3;"></i>No questions yet. Use the tabs above to add questions.</p></div>
             </div>
 
             <div class="btn-group">
-                <button type="button" class="btn btn-outline" onclick="goToStep(1)">
-                    <i class="fas fa-arrow-left"></i> Back
-                </button>
-                <button type="button" class="btn btn-primary" onclick="goToStep(3)">
-                    Next: Settings & Publish <i class="fas fa-arrow-right"></i>
-                </button>
+                <button type="button" class="btn btn-outline" onclick="goToStep(1)"><i class="fas fa-arrow-left"></i> Back</button>
+                <button type="button" class="btn btn-primary" onclick="goToStep(3)">Next: Settings & Publish <i class="fas fa-arrow-right"></i></button>
             </div>
         </div>
 
         <!-- ============ STEP 3: SETTINGS & PUBLISH ============ -->
         <div class="step-panel" id="step3">
             <div class="card">
-                <div class="card-header">
-                    <h3><i class="fas fa-cog"></i> <span id="settingsTitle">Test</span> Settings</h3>
-                </div>
+                <div class="card-header"><h3><i class="fas fa-cog"></i> <span id="settingsTitle">Test</span> Settings</h3></div>
                 <div id="dynamicSettings" class="settings-grid"></div>
                 <div id="assessmentSummary" style="margin-top:1rem;padding:1rem;background:var(--info-bg);border-radius:1rem;font-size:0.85rem;"></div>
             </div>
             <div class="btn-group">
-                <button type="button" class="btn btn-outline" onclick="goToStep(2)">
-                    <i class="fas fa-arrow-left"></i> Back to Questions
-                </button>
-                <button type="button" class="btn btn-outline" id="saveDraftBtn">
-                    <i class="fas fa-save"></i> Save as Draft
-                </button>
-                <button type="button" class="btn btn-primary" id="publishBtn">
-                    <i class="fas fa-paper-plane"></i> Publish Assessment
-                </button>
+                <button type="button" class="btn btn-outline" onclick="goToStep(2)"><i class="fas fa-arrow-left"></i> Back to Questions</button>
+                <button type="button" class="btn btn-outline" id="saveDraftBtn"><i class="fas fa-save"></i> Save as Draft</button>
+                <button type="button" class="btn btn-primary" id="publishBtn"><i class="fas fa-paper-plane"></i> Publish Assessment</button>
             </div>
         </div>
-
     </form>
 </div>
 
-<!-- BANK MODAL -->
-<div class="modal-overlay" id="bankModal">
-    <div class="modal-content" style="max-width:900px;">
-        <div class="modal-header">
-            <h2><i class="fas fa-layer-group"></i> Question Bank</h2>
-            <i class="fas fa-times modal-close" onclick="closeBankModal()"></i>
-        </div>
-        <div id="bankModalContent" style="max-height:60vh;overflow-y:auto;"></div>
-    </div>
-</div>
+<div class="modal-overlay" id="bankModal"><div class="modal-content" style="max-width:900px;"><div class="modal-header"><h2><i class="fas fa-layer-group"></i> Question Bank</h2><i class="fas fa-times modal-close" onclick="closeBankModal()"></i></div><div id="bankModalContent" style="max-height:60vh;overflow-y:auto;"></div></div></div>
+<div class="loading-overlay" id="loadingOverlay"><div class="loading-content"><div class="loading-spinner"></div><h3 id="loadingText">Processing...</h3></div></div>
 
-<!-- LOADING OVERLAY -->
-<div class="loading-overlay" id="loadingOverlay">
-    <div class="loading-content">
-        <div class="loading-spinner"></div>
-        <h3 id="loadingText">Processing...</h3>
-    </div>
-</div>
-
-<script type="module">
+<script>
 const firebaseConfig = {
     apiKey: "AIzaSyADXHEiaSQ146QsGsaOCElARtpwrLE8svs",
     authDomain: "judah-c737e.firebaseapp.com",
@@ -782,981 +548,170 @@ const db = firebase.firestore();
 const remoteConfig = firebase.remoteConfig();
 remoteConfig.settings.minimumFetchIntervalMillis = 3600000;
 
-// ============================================
-// COLLECTION NAMES
-// ============================================
 const SYLLABUS_COLLECTION = 'syllabi';
 const LESSON_NOTES_COLLECTION = 'lessonNotes';
 
-// ============================================
-// GLOBAL STATE
-// ============================================
-let currentUser = null;
-let userData = null;
-let currentType = 'test';
-let subjects = [];
-let currentSubject = null;
-let questions = [];
-let selectedWeeks = [];
-let syllabusWeeks = [];
-let currentStep = 1;
-let currentSource = 'ai';
-let currentManualQType = 'mcq';
-let groq = null;
-let aiGeneratedQuestions = [];
-let bankQuestions = [];
-let docExtractedQuestions = [];
-let csvQuestions = [];
-let uploadedDocText = '';
+let currentUser = null, userData = null, currentType = 'test', subjects = [], currentSubject = null;
+let questions = [], selectedWeeks = [], syllabusWeeks = [], currentStep = 1, currentSource = 'ai', currentManualQType = 'mcq';
+let groq = null, aiGeneratedQuestions = [], bankQuestions = [], csvQuestions = [], uploadedDocText = '';
 
-// ============================================
-// UTILITY FUNCTIONS
-// ============================================
-function showToast(title, msg, type = 'info') {
-    const icons = {
-        success: 'fa-check-circle',
-        error: 'fa-exclamation-circle',
-        warning: 'fa-exclamation-triangle',
-        info: 'fa-info-circle'
-    };
-    const toast = document.createElement('div');
-    toast.className = 'toast';
-    toast.innerHTML = `<i class="fas ${icons[type]}" style="color:var(--${type === 'success' ? 'success' : type === 'error' ? 'danger' : 'info'}-text);font-size:1.2rem;"></i><div><strong>${escapeHtml(title)}</strong><br><span style="font-size:0.8rem;color:var(--text-secondary);">${escapeHtml(msg)}</span></div>`;
-    document.getElementById('toastContainer').appendChild(toast);
-    setTimeout(() => {
-        toast.style.opacity = '0';
-        toast.style.transition = '0.3s';
-        setTimeout(() => toast.remove(), 300);
-    }, 4000);
+function showToast(t,m,ty='info'){const i={success:'fa-check-circle',error:'fa-exclamation-circle',warning:'fa-exclamation-triangle',info:'fa-info-circle'};const d=document.createElement('div');d.className='toast';d.innerHTML=`<i class="fas ${i[ty]}" style="color:var(--${ty==='success'?'success':ty==='error'?'danger':'info'}-text);font-size:1.2rem;"></i><div><strong>${escapeHtml(t)}</strong><br><span style="font-size:0.8rem;color:var(--text-secondary);">${escapeHtml(m)}</span></div>`;document.getElementById('toastContainer').appendChild(d);setTimeout(()=>{d.style.opacity='0';d.style.transition='0.3s';setTimeout(()=>d.remove(),300)},4000);}
+function showLoading(m='Processing...'){document.getElementById('loadingText').textContent=m;document.getElementById('loadingOverlay').classList.add('active');}
+function hideLoading(){document.getElementById('loadingOverlay').classList.remove('active');}
+function escapeHtml(s){const d=document.createElement('div');d.textContent=s||'';return d.innerHTML;}
+function parseCSVLine(l){const r=[];let c='',q=false;for(let i=0;i<l.length;i++){const ch=l[i];if(ch==='"')q=!q;else if(ch===','&&!q){r.push(c.trim());c='';}else c+=ch;}r.push(c.trim());return r;}
+
+function refreshDebug(){
+    document.getElementById('debugAuth').textContent=currentUser?`✅ ${currentUser.email}\nUID: ${currentUser.uid}\nRole: ${userData?.role}\nClassTeaching: ${userData?.classTeaching}\nClassesTeaching: ${(userData?.classesTeaching||[]).join(', ')}`:'❌ Not logged in';
+    document.getElementById('debugClasses').textContent=`classTeaching: ${userData?.classTeaching||'none'}\nclassesTeaching: ${(userData?.classesTeaching||[]).join(', ')||'none'}\nSelected target: ${document.getElementById('targetClass')?.value||'none'}`;
+    document.getElementById('debugSubjects').textContent=subjects.length?subjects.join(', '):'No subjects';
+    document.getElementById('debugWeeks').textContent=syllabusWeeks.length?syllabusWeeks.map(w=>`Week ${w.week}: ${w.topic}`).join('\n'):'No weeks';
+    document.getElementById('debugQuestions').textContent=questions.length?questions.map((q,i)=>`Q${i+1}: [${q.type}] ${q.question?.substring(0,60)}...`).join('\n'):'0 questions';
+    document.getElementById('debugState').textContent=JSON.stringify({classTeaching:userData?.classTeaching,classesTeaching:userData?.classesTeaching,currentType,currentSubject,selectedWeeks,questionsCount:questions.length,groqReady:!!groq},null,2);
 }
+window.refreshDebug=refreshDebug;
 
-function showLoading(msg = 'Processing...') {
-    document.getElementById('loadingText').textContent = msg;
-    document.getElementById('loadingOverlay').classList.add('active');
-}
+document.getElementById('debugBtn').addEventListener('click',()=>{document.getElementById('debugModal').classList.toggle('active');if(document.getElementById('debugModal').classList.contains('active'))refreshDebug();});
 
-function hideLoading() {
-    document.getElementById('loadingOverlay').classList.remove('active');
-}
+document.getElementById('sidebarToggle').addEventListener('click',()=>{document.getElementById('sidebar').classList.toggle('collapsed');document.getElementById('mainContent').classList.toggle('expanded');const i=document.getElementById('sidebarToggle').querySelector('i');i.classList.toggle('fa-chevron-left');i.classList.toggle('fa-chevron-right');});
 
-function escapeHtml(s) {
-    const d = document.createElement('div');
-    d.textContent = s || '';
-    return d.innerHTML;
-}
+const htmlEl=document.documentElement,themeToggle=document.getElementById('themeToggle');
+const saved=localStorage.getItem('judah-theme')||'dark';htmlEl.setAttribute('data-theme',saved);themeToggle.querySelector('span').textContent=saved==='dark'?'Light':'Dark';
+themeToggle.addEventListener('click',()=>{const n=htmlEl.getAttribute('data-theme')==='dark'?'light':'dark';htmlEl.setAttribute('data-theme',n);localStorage.setItem('judah-theme',n);themeToggle.querySelector('span').textContent=n==='dark'?'Light':'Dark';});
 
-function parseCSVLine(line) {
-    const r = [];
-    let c = '';
-    let q = false;
-    for (let i = 0; i < line.length; i++) {
-        const ch = line[i];
-        if (ch === '"') {
-            q = !q;
-        } else if (ch === ',' && !q) {
-            r.push(c.trim());
-            c = '';
-        } else {
-            c += ch;
-        }
-    }
-    r.push(c.trim());
-    return r;
-}
+function goToStep(s){currentStep=s;document.querySelectorAll('.wizard-step').forEach((el,i)=>{el.classList.remove('active','completed');if(i+1<s)el.classList.add('completed');if(i+1===s)el.classList.add('active');});document.querySelectorAll('.step-panel').forEach(p=>p.classList.remove('active'));document.getElementById('step'+s).classList.add('active');if(s===2)updateQuickStats();if(s===3){renderDynamicSettings();updateAssessmentSummary();}}
+window.goToStep=goToStep;
 
-// ============================================
-// DEBUG FUNCTIONS
-// ============================================
-function refreshDebug() {
-    document.getElementById('debugAuth').textContent = currentUser 
-        ? `✅ Logged in as: ${currentUser.email}\nUID: ${currentUser.uid}\nRole: ${userData?.role || 'unknown'}\nClass: ${userData?.classTeaching || 'not set'}` 
-        : '❌ Not logged in';
-    
-    document.getElementById('debugSubjects').textContent = subjects.length 
-        ? subjects.join(', ') 
-        : 'No subjects loaded';
-    
-    document.getElementById('debugWeeks').textContent = syllabusWeeks.length 
-        ? syllabusWeeks.map(w => `Week ${w.week}: ${w.topic} (source: ${w.source})`).join('\n') 
-        : currentSubject 
-            ? `No weeks found for "${currentSubject}"\nTried: syllabi collection & lessonNotes fallback` 
-            : 'No subject selected';
-    
-    document.getElementById('debugQuestions').textContent = questions.length 
-        ? questions.map((q, i) => `Q${i + 1}: [${q.type}] ${q.question?.substring(0, 60)}... (${q.points}pt, ${q.difficulty})`).join('\n') 
-        : '0 questions';
-    
-    document.getElementById('debugFirestore').textContent = 
-        `✅ Connected\n` +
-        `Syllabus source: "${SYLLABUS_COLLECTION}"\n` +
-        `Lesson notes source: "${LESSON_NOTES_COLLECTION}"\n` +
-        `Weeks found: ${syllabusWeeks.length}\n` +
-        `Groq ready: ${!!groq}`;
-    
-    document.getElementById('debugState').textContent = JSON.stringify({
-        currentUser: currentUser?.email || 'null',
-        classTeaching: userData?.classTeaching,
-        currentType, currentSubject, currentStep,
-        selectedWeeks, questionsCount: questions.length,
-        syllabusWeeksCount: syllabusWeeks.length,
-        groqReady: !!groq
-    }, null, 2);
-}
-window.refreshDebug = refreshDebug;
+function selectType(t,c){currentType=t;document.querySelectorAll('.type-card').forEach(x=>x.classList.remove('active'));c.classList.add('active');document.getElementById('weeksSection').style.display=(t==='test'||t==='exam')?'block':'none';document.getElementById('settingsTitle').textContent={test:'Test',assignment:'Assignment',exam:'Examination'}[t];}
+window.selectType=selectType;
 
-async function testAllCollections() {
-    if (!currentUser) { showToast('Error', 'Not logged in.', 'error'); return; }
-    if (!currentSubject) { showToast('Error', 'Select a subject first.', 'warning'); return; }
-    
-    showLoading('Testing all collections...');
-    let report = '';
-    
-    try {
-        // Test 1: syllabi collection
-        const s1 = await db.collection(SYLLABUS_COLLECTION)
-            .where('teacherId', '==', currentUser.uid)
-            .where('subject', '==', currentSubject)
-            .get();
-        report += `📋 "${SYLLABUS_COLLECTION}" (teacherId+subject): ${s1.size} docs\n`;
-        if (!s1.empty) {
-            s1.docs.forEach(d => {
-                const dd = d.data();
-                report += `  - id:${d.id} status:${dd.status} weeks:${(dd.weeks||[]).length}\n`;
-            });
-        }
-        
-        // Test 2: syllabi without status
-        const s2 = await db.collection(SYLLABUS_COLLECTION)
-            .where('teacherId', '==', currentUser.uid)
-            .limit(5)
-            .get();
-        report += `\n📋 "${SYLLABUS_COLLECTION}" (teacherId only): ${s2.size} docs\n`;
-        if (!s2.empty) {
-            s2.docs.forEach(d => {
-                const dd = d.data();
-                report += `  - id:${d.id} subject:"${dd.subject}" status:${dd.status}\n`;
-            });
-        }
-        
-        // Test 3: lessonNotes
-        const s3 = await db.collection(LESSON_NOTES_COLLECTION)
-            .where('teacherId', '==', currentUser.uid)
-            .where('subject', '==', currentSubject)
-            .limit(5)
-            .get();
-        report += `\n📋 "${LESSON_NOTES_COLLECTION}" (teacherId+subject): ${s3.size} docs\n`;
-        if (!s3.empty) {
-            s3.docs.forEach(d => {
-                const dd = d.data();
-                report += `  - id:${d.id} classId:"${dd.classId}" week:${dd.week} topic:"${dd.topic}" status:${dd.status}\n`;
-            });
-        }
-        
-        // Test 4: lessonNotes without subject filter (check all)
-        const s4 = await db.collection(LESSON_NOTES_COLLECTION)
-            .where('teacherId', '==', currentUser.uid)
-            .limit(3)
-            .get();
-        report += `\n📋 "${LESSON_NOTES_COLLECTION}" (teacherId only): ${s4.size} docs\n`;
-        if (!s4.empty) {
-            s4.docs.forEach(d => {
-                const dd = d.data();
-                report += `  - id:${d.id} subject:"${dd.subject}" week:${dd.week} classId:"${dd.classId}"\n`;
-            });
-        }
-        
-        document.getElementById('debugFirestore').textContent = report || 'All collections returned empty.';
-        showToast('Test Complete', `Check debug panel for results.`, 'success');
-    } catch(e) {
-        document.getElementById('debugFirestore').textContent = `❌ Error: ${e.message}\n${e.stack}`;
-        showToast('Error', e.message, 'error');
-    }
-    hideLoading();
-    refreshDebug();
-}
-window.testAllCollections = testAllCollections;
-
-document.getElementById('debugBtn').addEventListener('click', () => {
-    document.getElementById('debugModal').classList.toggle('active');
-    if (document.getElementById('debugModal').classList.contains('active')) refreshDebug();
-});
-
-// ============================================
-// SIDEBAR & THEME
-// ============================================
-document.getElementById('sidebarToggle').addEventListener('click', () => {
-    document.getElementById('sidebar').classList.toggle('collapsed');
-    document.getElementById('mainContent').classList.toggle('expanded');
-    const icon = document.getElementById('sidebarToggle').querySelector('i');
-    icon.classList.toggle('fa-chevron-left');
-    icon.classList.toggle('fa-chevron-right');
-});
-
-const htmlEl = document.documentElement;
-const themeToggle = document.getElementById('themeToggle');
-const saved = localStorage.getItem('judah-theme') || 'dark';
-htmlEl.setAttribute('data-theme', saved);
-themeToggle.querySelector('span').textContent = saved === 'dark' ? 'Light' : 'Dark';
-themeToggle.addEventListener('click', () => {
-    const n = htmlEl.getAttribute('data-theme') === 'dark' ? 'light' : 'dark';
-    htmlEl.setAttribute('data-theme', n);
-    localStorage.setItem('judah-theme', n);
-    themeToggle.querySelector('span').textContent = n === 'dark' ? 'Light' : 'Dark';
-});
-
-// ============================================
-// WIZARD NAVIGATION
-// ============================================
-function goToStep(s) {
-    currentStep = s;
-    document.querySelectorAll('.wizard-step').forEach((el, i) => {
-        el.classList.remove('active', 'completed');
-        if (i + 1 < s) el.classList.add('completed');
-        if (i + 1 === s) el.classList.add('active');
-    });
-    document.querySelectorAll('.step-panel').forEach(p => p.classList.remove('active'));
-    document.getElementById('step' + s).classList.add('active');
-    if (s === 2) updateQuickStats();
-    if (s === 3) { renderDynamicSettings(); updateAssessmentSummary(); }
-}
-window.goToStep = goToStep;
-
-// ============================================
-// TYPE SELECTION
-// ============================================
-function selectType(type, card) {
-    currentType = type;
-    document.querySelectorAll('.type-card').forEach(c => c.classList.remove('active'));
-    card.classList.add('active');
-    document.getElementById('weeksSection').style.display = (type === 'test' || type === 'exam') ? 'block' : 'none';
-    document.getElementById('settingsTitle').textContent = { test: 'Test', assignment: 'Assignment', exam: 'Examination' }[type];
-}
-window.selectType = selectType;
-
-// ============================================
-// SUBJECT & WEEKS - FALLBACK TO lessonNotes
-// ============================================
-document.getElementById('subject').addEventListener('change', async (e) => {
-    currentSubject = e.target.value;
-    selectedWeeks = [];
-    syllabusWeeks = [];
-
-    if (!currentSubject || !currentUser) {
-        document.getElementById('weeksCheckboxes').innerHTML = 
-            '<p style="grid-column:1/-1;text-align:center;padding:2rem;color:var(--text-secondary);">' +
-            '<i class="fas fa-arrow-up"></i> Select a subject</p>';
-        return;
-    }
-
+// ============ LOAD WEEKS ============
+document.getElementById('subject').addEventListener('change',async(e)=>{
+    currentSubject=e.target.value;selectedWeeks=[];syllabusWeeks=[];
+    if(!currentSubject||!currentUser){document.getElementById('weeksCheckboxes').innerHTML='<p style="grid-column:1/-1;text-align:center;padding:2rem;color:var(--text-secondary);"><i class="fas fa-arrow-up"></i> Select a subject</p>';return;}
     showLoading('Loading weeks...');
-    try {
-        // STEP 1: Try syllabi collection first
-        let snap = await db.collection(SYLLABUS_COLLECTION)
-            .where('teacherId', '==', currentUser.uid)
-            .where('subject', '==', currentSubject)
-            .where('status', '==', 'approved')
-            .get();
-
-        if (snap.empty) {
-            snap = await db.collection(SYLLABUS_COLLECTION)
-                .where('teacherId', '==', currentUser.uid)
-                .where('subject', '==', currentSubject)
-                .get();
+    try{
+        let snap=await db.collection(SYLLABUS_COLLECTION).where('teacherId','==',currentUser.uid).where('subject','==',currentSubject).where('status','==','approved').get();
+        if(snap.empty)snap=await db.collection(SYLLABUS_COLLECTION).where('teacherId','==',currentUser.uid).where('subject','==',currentSubject).get();
+        if(!snap.empty){snap.forEach(doc=>{(doc.data().weeks||[]).forEach(w=>{syllabusWeeks.push({...w,syllabusId:doc.id,source:'syllabi'});});});}
+        if(!syllabusWeeks.length){
+            const lnSnap=await db.collection(LESSON_NOTES_COLLECTION).where('teacherId','==',currentUser.uid).where('subject','==',currentSubject).get();
+            lnSnap.forEach(doc=>{const data=doc.data();if(data.week&&data.topic){syllabusWeeks.push({week:data.week,topic:data.topic,term:data.term||'',syllabusId:doc.id,source:'lessonNotes',status:data.status||'unknown'});}});
         }
-
-        if (!snap.empty) {
-            snap.forEach(doc => {
-                (doc.data().weeks || []).forEach(w => {
-                    syllabusWeeks.push({ ...w, syllabusId: doc.id, source: 'syllabi' });
-                });
-            });
-        }
-
-        // STEP 2: FALLBACK - If no syllabi data, get weeks from lessonNotes
-        if (!syllabusWeeks.length) {
-            console.log('📚 No syllabi data, falling back to lessonNotes...');
-            const lnSnap = await db.collection(LESSON_NOTES_COLLECTION)
-                .where('teacherId', '==', currentUser.uid)
-                .where('subject', '==', currentSubject)
-                .get();
-            
-            lnSnap.forEach(doc => {
-                const data = doc.data();
-                if (data.week && data.topic) {
-                    syllabusWeeks.push({
-                        week: data.week,
-                        topic: data.topic,
-                        term: data.term || '',
-                        syllabusId: doc.id,
-                        source: 'lessonNotes',
-                        status: data.status || 'unknown'
-                    });
-                }
-            });
-        }
-
-        // Deduplicate by week number
-        const seen = new Set();
-        syllabusWeeks = syllabusWeeks.filter(w => {
-            if (seen.has(w.week)) return false;
-            seen.add(w.week);
-            return true;
-        }).sort((a, b) => a.week - b.week);
-
-        console.log('📚 Final weeks:', syllabusWeeks);
-
-        const c = document.getElementById('weeksCheckboxes');
-        if (syllabusWeeks.length) {
-            const sourceLabel = syllabusWeeks[0].source === 'lessonNotes' ? ' (from lesson notes)' : '';
-            c.innerHTML = `
-                <p style="grid-column:1/-1;font-size:0.8rem;color:var(--text-muted);margin-bottom:0.5rem;">
-                    <i class="fas fa-info-circle"></i> Loaded ${syllabusWeeks.length} weeks${sourceLabel}
-                </p>
-                ${syllabusWeeks.map(w => `
-                    <label class="week-checkbox">
-                        <input type="checkbox" value="${w.week}" onchange="toggleWeek(this)">
-                        <span>
-                            <strong>Week ${w.week}</strong>: ${escapeHtml(w.topic || 'No topic')}
-                            ${w.status && w.status !== 'approved' ? `<small style="color:var(--warning-text);">(${w.status})</small>` : ''}
-                        </span>
-                    </label>
-                `).join('')}`;
-        } else {
-            c.innerHTML = '<p style="grid-column:1/-1;text-align:center;color:var(--warning-text);padding:1rem;">' +
-                '<i class="fas fa-exclamation-triangle" style="font-size:1.5rem;display:block;margin-bottom:0.5rem;"></i>' +
-                `No weeks found for "${currentSubject}".<br>` +
-                '<small>Checked both "syllabi" and "lessonNotes" collections.<br>' +
-                'Click 🐛 then "Test All Collections" to diagnose.</small></p>';
-        }
-        hideLoading();
-        refreshDebug();
-    } catch (e) {
-        hideLoading();
-        console.error('❌ Week load error:', e);
-        document.getElementById('weeksCheckboxes').innerHTML = 
-            '<p style="grid-column:1/-1;text-align:center;color:var(--danger-text);">' +
-            'Error: ' + escapeHtml(e.message) + '</p>';
-    }
+        const seen=new Set();syllabusWeeks=syllabusWeeks.filter(w=>{if(seen.has(w.week))return false;seen.add(w.week);return true;}).sort((a,b)=>a.week-b.week);
+        const c=document.getElementById('weeksCheckboxes');
+        if(syllabusWeeks.length){c.innerHTML=`<p style="grid-column:1/-1;font-size:0.8rem;color:var(--text-muted);margin-bottom:0.5rem;"><i class="fas fa-info-circle"></i> Loaded ${syllabusWeeks.length} weeks</p>${syllabusWeeks.map(w=>`<label class="week-checkbox"><input type="checkbox" value="${w.week}" onchange="toggleWeek(this)"><span><strong>Week ${w.week}</strong>: ${escapeHtml(w.topic||'No topic')}</span></label>`).join('')}`;}
+        else{c.innerHTML='<p style="grid-column:1/-1;text-align:center;color:var(--warning-text);padding:1rem;"><i class="fas fa-exclamation-triangle"></i> No weeks found.</p>';}
+        hideLoading();refreshDebug();
+    }catch(e){hideLoading();document.getElementById('weeksCheckboxes').innerHTML='<p style="color:var(--danger-text);">Error: '+escapeHtml(e.message)+'</p>';}
 });
 
-function toggleWeek(cb) {
-    const w = parseInt(cb.value);
-    if (cb.checked) {
-        if (!selectedWeeks.includes(w)) selectedWeeks.push(w);
-    } else {
-        selectedWeeks = selectedWeeks.filter(x => x !== w);
-    }
-    selectedWeeks.sort((a, b) => a - b);
-}
-window.toggleWeek = toggleWeek;
+function toggleWeek(cb){const w=parseInt(cb.value);if(cb.checked){if(!selectedWeeks.includes(w))selectedWeeks.push(w);}else{selectedWeeks=selectedWeeks.filter(x=>x!==w);}selectedWeeks.sort((a,b)=>a-b);}
+window.toggleWeek=toggleWeek;
 
-// ============================================
-// SOURCE SWITCHING
-// ============================================
-function switchSource(src) {
-    currentSource = src;
-    document.querySelectorAll('.source-tab').forEach(t => t.classList.remove('active'));
-    document.querySelector(`.source-tab[data-source="${src}"]`)?.classList.add('active');
-    document.querySelectorAll('.source-panel').forEach(p => p.style.display = 'none');
-    const panel = document.getElementById('panel-' + src);
-    if (panel) panel.style.display = 'block';
-    if (src === 'bank') loadBankQuestions();
-}
-window.switchSource = switchSource;
+function switchSource(src){currentSource=src;document.querySelectorAll('.source-tab').forEach(t=>t.classList.remove('active'));document.querySelector(`.source-tab[data-source="${src}"]`)?.classList.add('active');document.querySelectorAll('.source-panel').forEach(p=>p.style.display='none');const panel=document.getElementById('panel-'+src);if(panel)panel.style.display='block';if(src==='bank')loadBankQuestions();}
+window.switchSource=switchSource;
 
-// ============================================
-// QUICK STATS
-// ============================================
-function updateQuickStats() {
-    document.getElementById('statQCount').textContent = questions.length;
-    const pts = questions.reduce((s, q) => s + (q.points || 1), 0);
-    document.getElementById('statPoints').textContent = pts;
-    document.getElementById('statTime').textContent = Math.round(pts * 1.5) + ' min';
-    const bankQs = questions.filter(q => q.fromBank).length;
-    document.getElementById('statBank').textContent = bankQs;
-    document.getElementById('totalQCount').textContent = questions.length;
-}
+function updateQuickStats(){document.getElementById('statQCount').textContent=questions.length;const pts=questions.reduce((s,q)=>s+(q.points||1),0);document.getElementById('statPoints').textContent=pts;document.getElementById('statTime').textContent=Math.round(pts*1.5)+' min';document.getElementById('statBank').textContent=questions.filter(q=>q.fromBank).length;document.getElementById('totalQCount').textContent=questions.length;}
 
-// ============================================
-// AI GENERATION
-// ============================================
-async function fetchContentForAI() {
-    if (!currentSubject || !selectedWeeks.length || !currentUser) return null;
-    const content = { lessonNotes: [], resources: [], teachingProcess: [] };
-    try {
-        const lnSnap = await db.collection(LESSON_NOTES_COLLECTION)
-            .where('teacherId', '==', currentUser.uid)
-            .where('subject', '==', currentSubject)
-            .where('week', 'in', selectedWeeks)
-            .where('status', '==', 'approved')
-            .get();
+// AI Generation (unchanged)
+async function fetchContentForAI(){if(!currentSubject||!selectedWeeks.length||!currentUser)return null;const content={lessonNotes:[],resources:[],teachingProcess:[]};try{const lnSnap=await db.collection(LESSON_NOTES_COLLECTION).where('teacherId','==',currentUser.uid).where('subject','==',currentSubject).where('week','in',selectedWeeks).where('status','==','approved').get();lnSnap.forEach(d=>{const dd=d.data();content.lessonNotes.push({week:dd.week,topic:dd.topic,content:dd.lessonNote||dd.lessonContent||''});if(dd.studentResource)content.resources.push({week:dd.week,topic:dd.topic,content:dd.studentResource});if(dd.teachingProcess)content.teachingProcess.push({week:dd.week,topic:dd.topic,content:dd.teachingProcess});});document.getElementById('sourceLN').className='ai-source-badge '+(content.lessonNotes.length?'active':'inactive');document.getElementById('sourceRes').className='ai-source-badge '+(content.resources.length?'active':'inactive');document.getElementById('sourceTP').className='ai-source-badge '+(content.teachingProcess.length?'active':'inactive');if(uploadedDocText){content.documentText=uploadedDocText;document.getElementById('sourceDoc').className='ai-source-badge active';}return content;}catch(e){return null;}}
+async function generateFromAllSources(){if(!groq){showToast('AI Not Ready','Contact administrator.','error');return;}if(!currentSubject||!selectedWeeks.length){showToast('Required','Select subject and weeks first.','warning');return;}const count=parseInt(document.getElementById('aiCountVal').textContent)||20;const type=document.getElementById('aiType').value;const difficulty=document.getElementById('aiDifficulty').value;showLoading('Fetching lesson content...');const content=await fetchContentForAI();if(!content||!content.lessonNotes.length){hideLoading();showToast('No Content','No approved lesson notes found.','error');return;}let context='';if(content.lessonNotes.length){context+='=== LESSON NOTES ===\n';content.lessonNotes.forEach(n=>context+=`WEEK ${n.week}: ${n.topic}\n${n.content?.substring(0,1500)||''}\n\n`);}if(content.resources.length){context+='=== STUDENT RESOURCES ===\n';content.resources.forEach(r=>context+=`WEEK ${r.week}: ${r.topic}\n${r.content?.substring(0,1500)||''}\n\n`);}if(content.teachingProcess.length){context+='=== TEACHING PROCESS ===\n';content.teachingProcess.forEach(t=>context+=`WEEK ${t.week}: ${t.topic}\n${t.content?.substring(0,1500)||''}\n\n`);}if(content.documentText)context+='=== UPLOADED DOCUMENT ===\n'+content.documentText.substring(0,3000)+'\n\n';const typeMap={mcq:'multiple choice with 4 options (A,B,C,D)',truefalse:'true/false',fillblank:'fill-in-the-blank',mixed:'a mix of MCQ, true/false, and fill-in-blank'};showLoading(`Generating ${count} questions...`);aiGeneratedQuestions=[];const batchSize=15;const totalBatches=Math.ceil(count/batchSize);for(let b=0;b<totalBatches;b++){const batchCount=Math.min(batchSize,count-b*batchSize);try{const prompt=`Generate exactly ${batchCount} ${difficulty} ${typeMap[type]} questions based STRICTLY on the content below. Return ONLY a JSON array.\n\nCONTENT:\n${context}\n\nFormat: [{"question":"...","options":["A","B","C","D"],"correct":"A","points":1,"type":"mcq","difficulty":"medium"}]`;const res=await groq.chat.completions.create({messages:[{role:'user',content:prompt}],model:'llama-3.3-70b-versatile',temperature:0.3,max_tokens:4000});const text=res.choices[0].message.content;const match=text.match(/\[[\s\S]*\]/);if(match){JSON.parse(match[0]).forEach(q=>{aiGeneratedQuestions.push({type:q.type||(q.options?'mcq':(q.correct==='True'||q.correct==='False')?'truefalse':'fillblank'),question:q.question,options:q.options||['','','',''],correct:q.correct||'A',points:q.points||1,difficulty:q.difficulty||(difficulty==='mixed'?['easy','medium','hard'][Math.floor(Math.random()*3)]:difficulty),fromAI:true});});}}catch(e){}}hideLoading();if(!aiGeneratedQuestions.length){showToast('Error','Could not generate questions.','error');return;}renderAIReview();document.getElementById('aiReviewGrid').style.display='block';document.getElementById('aiReviewActions').style.display='flex';document.getElementById('aiCount').textContent=aiGeneratedQuestions.length;showToast('Generated!',`${aiGeneratedQuestions.length} questions created.`,'success');}
+window.generateFromAllSources=generateFromAllSources;
 
-        lnSnap.forEach(d => {
-            const dd = d.data();
-            content.lessonNotes.push({
-                week: dd.week,
-                topic: dd.topic,
-                content: dd.lessonNote || dd.lessonContent || ''
-            });
-            if (dd.studentResource) content.resources.push({
-                week: dd.week,
-                topic: dd.topic,
-                content: dd.studentResource
-            });
-            if (dd.teachingProcess) content.teachingProcess.push({
-                week: dd.week,
-                topic: dd.topic,
-                content: dd.teachingProcess
-            });
-        });
+function renderAIReview(){document.getElementById('aiReviewGrid').innerHTML=aiGeneratedQuestions.map((q,i)=>`<div class="ai-review-item"><input type="checkbox" checked data-ai="${i}" onchange="updateAISelected()"><span class="q-type">${q.type}</span><span class="q-diff difficulty-${q.difficulty}">${q.difficulty}</span><span style="flex:1;">${escapeHtml(q.question?.substring(0,80))}...</span><span style="color:var(--text-muted);font-size:0.75rem;">${q.points}pt</span></div>`).join('');updateAISelected();}
+function updateAISelected(){document.getElementById('aiSelectedCount').textContent=document.querySelectorAll('#aiReviewGrid input:checked').length;}
+function selectAllAI(){document.querySelectorAll('#aiReviewGrid input').forEach(cb=>cb.checked=true);updateAISelected();}
+function deselectAllAI(){document.querySelectorAll('#aiReviewGrid input').forEach(cb=>cb.checked=false);updateAISelected();}
+function insertSelectedAI(){const s=[];document.querySelectorAll('#aiReviewGrid input:checked').forEach(cb=>{const i=parseInt(cb.dataset.ai);if(aiGeneratedQuestions[i])s.push({...aiGeneratedQuestions[i],fromAI:true});});if(!s.length){showToast('None','Select at least one.','warning');return;}questions=questions.concat(s);renderQuestions();updateQuickStats();document.getElementById('aiReviewGrid').style.display='none';document.getElementById('aiReviewActions').style.display='none';showToast('Added',`${s.length} questions added.`,'success');}
+function regenerateAI(){aiGeneratedQuestions=[];generateFromAllSources();}
+window.selectAllAI=selectAllAI;window.deselectAllAI=deselectAllAI;window.insertSelectedAI=insertSelectedAI;window.regenerateAI=regenerateAI;window.updateAISelected=updateAISelected;
 
-        document.getElementById('sourceLN').className = 'ai-source-badge ' + (content.lessonNotes.length ? 'active' : 'inactive');
-        document.getElementById('sourceRes').className = 'ai-source-badge ' + (content.resources.length ? 'active' : 'inactive');
-        document.getElementById('sourceTP').className = 'ai-source-badge ' + (content.teachingProcess.length ? 'active' : 'inactive');
-        if (uploadedDocText) {
-            content.documentText = uploadedDocText;
-            document.getElementById('sourceDoc').className = 'ai-source-badge active';
-        }
-        return content;
-    } catch (e) {
-        console.error('fetchContentForAI error:', e);
-        return null;
-    }
-}
+// Bank, Manual, Document, CSV (unchanged from previous code)
+async function loadBankQuestions(){if(!currentUser)return;const s=document.getElementById('bankSubjectFilter')?.value||'',t=document.getElementById('bankTypeFilter')?.value||'',d=document.getElementById('bankDifficultyFilter')?.value||'',v=document.getElementById('bankVisibilityFilter')?.value||'all',q=(document.getElementById('bankSearch')?.value||'').toLowerCase();try{let query=db.collection('questionBank');if(s)query=query.where('subject','==',s);if(t)query=query.where('type','==',t);if(d)query=query.where('difficulty','==',d);if(v==='mine')query=query.where('teacherId','==',currentUser.uid);else if(v==='shared')query=query.where('shared','==',true);const snap=await query.limit(100).get();bankQuestions=[];snap.forEach(d=>bankQuestions.push({id:d.id,...d.data()}));if(q)bankQuestions=bankQuestions.filter(x=>(x.question||'').toLowerCase().includes(q));renderBankList();}catch(e){}}
+function renderBankList(){const c=document.getElementById('bankQuestionsList');if(!bankQuestions.length){c.innerHTML='<p style="text-align:center;padding:2rem;color:var(--text-secondary);">No questions found.</p>';return;}c.innerHTML=bankQuestions.map((q,i)=>`<div class="ai-review-item"><input type="checkbox" data-bank="${i}" onchange="updateBankSelected()"><span class="q-type">${q.type}</span><span class="q-diff difficulty-${q.difficulty}">${q.difficulty}</span><span style="flex:1;">${escapeHtml((q.question||'').substring(0,80))}...</span><span style="color:var(--text-muted);">${q.points||1}pt</span></div>`).join('');updateBankSelected();}
+function updateBankSelected(){document.getElementById('bankSelectedCount').textContent=document.querySelectorAll('#bankQuestionsList input:checked').length;}
+function toggleAllBank(){const a=document.querySelectorAll('#bankQuestionsList input');const any=Array.from(a).some(cb=>cb.checked);a.forEach(cb=>cb.checked=!any);updateBankSelected();}
+function addBankToAssessment(){const s=[];document.querySelectorAll('#bankQuestionsList input:checked').forEach(cb=>{const i=parseInt(cb.dataset.bank);if(bankQuestions[i])s.push({...bankQuestions[i],fromBank:true});});if(!s.length){showToast('None','Select questions first.','warning');return;}questions=questions.concat(s);renderQuestions();updateQuickStats();showToast('Added',`${s.length} bank questions added.`,'success');}
+function closeBankModal(){document.getElementById('bankModal').classList.remove('active');}
+window.loadBankQuestions=loadBankQuestions;window.updateBankSelected=updateBankSelected;window.toggleAllBank=toggleAllBank;window.addBankToAssessment=addBankToAssessment;window.closeBankModal=closeBankModal;
 
-async function generateFromAllSources() {
-    if (!groq) { showToast('AI Not Ready', 'Contact administrator.', 'error'); return; }
-    if (!currentSubject || !selectedWeeks.length) {
-        showToast('Required', 'Select subject and weeks first.', 'warning'); return;
-    }
+function setManualQType(type,btn){currentManualQType=type;document.querySelectorAll('#qTypeBtns .btn').forEach(b=>b.classList.remove('active'));btn.classList.add('active');document.getElementById('mqOptions').style.display=(type==='mcq')?'grid':'none';document.getElementById('mqCorrectGroup').style.display=(type==='theory')?'none':'block';if(type==='truefalse')document.getElementById('mqCorrect').innerHTML='<option value="True">True</option><option value="False">False</option>';else document.getElementById('mqCorrect').innerHTML='<option value="A">A</option><option value="B">B</option><option value="C">C</option><option value="D">D</option>';}
+function addManualQuestion(){const qText=document.getElementById('mqQuestion').value.trim();if(!qText){showToast('Required','Enter question text.','warning');return;}const q={type:currentManualQType,question:qText,options:currentManualQType==='mcq'?[document.getElementById('mqOptA').value.trim(),document.getElementById('mqOptB').value.trim(),document.getElementById('mqOptC').value.trim(),document.getElementById('mqOptD').value.trim()]:['','','',''],correct:currentManualQType==='theory'?'':document.getElementById('mqCorrect').value,points:parseInt(document.getElementById('mqPoints').value)||1,difficulty:document.getElementById('mqDifficulty').value,fromManual:true};questions.push(q);saveToQuestionBank(q);renderQuestions();updateQuickStats();document.getElementById('mqQuestion').value='';['mqOptA','mqOptB','mqOptC','mqOptD'].forEach(id=>document.getElementById(id).value='');showToast('Added','Question added & saved to bank.','success');}
+async function saveToQuestionBank(q){if(!currentUser||!currentSubject)return;try{await db.collection('questionBank').add({teacherId:currentUser.uid,teacherName:`${userData.firstName||''} ${userData.surname||''}`.trim(),subject:currentSubject,type:q.type,question:q.question,options:q.options||[],correct:q.correct,points:q.points||1,difficulty:q.difficulty||'medium',shared:false,usageCount:0,createdAt:firebase.firestore.FieldValue.serverTimestamp()});}catch(e){}}
+window.setManualQType=setManualQType;window.addManualQuestion=addManualQuestion;
 
-    const count = parseInt(document.getElementById('aiCountVal').textContent) || 20;
-    const type = document.getElementById('aiType').value;
-    const difficulty = document.getElementById('aiDifficulty').value;
+document.getElementById('docUploadArea').addEventListener('click',()=>document.getElementById('docFile').click());
+document.getElementById('docFile').addEventListener('change',e=>{if(e.target.files[0])processDocument(e.target.files[0]);});
+async function processDocument(file){showLoading('Reading...');try{const text=await file.text();uploadedDocText=text;hideLoading();document.getElementById('sourceDoc').className='ai-source-badge active';document.getElementById('docResult').style.display='block';document.getElementById('docResult').innerHTML=`<p><strong>📄 ${escapeHtml(file.name)}</strong> — ${text.length} chars loaded.</p>`;document.getElementById('docActions').style.display='flex';}catch(e){hideLoading();showToast('Error','Could not read file.','error');}}
 
-    showLoading('Fetching lesson content...');
-    const content = await fetchContentForAI();
-    if (!content || !content.lessonNotes.length) {
-        hideLoading();
-        showToast('No Content', 'No approved lesson notes found for the selected weeks.', 'error');
-        return;
-    }
+document.getElementById('csvUploadArea').addEventListener('click',()=>document.getElementById('csvFileInput').click());
+document.getElementById('csvFileInput').addEventListener('change',e=>{if(e.target.files[0])parseCSVFile(e.target.files[0]);});
+function parseCSVFile(file){const reader=new FileReader();reader.onload=e=>{const lines=e.target.result.split('\n').filter(l=>l.trim());if(lines.length<2){showToast('Invalid','CSV needs header+data.','error');return;}csvQuestions=[];for(let i=1;i<lines.length;i++){const row=parseCSVLine(lines[i]).map(c=>c.replace(/^"|"$/g,'').trim());if(row.length>=6&&row[0]){const correct=row[5].toUpperCase();if(['A','B','C','D'].includes(correct))csvQuestions.push({type:'mcq',question:row[0],options:[row[1]||'',row[2]||'',row[3]||'',row[4]||''],correct,points:parseInt(row[6])||1,difficulty:row[7]||'medium',fromCSV:true});else if(correct==='TRUE'||correct==='FALSE')csvQuestions.push({type:'truefalse',question:row[0],options:['','','',''],correct:correct==='TRUE'?'True':'False',points:parseInt(row[6])||1,difficulty:row[7]||'medium',fromCSV:true});else csvQuestions.push({type:'fillblank',question:row[0],options:['','','',''],correct:row[5],points:parseInt(row[6])||1,difficulty:row[7]||'medium',fromCSV:true});}}document.getElementById('csvPreview').style.display='block';document.getElementById('csvPreview').innerHTML=`<table><thead><tr><th>#</th><th>Q</th><th>Type</th><th>Ans</th></tr></thead><tbody>${csvQuestions.slice(0,10).map((q,i)=>`<tr><td>${i+1}</td><td>${escapeHtml(q.question.substring(0,50))}</td><td>${q.type}</td><td>${q.correct}</td></tr>`).join('')}</tbody></table><p>${csvQuestions.length} loaded.</p>`;document.getElementById('csvActions').style.display='flex';};reader.readAsText(file);}
+function importCSVQuestions(){if(!csvQuestions.length)return;questions=questions.concat(csvQuestions);csvQuestions.forEach(q=>saveToQuestionBank(q));renderQuestions();updateQuickStats();document.getElementById('csvPreview').style.display='none';document.getElementById('csvActions').style.display='none';showToast('Imported',`${csvQuestions.length} added.`,'success');}
+window.importCSVQuestions=importCSVQuestions;
 
-    let context = '';
-    if (content.lessonNotes.length) {
-        context += '=== LESSON NOTES ===\n';
-        content.lessonNotes.forEach(n => context += `WEEK ${n.week}: ${n.topic}\n${n.content?.substring(0, 1500) || ''}\n\n`);
-    }
-    if (content.resources.length) {
-        context += '=== STUDENT RESOURCES ===\n';
-        content.resources.forEach(r => context += `WEEK ${r.week}: ${r.topic}\n${r.content?.substring(0, 1500) || ''}\n\n`);
-    }
-    if (content.teachingProcess.length) {
-        context += '=== TEACHING PROCESS ===\n';
-        content.teachingProcess.forEach(t => context += `WEEK ${t.week}: ${t.topic}\n${t.content?.substring(0, 1500) || ''}\n\n`);
-    }
-    if (content.documentText) context += '=== UPLOADED DOCUMENT ===\n' + content.documentText.substring(0, 3000) + '\n\n';
+function renderQuestions(){const c=document.getElementById('questionsList');document.getElementById('totalQCount').textContent=questions.length;if(!questions.length){c.innerHTML='<p style="text-align:center;padding:2rem;">No questions yet.</p>';return;}c.innerHTML=questions.map((q,i)=>{let opts='';if(q.type==='mcq')opts=`<div class="question-options">${['A','B','C','D'].map(l=>`<div class="question-option"><input type="radio" name="qc_${i}" ${q.correct===l?'checked':''} onclick="setCorrect(${i},'${l}')"><span><strong>${l}.</strong> ${escapeHtml(q.options[l.charCodeAt(0)-65]||'(empty)')}</span></div>`).join('')}</div>`;else if(q.type==='truefalse')opts=`<div class="question-options"><div class="question-option"><input type="radio" name="qc_${i}" ${q.correct==='True'?'checked':''} onclick="setCorrect(${i},'True')"><span>True</span></div><div class="question-option"><input type="radio" name="qc_${i}" ${q.correct==='False'?'checked':''} onclick="setCorrect(${i},'False')"><span>False</span></div></div>`;else if(q.type==='fillblank')opts=`<p style="color:var(--success-text);">Answer: ${escapeHtml(q.correct||'')}</p>`;const badges=[];if(q.fromAI)badges.push('<span class="type-badge-sm">🤖 AI</span>');if(q.fromBank)badges.push('<span class="type-badge-sm">📚 Bank</span>');if(q.fromManual)badges.push('<span class="type-badge-sm">✍️ Manual</span>');if(q.fromCSV)badges.push('<span class="type-badge-sm">📊 CSV</span>');return`<div class="question-item"><div class="question-header"><span class="question-text"><strong>Q${i+1}:</strong> ${escapeHtml(q.question||'')}</span><div style="display:flex;gap:0.4rem;align-items:center;flex-wrap:wrap;">${badges.join('')}<span class="type-badge-sm">${q.type}</span><span class="difficulty-${q.difficulty}" style="padding:0.2rem 0.7rem;border-radius:1rem;">${q.difficulty}</span><span class="correct-badge">${q.points||1}pt</span><button class="btn btn-sm btn-outline" onclick="editQ(${i})"><i class="fas fa-edit"></i></button><button class="btn btn-sm btn-danger" onclick="removeQ(${i})"><i class="fas fa-trash"></i></button></div></div>${opts}</div>`;}).join('');updateQuickStats();}
+function setCorrect(i,v){if(questions[i])questions[i].correct=v;}
+function removeQ(i){if(confirm('Delete?')){questions.splice(i,1);renderQuestions();}}
+function clearAllQuestions(){if(confirm('Remove ALL?')){questions=[];renderQuestions();}}
+window.setCorrect=setCorrect;window.removeQ=removeQ;window.clearAllQuestions=clearAllQuestions;
 
-    const typeMap = {
-        mcq: 'multiple choice with 4 options (A,B,C,D)',
-        truefalse: 'true/false',
-        fillblank: 'fill-in-the-blank',
-        mixed: 'a mix of MCQ, true/false, and fill-in-blank'
-    };
+function renderDynamicSettings(){const div=document.getElementById('dynamicSettings');if(currentType==='test')div.innerHTML=`<div class="form-group"><label><i class="fas fa-clock"></i> Duration (minutes) *</label><input type="number" id="duration" class="form-control" value="${Math.round(questions.length*1.5)||30}" min="1"></div><div class="form-group"><label><i class="fas fa-random"></i> Randomization</label><div class="checkbox-item"><input type="checkbox" id="randomizeQuestions" checked><span>Randomize question order</span></div><div class="checkbox-item" style="margin-top:0.5rem;"><input type="checkbox" id="randomizeOptions" checked><span>Randomize MCQ options</span></div></div><div class="form-group"><label><i class="fas fa-eye"></i> Auto Grade</label><div class="checkbox-item"><input type="checkbox" id="autoGrade" checked><span>Auto-grade on submission</span></div></div>`;else if(currentType==='assignment')div.innerHTML=`<div class="form-group"><label><i class="fas fa-calendar-alt"></i> Due Date *</label><input type="datetime-local" id="dueDate" class="form-control" required></div><div class="form-group"><label><i class="fas fa-star"></i> Total Marks</label><input type="number" id="totalMarks" class="form-control" value="20" min="1"></div><div class="form-group"><label><i class="fas fa-upload"></i> Submission Type</label><select id="submissionType" class="form-control"><option value="text">Text</option><option value="file">File</option><option value="both">Both</option></select></div>`;else div.innerHTML=`<div class="form-group"><label><i class="fas fa-clock"></i> Duration (minutes) *</label><input type="number" id="duration" class="form-control" value="120" min="1"></div><div class="form-group"><label><i class="fas fa-calendar-alt"></i> Start *</label><input type="datetime-local" id="startDate" class="form-control" required></div><div class="form-group"><label><i class="fas fa-calendar-check"></i> End *</label><input type="datetime-local" id="endDate" class="form-control" required></div><div class="form-group"><label><i class="fas fa-random"></i> Randomization</label><div class="checkbox-item"><input type="checkbox" id="randomizeQuestions" checked><span>Randomize questions</span></div><div class="checkbox-item"><input type="checkbox" id="randomizeOptions" checked><span>Randomize options</span></div></div>`;}
+function updateAssessmentSummary(){const tp=questions.reduce((s,q)=>s+(q.points||1),0);document.getElementById('assessmentSummary').innerHTML=`<strong>📋 Summary:</strong><br>📝 ${questions.length} questions | ⭐ ${tp} total points | 📂 ${currentType} | 📚 ${currentSubject||'Not set'} | 🏫 ${document.getElementById('targetClass')?.value||'No class'}`;}
 
-    showLoading(`Generating ${count} questions in batches...`);
-    aiGeneratedQuestions = [];
+function validateAssessment(status){const errors=[];if(!document.getElementById('targetClass')?.value)errors.push('Select a target class.');if(!currentSubject)errors.push('Select a subject.');const title=document.getElementById('title')?.value?.trim();if(!title)errors.push('Enter a title.');if(currentType!=='assignment'&&!questions.length)errors.push('Add at least one question.');if(currentType==='assignment'&&!document.getElementById('dueDate')?.value)errors.push('Set a due date.');if(currentType==='exam'){const s=document.getElementById('startDate')?.value,e=document.getElementById('endDate')?.value;if(!s)errors.push('Set start date.');if(!e)errors.push('Set end date.');if(s&&e&&new Date(s)>=new Date(e))errors.push('End must be after start.');}questions.forEach((q,i)=>{if(!q.question?.trim())errors.push(`Q${i+1} empty.`);if(q.type==='mcq'&&q.options.filter(o=>!o?.trim()).length>2)errors.push(`Q${i+1}: Fill at least 2 options.`);});return errors;}
 
-    const batchSize = 15;
-    const totalBatches = Math.ceil(count / batchSize);
-
-    for (let b = 0; b < totalBatches; b++) {
-        const batchCount = Math.min(batchSize, count - b * batchSize);
-        try {
-            const prompt = `Generate exactly ${batchCount} ${difficulty} ${typeMap[type]} questions based STRICTLY on the content below. Return ONLY a JSON array.\n\nCONTENT:\n${context}\n\nFormat: [{"question":"...","options":["A","B","C","D"],"correct":"A","points":1,"type":"mcq","difficulty":"medium"}]`;
-            const res = await groq.chat.completions.create({
-                messages: [{ role: 'user', content: prompt }],
-                model: 'llama-3.3-70b-versatile',
-                temperature: 0.3,
-                max_tokens: 4000
-            });
-            const text = res.choices[0].message.content;
-            const match = text.match(/\[[\s\S]*\]/);
-            if (match) {
-                JSON.parse(match[0]).forEach(q => {
-                    aiGeneratedQuestions.push({
-                        type: q.type || (q.options ? 'mcq' : (q.correct === 'True' || q.correct === 'False') ? 'truefalse' : 'fillblank'),
-                        question: q.question,
-                        options: q.options || ['', '', '', ''],
-                        correct: q.correct || 'A',
-                        points: q.points || 1,
-                        difficulty: q.difficulty || (difficulty === 'mixed' ? ['easy', 'medium', 'hard'][Math.floor(Math.random() * 3)] : difficulty),
-                        fromAI: true
-                    });
-                });
-            }
-        } catch (e) { console.error('Batch error:', e); }
-    }
-
-    hideLoading();
-    if (!aiGeneratedQuestions.length) { showToast('Error', 'Could not generate questions.', 'error'); return; }
-
-    renderAIReview();
-    document.getElementById('aiReviewGrid').style.display = 'block';
-    document.getElementById('aiReviewActions').style.display = 'flex';
-    document.getElementById('aiCount').textContent = aiGeneratedQuestions.length;
-    showToast('Generated!', `${aiGeneratedQuestions.length} questions created.`, 'success');
-}
-window.generateFromAllSources = generateFromAllSources;
-
-function renderAIReview() {
-    document.getElementById('aiReviewGrid').innerHTML = aiGeneratedQuestions.map((q, i) => `
-        <div class="ai-review-item">
-            <input type="checkbox" checked data-ai="${i}" onchange="updateAISelected()">
-            <span class="q-type">${q.type}</span>
-            <span class="q-diff difficulty-${q.difficulty}">${q.difficulty}</span>
-            <span style="flex:1;">${escapeHtml(q.question?.substring(0, 80))}...</span>
-            <span style="color:var(--text-muted);font-size:0.75rem;">${q.points}pt</span>
-        </div>
-    `).join('');
-    updateAISelected();
-}
-
-function updateAISelected() {
-    document.getElementById('aiSelectedCount').textContent = document.querySelectorAll('#aiReviewGrid input:checked').length;
-}
-function selectAllAI() {
-    document.querySelectorAll('#aiReviewGrid input').forEach(cb => cb.checked = true);
-    updateAISelected();
-}
-function deselectAllAI() {
-    document.querySelectorAll('#aiReviewGrid input').forEach(cb => cb.checked = false);
-    updateAISelected();
-}
-function insertSelectedAI() {
-    const selected = [];
-    document.querySelectorAll('#aiReviewGrid input:checked').forEach(cb => {
-        const i = parseInt(cb.dataset.ai);
-        if (aiGeneratedQuestions[i]) selected.push({ ...aiGeneratedQuestions[i], fromAI: true });
-    });
-    if (!selected.length) { showToast('None Selected', 'Select at least one.', 'warning'); return; }
-    questions = questions.concat(selected);
-    renderQuestions();
-    updateQuickStats();
-    document.getElementById('aiReviewGrid').style.display = 'none';
-    document.getElementById('aiReviewActions').style.display = 'none';
-    showToast('Added', `${selected.length} questions added.`, 'success');
-}
-function regenerateAI() {
-    aiGeneratedQuestions = [];
-    generateFromAllSources();
-}
-window.selectAllAI = selectAllAI;
-window.deselectAllAI = deselectAllAI;
-window.insertSelectedAI = insertSelectedAI;
-window.regenerateAI = regenerateAI;
-window.updateAISelected = updateAISelected;
-
-// ============================================
-// QUESTION BANK
-// ============================================
-async function loadBankQuestions() {
-    if (!currentUser) return;
-    const subject = document.getElementById('bankSubjectFilter')?.value || '';
-    const type = document.getElementById('bankTypeFilter')?.value || '';
-    const difficulty = document.getElementById('bankDifficultyFilter')?.value || '';
-    const visibility = document.getElementById('bankVisibilityFilter')?.value || 'all';
-    const search = (document.getElementById('bankSearch')?.value || '').toLowerCase();
-
-    try {
-        let query = db.collection('questionBank');
-        if (subject) query = query.where('subject', '==', subject);
-        if (type) query = query.where('type', '==', type);
-        if (difficulty) query = query.where('difficulty', '==', difficulty);
-        if (visibility === 'mine') query = query.where('teacherId', '==', currentUser.uid);
-        else if (visibility === 'shared') query = query.where('shared', '==', true);
-
-        const snap = await query.limit(100).get();
-        bankQuestions = [];
-        snap.forEach(d => bankQuestions.push({ id: d.id, ...d.data() }));
-        if (search) bankQuestions = bankQuestions.filter(q => (q.question || '').toLowerCase().includes(search));
-        renderBankList();
-    } catch (e) { console.error('Bank load error:', e); }
-}
-
-function renderBankList() {
-    const c = document.getElementById('bankQuestionsList');
-    if (!bankQuestions.length) {
-        c.innerHTML = '<p style="text-align:center;padding:2rem;color:var(--text-secondary);"><i class="fas fa-inbox" style="font-size:2rem;display:block;margin-bottom:0.5rem;opacity:0.3;"></i>No questions found.</p>';
-        return;
-    }
-    c.innerHTML = bankQuestions.map((q, i) => `
-        <div class="ai-review-item">
-            <input type="checkbox" data-bank="${i}" onchange="updateBankSelected()">
-            <span class="q-type">${q.type}</span>
-            <span class="q-diff difficulty-${q.difficulty}">${q.difficulty}</span>
-            <span style="flex:1;">${escapeHtml((q.question || '').substring(0, 80))}...</span>
-            <span style="color:var(--text-muted);font-size:0.7rem;">${q.shared ? '🌍' : ''} ${q.subject || ''}</span>
-            <span style="color:var(--text-muted);font-size:0.75rem;">${q.points || 1}pt</span>
-        </div>
-    `).join('');
-    updateBankSelected();
-}
-
-function updateBankSelected() {
-    document.getElementById('bankSelectedCount').textContent = document.querySelectorAll('#bankQuestionsList input:checked').length;
-}
-function toggleAllBank() {
-    const all = document.querySelectorAll('#bankQuestionsList input');
-    const any = Array.from(all).some(cb => cb.checked);
-    all.forEach(cb => cb.checked = !any);
-    updateBankSelected();
-}
-function addBankToAssessment() {
-    const selected = [];
-    document.querySelectorAll('#bankQuestionsList input:checked').forEach(cb => {
-        const i = parseInt(cb.dataset.bank);
-        if (bankQuestions[i]) selected.push({ ...bankQuestions[i], fromBank: true });
-    });
-    if (!selected.length) { showToast('None', 'Select questions first.', 'warning'); return; }
-    questions = questions.concat(selected);
-    renderQuestions();
-    updateQuickStats();
-    showToast('Added', `${selected.length} bank questions added.`, 'success');
-}
-function closeBankModal() { document.getElementById('bankModal').classList.remove('active'); }
-window.loadBankQuestions = loadBankQuestions;
-window.updateBankSelected = updateBankSelected;
-window.toggleAllBank = toggleAllBank;
-window.addBankToAssessment = addBankToAssessment;
-window.closeBankModal = closeBankModal;
-
-// ============================================
-// MANUAL QUESTION
-// ============================================
-function setManualQType(type, btn) {
-    currentManualQType = type;
-    document.querySelectorAll('#qTypeBtns .btn').forEach(b => b.classList.remove('active'));
-    btn.classList.add('active');
-    document.getElementById('mqOptions').style.display = (type === 'mcq') ? 'grid' : 'none';
-    document.getElementById('mqCorrectGroup').style.display = (type === 'theory') ? 'none' : 'block';
-    if (type === 'truefalse') {
-        document.getElementById('mqCorrect').innerHTML = '<option value="True">True</option><option value="False">False</option>';
-    } else {
-        document.getElementById('mqCorrect').innerHTML = '<option value="A">A</option><option value="B">B</option><option value="C">C</option><option value="D">D</option>';
-    }
-}
-
-function addManualQuestion() {
-    const qText = document.getElementById('mqQuestion').value.trim();
-    if (!qText) { showToast('Required', 'Enter question text.', 'warning'); return; }
-
-    const q = {
-        type: currentManualQType,
-        question: qText,
-        options: currentManualQType === 'mcq' ? [
-            document.getElementById('mqOptA').value.trim(),
-            document.getElementById('mqOptB').value.trim(),
-            document.getElementById('mqOptC').value.trim(),
-            document.getElementById('mqOptD').value.trim()
-        ] : ['', '', '', ''],
-        correct: currentManualQType === 'theory' ? '' : document.getElementById('mqCorrect').value,
-        points: parseInt(document.getElementById('mqPoints').value) || 1,
-        difficulty: document.getElementById('mqDifficulty').value,
-        fromManual: true
-    };
-
-    questions.push(q);
-    saveToQuestionBank(q);
-    renderQuestions();
-    updateQuickStats();
-    document.getElementById('mqQuestion').value = '';
-    ['mqOptA', 'mqOptB', 'mqOptC', 'mqOptD'].forEach(id => document.getElementById(id).value = '');
-    showToast('Added', 'Question added & saved to bank.', 'success');
-}
-window.setManualQType = setManualQType;
-window.addManualQuestion = addManualQuestion;
-
-async function saveToQuestionBank(q) {
-    if (!currentUser || !currentSubject) return;
-    try {
-        await db.collection('questionBank').add({
-            teacherId: currentUser.uid,
-            teacherName: `${userData.firstName || ''} ${userData.surname || ''}`.trim(),
-            subject: currentSubject,
-            type: q.type,
-            question: q.question,
-            options: q.options || [],
-            correct: q.correct,
-            points: q.points || 1,
-            difficulty: q.difficulty || 'medium',
-            shared: false,
-            usageCount: 0,
-            createdAt: firebase.firestore.FieldValue.serverTimestamp()
-        });
-    } catch (e) { console.error('Bank save error:', e); }
-}
-
-// ============================================
-// DOCUMENT UPLOAD
-// ============================================
-document.getElementById('docUploadArea').addEventListener('click', () => document.getElementById('docFile').click());
-document.getElementById('docFile').addEventListener('change', e => { if (e.target.files[0]) processDocument(e.target.files[0]); });
-
-async function processDocument(file) {
-    showLoading('Reading document...');
-    try {
-        const text = await file.text();
-        uploadedDocText = text;
-        hideLoading();
-        document.getElementById('sourceDoc').className = 'ai-source-badge active';
-        showToast('Document Loaded', 'Use AI Generate to extract questions.', 'success');
-        document.getElementById('docResult').style.display = 'block';
-        document.getElementById('docResult').innerHTML = `<p><strong>📄 ${escapeHtml(file.name)}</strong> — ${text.length} characters loaded.</p>`;
-        document.getElementById('docActions').style.display = 'flex';
-    } catch (e) { hideLoading(); showToast('Error', 'Could not read file.', 'error'); }
-}
-function selectAllDoc() {}
-function insertDocQuestions() { showToast('Info', 'Use AI Generate tab.', 'info'); }
-window.selectAllDoc = selectAllDoc;
-window.insertDocQuestions = insertDocQuestions;
-
-// ============================================
-// CSV UPLOAD
-// ============================================
-document.getElementById('csvUploadArea').addEventListener('click', () => document.getElementById('csvFileInput').click());
-document.getElementById('csvFileInput').addEventListener('change', e => { if (e.target.files[0]) parseCSVFile(e.target.files[0]); });
-document.getElementById('downloadTemplateBtn').addEventListener('click', () => {
-    const csv = 'Question,Option A,Option B,Option C,Option D,Correct,Points,Difficulty\n"What is 2+2?",1,2,3,4,C,1,easy\n"Capital of Nigeria?",Lagos,Abuja,Kano,Ibadan,B,2,medium';
-    const blob = new Blob([csv], { type: 'text/csv' });
-    const a = document.createElement('a');
-    a.href = URL.createObjectURL(blob);
-    a.download = 'question_template.csv';
-    a.click();
-});
-
-function parseCSVFile(file) {
-    const reader = new FileReader();
-    reader.onload = e => {
-        const lines = e.target.result.split('\n').filter(l => l.trim());
-        if (lines.length < 2) { showToast('Invalid', 'CSV needs header + data.', 'error'); return; }
-        csvQuestions = [];
-        for (let i = 1; i < lines.length; i++) {
-            const row = parseCSVLine(lines[i]).map(c => c.replace(/^"|"$/g, '').trim());
-            if (row.length >= 6 && row[0]) {
-                const correct = row[5].toUpperCase();
-                if (['A', 'B', 'C', 'D'].includes(correct)) {
-                    csvQuestions.push({ type: 'mcq', question: row[0], options: [row[1] || '', row[2] || '', row[3] || '', row[4] || ''], correct, points: parseInt(row[6]) || 1, difficulty: row[7] || 'medium', fromCSV: true });
-                } else if (correct === 'TRUE' || correct === 'FALSE') {
-                    csvQuestions.push({ type: 'truefalse', question: row[0], options: ['', '', '', ''], correct: correct === 'TRUE' ? 'True' : 'False', points: parseInt(row[6]) || 1, difficulty: row[7] || 'medium', fromCSV: true });
-                } else {
-                    csvQuestions.push({ type: 'fillblank', question: row[0], options: ['', '', '', ''], correct: row[5], points: parseInt(row[6]) || 1, difficulty: row[7] || 'medium', fromCSV: true });
-                }
-            }
-        }
-        document.getElementById('csvPreview').style.display = 'block';
-        document.getElementById('csvPreview').innerHTML = `<table><thead><tr><th>#</th><th>Question</th><th>Type</th><th>Correct</th><th>Pts</th></tr></thead><tbody>${csvQuestions.slice(0, 10).map((q, i) => `<tr><td>${i + 1}</td><td>${escapeHtml(q.question.substring(0, 50))}</td><td>${q.type}</td><td>${q.correct}</td><td>${q.points}</td></tr>`).join('')}</tbody></table><p>${csvQuestions.length} questions loaded.</p>`;
-        document.getElementById('csvActions').style.display = 'flex';
-    };
-    reader.readAsText(file);
-}
-
-function importCSVQuestions() {
-    if (!csvQuestions.length) return;
-    questions = questions.concat(csvQuestions);
-    csvQuestions.forEach(q => saveToQuestionBank(q));
-    renderQuestions();
-    updateQuickStats();
-    document.getElementById('csvPreview').style.display = 'none';
-    document.getElementById('csvActions').style.display = 'none';
-    showToast('Imported', `${csvQuestions.length} questions added.`, 'success');
-}
-window.importCSVQuestions = importCSVQuestions;
-
-// ============================================
-// QUESTION LIST RENDERING
-// ============================================
-function renderQuestions() {
-    const c = document.getElementById('questionsList');
-    document.getElementById('totalQCount').textContent = questions.length;
-
-    if (!questions.length) {
-        c.innerHTML = '<p style="text-align:center;color:var(--text-secondary);padding:2rem;"><i class="fas fa-inbox" style="font-size:2rem;display:block;margin-bottom:0.5rem;opacity:0.3;"></i>No questions yet.</p>';
-        return;
-    }
-
-    c.innerHTML = questions.map((q, i) => {
-        let opts = '';
-        if (q.type === 'mcq') {
-            opts = `<div class="question-options">${['A', 'B', 'C', 'D'].map(l => `<div class="question-option"><input type="radio" name="qc_${i}" ${q.correct === l ? 'checked' : ''} onclick="setCorrect(${i},'${l}')"><span><strong>${l}.</strong> ${escapeHtml(q.options[l.charCodeAt(0) - 65] || '(empty)')}</span></div>`).join('')}</div>`;
-        } else if (q.type === 'truefalse') {
-            opts = `<div class="question-options"><div class="question-option"><input type="radio" name="qc_${i}" ${q.correct === 'True' ? 'checked' : ''} onclick="setCorrect(${i},'True')"><span>True</span></div><div class="question-option"><input type="radio" name="qc_${i}" ${q.correct === 'False' ? 'checked' : ''} onclick="setCorrect(${i},'False')"><span>False</span></div></div>`;
-        } else if (q.type === 'fillblank') {
-            opts = `<p style="color:var(--success-text);font-size:0.85rem;">Answer: ${escapeHtml(q.correct || '')}</p>`;
-        } else if (q.type === 'theory') {
-            opts = `<p style="color:var(--text-secondary);font-size:0.85rem;">Model Answer: ${escapeHtml((q.correct || '').substring(0, 100))}</p>`;
-        }
-
-        const badges = [];
-        if (q.fromAI) badges.push('<span class="type-badge-sm">🤖 AI</span>');
-        if (q.fromBank) badges.push('<span class="type-badge-sm">📚 Bank</span>');
-        if (q.fromManual) badges.push('<span class="type-badge-sm">✍️ Manual</span>');
-        if (q.fromCSV) badges.push('<span class="type-badge-sm">📊 CSV</span>');
-
-        return `<div class="question-item"><div class="question-header"><span class="question-text"><strong>Q${i + 1}:</strong> ${escapeHtml(q.question || '')}</span><div style="display:flex;gap:0.4rem;align-items:center;flex-wrap:wrap;">${badges.join('')}<span class="type-badge-sm">${q.type}</span><span class="difficulty-${q.difficulty}" style="padding:0.2rem 0.7rem;border-radius:1rem;font-size:0.7rem;font-weight:700;">${q.difficulty}</span><span class="correct-badge">${q.points || 1}pt</span><button class="btn btn-sm btn-outline" onclick="editQ(${i})"><i class="fas fa-edit"></i></button><button class="btn btn-sm btn-danger" onclick="removeQ(${i})"><i class="fas fa-trash"></i></button></div></div>${opts}</div>`;
-    }).join('');
-
-    updateQuickStats();
-}
-
-function setCorrect(i, v) { if (questions[i]) questions[i].correct = v; }
-function removeQ(i) { if (confirm('Delete question ' + (i + 1) + '?')) { questions.splice(i, 1); renderQuestions(); } }
-function editQ(i) {
-    const q = questions[i]; if (!q) return;
-    const t = prompt('Question text:', q.question); if (t !== null) q.question = t;
-    if (q.type === 'mcq') { for (let j = 0; j < 4; j++) { const o = prompt(`Option ${String.fromCharCode(65 + j)}:`, q.options[j] || ''); if (o !== null) q.options[j] = o; } }
-    const p = prompt('Points:', q.points || 1); if (p !== null) q.points = parseInt(p) || 1;
-    const d = prompt('Difficulty (easy/medium/hard):', q.difficulty || 'medium'); if (d && ['easy', 'medium', 'hard'].includes(d)) q.difficulty = d;
-    renderQuestions();
-}
-function clearAllQuestions() { if (confirm('Remove ALL questions?')) { questions = []; renderQuestions(); } }
-window.setCorrect = setCorrect;
-window.removeQ = removeQ;
-window.editQ = editQ;
-window.clearAllQuestions = clearAllQuestions;
-
-// ============================================
-// STEP 3: SETTINGS & PUBLISH
-// ============================================
-function renderDynamicSettings() {
-    const div = document.getElementById('dynamicSettings');
-    if (currentType === 'test') {
-        div.innerHTML = `<div class="form-group"><label><i class="fas fa-clock"></i> Duration (minutes) *</label><input type="number" id="duration" class="form-control" value="${Math.round(questions.length * 1.5) || 30}" min="1"></div><div class="form-group"><label><i class="fas fa-random"></i> Randomization</label><div class="checkbox-item"><input type="checkbox" id="randomizeQuestions" checked><span>Randomize question order</span></div><div class="checkbox-item" style="margin-top:0.5rem;"><input type="checkbox" id="randomizeOptions" checked><span>Randomize MCQ options</span></div></div><div class="form-group"><label><i class="fas fa-eye"></i> Auto Grade</label><div class="checkbox-item"><input type="checkbox" id="autoGrade" checked><span>Auto-grade on submission</span></div></div>`;
-    } else if (currentType === 'assignment') {
-        div.innerHTML = `<div class="form-group"><label><i class="fas fa-calendar-alt"></i> Due Date *</label><input type="datetime-local" id="dueDate" class="form-control" required></div><div class="form-group"><label><i class="fas fa-star"></i> Total Marks</label><input type="number" id="totalMarks" class="form-control" value="20" min="1"></div><div class="form-group"><label><i class="fas fa-upload"></i> Submission Type</label><select id="submissionType" class="form-control"><option value="text">Text</option><option value="file">File</option><option value="both">Both</option></select></div>`;
-    } else {
-        div.innerHTML = `<div class="form-group"><label><i class="fas fa-clock"></i> Duration (minutes) *</label><input type="number" id="duration" class="form-control" value="120" min="1"></div><div class="form-group"><label><i class="fas fa-calendar-alt"></i> Start *</label><input type="datetime-local" id="startDate" class="form-control" required></div><div class="form-group"><label><i class="fas fa-calendar-check"></i> End *</label><input type="datetime-local" id="endDate" class="form-control" required></div><div class="form-group"><label><i class="fas fa-random"></i> Randomization</label><div class="checkbox-item"><input type="checkbox" id="randomizeQuestions" checked><span>Randomize questions</span></div><div class="checkbox-item"><input type="checkbox" id="randomizeOptions" checked><span>Randomize options</span></div></div>`;
-    }
-}
-
-function updateAssessmentSummary() {
-    const totalPts = questions.reduce((s, q) => s + (q.points || 1), 0);
-    document.getElementById('assessmentSummary').innerHTML = `<strong>📋 Assessment Summary:</strong><br>📝 ${questions.length} questions | ⭐ ${totalPts} total points | 📂 Type: ${currentType} | 📚 Subject: ${currentSubject || 'Not set'}`;
-}
-
-// ============================================
-// VALIDATION & SAVE
-// ============================================
-function validateAssessment(status) {
-    const errors = [];
-    if (!currentSubject) errors.push('Select a subject.');
-    const title = document.getElementById('title')?.value?.trim();
-    if (!title) errors.push('Enter an assessment title.');
-    if (currentType !== 'assignment' && !questions.length) errors.push('Add at least one question.');
-    if (currentType === 'assignment' && !document.getElementById('dueDate')?.value) errors.push('Set a due date.');
-    if (currentType === 'exam') {
-        const start = document.getElementById('startDate')?.value;
-        const end = document.getElementById('endDate')?.value;
-        if (!start) errors.push('Set exam start date.');
-        if (!end) errors.push('Set exam end date.');
-        if (start && end && new Date(start) >= new Date(end)) errors.push('End must be after start.');
-    }
-    questions.forEach((q, i) => {
-        if (!q.question?.trim()) errors.push(`Q${i + 1} has empty text.`);
-        if (q.type === 'mcq' && q.options.filter(o => !o?.trim()).length > 2) errors.push(`Q${i + 1}: Fill at least 2 options.`);
-    });
-    return errors;
-}
-
-async function saveAssessment(status) {
-    const errors = validateAssessment(status);
-    if (errors.length) { showToast('Validation Error', errors.join('<br>'), 'error'); return; }
-    const title = document.getElementById('title').value.trim();
-    if (status === 'published' && !confirm(`Publish this ${currentType}?`)) return;
-
+async function saveAssessment(status){
+    const errors=validateAssessment(status);
+    if(errors.length){showToast('Validation Error',errors.join('<br>'),'error');return;}
+    const title=document.getElementById('title').value.trim();
+    if(status==='published'&&!confirm(`Publish this ${currentType}?`))return;
     showLoading('Saving...');
-    try {
-        const data = {
-            teacherId: currentUser.uid,
-            teacherName: `${userData.firstName || ''} ${userData.surname || ''}`.trim(),
-            type: currentType,
-            subject: currentSubject,
-            title,
-            classId: userData.classTeaching || '',
-            instructions: document.getElementById('instructions')?.value || '',
-            weeksCovered: selectedWeeks,
-            questions: currentType === 'assignment' ? [] : questions,
-            totalPoints: currentType === 'assignment' ? (parseInt(document.getElementById('totalMarks')?.value) || 20) : questions.reduce((s, q) => s + (q.points || 1), 0),
-            status,
-            createdAt: firebase.firestore.FieldValue.serverTimestamp()
-        };
-        if (currentType === 'test') {
-            data.duration = parseInt(document.getElementById('duration')?.value) || 30;
-            data.autoGrade = document.getElementById('autoGrade')?.checked || false;
-            data.randomizeQuestions = document.getElementById('randomizeQuestions')?.checked || false;
-            data.randomizeOptions = document.getElementById('randomizeOptions')?.checked || false;
-        } else if (currentType === 'assignment') {
-            data.dueDate = document.getElementById('dueDate')?.value || null;
-            data.submissionType = document.getElementById('submissionType')?.value || 'text';
-            data.totalMarks = parseInt(document.getElementById('totalMarks')?.value) || 20;
-        } else {
-            data.duration = parseInt(document.getElementById('duration')?.value) || 120;
-            data.startDate = document.getElementById('startDate')?.value || null;
-            data.endDate = document.getElementById('endDate')?.value || null;
-            data.randomizeQuestions = document.getElementById('randomizeQuestions')?.checked || false;
-            data.randomizeOptions = document.getElementById('randomizeOptions')?.checked || false;
-        }
+    try{
+        const targetClass=document.getElementById('targetClass')?.value||userData.classTeaching||'';
+        const data={teacherId:currentUser.uid,teacherName:`${userData.firstName||''} ${userData.surname||''}`.trim(),type:currentType,subject:currentSubject,title,classId:targetClass,instructions:document.getElementById('instructions')?.value||'',weeksCovered:selectedWeeks,questions:currentType==='assignment'?[]:questions,totalPoints:currentType==='assignment'?(parseInt(document.getElementById('totalMarks')?.value)||20):questions.reduce((s,q)=>s+(q.points||1),0),status,createdAt:firebase.firestore.FieldValue.serverTimestamp()};
+        if(currentType==='test'){data.duration=parseInt(document.getElementById('duration')?.value)||30;data.autoGrade=document.getElementById('autoGrade')?.checked||false;data.randomizeQuestions=document.getElementById('randomizeQuestions')?.checked||false;data.randomizeOptions=document.getElementById('randomizeOptions')?.checked||false;}
+        else if(currentType==='assignment'){data.dueDate=document.getElementById('dueDate')?.value||null;data.submissionType=document.getElementById('submissionType')?.value||'text';data.totalMarks=parseInt(document.getElementById('totalMarks')?.value)||20;}
+        else{data.duration=parseInt(document.getElementById('duration')?.value)||120;data.startDate=document.getElementById('startDate')?.value||null;data.endDate=document.getElementById('endDate')?.value||null;data.randomizeQuestions=document.getElementById('randomizeQuestions')?.checked||false;data.randomizeOptions=document.getElementById('randomizeOptions')?.checked||false;}
         await db.collection('assessments').add(data);
         hideLoading();
-        showToast('Success!', `Assessment ${status === 'published' ? 'published' : 'saved'}!`, 'success');
-        setTimeout(() => window.location.href = 'teacher-assessment-history.html', 1500);
-    } catch (e) {
-        hideLoading();
-        showToast('Error', e.message, 'error');
-    }
+        showToast('Success!',`Assessment ${status==='published'?'published':'saved'} to ${targetClass}!`,'success');
+        setTimeout(()=>window.location.href='teacher-assessment-history.html',1500);
+    }catch(e){hideLoading();showToast('Error',e.message,'error');}
 }
-document.getElementById('saveDraftBtn').addEventListener('click', () => saveAssessment('draft'));
-document.getElementById('publishBtn').addEventListener('click', () => saveAssessment('published'));
+document.getElementById('saveDraftBtn').addEventListener('click',()=>saveAssessment('draft'));
+document.getElementById('publishBtn').addEventListener('click',()=>saveAssessment('published'));
 
-// ============================================
-// AUTH
-// ============================================
-auth.onAuthStateChanged(async (user) => {
-    if (!user) { window.location.href = 'teacher-login.html'; return; }
-    try {
-        const doc = await db.collection('users').doc(user.uid).get();
-        if (!doc.exists || doc.data().role !== 'teacher') { await auth.signOut(); window.location.href = 'index.html'; return; }
-        currentUser = user;
-        userData = doc.data();
+auth.onAuthStateChanged(async(user)=>{
+    if(!user){window.location.href='teacher-login.html';return;}
+    try{
+        const doc=await db.collection('users').doc(user.uid).get();
+        if(!doc.exists||doc.data().role!=='teacher'){await auth.signOut();window.location.href='index.html';return;}
+        currentUser=user;userData=doc.data();
+        const pic=document.getElementById('profilePic');
+        if(userData.photoURL)pic.innerHTML=`<img src="${userData.photoURL}" alt="Profile">`;
+        else pic.textContent=(userData.firstName?.[0]||'T')+(userData.surname?.[0]||'E');
 
-        const pic = document.getElementById('profilePic');
-        if (userData.photoURL) pic.innerHTML = `<img src="${userData.photoURL}" alt="Profile">`;
-        else pic.textContent = (userData.firstName?.[0] || 'T') + (userData.surname?.[0] || 'E');
-
-        subjects = userData.subjects || [];
-        const sel = document.getElementById('subject');
-        sel.innerHTML = '<option value="">Select a subject...</option>';
-        subjects.forEach(s => { const o = document.createElement('option'); o.value = s; o.textContent = s; sel.appendChild(o); });
-
-        const bankSub = document.getElementById('bankSubjectFilter');
-        if (bankSub) {
-            bankSub.innerHTML = '<option value="">All Subjects</option>';
-            subjects.forEach(s => { const o = document.createElement('option'); o.value = s; o.textContent = s; bankSub.appendChild(o); });
+        // ============ POPULATE CLASS SELECTOR (NEW!) ============
+        const classSelect=document.getElementById('targetClass');
+        classSelect.innerHTML='<option value="">Select a class...</option>';
+        if(userData.classesTeaching&&userData.classesTeaching.length){
+            userData.classesTeaching.forEach(cls=>{const o=document.createElement('option');o.value=cls;o.textContent=cls;if(cls===userData.classTeaching)o.selected=true;classSelect.appendChild(o);});
+        }else if(userData.classTeaching){
+            const o=document.createElement('option');o.value=userData.classTeaching;o.textContent=userData.classTeaching;o.selected=true;classSelect.appendChild(o);
         }
 
-        try {
-            await remoteConfig.fetchAndActivate();
-            const key = remoteConfig.getString('groq_api_key');
-            if (key) { const { default: Groq } = await import('groq-sdk'); groq = new Groq({ apiKey: key, dangerouslyAllowBrowser: true }); }
-        } catch (e) {}
-
-        renderDynamicSettings();
-        renderQuestions();
-        refreshDebug();
-    } catch (e) { console.error(e); }
+        subjects=userData.subjects||[];
+        const sel=document.getElementById('subject');sel.innerHTML='<option value="">Select a subject...</option>';
+        subjects.forEach(s=>{const o=document.createElement('option');o.value=s;o.textContent=s;sel.appendChild(o);});
+        const bankSub=document.getElementById('bankSubjectFilter');
+        if(bankSub){bankSub.innerHTML='<option value="">All Subjects</option>';subjects.forEach(s=>{const o=document.createElement('option');o.value=s;o.textContent=s;bankSub.appendChild(o);});}
+        try{await remoteConfig.fetchAndActivate();const key=remoteConfig.getString('groq_api_key');if(key){const{default:Groq}=await import('groq-sdk');groq=new Groq({apiKey:key,dangerouslyAllowBrowser:true});}}catch(e){}
+        renderDynamicSettings();renderQuestions();refreshDebug();
+    }catch(e){console.error(e);}
 });
-
-document.getElementById('logoutBtn').addEventListener('click', async () => { await auth.signOut(); window.location.href = 'index.html'; });
+document.getElementById('logoutBtn').addEventListener('click',async()=>{await auth.signOut();window.location.href='index.html';});
 </script>
 </body>
 </html>
