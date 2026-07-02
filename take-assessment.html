@@ -938,7 +938,54 @@
         }
 
         // ============================================
-        // GLOBAL STATE VARIABLES        // ============================================
+        // HELPER: Get Correct Answer (handles all formats)
+        // ============================================
+        function getCorrectAnswer(q) {
+            // Normalize the question type
+            const type = (q.type || '').toLowerCase().replace(/[_-]/g, '');
+            
+            if (type === 'multiple' || type === 'mcq') {
+                // Handle index-based correct answer (0, 1, 2, 3)
+                if (typeof q.correct === 'number') {
+                    return q.options[q.correct] || '';
+                }
+                // Handle letter-based correct answer (A, B, C, D)
+                if (typeof q.correct === 'string' && /^[A-Da-d]$/.test(q.correct)) {
+                    const letterIndex = q.correct.toUpperCase().charCodeAt(0) - 65; // A=0, B=1, C=2, D=3
+                    return q.options[letterIndex] || '';
+                }
+                // Handle correctAnswer field
+                if (q.correctAnswer !== undefined) {
+                    if (typeof q.correctAnswer === 'number') {
+                        return q.options[q.correctAnswer] || '';
+                    }
+                    return String(q.correctAnswer);
+                }
+                // Handle answer field
+                if (q.answer !== undefined) {
+                    return String(q.answer);
+                }
+                return String(q.correct || '');
+            }
+            
+            if (type === 'boolean' || type === 'truefalse') {
+                // Handle numeric (1/0 or true/false)
+                if (q.correct === 1 || q.correct === true || q.correct === '1') return 'True';
+                if (q.correct === 0 || q.correct === false || q.correct === '0') return 'False';
+                // Handle string
+                const val = String(q.correct || q.correctAnswer || q.answer || '').trim();
+                if (val.toLowerCase() === 'true' || val === '1') return 'True';
+                if (val.toLowerCase() === 'false' || val === '0') return 'False';
+                return val;
+            }
+            
+            // Default: text/fillblank or any other type
+            return String(q.correct || q.correctAnswer || q.answer || '');
+        }
+
+        // ============================================
+        // GLOBAL STATE VARIABLES
+        // ============================================
         let currentUser = null;
         let userData = null;
         let assessmentData = null;
@@ -1100,6 +1147,9 @@
             const points = q.points || 1;
             const letters = ['A', 'B', 'C', 'D', 'E', 'F'];
 
+            // Normalize question type (handles underscore/hyphen separated names)
+            const normalizedType = (q.type || '').toLowerCase().replace(/[_-]/g, '');
+
             // Update progress bar
             const answeredCount = studentAnswers.length;
             const progressPercent = (answeredCount / questions.length) * 100;
@@ -1107,7 +1157,7 @@
 
             let optionsHtml = '';
             
-            if (q.type === 'multiple' || q.type === 'mcq') {
+            if (normalizedType === 'multiple' || normalizedType === 'mcq') {
                 optionsHtml = `
                     <div class="options-list">
                         ${(q.options || []).map((opt, i) => `
@@ -1118,7 +1168,7 @@
                             </div>
                         `).join('')}
                     </div>`;
-            } else if (q.type === 'boolean' || q.type === 'truefalse') {
+            } else if (normalizedType === 'boolean' || normalizedType === 'truefalse') {
                 optionsHtml = `
                     <div class="options-list">
                         <div class="option-item ${selected === 'True' ? 'selected' : ''}" 
@@ -1132,7 +1182,7 @@
                             <div class="option-text">False</div>
                         </div>
                     </div>`;
-            } else if (q.type === 'text' || q.type === 'fillblank') {
+            } else if (normalizedType === 'text' || normalizedType === 'fillblank') {
                 optionsHtml = `
                     <input type="text" 
                            class="fill-input" 
@@ -1141,7 +1191,7 @@
                            value="${escapeHtml(selected || '')}" 
                            oninput="selectAnswer(this.value)"
                            autocomplete="off">`;
-            } else if (q.type === 'theory') {
+            } else if (normalizedType === 'theory') {
                 optionsHtml = `
                     <div class="info-box">
                         <i class="fas fa-pen-fancy"></i> 
@@ -1161,8 +1211,8 @@
             }
 
             const isFlagged = flaggedQuestions.includes(currentIdx);
-            const questionTypeIcon = q.type === 'theory' ? 'fa-pen-fancy' : 
-                                     q.type === 'fillblank' ? 'fa-edit' : 'fa-list';
+            const questionTypeIcon = normalizedType === 'theory' ? 'fa-pen-fancy' : 
+                                     normalizedType === 'fillblank' || normalizedType === 'text' ? 'fa-edit' : 'fa-list';
 
             document.getElementById('contentArea').innerHTML = `
                 <div class="two-col">
@@ -1297,6 +1347,50 @@
         };
 
         // ============================================
+        // SCORE CALCULATION (FIXED)
+        // ============================================
+        function calculateScore() {
+            let total = 0, correct = 0, wrong = 0, theory = 0, unanswered = 0;
+            
+            assessmentData.questions.forEach((q, idx) => {
+                const ans = studentAnswers.find(a => a.questionIndex === idx);
+                const studentAns = ans ? (ans.answer || '').trim() : '';
+                const pts = q.points || 1;
+                
+                if (q.type === 'theory') {
+                    theory++;
+                    return;
+                }
+                
+                if (!studentAns) {
+                    unanswered++;
+                    wrong++;
+                    return;
+                }
+                
+                let correctAns = getCorrectAnswer(q);
+                
+                // Case-insensitive comparison
+                if (String(studentAns).toLowerCase() === String(correctAns).toLowerCase()) {
+                    total += pts;
+                    correct++;
+                } else {
+                    wrong++;
+                }
+            });
+            
+            return { 
+                score: total, 
+                correct, 
+                wrong, 
+                theory, 
+                unanswered,
+                totalQuestions: assessmentData.questions.length,
+                totalPoints: assessmentData.totalPoints || assessmentData.questions.reduce((sum, q) => sum + (q.points || 1), 0)
+            };
+        }
+
+        // ============================================
         // SUBMIT FUNCTIONS
         // ============================================
         window.openSubmitModal = () => {
@@ -1318,53 +1412,6 @@
         window.closeSubmitModal = () => {
             document.getElementById('submitModal').classList.remove('active');
         };
-
-        function calculateScore() {
-            let total = 0, correct = 0, wrong = 0, theory = 0, unanswered = 0;
-            
-            assessmentData.questions.forEach((q, idx) => {
-                const ans = studentAnswers.find(a => a.questionIndex === idx);
-                const studentAns = ans ? (ans.answer || '').trim() : '';
-                const pts = q.points || 1;
-                
-                if (q.type === 'theory') {
-                    theory++;
-                    return;
-                }
-                
-                if (!studentAns) {
-                    unanswered++;
-                    wrong++;
-                    return;
-                }
-                
-                let correctAns;
-                if (q.type === 'multiple' || q.type === 'mcq') {
-                    correctAns = q.options[q.correct];
-                } else if (q.type === 'boolean' || q.type === 'truefalse') {
-                    correctAns = q.correct === 1 || q.correct === true ? 'True' : 'False';
-                } else {
-                    correctAns = q.correct;
-                }
-                
-                if (String(studentAns).toLowerCase() === String(correctAns).toLowerCase()) {
-                    total += pts;
-                    correct++;
-                } else {
-                    wrong++;
-                }
-            });
-            
-            return { 
-                score: total, 
-                correct, 
-                wrong, 
-                theory, 
-                unanswered,
-                totalQuestions: assessmentData.questions.length,
-                totalPoints: assessmentData.totalPoints || assessmentData.questions.reduce((sum, q) => sum + (q.points || 1), 0)
-            };
-        }
 
         async function submitAssessment() {
             if (isSubmitted) return;
@@ -1389,17 +1436,7 @@
             const formattedAnswers = assessmentData.questions.map((q, idx) => {
                 const ans = studentAnswers.find(a => a.questionIndex === idx);
                 const studentAns = ans ? (ans.answer || '') : '';
-                
-                let correctAns = '';
-                if (q.type === 'multiple' || q.type === 'mcq') {
-                    correctAns = q.options[q.correct];
-                } else if (q.type === 'boolean' || q.type === 'truefalse') {
-                    correctAns = q.correct === 1 || q.correct === true ? 'True' : 'False';
-                } else if (q.type === 'theory') {
-                    correctAns = q.sampleAnswer || q.correct || 'Manual grading required';
-                } else {
-                    correctAns = q.correct;
-                }
+                const correctAns = getCorrectAnswer(q);
                 
                 return {
                     questionIndex: idx,
@@ -1737,6 +1774,7 @@
         console.log('   - Auto-save enabled (30s interval)');
         console.log('   - Saves to: submissions + studentSubmissions collections');
         console.log('   - Links to: my-analysis.html for results');
+        console.log('   - ✅ Correct answer format detection enabled');
     </script>
 </body>
 </html>
