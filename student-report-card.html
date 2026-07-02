@@ -1,0 +1,566 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="dark">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=yes">
+    <title>Judah Wonders Model School · My Report Card</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:opsz,wght@14..32,400;500;600;700;800&family=Playfair+Display:wght@600;700&family=Space+Grotesk:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-auth-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-firestore-compat.js"></script>
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        :root[data-theme="light"] {
+            --bg-primary: #f0f5fa; --bg-surface: rgba(255,255,255,0.9); --text-primary: #0b1e33;
+            --text-secondary: #2c3e50; --text-muted: #64748b; --accent: #0A2540; --accent-glow: #C8963E;
+            --border: rgba(0,0,0,0.08); --card-bg: rgba(255,255,255,0.85);
+            --success-text: #16a34a; --danger-text: #b91c1c; --warning-text: #b45309;
+            --gradient-start: #0A2540; --gradient-end: #C8963E;
+        }
+        :root[data-theme="dark"] {
+            --bg-primary: #0a0f1e; --bg-surface: rgba(15,23,42,0.95); --text-primary: #f0f4fa;
+            --text-secondary: #a0b3d9; --text-muted: #64748b; --accent: #C8963E; --accent-glow: #D4AF37;
+            --border: rgba(255,255,255,0.08); --card-bg: rgba(15,23,42,0.85);
+            --success-text: #4ade80; --danger-text: #f87171; --warning-text: #fbbf24;
+            --gradient-start: #0A2540; --gradient-end: #C8963E;
+        }
+
+        body { font-family: 'Inter', sans-serif; background: var(--bg-primary); color: var(--text-primary); min-height: 100vh; display: flex; align-items: center; justify-content: center; padding: 1.5rem; transition: background 0.3s; position: relative; overflow-x: hidden; }
+
+        .bg-logo { position: fixed; top: 50%; left: 50%; transform: translate(-50%, -50%); width: 400px; max-width: 70vw; opacity: 0.03; pointer-events: none; z-index: 0; animation: breathe 6s ease-in-out infinite; }
+        @keyframes breathe { 0%, 100% { transform: translate(-50%, -50%) scale(1); opacity: 0.03; } 50% { transform: translate(-50%, -50%) scale(1.06); opacity: 0.06; } }
+        .orb { position: fixed; border-radius: 50%; filter: blur(80px); pointer-events: none; z-index: 0; animation: float 25s infinite alternate; }
+        .orb-1 { width: 300px; height: 300px; top: -100px; right: -100px; background: radial-gradient(circle at 30% 30%, rgba(10,37,64,0.12), transparent 70%); }
+        .orb-2 { width: 400px; height: 400px; bottom: -150px; left: -150px; background: radial-gradient(circle at 70% 70%, rgba(200,150,62,0.10), transparent); animation-duration: 30s; }
+        @keyframes float { 0% { transform: translate(0,0) scale(1); } 100% { transform: translate(40px,30px) scale(1.15); } }
+
+        /* PIN Screen */
+        .pin-container { background: var(--card-bg); backdrop-filter: blur(24px); -webkit-backdrop-filter: blur(24px); border: 1px solid var(--border); border-radius: 2rem; padding: 3rem 2rem; max-width: 480px; width: 100%; text-align: center; box-shadow: 0 25px 60px rgba(0,0,0,0.4); position: relative; z-index: 5; }
+        .pin-container .logo-img { width: 70px; height: 70px; object-fit: contain; margin-bottom: 1rem; }
+        .pin-container .icon { font-size: 3rem; color: var(--accent); margin-bottom: 0.5rem; display: block; }
+        .pin-container h2 { font-family: 'Playfair Display', serif; font-size: 1.5rem; font-weight: 700; color: var(--accent); margin-bottom: 0.3rem; }
+        .pin-container .subtitle { color: var(--text-secondary); font-size: 0.85rem; margin-bottom: 1.8rem; line-height: 1.5; }
+
+        .student-info-preview { background: var(--accent-light); border: 1px solid var(--border); border-radius: 1rem; padding: 0.8rem 1rem; margin-bottom: 1.5rem; text-align: left; display: flex; align-items: center; gap: 0.8rem; }
+        .student-info-preview .avatar { width: 44px; height: 44px; border-radius: 50%; background: linear-gradient(135deg, var(--gradient-start), var(--gradient-end)); display: flex; align-items: center; justify-content: center; color: white; font-weight: 700; font-size: 1rem; flex-shrink: 0; overflow: hidden; }
+        .student-info-preview .avatar img { width: 100%; height: 100%; object-fit: cover; }
+        .student-info-preview .info .name { font-weight: 600; font-size: 0.9rem; }
+        .student-info-preview .info .id { font-family: 'Space Grotesk', monospace; font-size: 0.75rem; color: var(--text-muted); }
+
+        .pin-input-group { position: relative; margin-bottom: 0.5rem; }
+        .pin-input { width: 100%; padding: 0.9rem 1.2rem; background: var(--bg-primary); border: 2px solid var(--border); border-radius: 1.2rem; color: var(--text-primary); font-size: 1.4rem; text-align: center; letter-spacing: 6px; font-family: 'Space Grotesk', monospace; font-weight: 700; text-transform: uppercase; transition: all 0.3s; }
+        .pin-input:focus { outline: none; border-color: var(--accent); box-shadow: 0 0 20px rgba(200,150,62,0.2); }
+        .pin-input::placeholder { letter-spacing: 2px; font-size: 0.9rem; color: var(--text-muted); }
+        .pin-input.error { border-color: var(--danger-text); animation: shake 0.5s; }
+        @keyframes shake { 0%,100%{transform:translateX(0)} 25%{transform:translateX(-8px)} 50%{transform:translateX(8px)} 75%{transform:translateX(-4px)} }
+
+        .message { font-size: 0.8rem; padding: 0.6rem 0.9rem; border-radius: 0.8rem; margin-top: 0.8rem; display: none; text-align: left; line-height: 1.4; }
+        .message.show { display: block; }
+        .message.error { background: rgba(239,68,68,0.15); color: var(--danger-text); border: 1px solid rgba(239,68,68,0.3); }
+        .message.success { background: rgba(34,197,94,0.15); color: var(--success-text); border: 1px solid rgba(34,197,94,0.3); }
+        .message.info { background: rgba(200,150,62,0.15); color: var(--accent); border: 1px solid rgba(200,150,62,0.3); }
+
+        .btn { padding: 0.8rem 2rem; border: none; border-radius: 2rem; font-weight: 600; font-size: 0.9rem; cursor: pointer; transition: all 0.25s; width: 100%; font-family: inherit; display: flex; align-items: center; justify-content: center; gap: 0.5rem; letter-spacing: 0.3px; }
+        .btn-primary { background: linear-gradient(135deg, var(--gradient-start), var(--gradient-end)); color: white; box-shadow: 0 4px 15px rgba(200,150,62,0.3); }
+        .btn-primary:hover { box-shadow: 0 6px 25px rgba(200,150,62,0.5); transform: translateY(-2px); }
+        .btn-primary:disabled { opacity: 0.5; cursor: not-allowed; transform: none; box-shadow: none; }
+        .btn-outline { background: transparent; border: 2px solid var(--border); color: var(--text-primary); width: auto; padding: 0.5rem 1.2rem; font-size: 0.8rem; }
+
+        .footer-note { margin-top: 1.5rem; font-size: 0.75rem; color: var(--text-muted); }
+        .footer-note i { color: var(--accent); }
+
+        /* Result Screen */
+        .result-wrapper { max-width: 1000px; width: 100%; margin: 0 auto; position: relative; z-index: 5; }
+        .top-nav { display: flex; justify-content: space-between; align-items: center; margin-bottom: 1.5rem; flex-wrap: wrap; gap: 1rem; background: var(--card-bg); backdrop-filter: blur(12px); -webkit-backdrop-filter: blur(12px); border: 1px solid var(--border); border-radius: 1.5rem; padding: 1rem 1.5rem; }
+        .top-nav h1 { font-family: 'Playfair Display', serif; font-size: 1.3rem; font-weight: 700; color: var(--accent); display: flex; align-items: center; gap: 0.5rem; }
+        .top-nav .actions { display: flex; gap: 0.5rem; flex-wrap: wrap; }
+
+        /* Report Card */
+        .report-card { background: #ffffff; color: #000000; font-family: 'Georgia', 'Times New Roman', serif; max-width: 1000px; margin: 0 auto; border: 3px double #1a1a2e; font-size: 12px; line-height: 1.45; box-shadow: 0 10px 40px rgba(0,0,0,0.3); }
+        .rc-header-bg { background: #1a1a2e; color: #ffffff; padding: 14px 20px; text-align: center; }
+        .rc-header-bg h1 { font-size: 20px; font-weight: bold; letter-spacing: 2px; text-transform: uppercase; margin: 0; }
+        .rc-header-bg .motto { font-size: 10px; font-style: italic; margin-top: 3px; opacity: 0.9; }
+        .rc-header-bg .address { font-size: 9px; margin-top: 2px; opacity: 0.8; }
+        .rc-title-bar { background: #e8ecf1; color: #1a1a2e; text-align: center; padding: 7px; font-weight: bold; font-size: 13px; border-bottom: 2px solid #1a1a2e; text-transform: uppercase; letter-spacing: 1.5px; }
+        .rc-info-grid { display: grid; grid-template-columns: 1fr 1fr 1fr; padding: 10px 18px; gap: 3px 15px; font-size: 10px; border-bottom: 1px solid #ccc; }
+        .rc-photo { width: 75px; height: 90px; border: 1px solid #ccc; float: right; margin: 8px 18px 0 10px; display: flex; align-items: center; justify-content: center; font-size: 8px; color: #999; }
+        .rc-photo img { width: 100%; height: 100%; object-fit: cover; }
+        .rc-table-wrap { padding: 8px 18px; }
+        .rc-table { width: 100%; border-collapse: collapse; font-size: 10px; }
+        .rc-table thead th { background: #1a1a2e; color: #ffffff; padding: 6px 4px; border: 1px solid #1a1a2e; text-align: center; font-size: 9px; font-weight: 600; }
+        .rc-table thead th.sub-col { text-align: left; min-width: 120px; }
+        .rc-table tbody td { padding: 5px 4px; border: 1px solid #ccc; text-align: center; }
+        .rc-table tbody td.sub-col { text-align: left; font-weight: 600; }
+        .rc-table tbody tr:nth-child(even) { background: #f8f9fa; }
+        .rc-table tbody tr.total-row { background: #e8ecf1; font-weight: bold; }
+        .no-data { color: #999; font-style: italic; }
+        .rc-summary { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; margin: 8px 18px; }
+        .rc-summary-box { border: 1px solid #ccc; padding: 8px; font-size: 10px; }
+        .rc-summary-box h5 { background: #e8ecf1; margin: -8px -8px 6px -8px; padding: 5px 8px; font-size: 9px; text-transform: uppercase; letter-spacing: 1px; }
+        .rc-attendance { margin: 8px 18px; display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 8px; }
+        .rc-signatures { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 25px; margin: 25px 18px 15px; text-align: center; font-size: 10px; }
+        .rc-sign-line { border-top: 1px solid #000; padding-top: 5px; margin-top: 40px; }
+        .rc-footer { text-align: center; font-size: 9px; padding: 7px; background: #e8ecf1; border-top: 2px solid #1a1a2e; }
+        .grade-A { color: #16a34a; font-weight: 700; }
+        .grade-B { color: #2563eb; font-weight: 700; }
+        .grade-C { color: #d97706; font-weight: 700; }
+        .grade-D { color: #ea580c; font-weight: 700; }
+        .grade-E { color: #dc2626; font-weight: 700; }
+        .grade-F { color: #991b1b; font-weight: 700; }
+
+        /* Loading */
+        .spinner { display: inline-block; width: 18px; height: 18px; border: 2px solid rgba(255,255,255,0.3); border-top: 2px solid white; border-radius: 50%; animation: spin 0.8s linear infinite; }
+        @keyframes spin { 0%{transform:rotate(0deg)} 100%{transform:rotate(360deg)} }
+
+        @media (max-width: 768px) {
+            .pin-container { padding: 2rem 1.5rem; }
+            .rc-info-grid { grid-template-columns: 1fr 1fr; }
+            .rc-signatures { grid-template-columns: 1fr; }
+            .rc-photo { float: none; margin: 8px auto; }
+        }
+        @media print {
+            body { background: white !important; }
+            .orb, .bg-logo, .top-nav, .pin-container { display: none !important; }
+            .report-card { border: 2px solid #000 !important; box-shadow: none !important; margin: 0 !important; }
+            @page { margin: 0.4cm; size: A4; }
+        }
+    </style>
+</head>
+<body>
+    <img src="https://res.cloudinary.com/dda7kpir8/image/upload/q_auto/f_auto/v1781038310/ChatGPT_Image_Jun_9_2026_09_25_06_AM_elnine.png" alt="" class="bg-logo" aria-hidden="true">
+    <div class="orb orb-1"></div><div class="orb orb-2"></div>
+
+    <!-- PIN ENTRY SCREEN -->
+    <div id="pinScreen" class="pin-container">
+        <img src="https://res.cloudinary.com/dda7kpir8/image/upload/q_auto/f_auto/v1781038310/ChatGPT_Image_Jun_9_2026_09_25_06_AM_elnine.png" alt="JWMS" class="logo-img">
+        <h2>Access Your Report Card</h2>
+        <p class="subtitle">Enter the PIN provided by your school to view your published results. You must be signed in to your student account.</p>
+        
+        <div class="student-info-preview" id="studentPreview" style="display:none;">
+            <div class="avatar" id="studentAvatar">ST</div>
+            <div class="info">
+                <div class="name" id="studentName">Loading...</div>
+                <div class="id" id="studentIdDisplay">—</div>
+            </div>
+        </div>
+
+        <div class="pin-input-group">
+            <input type="text" id="pinInput" class="pin-input" placeholder="ENTER PIN" maxlength="10" autocomplete="off" autocorrect="off" autocapitalize="characters">
+        </div>
+        <div class="message" id="pinMessage"></div>
+        <button class="btn btn-primary" id="verifyPinBtn" style="margin-top:1rem;">
+            <i class="fas fa-key"></i> View My Results
+        </button>
+        <p class="footer-note">
+            <i class="fas fa-info-circle"></i> Don't have a PIN? Purchase one from your class teacher or school admin office.
+        </p>
+    </div>
+
+    <!-- RESULTS SCREEN -->
+    <div id="resultScreen" class="result-wrapper" style="display:none;">
+        <div class="top-nav">
+            <h1><i class="fas fa-graduation-cap"></i> My Report Card</h1>
+            <div class="actions">
+                <button class="btn-outline" onclick="window.print()"><i class="fas fa-print"></i> Print</button>
+                <button class="btn-outline" onclick="goBackToPin()"><i class="fas fa-arrow-left"></i> Back</button>
+            </div>
+        </div>
+        <div id="reportContent"></div>
+    </div>
+
+    <script>
+        // ============================================
+        // FIREBASE CONFIGURATION
+        // ============================================
+        const firebaseConfig = {
+            apiKey: "AIzaSyADXHEiaSQ146QsGsaOCElARtpwrLE8svs",
+            authDomain: "judah-c737e.firebaseapp.com",
+            projectId: "judah-c737e",
+            storageBucket: "judah-c737e.firebasestorage.app",
+            messagingSenderId: "739196063078",
+            appId: "1:739196063078:web:c0ee1c1da2cc3794ca8ca7",
+            measurementId: "G-YEM22F1C39"
+        };
+        firebase.initializeApp(firebaseConfig);
+        const auth = firebase.auth();
+        const db = firebase.firestore();
+
+        // ============================================
+        // UTILITIES
+        // ============================================
+        function escapeHtml(t) { if (!t) return ''; const d = document.createElement('div'); d.textContent = t; return d.innerHTML; }
+        function getGrade(s) { if (s >= 75) return 'A'; if (s >= 65) return 'B'; if (s >= 50) return 'C'; if (s >= 40) return 'D'; if (s < 40) return 'F'; return 'F'; }
+        function getRemark(g) { const r = { A: 'Excellent performance', B: 'Very Good performance', C: 'Good performance', D: 'Fair performance', F: 'Needs improvement' }; return r[g] || ''; }
+        function getOrdinal(n) { const s = ['th','st','nd','rd']; const v = n % 100; return n + (s[(v-20)%10] || s[v] || s[0]); }
+        function getTermName(t) { return { first:'First', second:'Second', third:'Third' }[t] || t; }
+
+        function showMessage(type, text) {
+            const el = document.getElementById('pinMessage');
+            el.className = 'message ' + type + ' show';
+            el.textContent = text;
+            if (type === 'error') {
+                document.getElementById('pinInput').classList.add('error');
+                setTimeout(() => document.getElementById('pinInput').classList.remove('error'), 500);
+            }
+        }
+
+        function clearMessage() {
+            const el = document.getElementById('pinMessage');
+            el.className = 'message';
+            el.textContent = '';
+        }
+
+        function resetPinButton() {
+            const btn = document.getElementById('verifyPinBtn');
+            btn.disabled = false;
+            btn.innerHTML = '<i class="fas fa-key"></i> View My Results';
+        }
+
+        // ============================================
+        // STATE
+        // ============================================
+        let currentUser = null;
+        let userData = null;
+        let currentPinData = null;
+
+        // ============================================
+        // GO BACK TO PIN SCREEN
+        // ============================================
+        window.goBackToPin = () => {
+            document.getElementById('resultScreen').style.display = 'none';
+            document.getElementById('pinScreen').style.display = 'block';
+            document.getElementById('pinInput').value = '';
+            clearMessage();
+            resetPinButton();
+        };
+
+        // ============================================
+        // VERIFY PIN
+        // ============================================
+        document.getElementById('verifyPinBtn').addEventListener('click', async () => {
+            const pin = document.getElementById('pinInput').value.trim().toUpperCase();
+            const btn = document.getElementById('verifyPinBtn');
+            clearMessage();
+
+            // Validate
+            if (!pin || pin.length < 6) {
+                showMessage('error', 'Please enter a valid PIN (6-10 characters).');
+                return;
+            }
+
+            if (!currentUser) {
+                showMessage('error', 'You must be signed in to your student account. Please log in first.');
+                return;
+            }
+
+            btn.disabled = true;
+            btn.innerHTML = '<span class="spinner"></span> Verifying...';
+
+            try {
+                // STEP 1: Look up PIN directly by document ID (O(1) lookup)
+                const pinDoc = await db.collection('reportPins').doc(pin).get();
+
+                if (!pinDoc.exists) {
+                    showMessage('error', 'Invalid PIN. Please check and try again, or purchase a new PIN from your school.');
+                    resetPinButton();
+                    return;
+                }
+
+                const pinData = pinDoc.data();
+
+                // STEP 2: Check PIN status
+                if (pinData.status === 'used') {
+                    if (pinData.usedBy === currentUser.uid) {
+                        // This student already used this PIN - let them view again
+                        showMessage('info', 'You have already used this PIN. Loading your report card...');
+                    } else {
+                        showMessage('error', 'This PIN has already been used by another student. Please purchase a new PIN.');
+                        resetPinButton();
+                        return;
+                    }
+                } else if (pinData.status === 'expired') {
+                    showMessage('error', 'This PIN has expired. Please purchase a new PIN from your school.');
+                    resetPinButton();
+                    return;
+                } else if (pinData.status === 'revoked') {
+                    showMessage('error', 'This PIN has been revoked. Please contact your school administrator.');
+                    resetPinButton();
+                    return;
+                }
+                // status === 'active' - proceed
+
+                // STEP 3: Find published report card matching the PIN's session/term and student's class
+                const studentClass = userData.class;
+                if (!studentClass) {
+                    showMessage('error', 'You are not assigned to a class. Please contact your teacher.');
+                    resetPinButton();
+                    return;
+                }
+
+                // Build query for published report cards
+                let query = db.collection('reportCards')
+                    .where('status', '==', 'published')
+                    .where('session', '==', pinData.session);
+
+                if (pinData.term) {
+                    query = query.where('term', '==', pinData.term);
+                }
+
+                const rcSnap = await query.get();
+
+                if (rcSnap.empty) {
+                    showMessage('error', 'No published report card found for this PIN\'s session/term. Please check back later.');
+                    resetPinButton();
+                    return;
+                }
+
+                // STEP 4: Find the report card that contains this student
+                let matchingRC = null;
+                let studentResult = null;
+
+                rcSnap.forEach(doc => {
+                    const rc = { id: doc.id, ...doc.data() };
+                    const result = (rc.studentResults || []).find(r => 
+                        r.studentId === currentUser.uid || r.studentUserId === userData.userId
+                    );
+                    if (result) {
+                        matchingRC = rc;
+                        studentResult = result;
+                    }
+                });
+
+                if (!matchingRC || !studentResult) {
+                    showMessage('error', 'Your results were not found in the published report card for this session. Please contact your teacher.');
+                    resetPinButton();
+                    return;
+                }
+
+                // STEP 5: Mark PIN as used (if not already used by this student)
+                if (pinData.status !== 'used') {
+                    await db.collection('reportPins').doc(pin).update({
+                        status: 'used',
+                        isUsed: true,
+                        usedBy: currentUser.uid,
+                        usedByName: `${userData.firstName || ''} ${userData.surname || ''}`.trim(),
+                        usedAt: firebase.firestore.FieldValue.serverTimestamp()
+                    });
+                }
+
+                currentPinData = pinData;
+
+                // STEP 6: Render the report card
+                showMessage('success', 'PIN verified! Loading your report card...');
+                renderReportCard(matchingRC, studentResult);
+
+                setTimeout(() => {
+                    document.getElementById('pinScreen').style.display = 'none';
+                    document.getElementById('resultScreen').style.display = 'block';
+                }, 600);
+
+            } catch (e) {
+                console.error('PIN verification error:', e);
+                showMessage('error', 'An error occurred. Please try again or contact your school.');
+                resetPinButton();
+            }
+        });
+
+        // ============================================
+        // RENDER REPORT CARD
+        // ============================================
+        function renderReportCard(rc, myResult) {
+            const session = rc.session || '2025/2026';
+            const term = rc.term || 'first';
+            const termName = getTermName(term).toUpperCase();
+            const schoolName = rc.schoolName || 'Judah Wonders Model School';
+            const motto = rc.motto || 'Raising Generational Wonders Among the Best';
+            const useA = rc.useAssignments !== false;
+            const w = rc.globalWeights || { a: 10, t: 30, e: 60 };
+            const totalStudents = rc.totalStudents || (rc.studentResults || []).length || 0;
+
+            // Rankings
+            const sorted = (rc.studentResults || []).sort((a, b) => (b.averageScore || 0) - (a.averageScore || 0));
+            const rank = sorted.findIndex(r => r.studentId === currentUser.uid || r.studentUserId === userData.userId) + 1;
+            const classAvg = sorted.length ? (sorted.reduce((s, r) => s + (r.averageScore || 0), 0) / sorted.length).toFixed(1) : '0';
+
+            // Subject rows
+            let subjectRows = '', totalScored = 0, subjectCount = 0;
+            const subjects = myResult.subjects || rc.subjects || [];
+            subjects.forEach(s => {
+                const sub = typeof s === 'string' ? { name: s, assignAvg: 0, testAvg: 0, examScore: 0, total: 0, grade: 'F' } : s;
+                const hasAny = (sub.assignAvg > 0 || sub.testAvg > 0 || sub.examScore > 0);
+                if (hasAny) {
+                    totalScored += (sub.total || 0);
+                    subjectCount++;
+                    subjectRows += `<tr>
+                        <td class="sub-col">${escapeHtml(sub.name)}</td>
+                        ${useA ? `<td>${sub.assignAvg > 0 ? sub.assignAvg.toFixed(1) : '<span class="no-data">—</span>'}</td>` : ''}
+                        <td>${sub.testAvg > 0 ? sub.testAvg.toFixed(1) : '<span class="no-data">—</span>'}</td>
+                        <td>${sub.examScore > 0 ? sub.examScore.toFixed(1) : '<span class="no-data">—</span>'}</td>
+                        <td><strong>${Math.round(sub.total || 0)}</strong></td>
+                        <td><strong class="grade-${sub.grade || 'F'}">${sub.grade || 'F'}</strong></td>
+                        <td>${getRemark(sub.grade || 'F')}</td>
+                    </tr>`;
+                } else {
+                    subjectRows += `<tr>
+                        <td class="sub-col">${escapeHtml(sub.name)}</td>
+                        ${useA ? '<td><span class="no-data">—</span></td>' : ''}
+                        <td><span class="no-data">—</span></td><td><span class="no-data">—</span></td>
+                        <td><span class="no-data">—</span></td><td><span class="no-data">—</span></td><td><span class="no-data">—</span></td>
+                    </tr>`;
+                }
+            });
+
+            const average = myResult.averageScore || (subjectCount > 0 ? totalScored / subjectCount : 0);
+            const overallGrade = getGrade(average);
+            const att = myResult.attendance || { total: 50, present: 45 };
+            const studentName = myResult.studentName || `${userData.firstName || ''} ${userData.surname || ''}`.trim();
+
+            document.getElementById('reportContent').innerHTML = `
+                <div class="report-card">
+                    <div class="rc-header-bg">
+                        <h1>${escapeHtml(schoolName)}</h1>
+                        <div class="motto">"${escapeHtml(motto)}"</div>
+                        <div class="address">Behind Family FM, Abiola Way, Abeokuta, Ogun State | Tel: 09060473636</div>
+                    </div>
+                    <div class="rc-title-bar">Student Progress Report Card — ${termName} Term, ${session} Academic Session</div>
+                    <div style="position:relative;">
+                        <div class="rc-photo">${userData.photoURL ? `<img src="${userData.photoURL}" alt="Photo">` : 'Photo'}</div>
+                    </div>
+                    <div class="rc-info-grid">
+                        <div><strong>Name:</strong> ${escapeHtml(studentName)}</div>
+                        <div><strong>Student ID:</strong> ${escapeHtml(userData.userId || '—')}</div>
+                        <div><strong>Class:</strong> ${escapeHtml((rc.className || rc.classId || userData.class || '').toUpperCase())}</div>
+                        <div><strong>Gender:</strong> ${escapeHtml(userData.gender || 'N/A')}</div>
+                        <div><strong>No. in Class:</strong> ${totalStudents}</div>
+                        <div><strong>Position:</strong> ${subjectCount > 0 ? getOrdinal(rank) + ' out of ' + totalStudents : '—'}</div>
+                        <div><strong>Term:</strong> ${termName}</div>
+                        <div><strong>Session:</strong> ${session}</div>
+                        <div><strong>Next Term Begins:</strong> ${escapeHtml(rc.nextTerm || 'To Be Announced')}</div>
+                    </div>
+                    <div class="rc-table-wrap">
+                        <table class="rc-table">
+                            <thead><tr>
+                                <th rowspan="2" class="sub-col">SUBJECTS</th>
+                                ${useA ? `<th rowspan="2">Assign.<br>(${w.a}%)</th>` : ''}
+                                <th rowspan="2">Test<br>(${w.t}%)</th>
+                                <th rowspan="2">Exam<br>(${w.e}%)</th>
+                                <th rowspan="2">TOTAL<br>(100%)</th>
+                                <th rowspan="2">GRADE</th>
+                                <th rowspan="2">REMARK</th>
+                            </tr></thead>
+                            <tbody>
+                                ${subjectRows}
+                                <tr class="total-row">
+                                    <td class="sub-col"><strong>AGGREGATE</strong></td>
+                                    ${useA ? '<td></td>' : ''}
+                                    <td colspan="2"></td>
+                                    <td><strong>${subjectCount > 0 ? Math.round(totalScored) : '—'}</strong></td>
+                                    <td><strong class="grade-${overallGrade}">${overallGrade}</strong></td>
+                                    <td>${subjectCount > 0 ? getRemark(overallGrade) : '—'}</td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                    <div class="rc-summary">
+                        <div class="rc-summary-box">
+                            <h5>📊 Academic Summary</h5>
+                            <p><strong>Total Score:</strong> ${subjectCount > 0 ? Math.round(totalScored) + ' / ' + (subjectCount * 100) : '—'}</p>
+                            <p><strong>Term Average:</strong> ${subjectCount > 0 ? average.toFixed(1) + '%' : '—'}</p>
+                            <p><strong>Class Average:</strong> ${classAvg}%</p>
+                            <p><strong>Overall Grade:</strong> <strong class="grade-${overallGrade}">${overallGrade} — ${getRemark(overallGrade)}</strong></p>
+                        </div>
+                        <div class="rc-summary-box">
+                            <h5>📝 Teacher's Comment</h5>
+                            <p style="font-style:italic;">${escapeHtml(myResult.teacherComment || 'No comment')}</p>
+                            ${myResult.principalComment ? `<p style="margin-top:4px;"><strong>Principal:</strong> ${escapeHtml(myResult.principalComment)}</p>` : ''}
+                        </div>
+                    </div>
+                    <div class="rc-attendance">
+                        <div class="rc-summary-box">
+                            <h5>📅 Attendance</h5>
+                            <p><strong>School Days:</strong> ${att.total || 50}</p>
+                            <p><strong>Days Present:</strong> ${att.present || 45}</p>
+                            <p><strong>Days Absent:</strong> ${(att.total || 50) - (att.present || 45)}</p>
+                        </div>
+                        <div class="rc-summary-box">
+                            <h5>💬 Principal's Comment</h5>
+                            <p style="font-style:italic;">${escapeHtml(myResult.principalComment || 'Keep up the good work!')}</p>
+                        </div>
+                        <div class="rc-summary-box">
+                            <h5>⭐ Grading System</h5>
+                            <p>A: 75-100% | B: 65-74%</p>
+                            <p>C: 50-64% | D: 40-49%</p>
+                            <p>F: Below 40%</p>
+                        </div>
+                    </div>
+                    <div class="rc-signatures">
+                        <div><div class="rc-sign-line">${escapeHtml(rc.teacherName || 'Class Teacher')}<br><small>Class Teacher</small></div></div>
+                        <div><div class="rc-sign-line"><br><small>Principal</small></div></div>
+                        <div><div class="rc-sign-line"><br><small>Parent/Guardian</small></div></div>
+                    </div>
+                    <div class="rc-footer">
+                        <strong>Next Term Begins:</strong> ${escapeHtml(rc.nextTerm || 'To Be Announced')} | <strong>Resumption:</strong> 8:00 AM | This report card is computer-generated.
+                    </div>
+                </div>`;
+        }
+
+        // ============================================
+        // ENTER KEY SUPPORT
+        // ============================================
+        document.getElementById('pinInput').addEventListener('keypress', e => {
+            if (e.key === 'Enter') document.getElementById('verifyPinBtn').click();
+        });
+
+        // ============================================
+        // AUTHENTICATION
+        // ============================================
+        auth.onAuthStateChanged(async user => {
+            if (!user) {
+                // Not logged in - redirect to login
+                window.location.href = 'student-login.html';
+                return;
+            }
+            try {
+                const doc = await db.collection('users').doc(user.uid).get();
+                if (!doc.exists || doc.data().role !== 'student') {
+                    auth.signOut();
+                    window.location.href = 'index.html';
+                    return;
+                }
+                currentUser = user;
+                userData = doc.data();
+
+                // Show student preview
+                const preview = document.getElementById('studentPreview');
+                preview.style.display = 'flex';
+                document.getElementById('studentName').textContent = `${userData.firstName || ''} ${userData.surname || ''}`.trim();
+                document.getElementById('studentIdDisplay').textContent = userData.userId || user.uid.substring(0, 10);
+
+                const avatar = document.getElementById('studentAvatar');
+                if (userData.photoURL) {
+                    avatar.innerHTML = `<img src="${userData.photoURL}" alt="">`;
+                } else {
+                    avatar.textContent = (userData.firstName?.[0] || 'S') + (userData.surname?.[0] || 'T');
+                }
+
+                // Check URL for PIN parameter
+                const params = new URLSearchParams(window.location.search);
+                const urlPin = params.get('pin');
+                if (urlPin) {
+                    document.getElementById('pinInput').value = urlPin;
+                    document.getElementById('verifyPinBtn').click();
+                }
+            } catch (e) {
+                console.error('Auth error:', e);
+                window.location.href = 'student-login.html';
+            }
+        });
+
+        console.log('📋 Student Report Card page initialized — Judah Wonders Model School');
+        console.log('   - PIN lookup: O(1) by document ID');
+        console.log('   - PIN is a payment token, not pre-assigned to student');
+        console.log('   - Requires student authentication');
+    </script>
+</body>
+</html>
