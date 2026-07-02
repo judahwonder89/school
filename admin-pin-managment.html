@@ -1,0 +1,679 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="dark">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=yes">
+    <title>Judah Wonders Model School · PIN Management</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:opsz,wght@14..32,400;500;600;700;800&family=Playfair+Display:wght@600;700&family=Space+Grotesk:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-auth-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-firestore-compat.js"></script>
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        
+        :root[data-theme="light"] {
+            --bg-primary: #f0f5fa; --bg-secondary: #e2e8f0; --bg-sidebar: rgba(255,255,255,0.85);
+            --text-primary: #0b1e33; --text-secondary: #2c3e50; --text-muted: #64748b;
+            --accent: #0A2540; --accent-glow: #C8963E; --accent-light: rgba(10,37,64,0.1);
+            --border: rgba(0,0,0,0.08); --border-light: rgba(0,0,0,0.05);
+            --card-bg: rgba(255,255,255,0.75); --card-bg-solid: #ffffff;
+            --hover-bg: rgba(255,255,255,0.95); --hover-bg-alt: rgba(10,37,64,0.05);
+            --shadow: 0 4px 20px -5px rgba(0,0,0,0.08); --shadow-lg: 0 8px 30px -5px rgba(0,0,0,0.12);
+            --input-bg: #ffffff; --input-border: #e2e8f0;
+            --success-bg: rgba(34,197,94,0.12); --success-text: #16a34a; --success-border: rgba(34,197,94,0.3);
+            --warning-bg: rgba(245,158,11,0.12); --warning-text: #b45309; --warning-border: rgba(245,158,11,0.3);
+            --danger-bg: rgba(239,68,68,0.12); --danger-text: #b91c1c; --danger-border: rgba(239,68,68,0.3);
+            --info-bg: rgba(10,37,64,0.08); --info-text: #0A2540; --info-border: rgba(10,37,64,0.2);
+            --gradient-start: #0A2540; --gradient-end: #C8963E; --overlay-bg: rgba(0,0,0,0.5);
+        }
+        :root[data-theme="dark"] {
+            --bg-primary: #0a0f1e; --bg-secondary: #111827; --bg-sidebar: rgba(15,23,42,0.85);
+            --text-primary: #f0f4fa; --text-secondary: #a0b3d9; --text-muted: #64748b;
+            --accent: #C8963E; --accent-glow: #D4AF37; --accent-light: rgba(200,150,62,0.15);
+            --border: rgba(255,255,255,0.08); --border-light: rgba(255,255,255,0.05);
+            --card-bg: rgba(15,23,42,0.75); --card-bg-solid: #0f172a;
+            --hover-bg: rgba(30,41,59,0.9); --hover-bg-alt: rgba(200,150,62,0.08);
+            --shadow: 0 4px 20px -5px rgba(0,0,0,0.4); --shadow-lg: 0 8px 30px -5px rgba(0,0,0,0.5);
+            --input-bg: rgba(30,41,59,0.9); --input-border: rgba(255,255,255,0.1);
+            --success-bg: rgba(34,197,94,0.15); --success-text: #4ade80; --success-border: rgba(34,197,94,0.3);
+            --warning-bg: rgba(245,158,11,0.15); --warning-text: #fbbf24; --warning-border: rgba(245,158,11,0.3);
+            --danger-bg: rgba(239,68,68,0.15); --danger-text: #f87171; --danger-border: rgba(239,68,68,0.3);
+            --info-bg: rgba(200,150,62,0.12); --info-text: #D4AF37; --info-border: rgba(200,150,62,0.25);
+            --gradient-start: #0A2540; --gradient-end: #C8963E; --overlay-bg: rgba(0,0,0,0.85);
+        }
+
+        body { font-family: 'Inter', sans-serif; background: var(--bg-primary); color: var(--text-primary); min-height: 100vh; display: flex; position: relative; overflow-x: hidden; transition: background 0.3s, color 0.3s; }
+
+        .bg-logo { position: fixed; top: 50%; left: 50%; transform: translate(-50%, -50%); width: 400px; max-width: 70vw; opacity: 0.03; pointer-events: none; z-index: 0; animation: breathe 6s ease-in-out infinite; }
+        @keyframes breathe { 0%, 100% { transform: translate(-50%, -50%) scale(1); opacity: 0.03; } 50% { transform: translate(-50%, -50%) scale(1.06); opacity: 0.06; } }
+        .orb { position: fixed; width: 250px; height: 250px; border-radius: 50%; filter: blur(80px); pointer-events: none; z-index: 0; animation: float 25s infinite alternate; }
+        .orb-1 { top: -100px; left: -100px; background: radial-gradient(circle at 30% 30%, rgba(10,37,64,0.12), transparent 70%); }
+        .orb-2 { bottom: -150px; right: -50px; width: 350px; height: 350px; background: radial-gradient(circle at 70% 70%, rgba(200,150,62,0.12), transparent); animation-duration: 30s; }
+        @keyframes float { 0% { transform: translate(0, 0) scale(1); } 100% { transform: translate(40px, 30px) scale(1.15); } }
+
+        .sidebar { width: 260px; background: var(--bg-sidebar); backdrop-filter: blur(20px); -webkit-backdrop-filter: blur(20px); border-right: 1px solid var(--border); padding: 1.5rem 0.8rem; display: flex; flex-direction: column; transition: all 0.3s; position: fixed; top: 0; left: 0; height: 100vh; overflow-y: auto; z-index: 100; box-shadow: var(--shadow-lg); }
+        .sidebar.collapsed { width: 85px; }
+        .sidebar .logo-area { display: flex; align-items: center; gap: 0.8rem; margin-bottom: 1.8rem; padding: 0 0.3rem; text-decoration: none; }
+        .sidebar .logo-area img { width: 38px; height: 38px; object-fit: contain; animation: logoPulse 3s ease-in-out infinite; flex-shrink: 0; }
+        @keyframes logoPulse { 0%, 100% { transform: scale(1); } 50% { transform: scale(1.05); } }
+        .sidebar .logo-area h2 { font-family: 'Playfair Display', serif; font-size: 1.1rem; font-weight: 700; white-space: nowrap; color: var(--accent); line-height: 1.2; }
+        .sidebar .logo-area h2 span { display: block; font-size: 0.6rem; letter-spacing: 1.5px; color: var(--accent-glow); }
+        .sidebar.collapsed .logo-area h2 { display: none; }
+        .sidebar .nav-item { display: flex; align-items: center; gap: 0.9rem; padding: 0.75rem 1rem; border-radius: 1rem; color: var(--text-secondary); transition: all 0.2s; cursor: pointer; margin-bottom: 0.25rem; text-decoration: none; font-weight: 500; white-space: nowrap; border: 1px solid transparent; font-size: 0.9rem; }
+        .sidebar .nav-item:hover { background: var(--hover-bg); color: var(--accent); border-color: var(--border); transform: translateX(3px); }
+        .sidebar .nav-item.active { background: linear-gradient(135deg, var(--gradient-start), var(--gradient-end)); color: white; box-shadow: 0 6px 15px -5px rgba(200,150,62,0.4); font-weight: 600; }
+        .sidebar .nav-item i { font-size: 1.2rem; width: 1.6rem; text-align: center; flex-shrink: 0; }
+        .sidebar.collapsed .nav-item span { display: none; }
+        .sidebar.collapsed .nav-item { justify-content: center; padding: 0.75rem; }
+        .sidebar .toggle-btn { margin-top: auto; display: flex; justify-content: flex-end; padding: 0.8rem 0.5rem; cursor: pointer; color: var(--text-secondary); font-size: 1.1rem; }
+        .sidebar .toggle-btn:hover { color: var(--accent); }
+
+        .main-content { flex: 1; margin-left: 260px; padding: 1.5rem; transition: margin-left 0.3s; max-width: calc(100vw - 260px); position: relative; z-index: 5; }
+        .main-content.expanded { margin-left: 85px; max-width: calc(100vw - 85px); }
+
+        .top-bar { display: flex; justify-content: space-between; align-items: center; margin-bottom: 1.5rem; flex-wrap: wrap; gap: 1rem; }
+        .page-title h1 { font-family: 'Playfair Display', serif; font-size: 1.8rem; font-weight: 700; color: var(--accent); margin-bottom: 0.1rem; }
+        .page-title p { color: var(--text-secondary); font-size: 0.85rem; }
+        .profile-area { display: flex; align-items: center; gap: 1rem; }
+        .theme-toggle { background: var(--card-bg); border: 1px solid var(--border); border-radius: 2rem; padding: 0.4rem 1rem; display: flex; align-items: center; gap: 0.4rem; cursor: pointer; color: var(--text-secondary); font-size: 0.8rem; transition: 0.2s; backdrop-filter: blur(10px); -webkit-backdrop-filter: blur(10px); }
+        .theme-toggle:hover { border-color: var(--accent); color: var(--accent); }
+        .profile-pic { width: 38px; height: 38px; border-radius: 50%; background: linear-gradient(135deg, var(--gradient-start), var(--gradient-end)); display: flex; align-items: center; justify-content: center; color: white; font-weight: 600; font-size: 0.9rem; box-shadow: 0 4px 12px rgba(200,150,62,0.3); overflow: hidden; }
+        .profile-pic img { width: 100%; height: 100%; object-fit: cover; border-radius: 50%; }
+        .dropdown-menu { position: absolute; right: 0; top: 50px; background: var(--card-bg-solid); border: 1px solid var(--border); border-radius: 1rem; padding: 0.4rem; min-width: 160px; display: none; z-index: 1000; box-shadow: var(--shadow-lg); }
+        .profile-dropdown { position: relative; cursor: pointer; }
+        .profile-dropdown:hover .dropdown-menu { display: block; animation: fadeIn 0.2s; }
+        @keyframes fadeIn { from { opacity: 0; transform: translateY(-10px); } to { opacity: 1; transform: translateY(0); } }
+        .dropdown-item { padding: 0.6rem 1rem; color: var(--text-primary); border-radius: 0.8rem; display: flex; align-items: center; gap: 0.6rem; font-size: 0.85rem; cursor: pointer; }
+        .dropdown-item:hover { background: var(--hover-bg); color: var(--accent); }
+
+        .stats-row { display: grid; grid-template-columns: repeat(auto-fit, minmax(140px, 1fr)); gap: 0.8rem; margin-bottom: 1.5rem; }
+        .stat-card { background: var(--card-bg); backdrop-filter: blur(12px); -webkit-backdrop-filter: blur(12px); border: 1px solid var(--border); border-radius: 1.2rem; padding: 1.1rem; text-align: center; transition: all 0.3s; position: relative; overflow: hidden; }
+        .stat-card::before { content: ''; position: absolute; top: 0; left: 0; right: 0; height: 3px; background: linear-gradient(90deg, var(--gradient-start), var(--gradient-end)); }
+        .stat-card:hover { transform: translateY(-2px); box-shadow: var(--shadow-lg); }
+        .stat-card .val { font-size: 1.8rem; font-weight: 800; font-family: 'Space Grotesk', monospace; color: var(--accent); }
+        .stat-card .lbl { font-size: 0.7rem; color: var(--text-muted); text-transform: uppercase; letter-spacing: 0.5px; margin-top: 0.2rem; }
+        .stat-card.success .val { color: var(--success-text); }
+        .stat-card.warning .val { color: var(--warning-text); }
+        .stat-card.danger .val { color: var(--danger-text); }
+
+        .card { background: var(--card-bg); backdrop-filter: blur(12px); -webkit-backdrop-filter: blur(12px); border: 1px solid var(--border); border-radius: 1.5rem; padding: 1.5rem; box-shadow: var(--shadow); margin-bottom: 1.5rem; }
+        .card-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 1rem; flex-wrap: wrap; gap: 0.5rem; padding-bottom: 1rem; border-bottom: 1px solid var(--border); }
+        .card-header h3 { font-size: 1.2rem; font-weight: 700; display: flex; align-items: center; gap: 0.5rem; color: var(--text-primary); }
+
+        .grid-2 { display: grid; grid-template-columns: 1fr 1fr; gap: 1rem; }
+        .grid-3 { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 1rem; }
+        .form-group { margin-bottom: 1rem; }
+        .form-group label { display: block; margin-bottom: 0.3rem; color: var(--text-secondary); font-weight: 600; font-size: 0.82rem; }
+        .form-control { width: 100%; padding: 0.65rem 1rem; background: var(--input-bg); border: 2px solid var(--input-border); border-radius: 1rem; color: var(--text-primary); font-family: inherit; font-size: 0.85rem; transition: border-color 0.2s; outline: none; }
+        .form-control:focus { border-color: var(--accent); box-shadow: 0 0 15px rgba(200,150,62,0.15); }
+        select.form-control { appearance: auto; }
+
+        .filter-bar { display: flex; gap: 0.5rem; margin-bottom: 1rem; flex-wrap: wrap; align-items: center; }
+        .filter-bar input, .filter-bar select { padding: 0.55rem 1rem; background: var(--input-bg); border: 2px solid var(--input-border); border-radius: 2rem; color: var(--text-primary); font-size: 0.82rem; font-family: inherit; }
+        .filter-bar input:focus, .filter-bar select:focus { outline: none; border-color: var(--accent); }
+        .filter-bar select { appearance: auto; }
+
+        .table-scroll { overflow-x: auto; border-radius: 1rem; }
+        table { width: 100%; border-collapse: collapse; }
+        th, td { padding: 0.7rem 0.6rem; border-bottom: 1px solid var(--border); font-size: 0.8rem; text-align: left; }
+        th { background: var(--hover-bg); font-weight: 700; color: var(--text-muted); white-space: nowrap; text-transform: uppercase; font-size: 0.7rem; letter-spacing: 0.5px; }
+        tr:hover td { background: var(--hover-bg-alt); }
+        .badge { padding: 0.2rem 0.7rem; border-radius: 2rem; font-size: 0.68rem; font-weight: 700; display: inline-block; text-transform: uppercase; letter-spacing: 0.3px; }
+        .badge-active { background: var(--success-bg); color: var(--success-text); border: 1px solid var(--success-border); }
+        .badge-used { background: var(--info-bg); color: var(--info-text); border: 1px solid var(--info-border); }
+        .badge-expired { background: var(--danger-bg); color: var(--danger-text); border: 1px solid var(--danger-border); }
+        .badge-revoked { background: var(--warning-bg); color: var(--warning-text); border: 1px solid var(--warning-border); }
+
+        .btn { padding: 0.55rem 1.3rem; border: none; border-radius: 2rem; font-weight: 600; font-size: 0.82rem; cursor: pointer; transition: all 0.25s; display: inline-flex; align-items: center; gap: 0.4rem; white-space: nowrap; font-family: inherit; text-decoration: none; letter-spacing: 0.3px; }
+        .btn-primary { background: linear-gradient(135deg, var(--gradient-start), var(--gradient-end)); color: white; box-shadow: 0 4px 12px rgba(200,150,62,0.3); }
+        .btn-primary:hover { box-shadow: 0 6px 20px rgba(200,150,62,0.5); transform: translateY(-2px); }
+        .btn-success { background: var(--success-text); color: white; }
+        .btn-danger { background: var(--danger-text); color: white; }
+        .btn-outline { background: transparent; border: 2px solid var(--border); color: var(--text-primary); }
+        .btn-outline:hover { background: var(--hover-bg); border-color: var(--accent); transform: translateY(-1px); }
+        .btn-sm { padding: 0.35rem 0.9rem; font-size: 0.75rem; border-radius: 1.5rem; }
+        .btn:active { transform: scale(0.97) !important; }
+        .btn:disabled { opacity: 0.5; cursor: not-allowed; }
+
+        .pin-result-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(140px, 1fr)); gap: 0.5rem; max-height: 300px; overflow-y: auto; }
+        .pin-box { background: var(--hover-bg); border: 2px solid var(--border); border-radius: 0.8rem; padding: 0.7rem; text-align: center; font-family: 'Space Grotesk', monospace; font-size: 0.9rem; font-weight: 700; letter-spacing: 2px; transition: 0.2s; cursor: pointer; }
+        .pin-box:hover { border-color: var(--accent); background: var(--accent-light); }
+
+        .modal-overlay { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: var(--overlay-bg); backdrop-filter: blur(8px); -webkit-backdrop-filter: blur(8px); display: none; justify-content: center; align-items: center; z-index: 2000; animation: fadeIn 0.3s; }
+        .modal-overlay.active { display: flex; }
+        .modal-content { background: var(--card-bg-solid); border: 1px solid var(--border); border-radius: 1.5rem; padding: 2rem; max-width: 700px; width: 90%; max-height: 85vh; overflow-y: auto; box-shadow: 0 20px 60px rgba(0,0,0,0.5); animation: slideUp 0.3s; }
+        @keyframes slideUp { from { transform: translateY(30px); opacity: 0; } to { transform: translateY(0); opacity: 1; } }
+        .modal-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 1rem; padding-bottom: 1rem; border-bottom: 1px solid var(--border); }
+        .modal-header h3 { font-size: 1.2rem; font-weight: 700; }
+        .modal-header i { cursor: pointer; font-size: 1.3rem; color: var(--text-secondary); transition: 0.2s; padding: 0.3rem; border-radius: 0.5rem; }
+        .modal-header i:hover { color: var(--danger-text); background: var(--danger-bg); }
+
+        .loading-overlay { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: var(--overlay-bg); backdrop-filter: blur(10px); -webkit-backdrop-filter: blur(10px); display: none; justify-content: center; align-items: center; z-index: 3000; }
+        .loading-overlay.active { display: flex; }
+        .loading-content { background: var(--card-bg-solid); padding: 2.5rem; border-radius: 1.5rem; text-align: center; box-shadow: var(--shadow-lg); }
+        .loading-spinner { width: 50px; height: 50px; border: 4px solid var(--border); border-top: 4px solid var(--accent); border-radius: 50%; animation: spin 1s linear infinite; margin: 0 auto 1rem; }
+        @keyframes spin { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }
+
+        .toast-container { position: fixed; top: 1rem; right: 1rem; z-index: 5000; display: flex; flex-direction: column; gap: 0.5rem; }
+        .toast { background: var(--card-bg-solid); border: 1px solid var(--border); border-radius: 1rem; padding: 0.9rem 1.2rem; min-width: 300px; max-width: 420px; box-shadow: var(--shadow-lg); display: flex; align-items: flex-start; gap: 0.7rem; animation: slideInRight 0.3s; font-size: 0.85rem; }
+        .toast.removing { animation: slideOutRight 0.3s ease-in forwards; }
+        @keyframes slideInRight { from { transform: translateX(120%); opacity: 0; } to { transform: translateX(0); opacity: 1; } }
+        @keyframes slideOutRight { from { transform: translateX(0); opacity: 1; } to { transform: translateX(120%); opacity: 0; } }
+
+        @media (max-width: 768px) {
+            .sidebar { width: 85px; } .sidebar .logo-area h2, .sidebar .nav-item span { display: none; }
+            .sidebar .nav-item { justify-content: center; padding: 0.7rem; }
+            .main-content { margin-left: 85px; max-width: calc(100vw - 85px); padding: 1rem; }
+            .grid-2, .grid-3 { grid-template-columns: 1fr; }
+            .stats-row { grid-template-columns: repeat(2, 1fr); }
+        }
+    </style>
+</head>
+<body>
+    <img src="https://res.cloudinary.com/dda7kpir8/image/upload/q_auto/f_auto/v1781038310/ChatGPT_Image_Jun_9_2026_09_25_06_AM_elnine.png" alt="" class="bg-logo" aria-hidden="true">
+    <div class="orb orb-1"></div><div class="orb orb-2"></div>
+    <div class="toast-container" id="toastContainer"></div>
+
+    <!-- SIDEBAR -->
+    <div class="sidebar" id="sidebar">
+        <a href="index.html" class="logo-area">
+            <img src="https://res.cloudinary.com/dda7kpir8/image/upload/q_auto/f_auto/v1781038310/ChatGPT_Image_Jun_9_2026_09_25_06_AM_elnine.png" alt="JWMS Logo">
+            <h2>Judah Wonders<span>Model School</span></h2>
+        </a>
+        <a href="admin-dashboard.html" class="nav-item"><i class="fas fa-chart-pie"></i><span>Dashboard</span></a>
+        <a href="admin-users.html" class="nav-item"><i class="fas fa-users"></i><span>Users</span></a>
+        <a href="admin-approvals.html" class="nav-item"><i class="fas fa-user-check"></i><span>Approvals</span></a>
+        <a href="admin-report-approval.html" class="nav-item"><i class="fas fa-graduation-cap"></i><span>Report Cards</span></a>
+        <a href="admin-pins.html" class="nav-item active"><i class="fas fa-qrcode"></i><span>PIN Management</span></a>
+        <a href="admin-announcements.html" class="nav-item"><i class="fas fa-bullhorn"></i><span>Announcements</span></a>
+        <a href="admin-calendar.html" class="nav-item"><i class="fas fa-calendar-check"></i><span>Calendar</span></a>
+        <a href="admin-audit.html" class="nav-item"><i class="fas fa-history"></i><span>Audit Logs</span></a>
+        <a href="admin-settings.html" class="nav-item"><i class="fas fa-cog"></i><span>Settings</span></a>
+        <div class="toggle-btn" id="sidebarToggle"><i class="fas fa-chevron-left"></i></div>
+    </div>
+
+    <!-- MAIN CONTENT -->
+    <div class="main-content" id="mainContent">
+        <div class="top-bar">
+            <div class="page-title"><h1>PIN Management</h1><p>Generate, sell, and track report card access PINs</p></div>
+            <div class="profile-area">
+                <div class="theme-toggle" id="themeToggle"><i class="fas fa-sun"></i><span>Light</span><i class="fas fa-moon"></i></div>
+                <div class="profile-dropdown">
+                    <div class="profile-pic" id="profilePic">A</div>
+                    <div class="dropdown-menu"><div class="dropdown-item" id="profileLink"><i class="fas fa-user"></i> Profile</div><div class="dropdown-item" id="logoutBtn"><i class="fas fa-sign-out-alt"></i> Logout</div></div>
+                </div>
+            </div>
+        </div>
+
+        <!-- STATS -->
+        <div class="stats-row">
+            <div class="stat-card"><div class="val" id="statTotal">0</div><div class="lbl">Total PINs</div></div>
+            <div class="stat-card success"><div class="val" id="statActive">0</div><div class="lbl">Active (Unsold)</div></div>
+            <div class="stat-card warning"><div class="val" id="statUsed">0</div><div class="lbl">Used (Sold)</div></div>
+            <div class="stat-card danger"><div class="val" id="statExpired">0</div><div class="lbl">Expired</div></div>
+            <div class="stat-card"><div class="val" id="statRevenue" style="color: var(--success-text);">₦0</div><div class="lbl">Revenue</div></div>
+        </div>
+
+        <!-- GENERATE PINS -->
+        <div class="card">
+            <div class="card-header"><h3><i class="fas fa-plus-circle"></i> Generate New PINs</h3></div>
+            <div class="grid-2">
+                <div class="form-group"><label><i class="fas fa-hashtag"></i> Number of PINs</label><input type="number" id="pinCount" class="form-control" value="1" min="1" max="500"></div>
+                <div class="form-group"><label><i class="fas fa-tag"></i> Price per PIN (₦)</label><input type="number" id="pinPrice" class="form-control" value="500" min="100"></div>
+                <div class="form-group"><label><i class="fas fa-calendar-alt"></i> Session</label><select id="pinSession" class="form-control"><option value="2024/2025">2024/2025</option><option value="2025/2026" selected>2025/2026</option><option value="2026/2027">2026/2027</option></select></div>
+                <div class="form-group"><label><i class="fas fa-clock"></i> Term (Optional)</label><select id="pinTerm" class="form-control"><option value="">All Terms</option><option value="first">First Term</option><option value="second">Second Term</option><option value="third">Third Term</option></select></div>
+            </div>
+            <div style="display:flex;gap:0.75rem;margin-top:1rem;flex-wrap:wrap;">
+                <button class="btn btn-primary" id="generateSingleBtn"><i class="fas fa-qrcode"></i> Generate Single PIN</button>
+                <button class="btn btn-primary" id="generateBulkBtn"><i class="fas fa-layer-group"></i> Generate Bulk</button>
+                <button class="btn btn-outline" id="bulkUploadBtn"><i class="fas fa-upload"></i> Bulk Upload & Generate</button>
+            </div>
+        </div>
+
+        <!-- FILTERS -->
+        <div class="filter-bar">
+            <input type="text" id="searchInput" placeholder="Search PIN code...">
+            <select id="statusFilter"><option value="all">All Status</option><option value="active" selected>Active</option><option value="used">Used</option><option value="expired">Expired</option><option value="revoked">Revoked</option></select>
+            <select id="sessionFilter"><option value="all">All Sessions</option></select>
+            <button class="btn btn-outline btn-sm" id="refreshBtn"><i class="fas fa-sync-alt"></i> Refresh</button>
+            <button class="btn btn-outline btn-sm" id="exportBtn"><i class="fas fa-download"></i> Export CSV</button>
+        </div>
+
+        <!-- PINS TABLE -->
+        <div class="card">
+            <div class="card-header"><h3><i class="fas fa-list"></i> Generated PINs</h3><span id="pinsCount" class="badge badge-active">0</span></div>
+            <div class="table-scroll">
+                <table>
+                    <thead><tr><th>PIN Code</th><th>Session</th><th>Term</th><th>Price</th><th>Status</th><th>Used By</th><th>Used Date</th><th>Generated</th><th>Actions</th></tr></thead>
+                    <tbody id="pinsBody"><tr><td colspan="9" style="text-align:center;padding:2rem;">Loading...</td></tr></tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+
+    <!-- PIN RESULT MODAL -->
+    <div class="modal-overlay" id="pinResultModal">
+        <div class="modal-content">
+            <div class="modal-header"><h3><i class="fas fa-check-circle"></i> PINs Generated Successfully</h3><i class="fas fa-times" onclick="closePinResultModal()"></i></div>
+            <div class="pin-result-grid" id="pinResultList"></div>
+            <div style="display:flex;gap:0.75rem;justify-content:flex-end;margin-top:1.5rem;padding-top:1rem;border-top:1px solid var(--border);flex-wrap:wrap;">
+                <button class="btn btn-outline" onclick="copyAllPins()"><i class="fas fa-copy"></i> Copy All</button>
+                <button class="btn btn-primary" onclick="downloadPinsCSV()"><i class="fas fa-download"></i> Download CSV</button>
+                <button class="btn btn-outline" onclick="closePinResultModal()">Close</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- BULK UPLOAD MODAL -->
+    <div class="modal-overlay" id="bulkModal">
+        <div class="modal-content">
+            <div class="modal-header"><h3><i class="fas fa-upload"></i> Bulk Generate PINs</h3><i class="fas fa-times" onclick="closeBulkModal()"></i></div>
+            <p style="color:var(--text-secondary);margin-bottom:1rem;">Upload a CSV file with payment references or generate PINs in bulk at once.</p>
+            <div class="grid-2">
+                <div class="form-group"><label>Number of PINs</label><input type="number" id="bulkPinCount" class="form-control" value="50" min="1" max="500"></div>
+                <div class="form-group"><label>Price per PIN (₦)</label><input type="number" id="bulkPinPrice" class="form-control" value="500" min="100"></div>
+            </div>
+            <div class="form-group"><label>Session</label><select id="bulkSession" class="form-control"><option value="2025/2026" selected>2025/2026</option></select></div>
+            <div style="display:flex;gap:0.75rem;justify-content:flex-end;margin-top:1.5rem;">
+                <button class="btn btn-outline" onclick="closeBulkModal()">Cancel</button>
+                <button class="btn btn-primary" id="processBulkBtn"><i class="fas fa-qrcode"></i> Generate PINs</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- LOADING -->
+    <div class="loading-overlay" id="loadingOverlay"><div class="loading-content"><div class="loading-spinner"></div><h3 style="margin-top:1rem;color:var(--text-primary);">Processing...</h3></div></div>
+
+    <script>
+        // ============================================
+        // FIREBASE CONFIGURATION
+        // ============================================
+        const firebaseConfig = {
+            apiKey: "AIzaSyADXHEiaSQ146QsGsaOCElARtpwrLE8svs",
+            authDomain: "judah-c737e.firebaseapp.com",
+            projectId: "judah-c737e",
+            storageBucket: "judah-c737e.firebasestorage.app",
+            messagingSenderId: "739196063078",
+            appId: "1:739196063078:web:c0ee1c1da2cc3794ca8ca7",
+            measurementId: "G-YEM22F1C39"
+        };
+        firebase.initializeApp(firebaseConfig);
+        const auth = firebase.auth();
+        const db = firebase.firestore();
+
+        // ============================================
+        // DOM & THEME
+        // ============================================
+        const sidebar = document.getElementById('sidebar');
+        const mainContent = document.getElementById('mainContent');
+        const html = document.documentElement;
+        const themeToggle = document.getElementById('themeToggle');
+
+        document.getElementById('sidebarToggle').addEventListener('click', () => {
+            sidebar.classList.toggle('collapsed'); mainContent.classList.toggle('expanded');
+            const icon = document.getElementById('sidebarToggle').querySelector('i');
+            icon.classList.toggle('fa-chevron-left'); icon.classList.toggle('fa-chevron-right');
+        });
+
+        const savedTheme = localStorage.getItem('judah-theme') || 'dark';
+        html.setAttribute('data-theme', savedTheme);
+        themeToggle.querySelector('span').textContent = savedTheme === 'dark' ? 'Light' : 'Dark';
+        themeToggle.addEventListener('click', () => {
+            const next = html.getAttribute('data-theme') === 'dark' ? 'light' : 'dark';
+            html.setAttribute('data-theme', next); localStorage.setItem('judah-theme', next);
+            themeToggle.querySelector('span').textContent = next === 'dark' ? 'Light' : 'Dark';
+        });
+
+        // ============================================
+        // UTILITIES
+        // ============================================
+        function showToast(title, message, type = 'info') {
+            const icons = { success: 'fa-check-circle', error: 'fa-exclamation-circle', warning: 'fa-exclamation-triangle', info: 'fa-info-circle' };
+            const container = document.getElementById('toastContainer');
+            const toast = document.createElement('div'); toast.className = 'toast';
+            toast.innerHTML = `<i class="fas ${icons[type]}" style="color:var(--${type==='success'?'success':type==='error'?'danger':type==='warning'?'warning':'info'}-text);font-size:1.1rem;margin-top:2px;"></i><div><strong>${escapeHtml(title)}</strong><br><span style="font-size:0.8rem;color:var(--text-secondary);">${escapeHtml(message)}</span></div>`;
+            container.appendChild(toast);
+            setTimeout(() => { toast.classList.add('removing'); setTimeout(() => toast.remove(), 300); }, 4000);
+        }
+        function showLoading() { document.getElementById('loadingOverlay').classList.add('active'); }
+        function hideLoading() { document.getElementById('loadingOverlay').classList.remove('active'); }
+        function escapeHtml(t) { if (!t) return ''; const d = document.createElement('div'); d.textContent = t; return d.innerHTML; }
+
+        function generateUniquePIN() {
+            const chars = 'ABCDEFGHJKLMNPQRSTUVWXYZ23456789';
+            let pin = '';
+            for (let i = 0; i < 8; i++) pin += chars.charAt(Math.floor(Math.random() * chars.length));
+            return pin;
+        }
+
+        function formatDate(ts) {
+            if (!ts || !ts.toDate) return '—';
+            return ts.toDate().toLocaleDateString('en-GB', { day: 'numeric', month: 'short', year: 'numeric' });
+        }
+
+        function getStatusBadge(s) {
+            const map = { active: 'badge-active', used: 'badge-used', expired: 'badge-expired', revoked: 'badge-revoked' };
+            const labels = { active: 'Active', used: 'Used', expired: 'Expired', revoked: 'Revoked' };
+            return `<span class="badge ${map[s] || 'badge-active'}">${labels[s] || s}</span>`;
+        }
+
+        // ============================================
+        // STATE
+        // ============================================
+        let currentUser = null, userData = null;
+        let allPins = [], lastGeneratedPins = [];
+
+        // ============================================
+        // LOAD PINS
+        // ============================================
+        async function loadPins() {
+            showLoading();
+            try {
+                const snap = await db.collection('reportPins').orderBy('createdAt', 'desc').limit(500).get();
+                allPins = [];
+                snap.forEach(d => {
+                    const data = d.data();
+                    // Check for expiration
+                    let status = data.status || 'active';
+                    if (status === 'active' && data.expiresAt && data.expiresAt.toDate() < new Date()) {
+                        status = 'expired';
+                    }
+                    allPins.push({ id: d.id, pin: data.pin || d.id, ...data, status });
+                });
+                updateStats();
+                populateSessionFilter();
+                renderTable();
+            } catch (e) {
+                console.error('Load error:', e);
+                showToast('Error', 'Failed to load PINs.', 'error');
+            } finally { hideLoading(); }
+        }
+
+        function updateStats() {
+            const active = allPins.filter(p => p.status === 'active').length;
+            const used = allPins.filter(p => p.status === 'used').length;
+            const expired = allPins.filter(p => p.status === 'expired').length;
+            const revenue = allPins.filter(p => p.status === 'used').reduce((s, p) => s + (p.price || 0), 0);
+            document.getElementById('statTotal').textContent = allPins.length;
+            document.getElementById('statActive').textContent = active;
+            document.getElementById('statUsed').textContent = used;
+            document.getElementById('statExpired').textContent = expired;
+            document.getElementById('statRevenue').textContent = '₦' + revenue.toLocaleString();
+        }
+
+        function populateSessionFilter() {
+            const sessions = [...new Set(allPins.map(p => p.session).filter(Boolean))].sort();
+            const sel = document.getElementById('sessionFilter');
+            sel.innerHTML = '<option value="all">All Sessions</option>' + sessions.map(s => `<option value="${s}">${s}</option>`).join('');
+        }
+
+        function renderTable() {
+            const statusF = document.getElementById('statusFilter').value;
+            const sessionF = document.getElementById('sessionFilter').value;
+            const search = document.getElementById('searchInput').value.toLowerCase();
+
+            let filtered = allPins.filter(p => {
+                if (statusF !== 'all' && p.status !== statusF) return false;
+                if (sessionF !== 'all' && p.session !== sessionF) return false;
+                if (search && !(p.pin || p.id).toLowerCase().includes(search)) return false;
+                return true;
+            });
+
+            document.getElementById('pinsCount').textContent = `${filtered.length} PINs`;
+
+            const tbody = document.getElementById('pinsBody');
+            if (!filtered.length) {
+                tbody.innerHTML = '<tr><td colspan="9" style="text-align:center;padding:2rem;color:var(--text-secondary);">No PINs found.</td></tr>';
+                return;
+            }
+
+            tbody.innerHTML = filtered.map(p => {
+                const pinCode = p.pin || p.id;
+                let actions = `<button class="btn btn-sm btn-outline" onclick="copyPin('${pinCode}')" title="Copy PIN"><i class="fas fa-copy"></i></button>`;
+                if (p.status === 'active') {
+                    actions += ` <button class="btn btn-sm btn-danger" onclick="revokePin('${p.id}')" title="Revoke"><i class="fas fa-ban"></i></button>`;
+                }
+                return `<tr>
+                    <td><code style="font-family:'Space Grotesk',monospace;font-weight:600;letter-spacing:1px;">${escapeHtml(pinCode)}</code></td>
+                    <td>${p.session || '—'}</td>
+                    <td>${p.term || 'All'}</td>
+                    <td>₦${(p.price || 0).toLocaleString()}</td>
+                    <td>${getStatusBadge(p.status)}</td>
+                    <td>${p.usedBy ? escapeHtml(p.usedByName || p.usedBy.substring(0,8)) : '—'}</td>
+                    <td style="white-space:nowrap;">${p.usedAt ? formatDate(p.usedAt) : '—'}</td>
+                    <td style="white-space:nowrap;font-size:0.75rem;">${formatDate(p.createdAt)}<br><small style="color:var(--text-muted);">${escapeHtml(p.generatedByName || '')}</small></td>
+                    <td style="white-space:nowrap;">${actions}</td>
+                </tr>`;
+            }).join('');
+        }
+
+        // ============================================
+        // GENERATE PINS
+        // ============================================
+        async function generatePINs(count, price, session, term) {
+            const adminName = `${userData?.firstName || ''} ${userData?.surname || ''}`.trim();
+            const batch = db.batch();
+            const generatedPins = [];
+            const expiresAt = new Date(Date.now() + 365 * 24 * 60 * 60 * 1000); // 1 year
+
+            for (let i = 0; i < count; i++) {
+                let pin = generateUniquePIN();
+                // Ensure uniqueness
+                let attempts = 0;
+                while (allPins.find(p => (p.pin || p.id) === pin) && attempts < 10) {
+                    pin = generateUniquePIN();
+                    attempts++;
+                }
+                generatedPins.push(pin);
+                const pinRef = db.collection('reportPins').doc(pin);
+                batch.set(pinRef, {
+                    pin: pin,
+                    session: session,
+                    term: term || null,
+                    price: price,
+                    status: 'active',
+                    isUsed: false,
+                    usedBy: null,
+                    usedByName: null,
+                    usedAt: null,
+                    generatedBy: currentUser.uid,
+                    generatedByName: adminName,
+                    generationType: count === 1 ? 'single' : 'bulk',
+                    batchId: count > 1 ? Date.now().toString() : null,
+                    createdAt: firebase.firestore.FieldValue.serverTimestamp(),
+                    expiresAt: expiresAt
+                });
+            }
+
+            await batch.commit();
+            
+            await db.collection('auditLogs').add({
+                userId: currentUser.uid,
+                userName: adminName,
+                action: count === 1 ? 'PIN_GENERATED_SINGLE' : 'PINS_GENERATED_BULK',
+                details: { count, totalValue: price * count, session, term },
+                timestamp: firebase.firestore.FieldValue.serverTimestamp()
+            }).catch(() => {});
+
+            return generatedPins;
+        }
+
+        document.getElementById('generateSingleBtn').addEventListener('click', async () => {
+            const count = parseInt(document.getElementById('pinCount').value) || 1;
+            const price = parseInt(document.getElementById('pinPrice').value) || 500;
+            const session = document.getElementById('pinSession').value;
+            const term = document.getElementById('pinTerm').value;
+
+            if (!confirm(`Generate ${count} PIN(s) at ₦${price.toLocaleString()} each? Total: ₦${(price * count).toLocaleString()}`)) return;
+
+            showLoading();
+            try {
+                lastGeneratedPins = await generatePINs(count, price, session, term);
+                showPinResults();
+                await loadPins();
+            } catch (e) {
+                showToast('Error', e.message, 'error');
+            } finally { hideLoading(); }
+        });
+
+        document.getElementById('generateBulkBtn').addEventListener('click', () => {
+            document.getElementById('bulkPinCount').value = document.getElementById('pinCount').value;
+            document.getElementById('bulkPinPrice').value = document.getElementById('pinPrice').value;
+            document.getElementById('bulkSession').value = document.getElementById('pinSession').value;
+            document.getElementById('bulkModal').classList.add('active');
+        });
+
+        document.getElementById('processBulkBtn').addEventListener('click', async () => {
+            const count = parseInt(document.getElementById('bulkPinCount').value) || 50;
+            const price = parseInt(document.getElementById('bulkPinPrice').value) || 500;
+            const session = document.getElementById('bulkSession').value;
+
+            if (!confirm(`Generate ${count} bulk PINs at ₦${price.toLocaleString()} each? Total: ₦${(price * count).toLocaleString()}`)) return;
+
+            showLoading();
+            try {
+                lastGeneratedPins = await generatePINs(count, price, session, '');
+                closeBulkModal();
+                showPinResults();
+                await loadPins();
+            } catch (e) {
+                showToast('Error', e.message, 'error');
+            } finally { hideLoading(); }
+        });
+
+        // ============================================
+        // PIN RESULT MODAL
+        // ============================================
+        function showPinResults() {
+            document.getElementById('pinResultList').innerHTML = lastGeneratedPins.map(pin => 
+                `<div class="pin-box" onclick="copyPin('${pin}')" title="Click to copy">${pin}</div>`
+            ).join('');
+            document.getElementById('pinResultModal').classList.add('active');
+            showToast('Generated!', `${lastGeneratedPins.length} PIN(s) created. Click a PIN to copy it.`, 'success');
+        }
+
+        window.closePinResultModal = () => document.getElementById('pinResultModal').classList.remove('active');
+        window.closeBulkModal = () => document.getElementById('bulkModal').classList.remove('active');
+
+        window.copyPin = (pin) => {
+            navigator.clipboard.writeText(pin).then(() => {
+                showToast('Copied!', `PIN ${pin} copied to clipboard.`, 'success');
+            }).catch(() => {
+                prompt('Copy this PIN:', pin);
+            });
+        };
+
+        window.copyAllPins = () => {
+            const text = lastGeneratedPins.join('\n');
+            navigator.clipboard.writeText(text).then(() => {
+                showToast('Copied!', `${lastGeneratedPins.length} PINs copied to clipboard.`, 'success');
+            });
+        };
+
+        window.downloadPinsCSV = () => {
+            const csv = 'PIN Code\n' + lastGeneratedPins.join('\n');
+            const blob = new Blob([csv], { type: 'text/csv' });
+            const a = document.createElement('a');
+            a.href = URL.createObjectURL(blob);
+            a.download = `JWMS_PINs_${new Date().toISOString().split('T')[0]}.csv`;
+            a.click();
+            URL.revokeObjectURL(a.href);
+            showToast('Downloaded', 'CSV file downloaded.', 'success');
+        };
+
+        // ============================================
+        // REVOKE PIN
+        // ============================================
+        window.revokePin = async (pinId) => {
+            if (!confirm('Revoke this PIN? It will no longer be usable.')) return;
+            showLoading();
+            try {
+                await db.collection('reportPins').doc(pinId).update({
+                    status: 'revoked',
+                    revokedAt: firebase.firestore.FieldValue.serverTimestamp(),
+                    revokedBy: currentUser.uid
+                });
+                showToast('Revoked', 'PIN has been revoked.', 'success');
+                await loadPins();
+            } catch (e) {
+                showToast('Error', e.message, 'error');
+            } finally { hideLoading(); }
+        };
+
+        // ============================================
+        // EXPORT ALL
+        // ============================================
+        document.getElementById('exportBtn').addEventListener('click', () => {
+            const headers = ['PIN Code', 'Session', 'Term', 'Price (₦)', 'Status', 'Used By', 'Used Date', 'Generated By', 'Generated Date'];
+            const rows = allPins.map(p => [
+                p.pin || p.id,
+                p.session || '',
+                p.term || '',
+                p.price || 0,
+                p.status,
+                p.usedByName || '',
+                p.usedAt ? formatDate(p.usedAt) : '',
+                p.generatedByName || '',
+                formatDate(p.createdAt)
+            ]);
+            const csv = [headers, ...rows].map(r => r.map(v => `"${String(v).replace(/"/g, '""')}"`).join(',')).join('\n');
+            const blob = new Blob([csv], { type: 'text/csv' });
+            const a = document.createElement('a');
+            a.href = URL.createObjectURL(blob);
+            a.download = `JWMS_All_PINs_${new Date().toISOString().split('T')[0]}.csv`;
+            a.click();
+            URL.revokeObjectURL(a.href);
+            showToast('Exported', 'Full PIN report downloaded.', 'success');
+        });
+
+        // ============================================
+        // BULK UPLOAD
+        // ============================================
+        document.getElementById('bulkUploadBtn').addEventListener('click', () => {
+            document.getElementById('bulkModal').classList.add('active');
+        });
+
+        // ============================================
+        // EVENT LISTENERS
+        // ============================================
+        document.getElementById('searchInput').addEventListener('input', renderTable);
+        document.getElementById('statusFilter').addEventListener('change', renderTable);
+        document.getElementById('sessionFilter').addEventListener('change', renderTable);
+        document.getElementById('refreshBtn').addEventListener('click', loadPins);
+
+        document.getElementById('pinResultModal').addEventListener('click', function(e) {
+            if (e.target === this) closePinResultModal();
+        });
+        document.getElementById('bulkModal').addEventListener('click', function(e) {
+            if (e.target === this) closeBulkModal();
+        });
+        document.addEventListener('keydown', e => {
+            if (e.key === 'Escape') { closePinResultModal(); closeBulkModal(); }
+        });
+
+        // ============================================
+        // AUTHENTICATION
+        // ============================================
+        auth.onAuthStateChanged(async user => {
+            if (!user) { window.location.href = 'admin-login.html'; return; }
+            try {
+                const doc = await db.collection('users').doc(user.uid).get();
+                if (!doc.exists || !['master-admin', 'admin'].includes(doc.data().role)) {
+                    auth.signOut(); window.location.href = 'index.html'; return;
+                }
+                currentUser = user; userData = doc.data();
+                const pic = document.getElementById('profilePic');
+                if (userData.photoURL) pic.innerHTML = `<img src="${userData.photoURL}" alt="Profile">`;
+                else pic.textContent = (userData.firstName?.[0] || 'A') + (userData.surname?.[0] || 'A');
+                document.getElementById('profileLink').addEventListener('click', () => window.location.href = 'admin-profile.html');
+                await loadPins();
+            } catch (e) { console.error('Auth error:', e); }
+        });
+
+        document.getElementById('logoutBtn').addEventListener('click', () => auth.signOut().then(() => window.location.href = 'index.html'));
+
+        console.log('🔑 PIN Management initialized — Judah Wonders Model School');
+    </script>
+</body>
+</html>
