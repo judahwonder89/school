@@ -9,168 +9,186 @@
     <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-app-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-firestore-compat.js"></script>
     <style>
-        * { margin: 0; padding: 0; box-sizing: border-box; }
-
+        * { margin:0; padding:0; box-sizing:border-box; }
+        
         :root[data-theme="light"] {
-            --bg-primary: #f0f5fa; --bg-surface: rgba(255,255,255,0.85); --text-primary: #0b1e33;
-            --text-secondary: #2c3e50; --text-muted: #64748b; --accent: #0A2540; --accent-glow: #C8963E;
-            --accent-light: rgba(10,37,64,0.08); --border: rgba(0,0,0,0.08); --border-light: rgba(0,0,0,0.04);
-            --card-bg: rgba(255,255,255,0.75); --hover-bg: rgba(255,255,255,0.95);
-            --shadow: 0 4px 20px -5px rgba(0,0,0,0.08); --shadow-lg: 0 8px 30px -5px rgba(0,0,0,0.12);
-            --input-bg: #fff; --input-border: #e2e8f0;
-            --success-bg: rgba(34,197,94,0.12); --success-text: #16a34a; --success-border: rgba(34,197,94,0.3);
-            --warning-bg: rgba(245,158,11,0.12); --warning-text: #b45309; --warning-border: rgba(245,158,11,0.3);
-            --danger-bg: rgba(239,68,68,0.12); --danger-text: #b91c1c; --danger-border: rgba(239,68,68,0.3);
-            --info-bg: rgba(10,37,64,0.08); --info-text: #0A2540; --info-border: rgba(10,37,64,0.2);
-            --gradient-start: #0A2540; --gradient-end: #C8963E;
+            --bg-primary:#f8fafc; --bg-surface:rgba(255,255,255,0.9); --text-primary:#0f172a;
+            --text-secondary:#475569; --text-muted:#94a3b8; --accent:#0A2540; --accent-glow:#C8963E;
+            --accent-light:rgba(10,37,64,0.08); --border:rgba(0,0,0,0.08); --border-light:rgba(0,0,0,0.04);
+            --card-bg:rgba(255,255,255,0.85); --hover-bg:rgba(241,245,249,0.8);
+            --shadow:0 4px 20px -5px rgba(0,0,0,0.06); --shadow-lg:0 10px 30px -5px rgba(0,0,0,0.1);
+            --input-bg:#ffffff; --input-border:#e2e8f0;
+            --success-bg:rgba(34,197,94,0.12); --success-text:#16a34a; --success-border:rgba(34,197,94,0.3);
+            --warning-bg:rgba(245,158,11,0.12); --warning-text:#b45309; --warning-border:rgba(245,158,11,0.3);
+            --danger-bg:rgba(239,68,68,0.12); --danger-text:#b91c1c; --danger-border:rgba(239,68,68,0.3);
+            --info-bg:rgba(10,37,64,0.08); --info-text:#0A2540; --info-border:rgba(10,37,64,0.2);
+            --gradient-start:#0A2540; --gradient-end:#C8963E; --overlay-bg:rgba(0,0,0,0.5);
         }
         :root[data-theme="dark"] {
-            --bg-primary: #0a0f1e; --bg-surface: rgba(15,23,42,0.85); --text-primary: #f0f4fa;
-            --text-secondary: #a0b3d9; --text-muted: #64748b; --accent: #C8963E; --accent-glow: #D4AF37;
-            --accent-light: rgba(200,150,62,0.12); --border: rgba(255,255,255,0.06);
-            --border-light: rgba(255,255,255,0.03); --card-bg: rgba(15,23,42,0.75);
-            --hover-bg: rgba(30,41,59,0.8); --shadow: 0 4px 20px -5px rgba(0,0,0,0.3);
-            --shadow-lg: 0 8px 30px -5px rgba(0,0,0,0.4); --input-bg: rgba(30,41,59,0.9);
-            --input-border: rgba(255,255,255,0.1);
-            --success-bg: rgba(34,197,94,0.15); --success-text: #4ade80; --success-border: rgba(34,197,94,0.3);
-            --warning-bg: rgba(245,158,11,0.15); --warning-text: #fbbf24; --warning-border: rgba(245,158,11,0.3);
-            --danger-bg: rgba(239,68,68,0.15); --danger-text: #f87171; --danger-border: rgba(239,68,68,0.3);
-            --info-bg: rgba(200,150,62,0.12); --info-text: #D4AF37; --info-border: rgba(200,150,62,0.25);
-            --gradient-start: #0A2540; --gradient-end: #C8963E;
+            --bg-primary:#0a0f1e; --bg-surface:rgba(15,23,42,0.9); --text-primary:#f0f4fa;
+            --text-secondary:#a0b3d9; --text-muted:#64748b; --accent:#C8963E; --accent-glow:#D4AF37;
+            --accent-light:rgba(200,150,62,0.12); --border:rgba(255,255,255,0.06);
+            --border-light:rgba(255,255,255,0.03); --card-bg:rgba(15,23,42,0.75);
+            --hover-bg:rgba(30,41,59,0.8); --shadow:0 4px 20px -5px rgba(0,0,0,0.3);
+            --shadow-lg:0 10px 30px -5px rgba(0,0,0,0.5); --input-bg:rgba(30,41,59,0.9);
+            --input-border:rgba(255,255,255,0.1);
+            --success-bg:rgba(34,197,94,0.15); --success-text:#4ade80; --success-border:rgba(34,197,94,0.3);
+            --warning-bg:rgba(245,158,11,0.15); --warning-text:#fbbf24; --warning-border:rgba(245,158,11,0.3);
+            --danger-bg:rgba(239,68,68,0.15); --danger-text:#f87171; --danger-border:rgba(239,68,68,0.3);
+            --info-bg:rgba(200,150,62,0.12); --info-text:#D4AF37; --info-border:rgba(200,150,62,0.25);
+            --gradient-start:#0A2540; --gradient-end:#C8963E; --overlay-bg:rgba(0,0,0,0.75);
         }
 
-        body { font-family: 'Inter', sans-serif; background: var(--bg-primary); color: var(--text-primary); min-height: 100vh; transition: background 0.3s, color 0.3s; position: relative; overflow-x: hidden; }
-        .bg-logo { position: fixed; top: 50%; left: 50%; transform: translate(-50%, -50%); width: 400px; max-width: 70vw; opacity: 0.03; pointer-events: none; z-index: 0; animation: breathe 6s ease-in-out infinite; }
+        body { font-family:'Inter',sans-serif; background:var(--bg-primary); color:var(--text-primary); min-height:100vh; transition:background 0.3s,color 0.3s; position:relative; overflow-x:hidden; }
+        .bg-logo { position:fixed; top:50%; left:50%; transform:translate(-50%,-50%); width:400px; max-width:70vw; opacity:0.03; pointer-events:none; z-index:0; animation:breathe 6s ease-in-out infinite; }
         @keyframes breathe { 0%,100%{transform:translate(-50%,-50%)scale(1);opacity:.03} 50%{transform:translate(-50%,-50%)scale(1.06);opacity:.06} }
-        .orb { position: fixed; border-radius: 50%; filter: blur(80px); pointer-events: none; z-index: 0; animation: float 25s infinite alternate; }
-        .orb-1 { width: 300px; height: 300px; top: -100px; left: -100px; background: radial-gradient(circle at 30% 30%, rgba(10,37,64,0.12), transparent 70%); }
-        .orb-2 { width: 400px; height: 400px; bottom: -150px; right: -50px; background: radial-gradient(circle at 70% 70%, rgba(200,150,62,0.10), transparent); animation-duration: 30s; }
+        .orb { position:fixed; border-radius:50%; filter:blur(80px); pointer-events:none; z-index:0; animation:float 25s infinite alternate; }
+        .orb-1 { width:300px; height:300px; top:-100px; left:-100px; background:radial-gradient(circle at 30% 30%,rgba(10,37,64,0.12),transparent 70%); }
+        .orb-2 { width:400px; height:400px; bottom:-150px; right:-50px; background:radial-gradient(circle at 70% 70%,rgba(200,150,62,0.10),transparent); animation-duration:30s; }
         @keyframes float { 0%{transform:translate(0,0)scale(1)} 100%{transform:translate(40px,30px)scale(1.15)} }
 
-        .main-container { max-width: 1100px; margin: 0 auto; padding: 1.5rem; position: relative; z-index: 5; }
+        .main-container { max-width:1200px; margin:0 auto; padding:1.5rem; position:relative; z-index:5; }
+        .top-bar { display:flex; justify-content:space-between; align-items:center; margin-bottom:1.5rem; flex-wrap:wrap; gap:1rem; background:var(--card-bg); backdrop-filter:blur(12px); -webkit-backdrop-filter:blur(12px); border:1px solid var(--border); border-radius:1.5rem; padding:1rem 1.5rem; }
+        .top-bar .logo { display:flex; align-items:center; gap:0.8rem; }
+        .top-bar .logo img { width:38px; height:38px; object-fit:contain; }
+        .top-bar .logo span { font-family:'Playfair Display',serif; font-weight:700; color:var(--accent); font-size:1rem; }
+        .theme-toggle { background:var(--card-bg); border:1px solid var(--border); border-radius:2rem; padding:0.5rem 1rem; display:flex; align-items:center; gap:0.4rem; cursor:pointer; color:var(--text-secondary); font-size:0.8rem; transition:all 0.2s; backdrop-filter:blur(10px); -webkit-backdrop-filter:blur(10px); }
+        .theme-toggle:hover { border-color:var(--accent); color:var(--accent); }
 
-        /* Top Bar */
-        .top-bar { display: flex; justify-content: space-between; align-items: center; margin-bottom: 1.5rem; flex-wrap: wrap; gap: 1rem; }
-        .top-bar .logo { display: flex; align-items: center; gap: 0.5rem; }
-        .top-bar .logo img { width: 36px; height: 36px; object-fit: contain; }
-        .top-bar .logo span { font-family: 'Playfair Display', serif; font-weight: 700; color: var(--accent); font-size: 1rem; }
-        .theme-toggle { background: var(--card-bg); border: 1px solid var(--border); border-radius: 2rem; padding: 0.5rem 1rem; display: flex; align-items: center; gap: 0.4rem; cursor: pointer; color: var(--text-secondary); font-size: 0.8rem; transition: all 0.2s; backdrop-filter: blur(10px); -webkit-backdrop-filter: blur(10px); }
-        .theme-toggle:hover { border-color: var(--accent); color: var(--accent); }
+        /* Login */
+        .login-container { display:flex; align-items:center; justify-content:center; min-height:70vh; }
+        .login-card { background:var(--card-bg); backdrop-filter:blur(20px); -webkit-backdrop-filter:blur(20px); border:1px solid var(--border); border-radius:2rem; padding:2.5rem 2rem; width:min(480px,100%); box-shadow:var(--shadow-lg); text-align:center; }
+        .login-card img { width:80px; margin-bottom:1rem; }
+        .login-card h2 { font-family:'Playfair Display',serif; font-size:1.5rem; font-weight:700; color:var(--accent); margin-bottom:0.5rem; }
+        .login-card p { color:var(--text-secondary); font-size:0.85rem; margin-bottom:1.5rem; }
+        .form-group { margin-bottom:1rem; text-align:left; }
+        .form-group label { display:block; margin-bottom:0.3rem; color:var(--text-secondary); font-weight:600; font-size:0.82rem; }
+        .form-control { width:100%; padding:0.75rem 1rem; background:var(--input-bg); border:2px solid var(--input-border); border-radius:1rem; color:var(--text-primary); font-family:inherit; font-size:0.9rem; transition:border-color 0.2s; outline:none; }
+        .form-control:focus { border-color:var(--accent); }
+        .btn { padding:0.7rem 1.5rem; border:none; border-radius:2rem; font-weight:600; font-size:0.9rem; cursor:pointer; transition:all 0.25s; font-family:inherit; width:100%; letter-spacing:0.3px; }
+        .btn-primary { background:linear-gradient(135deg,var(--gradient-start),var(--gradient-end)); color:white; box-shadow:0 4px 12px rgba(200,150,62,0.3); }
+        .btn-primary:hover { box-shadow:0 6px 20px rgba(200,150,62,0.5); transform:translateY(-2px); }
+        .btn-sm { padding:0.35rem 0.9rem; font-size:0.75rem; width:auto; }
+        .btn-outline { background:transparent; border:1px solid var(--border); color:var(--text-primary); width:auto; }
+        .btn-outline:hover { background:var(--hover-bg); border-color:var(--accent); }
+        .btn:disabled { opacity:0.5; cursor:not-allowed; transform:none; }
+        .message { font-size:0.8rem; margin-top:0.5rem; padding:0.5rem 0.8rem; border-radius:0.8rem; display:none; text-align:left; }
+        .message.error { background:var(--danger-bg); color:var(--danger-text); border:1px solid var(--danger-border); display:block; }
+        .message.success { background:var(--success-bg); color:var(--success-text); border:1px solid var(--success-border); display:block; }
 
-        /* Login Card */
-        .login-container { display: flex; align-items: center; justify-content: center; min-height: 70vh; }
-        .login-card { background: var(--card-bg); backdrop-filter: blur(20px); -webkit-backdrop-filter: blur(20px); border: 1px solid var(--border); border-radius: 2rem; padding: 2.5rem 2rem; width: min(460px, 100%); box-shadow: var(--shadow-lg); text-align: center; }
-        .login-card img { width: 80px; margin-bottom: 1rem; }
-        .login-card h2 { font-family: 'Playfair Display', serif; font-size: 1.5rem; font-weight: 700; color: var(--accent); margin-bottom: 0.5rem; }
-        .login-card p { color: var(--text-secondary); font-size: 0.85rem; margin-bottom: 1.5rem; }
+        /* Dashboard */
+        .dashboard { display:none; }
+        .dashboard.active { display:block; animation:fadeSlideIn 0.4s ease; }
+        .login-container.hidden { display:none; }
+        @keyframes fadeSlideIn { from{opacity:0;transform:translateY(12px)} to{opacity:1;transform:translateY(0)} }
+        
+        .child-header { display:flex; align-items:center; gap:1.5rem; background:var(--card-bg); backdrop-filter:blur(12px); -webkit-backdrop-filter:blur(12px); border:1px solid var(--border); border-radius:1.5rem; padding:1.5rem; margin-bottom:1.5rem; flex-wrap:wrap; box-shadow:var(--shadow); }
+        .child-avatar { width:80px; height:80px; border-radius:50%; background:linear-gradient(135deg,var(--gradient-start),var(--gradient-end)); display:flex; align-items:center; justify-content:center; color:white; font-size:2rem; font-weight:700; flex-shrink:0; overflow:hidden; }
+        .child-avatar img { width:100%; height:100%; object-fit:cover; }
+        .child-info h2 { font-size:1.5rem; font-weight:700; }
+        .child-info .id { font-family:'Space Grotesk',monospace; color:var(--accent); font-size:0.85rem; }
 
-        .form-group { margin-bottom: 1rem; text-align: left; }
-        .form-group label { display: block; margin-bottom: 0.3rem; color: var(--text-secondary); font-weight: 600; font-size: 0.82rem; }
-        .form-control { width: 100%; padding: 0.75rem 1rem; background: var(--input-bg); border: 2px solid var(--input-border); border-radius: 1rem; color: var(--text-primary); font-family: inherit; font-size: 0.9rem; transition: border-color 0.2s; outline: none; }
-        .form-control:focus { border-color: var(--accent); }
-
-        .btn { padding: 0.7rem 1.5rem; border: none; border-radius: 2rem; font-weight: 600; font-size: 0.9rem; cursor: pointer; transition: all 0.25s; font-family: inherit; width: 100%; }
-        .btn-primary { background: linear-gradient(135deg, var(--gradient-start), var(--gradient-end)); color: white; box-shadow: 0 4px 12px rgba(200,150,62,0.3); }
-        .btn-primary:hover { box-shadow: 0 6px 20px rgba(200,150,62,0.5); transform: translateY(-2px); }
-        .btn:disabled { opacity: 0.5; cursor: not-allowed; transform: none; }
-
-        .message { font-size: 0.8rem; margin-top: 0.5rem; padding: 0.5rem 0.8rem; border-radius: 0.8rem; display: none; text-align: left; }
-        .message.error { background: var(--danger-bg); color: var(--danger-text); border: 1px solid var(--danger-border); display: block; }
-        .message.success { background: var(--success-bg); color: var(--success-text); border: 1px solid var(--success-border); display: block; }
-
-        /* Dashboard (after login) */
-        .dashboard { display: none; }
-        .dashboard.active { display: block; }
-        .login-container.hidden { display: none; }
-
-        .child-header { display: flex; align-items: center; gap: 1.5rem; background: var(--card-bg); backdrop-filter: blur(12px); -webkit-backdrop-filter: blur(12px); border: 1px solid var(--border); border-radius: 1.5rem; padding: 1.5rem; margin-bottom: 1.5rem; flex-wrap: wrap; box-shadow: var(--shadow); }
-        .child-avatar { width: 80px; height: 80px; border-radius: 50%; background: linear-gradient(135deg, var(--gradient-start), var(--gradient-end)); display: flex; align-items: center; justify-content: center; color: white; font-size: 2rem; font-weight: 700; flex-shrink: 0; overflow: hidden; }
-        .child-avatar img { width: 100%; height: 100%; object-fit: cover; }
-        .child-info h2 { font-size: 1.5rem; font-weight: 700; }
-        .child-info .id { font-family: 'Space Grotesk', monospace; color: var(--accent); font-size: 0.85rem; }
-
-        .badge { padding: 0.2rem 0.7rem; border-radius: 2rem; font-size: 0.7rem; font-weight: 700; display: inline-flex; align-items: center; gap: 0.3rem; }
-        .badge-success { background: var(--success-bg); color: var(--success-text); border: 1px solid var(--success-border); }
-        .badge-info { background: var(--info-bg); color: var(--info-text); border: 1px solid var(--info-border); }
+        /* Stats */
+        .stats-row { display:grid; grid-template-columns:repeat(auto-fit,minmax(140px,1fr)); gap:0.8rem; margin-bottom:1.5rem; }
+        .stat-card { background:var(--card-bg); backdrop-filter:blur(12px); -webkit-backdrop-filter:blur(12px); border:1px solid var(--border); border-radius:1.2rem; padding:1rem; text-align:center; transition:0.3s; position:relative; overflow:hidden; }
+        .stat-card::before { content:''; position:absolute; top:0; left:0; right:0; height:3px; background:linear-gradient(90deg,var(--gradient-start),var(--gradient-end)); }
+        .stat-card:hover { transform:translateY(-2px); box-shadow:var(--shadow-lg); }
+        .stat-card .stat-icon { font-size:1.3rem; color:var(--accent); margin-bottom:0.3rem; }
+        .stat-card .val { font-size:1.5rem; font-weight:800; font-family:'Space Grotesk',monospace; color:var(--accent); }
+        .stat-card .lbl { font-size:0.7rem; color:var(--text-muted); text-transform:uppercase; letter-spacing:0.5px; margin-top:0.2rem; }
 
         /* Tabs */
-        .tab-nav { display: flex; gap: 0.4rem; margin-bottom: 1.5rem; background: var(--card-bg); backdrop-filter: blur(12px); -webkit-backdrop-filter: blur(12px); border: 1px solid var(--border); border-radius: 1.5rem; padding: 0.4rem; overflow-x: auto; box-shadow: var(--shadow); }
-        .tab-btn { padding: 0.6rem 1.2rem; border-radius: 1.25rem; border: none; background: transparent; color: var(--text-secondary); cursor: pointer; font-weight: 600; font-size: 0.8rem; white-space: nowrap; display: flex; align-items: center; gap: 0.4rem; font-family: inherit; transition: all 0.3s; }
-        .tab-btn:hover { background: var(--hover-bg); color: var(--accent); }
-        .tab-btn.active { background: linear-gradient(135deg, var(--gradient-start), var(--gradient-end)); color: white; }
-        .tab-content { display: none; animation: fadeSlideIn 0.4s ease; }
-        .tab-content.active { display: block; }
-        @keyframes fadeSlideIn { from{opacity:0;transform:translateY(10px)} to{opacity:1;transform:translateY(0)} }
+        .tab-nav { display:flex; gap:0.3rem; margin-bottom:1rem; background:var(--card-bg); backdrop-filter:blur(8px); -webkit-backdrop-filter:blur(8px); border:1px solid var(--border); border-radius:2.5rem; padding:0.25rem; overflow-x:auto; }
+        .tab-btn { padding:0.55rem 1.2rem; border-radius:2.5rem; font-weight:600; font-size:0.8rem; cursor:pointer; transition:0.2s; color:var(--text-secondary); white-space:nowrap; display:flex; align-items:center; gap:0.4rem; font-family:inherit; background:transparent; border:none; }
+        .tab-btn:hover { color:var(--accent); background:var(--hover-bg); }
+        .tab-btn.active { background:linear-gradient(135deg,var(--gradient-start),var(--gradient-end)); color:white; }
+        .tab-content { display:none; animation:fadeSlideIn 0.3s ease; }
+        .tab-content.active { display:block; }
 
         /* Cards */
-        .card { background: var(--card-bg); backdrop-filter: blur(12px); -webkit-backdrop-filter: blur(12px); border: 1px solid var(--border); border-radius: 1.5rem; padding: 1.5rem; box-shadow: var(--shadow); margin-bottom: 1.5rem; }
-        .card-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 1rem; flex-wrap: wrap; gap: 0.5rem; padding-bottom: 1rem; border-bottom: 1px solid var(--border); }
-        .card-header h3 { font-size: 1.1rem; font-weight: 700; display: flex; align-items: center; gap: 0.5rem; }
+        .card { background:var(--card-bg); backdrop-filter:blur(12px); -webkit-backdrop-filter:blur(12px); border:1px solid var(--border); border-radius:1.5rem; padding:1.5rem; box-shadow:var(--shadow); margin-bottom:1.5rem; }
+        .card-header { display:flex; justify-content:space-between; align-items:center; margin-bottom:1rem; flex-wrap:wrap; gap:0.5rem; padding-bottom:1rem; border-bottom:1px solid var(--border); }
+        .card-header h3 { font-size:1.1rem; font-weight:700; display:flex; align-items:center; gap:0.5rem; }
+        .badge { padding:0.2rem 0.7rem; border-radius:2rem; font-size:0.7rem; font-weight:700; display:inline-flex; align-items:center; gap:0.3rem; }
+        .badge-success { background:var(--success-bg); color:var(--success-text); border:1px solid var(--success-border); }
+        .badge-info { background:var(--info-bg); color:var(--info-text); border:1px solid var(--info-border); }
+        .badge-warning { background:var(--warning-bg); color:var(--warning-text); border:1px solid var(--warning-border); }
+        .badge-live { background:var(--success-bg); color:var(--success-text); border:1px solid var(--success-border); animation:pulse 2s infinite; }
+        @keyframes pulse { 0%,100%{opacity:1} 50%{opacity:.5} }
 
-        .stats-row { display: grid; grid-template-columns: repeat(auto-fit, minmax(150px, 1fr)); gap: 0.8rem; margin-bottom: 1.5rem; }
-        .stat-card { background: var(--card-bg); backdrop-filter: blur(12px); -webkit-backdrop-filter: blur(12px); border: 1px solid var(--border); border-radius: 1.2rem; padding: 1rem; text-align: center; }
-        .stat-card .val { font-size: 1.7rem; font-weight: 800; font-family: 'Space Grotesk', monospace; color: var(--accent); }
-        .stat-card .lbl { font-size: 0.72rem; color: var(--text-muted); text-transform: uppercase; margin-top: 0.2rem; }
+        .info-row { display:flex; padding:0.6rem 0; border-bottom:1px solid var(--border); }
+        .info-label { width:140px; color:var(--text-secondary); font-weight:500; font-size:0.85rem; flex-shrink:0; }
+        .info-value { flex:1; font-weight:500; font-size:0.9rem; }
 
-        .info-row { display: flex; padding: 0.6rem 0; border-bottom: 1px solid var(--border); }
-        .info-label { width: 140px; color: var(--text-secondary); font-weight: 500; font-size: 0.85rem; flex-shrink: 0; }
-        .info-value { flex: 1; font-weight: 500; font-size: 0.9rem; }
+        .teacher-card { display:flex; align-items:center; gap:1rem; padding:0.8rem; background:var(--hover-bg); border-radius:1rem; margin-bottom:0.5rem; }
+        .teacher-avatar { width:45px; height:45px; border-radius:50%; background:linear-gradient(135deg,var(--gradient-start),var(--gradient-end)); display:flex; align-items:center; justify-content:center; color:white; font-weight:700; flex-shrink:0; overflow:hidden; }
+        .teacher-avatar img { width:100%; height:100%; object-fit:cover; }
 
-        .teacher-card { display: flex; align-items: center; gap: 1rem; padding: 0.8rem; background: var(--hover-bg); border-radius: 1rem; margin-bottom: 0.5rem; }
-        .teacher-card .t-avatar { width: 45px; height: 45px; border-radius: 50%; background: linear-gradient(135deg, var(--gradient-start), var(--gradient-end)); display: flex; align-items: center; justify-content: center; color: white; font-weight: 700; flex-shrink: 0; overflow: hidden; }
-        .teacher-card .t-avatar img { width: 100%; height: 100%; object-fit: cover; }
+        .textbook-content { background:var(--hover-bg); border:1px solid var(--border); border-radius:1rem; padding:1.5rem; font-size:0.9rem; line-height:1.7; max-height:400px; overflow-y:auto; }
+        .video-grid { display:grid; grid-template-columns:repeat(auto-fill,minmax(280px,1fr)); gap:1rem; }
+        .video-card { background:var(--hover-bg); border:1px solid var(--border); border-radius:1rem; overflow:hidden; }
+        .video-embed { position:relative; width:100%; padding-bottom:56.25%; background:#000; }
+        .video-embed iframe { position:absolute; top:0; left:0; width:100%; height:100%; border:none; }
+        .video-info { padding:0.8rem; font-size:0.8rem; }
+        .handwriting-grid { display:grid; grid-template-columns:repeat(auto-fill,minmax(200px,1fr)); gap:0.8rem; }
+        .handwriting-grid img { width:100%; aspect-ratio:4/3; object-fit:cover; border-radius:0.5rem; cursor:pointer; border:2px solid transparent; transition:0.2s; }
+        .handwriting-grid img:hover { border-color:var(--accent); transform:scale(1.04); }
 
-        .announcement-card { background: var(--hover-bg); border: 1px solid var(--border); border-radius: 1rem; padding: 1rem; margin-bottom: 0.8rem; }
-        .announcement-card h4 { font-size: 0.9rem; color: var(--accent); margin-bottom: 0.3rem; }
-        .announcement-card .date { font-size: 0.7rem; color: var(--text-muted); margin-bottom: 0.4rem; }
+        .timetable-grid { display:grid; grid-template-columns:repeat(5,1fr); gap:0.5rem; }
+        .timetable-day { background:var(--card-bg); border:1px solid var(--border); border-radius:1rem; overflow:hidden; }
+        .timetable-day .day-header { background:linear-gradient(135deg,var(--gradient-start),var(--gradient-end)); color:white; padding:0.5rem; text-align:center; font-weight:700; font-size:0.75rem; }
+        .timetable-day .period { padding:0.4rem; border-bottom:1px solid var(--border-light); font-size:0.7rem; text-align:center; }
 
-        .timetable-grid { display: grid; grid-template-columns: repeat(5, 1fr); gap: 0.5rem; }
-        .timetable-day { background: var(--card-bg); border: 1px solid var(--border); border-radius: 1rem; overflow: hidden; }
-        .timetable-day .day-header { background: linear-gradient(135deg, var(--gradient-start), var(--gradient-end)); color: white; padding: 0.5rem; text-align: center; font-weight: 700; font-size: 0.75rem; }
-        .timetable-day .period { padding: 0.4rem; border-bottom: 1px solid var(--border-light); font-size: 0.7rem; text-align: center; }
+        .syllabus-card { background:var(--hover-bg); border:1px solid var(--border); border-radius:1rem; padding:1rem; margin-bottom:0.8rem; }
+        .syllabus-week { padding:0.3rem 0; border-bottom:1px solid var(--border-light); font-size:0.8rem; }
 
-        .syllabus-card { background: var(--hover-bg); border: 1px solid var(--border); border-radius: 1rem; padding: 1rem; margin-bottom: 0.8rem; }
-        .syllabus-card h4 { color: var(--accent); margin-bottom: 0.5rem; }
-        .syllabus-week { padding: 0.3rem 0; border-bottom: 1px solid var(--border-light); font-size: 0.8rem; }
+        .progress-bar { height:8px; background:var(--border); border-radius:4px; margin-top:0.3rem; overflow:hidden; }
+        .progress-fill { height:100%; background:linear-gradient(90deg,var(--gradient-start),var(--gradient-end)); border-radius:4px; transition:width 0.5s; }
 
-        .score-table { width: 100%; border-collapse: collapse; }
-        .score-table th, .score-table td { padding: 0.5rem; border-bottom: 1px solid var(--border); font-size: 0.8rem; text-align: left; }
-        .score-table th { color: var(--text-muted); font-weight: 600; font-size: 0.7rem; text-transform: uppercase; }
-        .score-high { color: var(--success-text); font-weight: 700; }
-        .score-mid { color: var(--warning-text); font-weight: 700; }
-        .score-low { color: var(--danger-text); font-weight: 700; }
+        .meeting-card { background:var(--card-bg); border:1px solid var(--border); border-radius:1rem; padding:1rem; margin-bottom:0.8rem; display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:0.5rem; }
+        .meeting-card.live { border:2px solid var(--success-text); }
+        .meeting-card.soon { border:2px solid var(--warning-text); }
+        .join-btn { background:var(--success-text); color:white; padding:0.5rem 1.2rem; border-radius:2rem; font-weight:600; text-decoration:none; font-size:0.8rem; display:inline-flex; align-items:center; gap:0.3rem; }
 
-        .empty-state { text-align: center; padding: 2rem; color: var(--text-muted); }
-        .empty-state i { font-size: 2.5rem; margin-bottom: 0.8rem; opacity: 0.4; display: block; }
+        .ann-card { background:var(--hover-bg); border:1px solid var(--border); border-radius:1rem; padding:1rem; margin-bottom:0.5rem; }
+        .ann-card h4 { font-size:0.9rem; color:var(--accent); margin-bottom:0.3rem; }
+        .ann-card .date { font-size:0.7rem; color:var(--text-muted); }
 
-        .logout-btn { background: var(--danger-bg); color: var(--danger-text); border: 1px solid var(--danger-border); padding: 0.5rem 1.2rem; border-radius: 2rem; cursor: pointer; font-weight: 600; font-size: 0.8rem; transition: all 0.2s; font-family: inherit; }
-        .logout-btn:hover { background: var(--danger-text); color: white; }
+        .lightbox-overlay { position:fixed; inset:0; background:rgba(0,0,0,0.93); backdrop-filter:blur(10px); -webkit-backdrop-filter:blur(10px); z-index:3000; display:none; justify-content:center; align-items:center; cursor:pointer; padding:2rem; }
+        .lightbox-overlay.active { display:flex; }
+        .lightbox-overlay img { max-width:90%; max-height:90vh; border-radius:1rem; }
+        .lightbox-close { position:absolute; top:1.5rem; right:1.5rem; color:white; font-size:2rem; cursor:pointer; background:rgba(255,255,255,0.1); width:44px; height:44px; border-radius:50%; display:flex; align-items:center; justify-content:center; }
 
-        .loading-spinner { display: inline-block; width: 16px; height: 16px; border: 2px solid rgba(255,255,255,0.3); border-top: 2px solid white; border-radius: 50%; animation: spin 0.8s linear infinite; }
+        .empty-state { text-align:center; padding:2rem; color:var(--text-muted); }
+        .empty-state i { font-size:2.5rem; margin-bottom:0.8rem; opacity:0.3; display:block; }
+        .logout-btn { background:var(--danger-bg); color:var(--danger-text); border:1px solid var(--danger-border); padding:0.5rem 1.2rem; border-radius:2rem; cursor:pointer; font-weight:600; font-size:0.8rem; transition:0.2s; font-family:inherit; }
+        .logout-btn:hover { background:var(--danger-text); color:white; }
+        .loading-spinner { display:inline-block; width:16px; height:16px; border:2px solid rgba(255,255,255,0.3); border-top:2px solid white; border-radius:50%; animation:spin 0.8s linear infinite; }
         @keyframes spin { 0%{transform:rotate(0deg)} 100%{transform:rotate(360deg)} }
+        .week-selector { display:flex; gap:0.3rem; flex-wrap:wrap; margin-bottom:1rem; }
+        .week-dot { width:32px; height:32px; border-radius:50%; display:flex; align-items:center; justify-content:center; font-size:0.65rem; font-weight:700; border:2px solid var(--border); }
+        .week-dot.done { background:var(--success-bg); border-color:var(--success-text); color:var(--success-text); }
+        .week-dot.current { background:var(--warning-bg); border-color:var(--warning-text); color:var(--warning-text); }
+        .week-dot.pending { background:transparent; color:var(--text-muted); }
 
-        @media (max-width: 768px) {
-            .main-container { padding: 1rem; }
-            .timetable-grid { grid-template-columns: repeat(2, 1fr); }
-            .tab-btn { padding: 0.5rem 0.8rem; font-size: 0.72rem; }
-        }
-        @media (max-width: 480px) {
-            .timetable-grid { grid-template-columns: 1fr; }
-            .child-header { flex-direction: column; text-align: center; }
-        }
+        /* Report Card Button */
+        .report-card-btn { background:linear-gradient(135deg, var(--gradient-start), var(--gradient-end)); color:white; padding:0.7rem 1.5rem; border-radius:2rem; font-weight:600; font-size:0.85rem; cursor:pointer; border:none; display:inline-flex; align-items:center; gap:0.5rem; transition:0.2s; font-family:inherit; text-decoration:none; }
+        .report-card-btn:hover { box-shadow:0 6px 20px rgba(200,150,62,0.5); transform:translateY(-2px); }
+
+        @media(max-width:768px){ .main-container{padding:1rem} .timetable-grid{grid-template-columns:repeat(2,1fr)} .child-header{flex-direction:column;text-align:center} .tab-btn{padding:0.4rem 0.8rem;font-size:0.7rem} .video-grid{grid-template-columns:1fr} }
     </style>
 </head>
 <body>
     <img src="https://res.cloudinary.com/dda7kpir8/image/upload/q_auto/f_auto/v1781038310/ChatGPT_Image_Jun_9_2026_09_25_06_AM_elnine.png" alt="" class="bg-logo" aria-hidden="true">
     <div class="orb orb-1"></div><div class="orb orb-2"></div>
 
+    <!-- Lightbox -->
+    <div class="lightbox-overlay" id="lightbox" onclick="closeLightbox()"><button class="lightbox-close">✕</button><img id="lightboxImg" src="" alt="" onclick="event.stopPropagation()"></div>
+
     <div class="main-container">
         <!-- Top Bar -->
         <div class="top-bar">
-            <div class="logo">
-                <img src="https://res.cloudinary.com/dda7kpir8/image/upload/q_auto/f_auto/v1781038310/ChatGPT_Image_Jun_9_2026_09_25_06_AM_elnine.png" alt="JWMS">
-                <span>Judah Wonders Model School</span>
-            </div>
+            <div class="logo"><img src="https://res.cloudinary.com/dda7kpir8/image/upload/q_auto/f_auto/v1781038310/ChatGPT_Image_Jun_9_2026_09_25_06_AM_elnine.png" alt="JWMS"><span>Judah Wonders Model School</span></div>
             <div style="display:flex;align-items:center;gap:1rem;">
                 <button class="logout-btn" id="logoutDashboardBtn" style="display:none;"><i class="fas fa-sign-out-alt"></i> Leave</button>
                 <div class="theme-toggle" id="themeToggle"><i class="fas fa-sun"></i><span>Light</span></div>
@@ -182,23 +200,20 @@
             <div class="login-card">
                 <img src="https://res.cloudinary.com/dda7kpir8/image/upload/q_auto/f_auto/v1781038310/ChatGPT_Image_Jun_9_2026_09_25_06_AM_elnine.png" alt="JWMS">
                 <h2>Parent Access Portal</h2>
-                <p>Enter your child's Student ID and Access PIN to view their academic information.</p>
+                <p>Enter your child's Student ID and Access PIN to view their information</p>
                 <form id="parentLoginForm" autocomplete="off">
-                    <div class="form-group">
-                        <label><i class="fas fa-id-card"></i> Student ID</label>
-                        <input type="text" id="loginStudentId" class="form-control" placeholder="e.g., JWSSTADE202600001" required>
-                    </div>
-                    <div class="form-group">
-                        <label><i class="fas fa-lock"></i> Access PIN</label>
-                        <input type="password" id="loginPin" class="form-control" placeholder="6-digit PIN" maxlength="6" required>
-                    </div>
+                    <div class="form-group"><label><i class="fas fa-id-card"></i> Student ID</label><input type="text" id="loginStudentId" class="form-control" placeholder="e.g., JWSSTADE202600001" required></div>
+                    <div class="form-group"><label><i class="fas fa-lock"></i> Access PIN</label><input type="password" id="loginPin" class="form-control" placeholder="6-digit PIN" maxlength="6" required></div>
                     <div class="message" id="loginMessage"></div>
                     <button type="submit" class="btn btn-primary" id="loginBtn"><i class="fas fa-sign-in-alt"></i> View My Child's Information</button>
                 </form>
+                <p style="margin-top:1rem;font-size:0.75rem;color:var(--text-muted);">
+                    <i class="fas fa-info-circle"></i> Don't have access? Contact the school to set up your parent access PIN.
+                </p>
             </div>
         </div>
 
-        <!-- DASHBOARD (hidden until login) -->
+        <!-- DASHBOARD -->
         <div class="dashboard" id="dashboard">
             <!-- Child Header -->
             <div class="child-header" id="childHeader"></div>
@@ -209,50 +224,72 @@
             <!-- Tabs -->
             <div class="tab-nav" id="tabNav">
                 <button class="tab-btn active" data-tab="overview"><i class="fas fa-home"></i> Overview</button>
+                <button class="tab-btn" data-tab="materials"><i class="fas fa-book-reader"></i> Learning</button>
+                <button class="tab-btn" data-tab="progress"><i class="fas fa-tasks"></i> Progress</button>
                 <button class="tab-btn" data-tab="teachers"><i class="fas fa-chalkboard-teacher"></i> Teachers</button>
-                <button class="tab-btn" data-tab="announcements"><i class="fas fa-bullhorn"></i> Announcements</button>
-                <button class="tab-btn" data-tab="attendance"><i class="fas fa-fingerprint"></i> Attendance</button>
+                <button class="tab-btn" data-tab="meetings"><i class="fas fa-video"></i> Classes</button>
                 <button class="tab-btn" data-tab="timetable"><i class="fas fa-calendar-alt"></i> Timetable</button>
                 <button class="tab-btn" data-tab="syllabus"><i class="fas fa-book-open"></i> Syllabus</button>
-                <button class="tab-btn" data-tab="scores"><i class="fas fa-chart-bar"></i> Scores</button>
+                <button class="tab-btn" data-tab="reportcard"><i class="fas fa-graduation-cap"></i> Report Card</button>
             </div>
 
-            <!-- Overview -->
+            <!-- OVERVIEW TAB -->
             <div class="tab-content active" id="tab-overview">
                 <div class="card"><div class="card-header"><h3><i class="fas fa-info-circle"></i> Child Information</h3></div><div id="overviewInfo"></div></div>
+                <div class="card"><div class="card-header"><h3><i class="fas fa-fingerprint"></i> Attendance Summary</h3></div><div id="overviewAttendance"></div></div>
                 <div class="card"><div class="card-header"><h3><i class="fas fa-bullhorn"></i> Recent Announcements</h3></div><div id="overviewAnnouncements"></div></div>
             </div>
 
-            <!-- Teachers -->
+            <!-- LEARNING MATERIALS TAB -->
+            <div class="tab-content" id="tab-materials">
+                <div class="card"><div class="card-header"><h3><i class="fas fa-book-reader"></i> Study Resources</h3><select id="materialSubject" class="form-control" style="width:auto;" onchange="renderMaterials()"><option value="all">All Subjects</option></select></div><div id="materialsContent"><div class="empty-state"><i class="fas fa-spinner fa-spin"></i><p>Loading...</p></div></div></div>
+                <div class="card"><div class="card-header"><h3><i class="fas fa-play-circle"></i> Video Resources</h3></div><div id="videosContent"><div class="empty-state"><i class="fas fa-spinner fa-spin"></i><p>Loading...</p></div></div></div>
+                <div class="card"><div class="card-header"><h3><i class="fas fa-images"></i> Visual Notes</h3></div><div id="imagesContent"><div class="empty-state"><i class="fas fa-spinner fa-spin"></i><p>Loading...</p></div></div></div>
+            </div>
+
+            <!-- PROGRESS TAB -->
+            <div class="tab-content" id="tab-progress">
+                <div class="card"><div class="card-header"><h3><i class="fas fa-tasks"></i> Week Completion Progress</h3></div><div id="progressContent"><div class="empty-state"><i class="fas fa-spinner fa-spin"></i><p>Loading...</p></div></div></div>
+            </div>
+
+            <!-- TEACHERS TAB -->
             <div class="tab-content" id="tab-teachers">
-                <div class="card"><div class="card-header"><h3><i class="fas fa-user-tie"></i> Class Teachers</h3></div><div id="classTeachersList"></div></div>
-                <div class="card"><div class="card-header"><h3><i class="fas fa-book"></i> Subject Teachers</h3></div><div id="subjectTeachersList"></div></div>
+                <div class="card"><div class="card-header"><h3><i class="fas fa-user-tie"></i> Class Teachers</h3></div><div id="classTeachersList"><div class="empty-state"><i class="fas fa-spinner fa-spin"></i><p>Loading...</p></div></div></div>
+                <div class="card"><div class="card-header"><h3><i class="fas fa-book"></i> Subject Teachers</h3></div><div id="subjectTeachersList"><div class="empty-state"><i class="fas fa-spinner fa-spin"></i><p>Loading...</p></div></div></div>
             </div>
 
-            <!-- Announcements -->
-            <div class="tab-content" id="tab-announcements"><div class="card"><div class="card-header"><h3><i class="fas fa-bullhorn"></i> All Class Announcements</h3></div><div id="allAnnouncements"></div></div></div>
-
-            <!-- Attendance -->
-            <div class="tab-content" id="tab-attendance">
-                <div class="stats-row" id="attStats"></div>
-                <div class="card"><div class="card-header"><h3><i class="fas fa-list-ul"></i> Attendance Record</h3></div><div class="table-responsive" style="overflow-x:auto;"><table class="score-table"><thead><tr><th>Date</th><th>Session</th><th>Status</th><th>Remark</th></tr></thead><tbody id="attendanceBody"></tbody></table></div></div>
+            <!-- VIRTUAL CLASSES TAB -->
+            <div class="tab-content" id="tab-meetings">
+                <div class="card"><div class="card-header"><h3><i class="fas fa-video"></i> Upcoming Virtual Classes</h3></div><div id="meetingsList"><div class="empty-state"><i class="fas fa-spinner fa-spin"></i><p>Loading...</p></div></div></div>
             </div>
 
-            <!-- Timetable -->
-            <div class="tab-content" id="tab-timetable"><div class="card"><div class="card-header"><h3><i class="fas fa-calendar-alt"></i> Class Timetable</h3></div><div id="timetableContent"></div></div></div>
+            <!-- TIMETABLE TAB -->
+            <div class="tab-content" id="tab-timetable"><div class="card"><div class="card-header"><h3><i class="fas fa-calendar-alt"></i> Class Timetable</h3></div><div id="timetableContent"><div class="empty-state"><i class="fas fa-spinner fa-spin"></i><p>Loading...</p></div></div></div></div>
 
-            <!-- Syllabus -->
-            <div class="tab-content" id="tab-syllabus"><div class="card"><div class="card-header"><h3><i class="fas fa-book-open"></i> Approved Syllabus</h3></div><div id="syllabusContent"></div></div></div>
+            <!-- SYLLABUS TAB -->
+            <div class="tab-content" id="tab-syllabus"><div class="card"><div class="card-header"><h3><i class="fas fa-book-open"></i> Published Syllabus</h3><select id="sylTermFilter" class="form-control" style="width:auto;" onchange="renderSyllabusTab()"><option value="First Term">First Term</option><option value="Second Term">Second Term</option><option value="Third Term">Third Term</option></select></div><div id="syllabusContent"><div class="empty-state"><i class="fas fa-spinner fa-spin"></i><p>Loading...</p></div></div></div></div>
 
-            <!-- Scores -->
-            <div class="tab-content" id="tab-scores"><div class="card"><div class="card-header"><h3><i class="fas fa-chart-bar"></i> Assessment Scores</h3></div><div class="table-responsive" style="overflow-x:auto;"><table class="score-table"><thead><tr><th>Subject</th><th>Category</th><th>Score</th><th>Date</th></tr></thead><tbody id="scoresBody"></tbody></table></div></div></div>
+            <!-- REPORT CARD TAB -->
+            <div class="tab-content" id="tab-reportcard">
+                <div class="card"><div class="card-header"><h3><i class="fas fa-graduation-cap"></i> Report Card Access</h3></div>
+                <div id="reportCardContent">
+                    <div style="text-align:center;padding:2rem;">
+                        <i class="fas fa-graduation-cap" style="font-size:3rem;color:var(--accent);margin-bottom:1rem;display:block;"></i>
+                        <h3 style="margin-bottom:0.5rem;">View Your Child's Report Card</h3>
+                        <p style="color:var(--text-secondary);margin-bottom:1.5rem;">Enter the report card PIN purchased from the school to view your child's academic results.</p>
+                        <div class="form-group" style="max-width:300px;margin:0 auto 1rem;">
+                            <input type="text" id="rcPinInput" class="form-control" placeholder="Enter Report Card PIN" style="text-align:center;font-family:'Space Grotesk',monospace;letter-spacing:3px;font-size:1.1rem;text-transform:uppercase;">
+                        </div>
+                        <button class="report-card-btn" id="viewReportCardBtn"><i class="fas fa-eye"></i> View Report Card</button>
+                        <div class="message" id="rcMessage" style="max-width:300px;margin:0.5rem auto 0;"></div>
+                        <div id="rcResult"></div>
+                    </div>
+                </div></div>
+            </div>
         </div>
     </div>
 
     <script>
-        // ============================================
-        // FIREBASE CONFIG
-        // ============================================
         const firebaseConfig = {
             apiKey: "AIzaSyADXHEiaSQ146QsGsaOCElARtpwrLE8svs",
             authDomain: "judah-c737e.firebaseapp.com",
@@ -265,417 +302,325 @@
         firebase.initializeApp(firebaseConfig);
         const db = firebase.firestore();
 
-        // ============================================
-        // STATE
-        // ============================================
-        let childData = null;
-        let childClass = null;
-        let allAttendance = [];
-        let allAnnouncements = [];
-        let allScores = [];
-        let classTimetable = null;
-        let allSyllabi = [];
-        let classTeachers = [];
-        let subjectTeachers = [];
+        let childData=null,childClass=null,allAttendance=[],allAnnouncements=[],classTimetable=null,allSyllabi=[],classTeachers=[],subjectTeachers=[],allLessonNotes=[],meetings=[];
+        function escapeHtml(s){const d=document.createElement('div');d.textContent=s||'';return d.innerHTML;}
+        function extractYouTubeId(url){if(!url)return null;const m=url?.match(/(?:youtube\.com\/watch\?v=|youtu\.be\/|youtube\.com\/embed\/)([a-zA-Z0-9_-]{11})/);return m?m[1]:null;}
+        function getGrade(s){if(s>=75)return'A';if(s>=65)return'B';if(s>=50)return'C';if(s>=40)return'D';return'F';}
+        function getRemark(g){const r={A:'Excellent performance',B:'Very Good performance',C:'Good performance',D:'Fair performance',F:'Needs improvement'};return r[g]||'';}
+        function getTermName(t){return{first:'First',second:'Second',third:'Third'}[t]||t;}
+        function getOrdinal(n){const s=['th','st','nd','rd'];const v=n%100;return n+(s[(v-20)%10]||s[v]||s[0]);}
 
-        // ============================================
         // THEME
-        // ============================================
-        const html = document.documentElement;
-        const themeToggle = document.getElementById('themeToggle');
-        const savedTheme = localStorage.getItem('judah-theme') || 'dark';
-        html.setAttribute('data-theme', savedTheme);
-        themeToggle.querySelector('span').textContent = savedTheme === 'dark' ? 'Light' : 'Dark';
-        themeToggle.addEventListener('click', () => {
-            const next = html.getAttribute('data-theme') === 'dark' ? 'light' : 'dark';
-            html.setAttribute('data-theme', next);
-            localStorage.setItem('judah-theme', next);
-            themeToggle.querySelector('span').textContent = next === 'dark' ? 'Light' : 'Dark';
+        const html=document.documentElement,themeToggle=document.getElementById('themeToggle');
+        const savedTheme=localStorage.getItem('judah-theme')||'dark';html.setAttribute('data-theme',savedTheme);themeToggle.querySelector('span').textContent=savedTheme==='dark'?'Light':'Dark';
+        themeToggle.addEventListener('click',()=>{const n=html.getAttribute('data-theme')==='dark'?'light':'dark';html.setAttribute('data-theme',n);localStorage.setItem('judah-theme',n);themeToggle.querySelector('span').textContent=n==='dark'?'Light':'Dark';});
+
+        // TABS
+        document.getElementById('tabNav').addEventListener('click',e=>{const btn=e.target.closest('.tab-btn');if(!btn)return;document.querySelectorAll('#tabNav .tab-btn').forEach(b=>b.classList.remove('active'));btn.classList.add('active');document.querySelectorAll('.tab-content').forEach(t=>t.classList.remove('active'));const tc=document.getElementById('tab-'+btn.dataset.tab);if(tc)tc.classList.add('active');if(btn.dataset.tab==='materials')renderMaterials();if(btn.dataset.tab==='progress')renderProgress();if(btn.dataset.tab==='teachers')renderTeachers();if(btn.dataset.tab==='meetings')renderMeetings();if(btn.dataset.tab==='timetable')renderTimetableTab();if(btn.dataset.tab==='syllabus')renderSyllabusTab();});
+
+        // LIGHTBOX
+        function openLightbox(url){document.getElementById('lightboxImg').src=url;document.getElementById('lightbox').classList.add('active');}
+        function closeLightbox(){document.getElementById('lightbox').classList.remove('active');}
+        document.addEventListener('keydown',e=>{if(e.key==='Escape')closeLightbox();});
+
+        // SESSION CHECK
+        function checkSession(){const sd=sessionStorage.getItem('parentSession');if(sd){try{const p=JSON.parse(sd);if(p.studentId&&Date.now()-p.timestamp<86400000){loadChildByUserId(p.studentId);return true;}}catch(e){sessionStorage.removeItem('parentSession');}}return false;}
+
+        // LOGIN
+        document.getElementById('parentLoginForm').addEventListener('submit',async e=>{
+            e.preventDefault();
+            const studentId=document.getElementById('loginStudentId').value.trim();
+            const pin=document.getElementById('loginPin').value.trim();
+            const msgDiv=document.getElementById('loginMessage'),btn=document.getElementById('loginBtn');
+            msgDiv.className='message';msgDiv.style.display='none';
+            if(!studentId||!pin){msgDiv.textContent='Please enter both Student ID and PIN.';msgDiv.className='message error';return;}
+            btn.disabled=true;btn.innerHTML='<span class="loading-spinner"></span> Verifying...';
+            try{
+                const snap=await db.collection('users').where('role','==','student').where('userId','==',studentId).limit(1).get();
+                if(snap.empty){msgDiv.textContent='Student not found. Please check the Student ID.';msgDiv.className='message error';btn.disabled=false;btn.innerHTML='<i class="fas fa-sign-in-alt"></i> View My Child\'s Information';return;}
+                const doc=snap.docs[0],data=doc.data();
+                if(!data.parentAccessPin){msgDiv.textContent='No access PIN set for this student. Contact the school to set one up.';msgDiv.className='message error';btn.disabled=false;btn.innerHTML='<i class="fas fa-sign-in-alt"></i> View My Child\'s Information';return;}
+                if(pin!==data.parentAccessPin){msgDiv.textContent='Incorrect PIN. Please try again.';msgDiv.className='message error';btn.disabled=false;btn.innerHTML='<i class="fas fa-sign-in-alt"></i> View My Child\'s Information';return;}
+                childData=data;childData.id=doc.id;childClass=data.class;
+                sessionStorage.setItem('parentSession',JSON.stringify({studentId:data.userId,childName:`${data.firstName||''} ${data.surname||''}`.trim(),timestamp:Date.now()}));
+                document.getElementById('loginContainer').classList.add('hidden');document.getElementById('dashboard').classList.add('active');document.getElementById('logoutDashboardBtn').style.display='inline-flex';
+                await loadAllData();renderAll();
+            }catch(err){msgDiv.textContent='An error occurred. Please try again.';msgDiv.className='message error';}
+            finally{btn.disabled=false;btn.innerHTML='<i class="fas fa-sign-in-alt"></i> View My Child\'s Information';}
         });
 
-        // ============================================
-        // UTILITIES
-        // ============================================
-        function escapeHtml(s) { const d = document.createElement('div'); d.textContent = s || ''; return d.innerHTML; }
+        async function loadChildByUserId(userId){
+            const snap=await db.collection('users').where('role','==','student').where('userId','==',userId).limit(1).get();
+            if(snap.empty){logout();return;}
+            const doc=snap.docs[0];childData=doc.data();childData.id=doc.id;childClass=childData.class;
+            document.getElementById('loginContainer').classList.add('hidden');document.getElementById('dashboard').classList.add('active');document.getElementById('logoutDashboardBtn').style.display='inline-flex';
+            await loadAllData();renderAll();
+        }
 
-        // ============================================
-        // SESSION CHECK
-        // ============================================
-        function checkSession() {
-            const sessionData = sessionStorage.getItem('parentSession');
-            if (sessionData) {
-                try {
-                    const parsed = JSON.parse(sessionData);
-                    if (parsed.studentId && parsed.childName && Date.now() - parsed.timestamp < 86400000) {
-                        loadChildByUserId(parsed.studentId);
-                        return true;
-                    }
-                } catch (e) { sessionStorage.removeItem('parentSession'); }
-            }
-            return false;
+        function logout(){sessionStorage.removeItem('parentSession');childData=null;childClass=null;document.getElementById('loginContainer').classList.remove('hidden');document.getElementById('dashboard').classList.remove('active');document.getElementById('logoutDashboardBtn').style.display='none';}
+        document.getElementById('logoutDashboardBtn').addEventListener('click',logout);
+
+        // LOAD ALL DATA
+        async function loadAllData(){
+            if(!childData||!childClass)return;
+            try{
+                const[attSnap,annSnap,ttSnap,sylSnap,ctSnap,stSnap,lnSnap,vcSnap]=await Promise.all([
+                    db.collection('attendance').where('studentId','==',childData.id).orderBy('date','desc').limit(100).get(),
+                    db.collection('classAnnouncements').where('classId','==',childClass).orderBy('createdAt','desc').limit(20).get(),
+                    db.collection('timetables').where('classId','==',childClass).where('status','==','published').limit(1).get(),
+                    db.collection('syllabi').where('classId','==',childClass).where('status','==','published').get(),
+                    db.collection('users').where('role','==','teacher').where('classTeacherFor','array-contains',childClass).where('approved','==',true).get(),
+                    db.collection('users').where('role','==','teacher').where('approved','==',true).get(),
+                    db.collection('lessonNotes').where('classId','==',childClass).get(),
+                    db.collection('virtualClasses').where('classId','==',childClass).where('date','>=',new Date().toISOString().split('T')[0]).orderBy('date','asc').get()
+                ]);
+                allAttendance=[];attSnap.forEach(d=>allAttendance.push(d.data()));
+                allAnnouncements=[];annSnap.forEach(d=>allAnnouncements.push(d.data()));
+                classTimetable=null;ttSnap.forEach(d=>classTimetable=d.data());
+                allSyllabi=[];sylSnap.forEach(d=>allSyllabi.push(d.data()));
+                classTeachers=[];ctSnap.forEach(d=>classTeachers.push({id:d.id,...d.data()}));
+                allLessonNotes=[];lnSnap.forEach(d=>allLessonNotes.push({id:d.id,...d.data()}));
+                meetings=[];vcSnap.forEach(d=>meetings.push({id:d.id,...d.data()}));
+                subjectTeachers=[];const sm={};
+                stSnap.forEach(d=>{const dd=d.data();const map=dd.subjectClassMap||{};if(map[childClass]&&map[childClass].length){const ti={id:d.id,firstName:dd.firstName,surname:dd.surname,email:dd.email,phone:dd.phone,photoURL:dd.photoURL,publicProfile:dd.publicProfile||{},points:dd.points||0};map[childClass].forEach(sub=>{if(!sm[sub])sm[sub]=[];sm[sub].push(ti);});}});
+                for(const[s,t]of Object.entries(sm))subjectTeachers.push({subject:s,teachers:t});subjectTeachers.sort((a,b)=>a.subject.localeCompare(b.subject));
+            }catch(e){console.error('Load error:',e);}
+        }
+
+        // RENDER ALL
+        function renderAll(){
+            if(!childData)return;
+            renderChildHeader();renderStats();renderOverview();renderMaterials();renderTeachers();renderMeetings();renderTimetableTab();renderSyllabusTab();renderProgress();
+            const subjects=[...new Set(allLessonNotes.filter(n=>n.resourcePublished&&n.studentResource).map(n=>n.subject))];
+            const sel=document.getElementById('materialSubject');sel.innerHTML='<option value="all">All Subjects</option>'+subjects.map(s=>`<option value="${s}">${s}</option>`).join('');
+        }
+
+        function renderChildHeader(){
+            const name=`${childData.firstName||''} ${childData.surname||''}`.trim();
+            const ini=(childData.firstName?.[0]||'')+(childData.surname?.[0]||'');
+            document.getElementById('childHeader').innerHTML=`<div class="child-avatar">${childData.photoURL?`<img src="${childData.photoURL}" alt="">`:ini}</div><div class="child-info"><h2>${escapeHtml(name)}</h2><div class="id">${childData.userId||'—'}</div><div style="margin-top:0.3rem;"><span class="badge badge-info">${escapeHtml(childClass||'—')}</span> <span class="badge ${childData.suspended?'badge-warning':'badge-success'}">${childData.suspended?'Suspended':'Active'}</span></div></div>`;
+        }
+
+        function renderStats(){
+            const present=allAttendance.filter(a=>a.status==='present').length;
+            const rate=allAttendance.length?Math.round((present/allAttendance.length)*100):0;
+            const resources=allLessonNotes.filter(n=>n.resourcePublished&&n.studentResource).length;
+            const videos=allLessonNotes.filter(n=>n.videosPublished&&n.videoLinks?.length).reduce((a,n)=>a+n.videoLinks.length,0);
+            const cw=childData.completedWeeks||[];
+            document.getElementById('statsRow').innerHTML=`
+                <div class="stat-card"><div class="stat-icon"><i class="fas fa-fingerprint"></i></div><div class="val">${rate}%</div><div class="lbl">Attendance</div></div>
+                <div class="stat-card"><div class="stat-icon"><i class="fas fa-book"></i></div><div class="val">${resources}</div><div class="lbl">Resources</div></div>
+                <div class="stat-card"><div class="stat-icon"><i class="fas fa-play-circle"></i></div><div class="val">${videos}</div><div class="lbl">Videos</div></div>
+                <div class="stat-card"><div class="stat-icon"><i class="fas fa-check-circle"></i></div><div class="val">${cw.length}</div><div class="lbl">Weeks Done</div></div>
+                <div class="stat-card"><div class="stat-icon"><i class="fas fa-video"></i></div><div class="val">${meetings.length}</div><div class="lbl">Classes</div></div>
+                <div class="stat-card"><div class="stat-icon"><i class="fas fa-chalkboard-teacher"></i></div><div class="val">${classTeachers.length}</div><div class="lbl">Teachers</div></div>`;
+        }
+
+        function renderOverview(){
+            const name=`${childData.firstName||''} ${childData.surname||''}`.trim();
+            document.getElementById('overviewInfo').innerHTML=`
+                <div class="info-row"><span class="info-label">Full Name</span><span class="info-value">${escapeHtml(name)}</span></div>
+                <div class="info-row"><span class="info-label">Student ID</span><span class="info-value" style="font-family:'Space Grotesk',monospace;">${childData.userId||'—'}</span></div>
+                <div class="info-row"><span class="info-label">Class</span><span class="info-value">${escapeHtml(childClass||'—')}</span></div>
+                <div class="info-row"><span class="info-label">Prefect Role</span><span class="info-value">${childData.prefect||'None'}</span></div>
+                <div class="info-row"><span class="info-label">Parent Phone</span><span class="info-value">${escapeHtml(childData.parentPhone||'—')}</span></div>
+                <div class="info-row"><span class="info-label">Parent Email</span><span class="info-value">${escapeHtml(childData.parentEmail||'—')}</span></div>`;
+            const present=allAttendance.filter(a=>a.status==='present').length;
+            const absent=allAttendance.filter(a=>a.status==='absent').length;
+            const rate=allAttendance.length?Math.round((present/allAttendance.length)*100):0;
+            document.getElementById('overviewAttendance').innerHTML=`
+                <div style="display:flex;justify-content:space-around;margin-bottom:0.5rem;"><span>✅ Present: <strong>${present}</strong></span><span>❌ Absent: <strong>${absent}</strong></span><span>📊 Total: <strong>${allAttendance.length}</strong></span></div>
+                <div class="progress-bar"><div class="progress-fill" style="width:${rate}%"></div></div><div style="text-align:center;margin-top:0.5rem;font-weight:600;">${rate}%</div>`;
+            const recent=allAnnouncements.slice(0,3);
+            document.getElementById('overviewAnnouncements').innerHTML=recent.length?recent.map(a=>`<div class="ann-card"><h4>${escapeHtml(a.title||'Untitled')}</h4><div class="date">${a.createdAt?.toDate?.().toLocaleDateString('en-GB',{day:'numeric',month:'short'})||''} · ${escapeHtml(a.teacherName||'')}</div><p style="font-size:0.8rem;">${escapeHtml((a.content||'').substring(0,150))}...</p></div>`).join(''):'<div class="empty-state"><p>No announcements.</p></div>';
+        }
+
+        function renderMaterials(){
+            const subjectFilter=document.getElementById('materialSubject')?.value||'all';
+            let notes=allLessonNotes.filter(n=>n.resourcePublished&&n.studentResource);
+            if(subjectFilter!=='all')notes=notes.filter(n=>n.subject===subjectFilter);
+            const c=document.getElementById('materialsContent');
+            if(!notes.length){c.innerHTML='<div class="empty-state"><i class="fas fa-book"></i><p>No study resources published yet.</p></div>';}
+            else{c.innerHTML=notes.map(n=>`<div class="card" style="padding:1.2rem;margin-bottom:1rem;"><h4 style="color:var(--accent);margin-bottom:0.5rem;">${escapeHtml(n.subject)} — Week ${n.week}</h4><p style="font-size:0.8rem;color:var(--text-muted);">${escapeHtml(n.topic||'')}</p><div class="textbook-content">${n.studentResource}</div></div>`).join('');}
+            const videoNotes=allLessonNotes.filter(n=>n.videosPublished&&n.videoLinks?.length);
+            const vc=document.getElementById('videosContent');
+            if(!videoNotes.length){vc.innerHTML='<div class="empty-state"><i class="fas fa-play-circle"></i><p>No videos yet.</p></div>';return;}
+            vc.innerHTML='<div class="video-grid">'+videoNotes.flatMap(n=>(n.videoLinks||[]).map(link=>{const vid=extractYouTubeId(link);if(vid)return`<div class="video-card"><div class="video-embed"><iframe src="https://www.youtube.com/embed/${vid}?rel=0&modestbranding=1" allowfullscreen loading="lazy"></iframe></div><div class="video-info"><strong>${escapeHtml(n.subject)} Wk ${n.week}</strong></div></div>`;return'';}).filter(Boolean)).join('')+'</div>';
+            const imgNotes=allLessonNotes.filter(n=>n.handwritingImagesPublished&&n.handwritingImages?.length);
+            const ic=document.getElementById('imagesContent');
+            if(!imgNotes.length){ic.innerHTML='<div class="empty-state"><i class="fas fa-images"></i><p>No visual notes yet.</p></div>';return;}
+            ic.innerHTML='<div class="handwriting-grid">'+imgNotes.flatMap(n=>(n.handwritingImages||[]).map(img=>`<img src="${img.url}" alt="Visual note" onclick="openLightbox('${img.url.replace(/'/g,"\\'")}')" loading="lazy">`)).join('')+'</div>';
+        }
+
+        function renderProgress(){
+            const cw=new Set(childData.completedWeeks||[]);
+            const allSubjects=[...new Set(allLessonNotes.map(n=>n.subject))];
+            const c=document.getElementById('progressContent');
+            if(!allSubjects.length){c.innerHTML='<div class="empty-state"><i class="fas fa-tasks"></i><p>No data yet.</p></div>';return;}
+            c.innerHTML=allSubjects.map(sub=>{
+                const weeks=[...new Set(allLessonNotes.filter(n=>n.subject===sub).map(n=>n.week))].sort((a,b)=>a-b);
+                const done=weeks.filter(w=>cw.has(`${sub}_${w}`)).length;
+                const pct=weeks.length?Math.round((done/weeks.length)*100):0;
+                return`<div style="margin-bottom:1rem;"><div style="display:flex;justify-content:space-between;font-size:0.85rem;"><span><strong>${escapeHtml(sub)}</strong></span><span>${done}/${weeks.length} weeks</span></div><div class="progress-bar"><div class="progress-fill" style="width:${pct}%"></div></div></div>`;
+            }).join('')+`<div style="margin-top:1rem;"><strong>Week-by-Week:</strong></div><div class="week-selector">${[...new Set(allLessonNotes.map(n=>n.week))].sort((a,b)=>a-b).map(w=>{const isDone=[...allLessonNotes.filter(n=>n.week===w)].some(n=>cw.has(`${n.subject}_${w}`));return`<div class="week-dot ${isDone?'done':'pending'}">${w}</div>`;}).join('')}</div>`;
+        }
+
+        function renderTeachers(){
+            const ct=document.getElementById('classTeachersList');
+            ct.innerHTML=classTeachers.length?classTeachers.map(t=>{const pub=t.publicProfile||{};const name=`${t.firstName||''} ${t.surname||''}`.trim();const ini=(t.firstName?.[0]||'')+(t.surname?.[0]||'');let d='';if(pub.email===true&&t.email)d+=`<div style="font-size:0.75rem;color:var(--text-muted);"><i class="fas fa-envelope"></i> ${escapeHtml(t.email)}</div>`;if(pub.phone===true&&t.phone)d+=`<div style="font-size:0.75rem;color:var(--text-muted);"><i class="fas fa-phone"></i> ${escapeHtml(t.phone)}</div>`;if(!d&&pub.email!==true&&pub.phone!==true)d='<div style="font-size:0.7rem;color:var(--text-muted);"><i class="fas fa-lock"></i> Contact private</div>';return`<div class="teacher-card"><div class="teacher-avatar">${t.photoURL&&pub.photo!==false?`<img src="${t.photoURL}" alt="">`:ini}</div><div><strong>${pub.name!==false?escapeHtml(name):'Teacher'}</strong>${d}${pub.rating!==false&&t.points>0?`<div style="color:var(--accent);">${'★'.repeat(Math.min(5,Math.floor((t.points||0)/100)))}</div>`:''}</div></div>`;}).join(''):'<div class="empty-state"><p>No class teachers.</p></div>';
+            const st=document.getElementById('subjectTeachersList');
+            st.innerHTML=subjectTeachers.length?subjectTeachers.map(g=>`<div style="margin-bottom:1rem;"><h4 style="color:var(--accent);margin-bottom:0.5rem;">${escapeHtml(g.subject)}</h4>${g.teachers.map(t=>{const pub=t.publicProfile||{};const name=`${t.firstName||''} ${t.surname||''}`.trim();const ini=(t.firstName?.[0]||'')+(t.surname?.[0]||'');return`<div class="teacher-card"><div class="teacher-avatar" style="width:35px;height:35px;font-size:0.7rem;">${t.photoURL&&pub.photo!==false?`<img src="${t.photoURL}" alt="">`:ini}</div><span style="font-size:0.85rem;">${pub.name!==false?escapeHtml(name):'Teacher'}</span></div>`;}).join('')}</div>`).join(''):'<div class="empty-state"><p>No subject teachers.</p></div>';
+        }
+
+        function renderMeetings(){
+            const c=document.getElementById('meetingsList');
+            if(!meetings.length){c.innerHTML='<div class="empty-state"><i class="fas fa-video"></i><p>No upcoming classes.</p></div>';return;}
+            const now=new Date();
+            c.innerHTML=meetings.map(m=>{const mt=new Date(`${m.date}T${m.time}`);const diff=Math.floor((mt-now)/60000);let cls='',label='Upcoming',disabled='';if(diff<=0&&diff>-120){cls='live';label='● Live Now';}else if(diff<=15&&diff>0){cls='soon';label='● Starting Soon';}else if(diff<-120){disabled='disabled';label='Ended';}return`<div class="meeting-card ${cls}"><div><strong>${escapeHtml(m.subject||'Virtual Class')}</strong> · Week ${m.week||'?'}<br><span style="font-size:0.8rem;color:var(--text-secondary);">${m.date} ${m.time} · ${m.platform} · ${m.duration} min</span><br><span class="badge ${cls==='live'?'badge-live':cls==='soon'?'badge-warning':'badge-info'}">${label}</span></div><a href="${m.link||'#'}" target="_blank" rel="noopener" class="join-btn ${disabled}">${cls==='live'?'Join Now':'Join'}</a></div>`;}).join('');
+        }
+
+        function renderTimetableTab(){
+            const c=document.getElementById('timetableContent');
+            if(!classTimetable||!classTimetable.periods?.length){c.innerHTML='<div class="empty-state"><i class="fas fa-calendar-alt"></i><p>No timetable published.</p></div>';return;}
+            const days=['monday','tuesday','wednesday','thursday','friday'],dl=['Mon','Tue','Wed','Thu','Fri'];
+            c.innerHTML=`<div class="timetable-grid">${days.map((d,i)=>{const dp=classTimetable.periods.filter(p=>p.day===d);return`<div class="timetable-day"><div class="day-header">${dl[i]}</div>${dp.length?dp.map(p=>`<div class="period"><div style="font-weight:600;">${escapeHtml(p.subject||'—')}</div><div style="font-size:0.65rem;">${escapeHtml(p.startTime||'')}-${escapeHtml(p.endTime||'')}</div></div>`).join(''):'<div class="period" style="color:var(--text-muted);">—</div>'}</div>`;}).join('')}</div>`;
+        }
+
+        function renderSyllabusTab(){
+            const term=document.getElementById('sylTermFilter')?.value||'First Term';
+            const filtered=allSyllabi.filter(s=>s.term===term||!s.term);
+            const c=document.getElementById('syllabusContent');
+            c.innerHTML=filtered.length?filtered.map(s=>`<div class="syllabus-card"><h4>${escapeHtml(s.subject||'Untitled')}</h4><p style="font-size:0.75rem;color:var(--text-muted);">${s.weeks?.length||0} weeks</p>${(s.weeks||[]).sort((a,b)=>a.week-b.week).map(w=>`<div class="syllabus-week"><strong>Week ${w.week}:</strong> ${escapeHtml(w.topic||'—')}</div>`).join('')}</div>`).join(''):'<div class="empty-state"><i class="fas fa-book-open"></i><p>No syllabus published.</p></div>';
         }
 
         // ============================================
-        // LOGIN
+        // REPORT CARD TAB - Parent views via PIN
         // ============================================
-        document.getElementById('parentLoginForm').addEventListener('submit', async (e) => {
-            e.preventDefault();
-            const studentId = document.getElementById('loginStudentId').value.trim();
-            const pin = document.getElementById('loginPin').value.trim();
-            const msgDiv = document.getElementById('loginMessage');
-            const btn = document.getElementById('loginBtn');
-
+        document.getElementById('viewReportCardBtn').addEventListener('click', async () => {
+            const pin = document.getElementById('rcPinInput').value.trim().toUpperCase();
+            const msgDiv = document.getElementById('rcMessage');
             msgDiv.className = 'message';
-            msgDiv.style.display = 'none';
-
-            if (!studentId || !pin) {
-                msgDiv.textContent = 'Please enter both Student ID and Access PIN.';
+            
+            if (!pin || pin.length < 6) {
+                msgDiv.textContent = 'Please enter a valid PIN.';
                 msgDiv.className = 'message error';
                 return;
             }
 
+            const btn = document.getElementById('viewReportCardBtn');
             btn.disabled = true;
-            btn.innerHTML = '<span class="loading-spinner"></span> Verifying...';
+            btn.innerHTML = '<span class="loading-spinner"></span> Loading...';
 
             try {
-                const snap = await db.collection('users')
-                    .where('role', '==', 'student')
-                    .where('userId', '==', studentId)
-                    .limit(1)
-                    .get();
-
-                if (snap.empty) {
-                    msgDiv.textContent = 'Student not found. Please check the ID and try again.';
+                // Look up PIN
+                const pinDoc = await db.collection('reportPins').doc(pin).get();
+                if (!pinDoc.exists) {
+                    msgDiv.textContent = 'Invalid PIN. Please check and try again.';
                     msgDiv.className = 'message error';
                     btn.disabled = false;
-                    btn.innerHTML = '<i class="fas fa-sign-in-alt"></i> View My Child\'s Information';
+                    btn.innerHTML = '<i class="fas fa-eye"></i> View Report Card';
                     return;
                 }
 
-                const doc = snap.docs[0];
-                const data = doc.data();
-                const storedPin = data.parentAccessPin;
-
-                if (!storedPin) {
-                    msgDiv.textContent = 'No access PIN has been set for this student. Please contact the school.';
+                const pinData = pinDoc.data();
+                if (pinData.status === 'expired') {
+                    msgDiv.textContent = 'This PIN has expired.';
                     msgDiv.className = 'message error';
                     btn.disabled = false;
-                    btn.innerHTML = '<i class="fas fa-sign-in-alt"></i> View My Child\'s Information';
+                    btn.innerHTML = '<i class="fas fa-eye"></i> View Report Card';
                     return;
                 }
 
-                if (pin !== storedPin) {
-                    msgDiv.textContent = 'Incorrect PIN. Please try again.';
+                // Find published report card
+                let query = db.collection('reportCards')
+                    .where('status', '==', 'published')
+                    .where('session', '==', pinData.session);
+                
+                if (pinData.term) query = query.where('term', '==', pinData.term);
+                
+                const rcSnap = await query.get();
+                let found = false;
+
+                rcSnap.forEach(doc => {
+                    const rc = doc.data();
+                    const result = (rc.studentResults || []).find(r =>
+                        r.studentId === childData.id || r.studentUserId === childData.userId
+                    );
+                    if (result) {
+                        found = true;
+                        renderParentReportCard(rc, result, pinData);
+                    }
+                });
+
+                if (!found) {
+                    msgDiv.textContent = 'Your child\'s results not found in published report cards for this session.';
                     msgDiv.className = 'message error';
-                    btn.disabled = false;
-                    btn.innerHTML = '<i class="fas fa-sign-in-alt"></i> View My Child\'s Information';
-                    return;
+                } else {
+                    msgDiv.textContent = 'Report card loaded successfully!';
+                    msgDiv.className = 'message success';
                 }
-
-                // Success
-                childData = data;
-                childData.id = doc.id;
-                childClass = data.class;
-
-                sessionStorage.setItem('parentSession', JSON.stringify({
-                    studentId: data.userId,
-                    childName: `${data.firstName || ''} ${data.surname || ''}`.trim(),
-                    timestamp: Date.now()
-                }));
-
-                document.getElementById('loginContainer').classList.add('hidden');
-                document.getElementById('dashboard').classList.add('active');
-                document.getElementById('logoutDashboardBtn').style.display = 'inline-flex';
-
-                await loadAllChildData();
-                renderAllTabs();
-
-            } catch (err) {
-                console.error('Login error:', err);
-                msgDiv.textContent = 'An error occurred. Please try again.';
+            } catch (e) {
+                console.error('RC error:', e);
+                msgDiv.textContent = 'Error loading report card.';
                 msgDiv.className = 'message error';
             } finally {
                 btn.disabled = false;
-                btn.innerHTML = '<i class="fas fa-sign-in-alt"></i> View My Child\'s Information';
+                btn.innerHTML = '<i class="fas fa-eye"></i> View Report Card';
             }
         });
 
-        async function loadChildByUserId(userId) {
-            const snap = await db.collection('users').where('role', '==', 'student').where('userId', '==', userId).limit(1).get();
-            if (snap.empty) { logout(); return; }
-            const doc = snap.docs[0];
-            childData = doc.data();
-            childData.id = doc.id;
-            childClass = childData.class;
-            document.getElementById('loginContainer').classList.add('hidden');
-            document.getElementById('dashboard').classList.add('active');
-            document.getElementById('logoutDashboardBtn').style.display = 'inline-flex';
-            await loadAllChildData();
-            renderAllTabs();
-        }
+        function renderParentReportCard(rc, myResult, pinData) {
+            const session = rc.session || '2025/2026';
+            const term = rc.term || 'first';
+            const termName = getTermName(term).toUpperCase();
+            const schoolName = rc.schoolName || 'Judah Wonders Model School';
+            const useA = rc.useAssignments !== false;
+            const w = rc.globalWeights || { a: 10, t: 30, e: 60 };
+            const totalStudents = rc.totalStudents || (rc.studentResults || []).length || 0;
+            const sorted = (rc.studentResults || []).sort((a, b) => (b.averageScore || 0) - (a.averageScore || 0));
+            const rank = sorted.findIndex(r => r.studentId === childData.id || r.studentUserId === childData.userId) + 1;
+            const classAvg = sorted.length ? (sorted.reduce((s, r) => s + (r.averageScore || 0), 0) / sorted.length).toFixed(1) : '0';
 
-        function logout() {
-            sessionStorage.removeItem('parentSession');
-            childData = null;
-            childClass = null;
-            document.getElementById('loginContainer').classList.remove('hidden');
-            document.getElementById('dashboard').classList.remove('active');
-            document.getElementById('logoutDashboardBtn').style.display = 'none';
-            document.getElementById('loginStudentId').value = '';
-            document.getElementById('loginPin').value = '';
-        }
+            let subjectRows = '', totalScored = 0, subjectCount = 0;
+            const subjects = myResult.subjects || rc.subjects || [];
+            subjects.forEach(s => {
+                const sub = typeof s === 'string' ? { name: s, assignAvg: 0, testAvg: 0, examScore: 0, total: 0, grade: 'F' } : s;
+                const hasAny = (sub.assignAvg > 0 || sub.testAvg > 0 || sub.examScore > 0);
+                if (hasAny) {
+                    totalScored += (sub.total || 0); subjectCount++;
+                    subjectRows += `<tr><td class="sub-col">${escapeHtml(sub.name)}</td>${useA?`<td>${sub.assignAvg>0?sub.assignAvg.toFixed(1):'<span class="no-data">—</span>'}</td>`:''}<td>${sub.testAvg>0?sub.testAvg.toFixed(1):'<span class="no-data">—</span>'}</td><td>${sub.examScore>0?sub.examScore.toFixed(1):'<span class="no-data">—</span>'}</td><td><strong>${Math.round(sub.total||0)}</strong></td><td><strong class="grade-${sub.grade||'F'}">${sub.grade||'F'}</strong></td><td>${getRemark(sub.grade||'F')}</td></tr>`;
+                } else {
+                    subjectRows += `<tr><td class="sub-col">${escapeHtml(sub.name)}</td>${useA?'<td><span class="no-data">—</span></td>':''}<td><span class="no-data">—</span></td><td><span class="no-data">—</span></td><td><span class="no-data">—</span></td><td><span class="no-data">—</span></td><td><span class="no-data">—</span></td></tr>`;
+                }
+            });
 
-        document.getElementById('logoutDashboardBtn').addEventListener('click', logout);
+            const average = myResult.averageScore || (subjectCount > 0 ? totalScored / subjectCount : 0);
+            const overallGrade = getGrade(average);
+            const studentName = myResult.studentName || `${childData.firstName || ''} ${childData.surname || ''}`.trim();
 
-        // ============================================
-        // LOAD DATA
-        // ============================================
-        async function loadAllChildData() {
-            if (!childData || !childClass) return;
-
-            try {
-                // Attendance
-                const attSnap = await db.collection('attendance').where('studentId', '==', childData.id).orderBy('date', 'desc').limit(100).get();
-                allAttendance = []; attSnap.forEach(d => allAttendance.push(d.data()));
-
-                // Announcements
-                const annSnap = await db.collection('classAnnouncements').where('classId', '==', childClass).orderBy('createdAt', 'desc').limit(20).get();
-                allAnnouncements = []; annSnap.forEach(d => allAnnouncements.push(d.data()));
-
-                // Scores
-                const scoreSnap = await db.collection('scores').where('studentId', '==', childData.id).orderBy('date', 'desc').limit(30).get();
-                allScores = []; scoreSnap.forEach(d => allScores.push(d.data()));
-
-                // Timetable
-                const ttSnap = await db.collection('timetables').where('classId', '==', childClass).where('published', '==', true).limit(1).get();
-                classTimetable = null; ttSnap.forEach(d => classTimetable = d.data());
-
-                // Syllabus
-                const sylSnap = await db.collection('syllabus').where('classId', '==', childClass).where('status', '==', 'approved').get();
-                allSyllabi = []; sylSnap.forEach(d => allSyllabi.push(d.data()));
-
-                // Class Teachers
-                const ctSnap = await db.collection('users').where('role', '==', 'teacher').where('classTeacherFor', 'array-contains', childClass).where('approved', '==', true).get();
-                classTeachers = []; ctSnap.forEach(d => classTeachers.push({ id: d.id, ...d.data() }));
-
-                // Subject Teachers
-                const stSnap = await db.collection('users').where('role', '==', 'teacher').where('approved', '==', true).get();
-                subjectTeachers = [];
-                const sm = {};
-                stSnap.forEach(d => {
-                    const dd = d.data();
-                    const map = dd.subjectClassMap || {};
-                    if (map[childClass] && map[childClass].length) {
-                        const ti = { id: d.id, firstName: dd.firstName, surname: dd.surname, email: dd.email, phone: dd.phone, photoURL: dd.photoURL, publicProfile: dd.publicProfile || {}, points: dd.points || 0, qualifications: dd.qualifications };
-                        map[childClass].forEach(sub => { if (!sm[sub]) sm[sub] = []; sm[sub].push(ti); });
-                    }
-                });
-                for (const [sub, teachers] of Object.entries(sm)) { subjectTeachers.push({ subject: sub, teachers }); }
-                subjectTeachers.sort((a, b) => a.subject.localeCompare(b.subject));
-
-            } catch (e) { console.error('Load error:', e); }
-        }
-
-        // ============================================
-        // RENDER ALL TABS
-        // ============================================
-        function renderAllTabs() {
-            if (!childData) return;
-            renderChildHeader();
-            renderStats();
-            renderOverview();
-            renderTeachersTab();
-            renderAnnouncementsTab();
-            renderAttendanceTab();
-            renderTimetableTab();
-            renderSyllabusTab();
-            renderScoresTab();
-        }
-
-        function renderChildHeader() {
-            const name = `${childData.firstName || ''} ${childData.surname || ''}`.trim();
-            const initials = (childData.firstName?.[0] || '') + (childData.surname?.[0] || '');
-            document.getElementById('childHeader').innerHTML = `
-                <div class="child-avatar">${childData.photoURL ? `<img src="${childData.photoURL}" alt="${escapeHtml(name)}">` : initials}</div>
-                <div class="child-info">
-                    <h2>${escapeHtml(name)}</h2>
-                    <div class="id">${childData.userId || '—'}</div>
-                    <div style="margin-top:0.3rem;">
-                        <span class="badge badge-info">${escapeHtml(childClass || '—')}</span>
-                        <span class="badge badge-success">${childData.suspended ? 'Suspended' : 'Active'}</span>
+            document.getElementById('rcResult').innerHTML = `
+                <div style="margin-top:1.5rem;overflow-x:auto;">
+                    <div class="report-card" style="margin:0 auto;">
+                        <div class="rc-header-bg"><h1>${escapeHtml(schoolName)}</h1><div class="motto">"Raising Generational Wonders Among the Best"</div><div class="address">Behind Family FM, Abiola Way, Abeokuta, Ogun State | Tel: 09060473636</div></div>
+                        <div class="rc-title-bar">Student Progress Report Card — ${termName} Term, ${session} Academic Session</div>
+                        <div style="position:relative;"><div class="rc-photo">${childData.photoURL?`<img src="${childData.photoURL}" alt="">`:'Photo'}</div></div>
+                        <div class="rc-info-grid">
+                            <div><strong>Name:</strong> ${escapeHtml(studentName)}</div><div><strong>Student ID:</strong> ${escapeHtml(childData.userId||'—')}</div><div><strong>Class:</strong> ${escapeHtml((rc.className||rc.classId||childClass||'').toUpperCase())}</div>
+                            <div><strong>Gender:</strong> ${escapeHtml(childData.gender||'N/A')}</div><div><strong>No. in Class:</strong> ${totalStudents}</div><div><strong>Position:</strong> ${subjectCount>0?getOrdinal(rank)+' out of '+totalStudents:'—'}</div>
+                            <div><strong>Term:</strong> ${termName}</div><div><strong>Session:</strong> ${session}</div><div><strong>Next Term:</strong> ${escapeHtml(rc.nextTerm||'TBA')}</div>
+                        </div>
+                        <div class="rc-table-wrap"><table class="rc-table"><thead><tr><th rowspan="2" class="sub-col">SUBJECTS</th>${useA?`<th rowspan="2">Assign.<br>(${w.a}%)</th>`:''}<th rowspan="2">Test<br>(${w.t}%)</th><th rowspan="2">Exam<br>(${w.e}%)</th><th rowspan="2">TOTAL<br>(100%)</th><th rowspan="2">GRADE</th><th rowspan="2">REMARK</th></tr></thead><tbody>${subjectRows}<tr class="total-row"><td class="sub-col"><strong>AGGREGATE</strong></td>${useA?'<td></td>':''}<td colspan="2"></td><td><strong>${subjectCount>0?Math.round(totalScored):'—'}</strong></td><td><strong class="grade-${overallGrade}">${overallGrade}</strong></td><td>${subjectCount>0?getRemark(overallGrade):'—'}</td></tr></tbody></table></div>
+                        <div class="rc-summary"><div class="rc-summary-box"><h5>📊 Academic Summary</h5><p><strong>Term Average:</strong> ${subjectCount>0?average.toFixed(1)+'%':'—'}</p><p><strong>Class Average:</strong> ${classAvg}%</p><p><strong>Overall Grade:</strong> <strong class="grade-${overallGrade}">${overallGrade} — ${getRemark(overallGrade)}</strong></p></div><div class="rc-summary-box"><h5>📝 Teacher's Comment</h5><p style="font-style:italic;">${escapeHtml(myResult.teacherComment||'No comment')}</p></div></div>
+                        <div class="rc-signatures"><div><div class="rc-sign-line">${escapeHtml(rc.teacherName||'Class Teacher')}<br><small>Class Teacher</small></div></div><div><div class="rc-sign-line"><br><small>Principal</small></div></div><div><div class="rc-sign-line"><br><small>Parent/Guardian</small></div></div></div>
+                        <div class="rc-footer"><strong>Next Term Begins:</strong> ${escapeHtml(rc.nextTerm||'TBA')} | This report card is computer-generated.</div>
                     </div>
+                    <div style="text-align:center;margin-top:1rem;"><button class="btn-outline" onclick="window.print()"><i class="fas fa-print"></i> Print Report Card</button></div>
                 </div>`;
         }
 
-        function renderStats() {
-            const present = allAttendance.filter(a => a.status === 'present').length;
-            const total = allAttendance.length || 1;
-            const rate = Math.round((present / total) * 100);
-            const avgScore = allScores.length ? Math.round(allScores.reduce((s, sc) => s + (sc.score || 0), 0) / allScores.length) : 0;
-
-            document.getElementById('statsRow').innerHTML = `
-                <div class="stat-card"><div class="val">${rate}%</div><div class="lbl">Attendance</div></div>
-                <div class="stat-card"><div class="val">${allAnnouncements.length}</div><div class="lbl">Announcements</div></div>
-                <div class="stat-card"><div class="val">${allScores.length}</div><div class="lbl">Scores</div></div>
-                <div class="stat-card"><div class="val">${avgScore}%</div><div class="lbl">Avg Score</div></div>
-                <div class="stat-card"><div class="val">${classTeachers.length}</div><div class="lbl">Teachers</div></div>
-            `;
-        }
-
-        // ============================================
-        // OVERVIEW TAB
-        // ============================================
-        function renderOverview() {
-            const name = `${childData.firstName || ''} ${childData.surname || ''}`.trim();
-            document.getElementById('overviewInfo').innerHTML = `
-                <div class="info-row"><span class="info-label">Full Name</span><span class="info-value">${escapeHtml(name)}</span></div>
-                <div class="info-row"><span class="info-label">Student ID</span><span class="info-value" style="font-family:'Space Grotesk',monospace;">${childData.userId || '—'}</span></div>
-                <div class="info-row"><span class="info-label">Class</span><span class="info-value">${escapeHtml(childClass || '—')}</span></div>
-                <div class="info-row"><span class="info-label">Prefect Role</span><span class="info-value">${childData.prefect || 'None'}</span></div>
-                <div class="info-row"><span class="info-label">Parent Phone</span><span class="info-value">${escapeHtml(childData.parentPhone || '—')}</span></div>
-                <div class="info-row"><span class="info-label">Parent Email</span><span class="info-value">${escapeHtml(childData.parentEmail || '—')}</span></div>`;
-
-            const recent = allAnnouncements.slice(0, 3);
-            document.getElementById('overviewAnnouncements').innerHTML = recent.length ? recent.map(a => `
-                <div class="announcement-card">
-                    <h4>${escapeHtml(a.title || 'Untitled')}</h4>
-                    <div class="date">${a.createdAt?.toDate?.().toLocaleDateString('en-GB', { day: 'numeric', month: 'short', year: 'numeric' }) || 'Unknown'}</div>
-                    <p style="font-size:0.85rem;">${escapeHtml((a.content || '').substring(0, 200))}...</p>
-                </div>`).join('') : '<div class="empty-state"><i class="fas fa-bullhorn"></i><p>No announcements yet.</p></div>';
-        }
-
-        // ============================================
-        // TEACHERS TAB
-        // ============================================
-        function renderTeachersTab() {
-            document.getElementById('classTeachersList').innerHTML = classTeachers.length ? classTeachers.map(t => {
-                const pub = t.publicProfile || {};
-                const name = `${t.firstName || ''} ${t.surname || ''}`.trim();
-                const initials = (t.firstName?.[0] || '') + (t.surname?.[0] || '');
-                let details = '';
-                if (pub.email === true && t.email) details += `<div style="font-size:0.75rem;color:var(--text-muted);"><i class="fas fa-envelope"></i> ${escapeHtml(t.email)}</div>`;
-                if (pub.phone === true && t.phone) details += `<div style="font-size:0.75rem;color:var(--text-muted);"><i class="fas fa-phone"></i> ${escapeHtml(t.phone)}</div>`;
-                if (!details && pub.email !== true && pub.phone !== true) details = '<div style="font-size:0.7rem;color:var(--text-muted);font-style:italic;"><i class="fas fa-lock"></i> Contact info private</div>';
-                return `<div class="teacher-card">
-                    <div class="t-avatar">${t.photoURL && pub.photo !== false ? `<img src="${t.photoURL}" alt="">` : initials}</div>
-                    <div style="flex:1;"><strong>${pub.name !== false ? escapeHtml(name) : 'Teacher'}</strong>${details}</div>
-                    ${pub.rating !== false && t.points > 0 ? `<span style="color:var(--accent);">${'★'.repeat(Math.min(5, Math.floor((t.points || 0) / 100)))}</span>` : ''}
-                </div>`;
-            }).join('') : '<div class="empty-state"><i class="fas fa-user-slash"></i><p>No class teachers assigned.</p></div>';
-
-            document.getElementById('subjectTeachersList').innerHTML = subjectTeachers.length ? subjectTeachers.map(st => `
-                <div style="margin-bottom:1rem;">
-                    <h4 style="color:var(--accent);margin-bottom:0.5rem;"><span class="badge badge-info">${escapeHtml(st.subject)}</span></h4>
-                    ${st.teachers.map(t => {
-                        const pub = t.publicProfile || {};
-                        const name = `${t.firstName || ''} ${t.surname || ''}`.trim();
-                        const initials = (t.firstName?.[0] || '') + (t.surname?.[0] || '');
-                        return `<div class="teacher-card">
-                            <div class="t-avatar" style="width:35px;height:35px;font-size:0.7rem;">${t.photoURL && pub.photo !== false ? `<img src="${t.photoURL}" alt="">` : initials}</div>
-                            <span style="font-size:0.85rem;">${pub.name !== false ? escapeHtml(name) : 'Teacher'}</span>
-                        </div>`;
-                    }).join('')}
-                </div>`).join('') : '<div class="empty-state"><i class="fas fa-book"></i><p>No subject teachers assigned.</p></div>';
-        }
-
-        // ============================================
-        // ANNOUNCEMENTS TAB
-        // ============================================
-        function renderAnnouncementsTab() {
-            document.getElementById('allAnnouncements').innerHTML = allAnnouncements.length ? allAnnouncements.map(a => `
-                <div class="announcement-card">
-                    <h4>${escapeHtml(a.title || 'Untitled')}</h4>
-                    <div class="date"><i class="fas fa-calendar"></i> ${a.createdAt?.toDate?.().toLocaleDateString('en-GB', { day: 'numeric', month: 'short', year: 'numeric', hour: '2-digit', minute: '2-digit' }) || 'Unknown'} · <i class="fas fa-user"></i> ${escapeHtml(a.teacherName || 'Teacher')}</div>
-                    <p style="font-size:0.85rem;line-height:1.5;">${escapeHtml(a.content || '')}</p>
-                </div>`).join('') : '<div class="empty-state"><i class="fas fa-bullhorn"></i><p>No announcements.</p></div>';
-        }
-
-        // ============================================
-        // ATTENDANCE TAB
-        // ============================================
-        function renderAttendanceTab() {
-            const present = allAttendance.filter(a => a.status === 'present').length;
-            const absent = allAttendance.filter(a => a.status === 'absent').length;
-            const rate = allAttendance.length ? Math.round((present / allAttendance.length) * 100) : 0;
-
-            document.getElementById('attStats').innerHTML = `
-                <div class="stat-card" style="border-left:3px solid var(--success-text);"><div class="val" style="color:var(--success-text);">${present}</div><div class="lbl">Present</div></div>
-                <div class="stat-card" style="border-left:3px solid var(--danger-text);"><div class="val" style="color:var(--danger-text);">${absent}</div><div class="lbl">Absent</div></div>
-                <div class="stat-card" style="border-left:3px solid var(--accent);"><div class="val">${rate}%</div><div class="lbl">Rate</div></div>`;
-
-            document.getElementById('attendanceBody').innerHTML = allAttendance.length ? allAttendance.slice(0, 30).map(a => {
-                const date = a.date?.toDate ? a.date.toDate().toLocaleDateString('en-GB', { day: 'numeric', month: 'short', year: 'numeric' }) : a.date || '—';
-                return `<tr>
-                    <td>${date}</td>
-                    <td>${a.session === 'morning' ? 'Morning' : 'Afternoon'}</td>
-                    <td><span class="badge ${a.status === 'present' ? 'badge-success' : 'badge-danger'}">${a.status}</span></td>
-                    <td>${escapeHtml(a.remark || '—')}</td>
-                </tr>`;
-            }).join('') : '<tr><td colspan="4"><div class="empty-state"><p>No attendance records.</p></div></td></tr>';
-        }
-
-        // ============================================
-        // TIMETABLE TAB
-        // ============================================
-        function renderTimetableTab() {
-            const c = document.getElementById('timetableContent');
-            if (!classTimetable || !classTimetable.periods?.length) {
-                c.innerHTML = '<div class="empty-state"><i class="fas fa-calendar-alt"></i><p>No timetable published yet.</p></div>';
-                return;
-            }
-            const days = ['monday', 'tuesday', 'wednesday', 'thursday', 'friday'];
-            const dl = ['Mon', 'Tue', 'Wed', 'Thu', 'Fri'];
-            c.innerHTML = `<div class="timetable-grid">${days.map((d, i) => {
-                const dp = classTimetable.periods.filter(p => p[d]);
-                return `<div class="timetable-day"><div class="day-header">${dl[i]}</div>${dp.length ? dp.map(p => `<div class="period"><div style="font-weight:600;">${escapeHtml(p[d] || '—')}</div><div style="font-size:0.65rem;color:var(--text-muted);">${escapeHtml(p.startTime || '')} - ${escapeHtml(p.endTime || '')}</div></div>`).join('') : '<div class="period" style="color:var(--text-muted);">—</div>'}</div>`;
-            }).join('')}</div>`;
-        }
-
-        // ============================================
-        // SYLLABUS TAB
-        // ============================================
-        function renderSyllabusTab() {
-            document.getElementById('syllabusContent').innerHTML = allSyllabi.length ? allSyllabi.map(s => `
-                <div class="syllabus-card">
-                    <h4><i class="fas fa-book"></i> ${escapeHtml(s.subject || 'Untitled')}</h4>
-                    <p style="font-size:0.8rem;color:var(--text-muted);">Teacher: ${escapeHtml(s.teacherName || '—')} · ${s.weeks?.length || 0} weeks</p>
-                    ${(s.weeks || []).map(w => `<div class="syllabus-week"><strong>Week ${w.week}:</strong> ${escapeHtml(w.topic || '—')}</div>`).join('')}
-                </div>`).join('') : '<div class="empty-state"><i class="fas fa-book-open"></i><p>No syllabus published yet.</p></div>';
-        }
-
-        // ============================================
-        // SCORES TAB
-        // ============================================
-        function renderScoresTab() {
-            document.getElementById('scoresBody').innerHTML = allScores.length ? allScores.map(s => {
-                const sc = s.score || 0;
-                const cls = sc >= 80 ? 'score-high' : sc >= 50 ? 'score-mid' : 'score-low';
-                return `<tr><td>${escapeHtml(s.subject || '—')}</td><td>${escapeHtml(s.category || '—')}</td><td class="${cls}">${sc}%</td><td>${s.date || '—'}</td></tr>`;
-            }).join('') : '<tr><td colspan="4"><div class="empty-state"><p>No scores recorded yet.</p></div></tr>';
-        }
-
-        // ============================================
-        // TAB NAVIGATION
-        // ============================================
-        document.getElementById('tabNav').addEventListener('click', (e) => {
-            const btn = e.target.closest('.tab-btn');
-            if (!btn) return;
-            document.querySelectorAll('#tabNav .tab-btn').forEach(b => b.classList.remove('active'));
-            btn.classList.add('active');
-            document.querySelectorAll('.tab-content').forEach(t => t.classList.remove('active'));
-            const tc = document.getElementById('tab-' + btn.dataset.tab);
-            if (tc) tc.classList.add('active');
-        });
-
-        // ============================================
         // INIT
-        // ============================================
-        if (!checkSession()) {
-            document.getElementById('loginContainer').classList.remove('hidden');
-            document.getElementById('dashboard').classList.remove('active');
-        }
-
-        console.log('👨‍👩‍👧 Parent Portal ready');
+        if(!checkSession()){document.getElementById('loginContainer').classList.remove('hidden');document.getElementById('dashboard').classList.remove('active');}
+        console.log('👨‍👩‍👧 Parent Portal ready — Judah Wonders Model School');
     </script>
 </body>
 </html>
